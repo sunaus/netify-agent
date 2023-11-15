@@ -1099,7 +1099,7 @@ void ndDetectionThread::FlowUpdate(ndDetectionQueueEntry *entry) {
     else if (ndEF->flags.detection_updated.load())
         event = ndPluginProcessor::EVENT_DPI_UPDATE;
 
-    ndi.plugins.BroadcastProcessorEvent(event);
+    ndi.plugins.BroadcastProcessorEvent(event, ndEF);
 
     if (ndGC_DEBUG || ndGC.h_flow != stderr) {
         bool output = false;
