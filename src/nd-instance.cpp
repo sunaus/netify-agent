@@ -18,7 +18,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <ios>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -29,6 +28,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <ios>
 #include <iostream>
 
 #if defined(_ND_USE_LIBTCMALLOC) && \

@@ -62,8 +62,7 @@ ndFlow::ndFlow(nd_iface_ptr &iface)
     detected_application(ND_APP_UNKNOWN),
     detected_protocol_name("Unknown"),
     category{ ND_CAT_UNKNOWN, ND_CAT_UNKNOWN, ND_CAT_UNKNOWN },
-    ndpi_flow(NULL), http{ { 0 } }, privacy_mask(0),
-    origin(0), direction(0),
+    ndpi_flow(NULL), privacy_mask(0), origin(0), direction(0),
 #if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
     ct_id(0), ct_mark(0),
 #endif
@@ -92,8 +91,7 @@ ndFlow::ndFlow(const ndFlow &flow)
     detected_application(ND_APP_UNKNOWN),
     detected_protocol_name("Unknown"),
     category{ ND_CAT_UNKNOWN, ND_CAT_UNKNOWN, ND_CAT_UNKNOWN },
-    ndpi_flow(NULL), http{ { 0 } }, privacy_mask(0),
-    origin(0), direction(0),
+    ndpi_flow(NULL), privacy_mask(0), origin(0), direction(0),
 #if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
     ct_id(0), ct_mark(0),
 #endif
@@ -108,16 +106,6 @@ ndFlow::ndFlow(const ndFlow &flow)
 
 ndFlow::~ndFlow() {
     Release();
-
-    if (HasTLSIssuerDN()) {
-        free(ssl.issuer_dn);
-        ssl.issuer_dn = NULL;
-    }
-
-    if (HasTLSSubjectDN()) {
-        free(ssl.subject_dn);
-        ssl.subject_dn = NULL;
-    }
 }
 
 void ndFlow::Hash(const string &device, bool hash_mdata,
@@ -183,7 +171,7 @@ void ndFlow::Hash(const string &device, bool hash_mdata,
               host_server_name.size());
         }
         if (HasBTInfoHash()) {
-            sha1_write(&ctx, bt.info_hash, ND_FLOW_BTIHASH_LEN);
+            sha1_write(&ctx, &bt.info_hash[0], SHA1_DIGEST_LENGTH);
         }
     }
 
@@ -252,32 +240,32 @@ nd_proto_id_t ndFlow::GetMasterProtocol(void) const {
 
 bool ndFlow::HasDhcpFingerprint(void) const {
     return (detected_protocol == ND_PROTO_DHCP &&
-      dhcp.fingerprint[0] != '\0');
+      ! dhcp.fingerprint.empty());
 }
 
 bool ndFlow::HasDhcpClassIdent(void) const {
     return (detected_protocol == ND_PROTO_DHCP &&
-      dhcp.class_ident[0] != '\0');
+      ! dhcp.class_ident.empty());
 }
 
 bool ndFlow::HasHttpUserAgent(void) const {
     return (GetMasterProtocol() == ND_PROTO_HTTP &&
-      http.user_agent[0] != '\0');
+      ! http.user_agent.empty());
 }
 
 bool ndFlow::HasHttpURL(void) const {
     return (GetMasterProtocol() == ND_PROTO_HTTP &&
-      http.url[0] != '\0');
+      ! http.url.empty());
 }
 
 bool ndFlow::HasSSHClientAgent(void) const {
     return (detected_protocol == ND_PROTO_SSH &&
-      ssh.client_agent[0] != '\0');
+      ! ssh.client_agent.empty());
 }
 
 bool ndFlow::HasSSHServerAgent(void) const {
     return (detected_protocol == ND_PROTO_SSH &&
-      ssh.server_agent[0] != '\0');
+      ! ssh.server_agent.empty());
 }
 
 bool ndFlow::HasTLSClientSNI(void) const {
@@ -289,53 +277,44 @@ bool ndFlow::HasTLSClientSNI(void) const {
 bool ndFlow::HasTLSServerCN(void) const {
     return ((GetMasterProtocol() == ND_PROTO_TLS ||
               detected_protocol == ND_PROTO_QUIC) &&
-      ssl.server_cn[0] != '\0');
+      ! ssl.server_cn.empty());
 }
 
 bool ndFlow::HasTLSIssuerDN(void) const {
     return ((GetMasterProtocol() == ND_PROTO_TLS ||
               detected_protocol == ND_PROTO_QUIC) &&
-      ssl.issuer_dn != NULL);
+      ! ssl.issuer_dn.empty());
 }
 
 bool ndFlow::HasTLSSubjectDN(void) const {
     return ((GetMasterProtocol() == ND_PROTO_TLS ||
               detected_protocol == ND_PROTO_QUIC) &&
-      ssl.subject_dn != NULL);
+      ! ssl.subject_dn.empty());
 }
 
 bool ndFlow::HasTLSClientJA3(void) const {
     return (GetMasterProtocol() == ND_PROTO_TLS &&
-      ssl.client_ja3[0] != '\0');
+      ! ssl.client_ja3.empty());
 }
 
 bool ndFlow::HasTLSServerJA3(void) const {
     return (GetMasterProtocol() == ND_PROTO_TLS &&
-      ssl.server_ja3[0] != '\0');
+      ! ssl.server_ja3.empty());
 }
 
 bool ndFlow::HasBTInfoHash(void) const {
     return (detected_protocol == ND_PROTO_BITTORRENT &&
-      bt.info_hash_valid);
+      ! bt.info_hash.empty());
 }
 
 bool ndFlow::HasSSDPUserAgent(void) const {
     return (GetMasterProtocol() == ND_PROTO_SSDP &&
-      http.user_agent[0] != '\0');
+      ! http.user_agent.empty());
 }
 
-#if 0
-bool ndFlow::HasMiningVariant(void) const
-{
-    return (
-        detected_protocol == ND_PROTO_MINING &&
-        mining.variant[0] != '\0'
-    );
-}
-#endif
 bool ndFlow::HasMDNSDomainName(void) const {
     return (detected_protocol == ND_PROTO_MDNS &&
-      mdns.domain_name[0] != '\0');
+      ! mdns.domain_name.empty());
 }
 
 void ndFlow::Print(uint8_t pflags) const {
@@ -473,6 +452,16 @@ void ndFlow::Print(uint8_t pflags) const {
                 dls << " MDNS/DN: " << mdns.domain_name;
             }
 
+            if (HasBTInfoHash()) {
+                string digest;
+                nd_sha1_to_string(bt.info_hash, digest);
+
+                dls << endl
+                    << setw(iface->ifname.size()) << " "
+                    << ":";
+                dls << " BT/HASH: " << digest;
+            }
+
             if (HasDhcpFingerprint() || HasDhcpClassIdent()) {
                 dls << endl
                     << setw(iface->ifname.size()) << " "
@@ -559,8 +548,7 @@ void ndFlow::Print(uint8_t pflags) const {
                       << nd_risk_get_name(*r);
                 }
                 if (risks.size() > 1) {
-                    for (r = next(risks.begin());
-                         r != risks.end(); r++)
+                    for (r = next(risks.begin()); r != risks.end(); r++)
                     {
                         dls
                           << endl

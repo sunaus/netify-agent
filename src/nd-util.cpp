@@ -1150,6 +1150,22 @@ bool nd_scan_dotd(const string &path, vector<string> &files) {
     return (files.size() > 0);
 }
 
+void nd_set_hostname(string &dst, bool strict) {
+    transform(dst.begin(), dst.end(), dst.begin(),
+      [strict](unsigned char c) {
+        if (strict) {
+            if (isalnum(c) || c == '-' || c == '_' || c == '.')
+                return (unsigned char)tolower(c);
+        }
+        else {
+            if (isalnum(c) || ispunct(c) || c == ' ') {
+                return c;
+            }
+        }
+        return (unsigned char)'_';
+    });
+}
+
 void nd_set_hostname(string &dst, const char *src,
   size_t length, bool strict) {
     dst.clear();

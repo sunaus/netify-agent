@@ -1320,9 +1320,9 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
 
             const uint8_t *p = (const uint8_t *)ns_rr_rdata(rr);
 
-            unsigned i = 0;
-            while (*p != 0 && p < (const uint8_t *)(pkt + pkt_len) &&
-              i < ND_FLOW_HOSTNAME - 1)
+            flow->mdns.domain_name.clear();
+
+            while (*p != 0 && p < (const uint8_t *)(pkt + pkt_len))
             {
                 if ((*p & 0xc0) == 0xc0) {
                     uint16_t offset = (*(p + 1)) +
@@ -1332,20 +1332,20 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
 
                 uint8_t len = *p;
                 p++;
-                if (i != 0)
-                    flow->mdns.domain_name[i++] = '.';
-                for (uint8_t j = 0;
-                     j < len && i < ND_FLOW_HOSTNAME - 1 &&
+                if (! flow->mdns.domain_name.empty())
+                    flow->mdns.domain_name += '.';
+
+                for (uint8_t j = 0; j < len &&
                      p < (const uint8_t *)(pkt + pkt_len);
-                     p++, i++, j++)
+                     p++, j++)
                 {
-                    flow->mdns.domain_name[i] = *p;
+                    flow->mdns.domain_name +=
+                      static_cast<const char>(*p);
                 }
             }
 
-            if (flow->mdns.domain_name[0] != '\0') {
-                nd_set_hostname(flow->mdns.domain_name,
-                  flow->mdns.domain_name, ND_FLOW_HOSTNAME, false);
+            if (! flow->mdns.domain_name.empty()) {
+                nd_set_hostname(flow->mdns.domain_name, false);
             }
 #ifdef _ND_LOG_DHC
             if (flow->HasMDNSDomainName() == false)

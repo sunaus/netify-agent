@@ -32,33 +32,8 @@
 
 using namespace std;
 
-// XXX: These lengths are extracted from:
-//      ndpi/src/include/ndpi_typedefs.h
-//
-// Unfortunately they don't define such constants so we have
-// to define them here.  If they change in nDPI, they'll
-// need to be updated manually.
-#define ND_FLOW_HOSTNAME 80  // nDPI host_server_name length
-#define ND_FLOW_UA_LEN   512  // User agent length
-#define ND_FLOW_URL_LEN  512  // HTTP URL length
-#define ND_FLOW_SSH_UALEN \
-    48  // SSH user-agent (signature) length
-#define ND_FLOW_TLS_CNLEN \
-    256  // TLS SNI hostname/common-name length. Reference: RFC 4366
-#define ND_FLOW_TLS_ORGLEN \
-    64  // TLS certificate organization name length
-#define ND_FLOW_TLS_JA3LEN 33  // TLS JA3 hash length (MD5)
-#define ND_FLOW_DHCPFP_LEN 48  // DHCP fingerprint length
-#define ND_FLOW_DHCPCI_LEN 96  // DHCP class identifier
-
-// BitTorrent info hash length
-#define ND_FLOW_BTIHASH_LEN SHA1_DIGEST_LENGTH
-
-// SSL certificate fingerprint hash length
-#define ND_FLOW_TLS_HASH_LEN SHA1_DIGEST_LENGTH
-
-// Extra protocol info text
-#define ND_FLOW_EXTRA_INFO 16
+// TLS SNI hostname/common-name length. Reference: RFC 4366
+#define ND_FLOW_TLS_CNLEN 256
 
 class ndFlowStats
 {
@@ -486,9 +461,8 @@ public:
                     serialize(output,
                       { "ssl", "server_ja3" }, ssl.server_ja3);
 
-                if (ssl.cert_fingerprint_found) {
-                    nd_sha1_to_string(
-                      (const uint8_t *)ssl.cert_fingerprint, digest);
+                if (! ssl.cert_fingerprint.empty()) {
+                    nd_sha1_to_string(ssl.cert_fingerprint, digest);
                     serialize(output,
                       { "ssl", "fingerprint" }, digest);
                 }
@@ -501,8 +475,7 @@ public:
             }
 
             if (HasBTInfoHash()) {
-                nd_sha1_to_string(
-                  (const uint8_t *)bt.info_hash, digest);
+                nd_sha1_to_string(bt.info_hash, digest);
                 serialize(output, { "bt", "info_hash" }, digest);
             }
 
@@ -694,50 +667,44 @@ public:
     string dns_host_name;
     string host_server_name;
 
-    union {
-        struct {
-            char user_agent[ND_FLOW_UA_LEN];
-            char url[ND_FLOW_URL_LEN];
-        } http;
+    struct {
+        string user_agent;
+        string url;
+    } http;
 
-        struct {
-            char fingerprint[ND_FLOW_DHCPFP_LEN];
-            char class_ident[ND_FLOW_DHCPCI_LEN];
-        } dhcp;
+    struct {
+        string fingerprint;
+        string class_ident;
+    } dhcp;
 
-        struct {
-            char client_agent[ND_FLOW_SSH_UALEN];
-            char server_agent[ND_FLOW_SSH_UALEN];
-        } ssh;
+    struct {
+        string client_agent;
+        string server_agent;
+    } ssh;
 
-        struct {
-            uint16_t version;
-            uint16_t cipher_suite;
-            char *subject_dn, *issuer_dn;
-            char server_cn[ND_FLOW_TLS_CNLEN];
-            char client_ja3[ND_FLOW_TLS_JA3LEN];
-            char server_ja3[ND_FLOW_TLS_JA3LEN];
-            bool cert_fingerprint_found;
-            char cert_fingerprint[ND_FLOW_TLS_HASH_LEN];
-        } ssl;
+    struct {
+        uint16_t version;
+        uint16_t cipher_suite;
 
-        struct {
-            bool tls;
-        } smtp;
+        string subject_dn;
+        string issuer_dn;
+        string server_cn;
+        string client_ja3;
+        string server_ja3;
+        vector<uint8_t> cert_fingerprint;
+    } ssl;
 
-        struct {
-            uint8_t info_hash_valid:1;
-            char info_hash[ND_FLOW_BTIHASH_LEN];
-        } bt;
-#if 0
-        struct {
-            char variant[ND_FLOW_EXTRA_INFO];
-        } mining;
-#endif
-        struct {
-            char domain_name[ND_FLOW_HOSTNAME];
-        } mdns;
-    };
+    struct {
+        bool tls;
+    } smtp;
+
+    struct {
+        vector<uint8_t> info_hash;
+    } bt;
+
+    struct {
+        string domain_name;
+    } mdns;
 
     vector<string> tls_alpn, tls_alpn_server;
     atomic<bool> tls_alpn_set, tls_alpn_server_set;

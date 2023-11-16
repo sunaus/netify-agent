@@ -288,6 +288,7 @@ void nd_regex_error(const regex_error &e, string &error);
 
 bool nd_scan_dotd(const string &path, vector<string> &files);
 
+void nd_set_hostname(string &dst, bool strict = true);
 void nd_set_hostname(string &dst, const char *src,
   size_t length, bool strict = true);
 void nd_set_hostname(char *dst, const char *src,

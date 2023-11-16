@@ -18,14 +18,16 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-risks.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "nd-detection.hpp"
 #include "nd-protos.hpp"
+#include "nd-risks.hpp"
+#include "nd-sha1.h"
 #include "nd-tls-alpn.hpp"
+
 #include "ndpi_protocol_ids.h"
 
 // Enable flow hash cache debug logging
@@ -336,12 +338,13 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.server_cn[0] == '\0' &&
+            if (ndEF->ssl.server_cn.empty() &&
               ndEFNFP.tls_quic.serverCN != nullptr)
             {
                 nd_set_hostname(ndEF->ssl.server_cn,
                   ndEFNFP.tls_quic.serverCN,
                   ND_FLOW_TLS_CNLEN);
+
                 free(ndEFNFP.tls_quic.serverCN);
                 ndEFNFP.tls_quic.serverCN = nullptr;
 
@@ -354,11 +357,11 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.issuer_dn == nullptr &&
+            if (ndEF->ssl.issuer_dn.empty() &&
               ndEFNFP.tls_quic.issuerDN != nullptr)
             {
-                ndEF->ssl.issuer_dn = strdup(
-                  ndEFNFP.tls_quic.issuerDN);
+                ndEF->ssl.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
+
                 free(ndEFNFP.tls_quic.issuerDN);
                 ndEFNFP.tls_quic.issuerDN = nullptr;
 
@@ -366,11 +369,11 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.subject_dn == nullptr &&
+            if (ndEF->ssl.subject_dn.empty() &&
               ndEFNFP.tls_quic.subjectDN != nullptr)
             {
-                ndEF->ssl.subject_dn = strdup(
-                  ndEFNFP.tls_quic.subjectDN);
+                ndEF->ssl.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
+
                 free(ndEFNFP.tls_quic.subjectDN);
                 ndEFNFP.tls_quic.subjectDN = nullptr;
 
@@ -378,24 +381,24 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.server_ja3[0] == '\0' &&
+            if (ndEF->ssl.server_ja3.empty() &&
               ndEFNFP.tls_quic.ja3_server[0] != '\0')
             {
-                snprintf(ndEF->ssl.server_ja3, ND_FLOW_TLS_JA3LEN,
-                  "%s", ndEFNFP.tls_quic.ja3_server);
+                ndEF->ssl.server_ja3.assign(
+                  ndEFNFP.tls_quic.ja3_server);
 
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
             }
 
-            if (! ndEF->ssl.cert_fingerprint_found &&
+            if (ndEF->ssl.cert_fingerprint.empty() &&
               ndEFNFP.tls_quic.fingerprint_set)
             {
-                memcpy(ndEF->ssl.cert_fingerprint,
+                ndEF->ssl.cert_fingerprint.reserve(SHA1_DIGEST_LENGTH);
+                ndEF->ssl.cert_fingerprint.resize(SHA1_DIGEST_LENGTH);
+                memcpy(&ndEF->ssl.cert_fingerprint[0],
                   ndEFNFP.tls_quic.sha1_certificate_fingerprint,
-                  ND_FLOW_TLS_HASH_LEN);
-
-                ndEF->ssl.cert_fingerprint_found = true;
+                  SHA1_DIGEST_LENGTH);
 
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
@@ -432,13 +435,24 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             // nd_dprintf("LLMNR flow updated.\n");
             break;
         case ND_PROTO_SSH:
-            if (ndEF->ssh.server_agent[0] == '\0' &&
+            if (ndEF->ssh.server_agent.empty() &&
               ndEFNFP.ssh.server_signature[0] != '\0')
             {
-                snprintf(ndEF->ssh.server_agent, ND_FLOW_SSH_UALEN,
-                  "%s", ndEFNFP.ssh.server_signature);
+                ndEF->ssh.server_agent.assign(
+                  ndEFNFP.ssh.server_signature);
+
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
+            }
+            break;
+        case ND_PROTO_BITTORRENT:
+            if (ndEF->bt.info_hash.empty() &&
+              ndEFNFP.bittorrent.hash[0] != '\0')
+            {
+                ndEF->bt.info_hash.reserve(SHA1_DIGEST_LENGTH);
+                ndEF->bt.info_hash.resize(SHA1_DIGEST_LENGTH);
+                memcpy(&ndEF->bt.info_hash[0],
+                  ndEFNFP.bittorrent.hash, SHA1_DIGEST_LENGTH);
             }
             break;
         default: break;
@@ -565,9 +579,8 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         }
     }
 
-    nd_set_hostname(ndEF->host_server_name, ndEFNF->host_server_name,
-      min((size_t)ND_FLOW_HOSTNAME,
-        (size_t)sizeof(ndEFNF->host_server_name)));
+    ndEF->host_server_name.assign(ndEFNF->host_server_name);
+    nd_set_hostname(ndEF->host_server_name);
 
     // Determine application based on master protocol metadata
     // for Protocol / Application "Twins"
@@ -728,18 +741,16 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
                   ndi.apps.Find(ndEF->ssl.server_cn));
         }
 
-        if (ndEF->ssl.issuer_dn == nullptr &&
-          ndEFNFP.tls_quic.issuerDN != nullptr)
-        {
-            ndEF->ssl.issuer_dn = strdup(ndEFNFP.tls_quic.issuerDN);
+        if (ndEFNFP.tls_quic.issuerDN != nullptr) {
+            ndEF->ssl.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
+
             free(ndEFNFP.tls_quic.issuerDN);
             ndEFNFP.tls_quic.issuerDN = nullptr;
         }
 
-        if (ndEF->ssl.subject_dn == nullptr &&
-          ndEFNFP.tls_quic.subjectDN != nullptr)
-        {
-            ndEF->ssl.subject_dn = strdup(ndEFNFP.tls_quic.subjectDN);
+        if (ndEFNFP.tls_quic.subjectDN != nullptr) {
+            ndEF->ssl.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
+
             free(ndEFNFP.tls_quic.subjectDN);
             ndEFNFP.tls_quic.subjectDN = nullptr;
         }
@@ -748,51 +759,38 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     case ND_PROTO_HTTP:
     case ND_PROTO_SSDP:
         if (ndEFNF->http.user_agent != nullptr) {
-            for (size_t i = 0;
-                 i < strlen((const char *)ndEFNF->http.user_agent);
-                 i++)
-            {
-                if (! isprint(ndEFNF->http.user_agent[i])) {
-                    // XXX: Sanitize user_agent of non-printable
-                    // characters.
-                    ndEFNF->http.user_agent[i] = '\0';
-                    break;
-                }
-            }
+            ndEF->http.user_agent.assign(ndEFNF->http.user_agent);
 
-            snprintf(ndEF->http.user_agent, ND_FLOW_UA_LEN,
-              "%s", ndEFNF->http.user_agent);
+            free(ndEFNF->http.user_agent);
+            ndEFNF->http.user_agent = nullptr;
         }
 
         if (ndEFNF->http.url != nullptr) {
-            snprintf(ndEF->http.url, ND_FLOW_URL_LEN, "%s",
-              ndEFNF->http.url);
+            ndEF->http.url.assign(ndEFNF->http.url);
+            free(ndEFNF->http.url);
+            ndEFNF->http.url = nullptr;
         }
 
         break;
     case ND_PROTO_DHCP:
-        snprintf(ndEF->dhcp.fingerprint, ND_FLOW_DHCPFP_LEN,
-          "%s", ndEFNFP.dhcp.fingerprint);
-        snprintf(ndEF->dhcp.class_ident, ND_FLOW_DHCPCI_LEN,
-          "%s", ndEFNFP.dhcp.class_ident);
+        if (ndEFNFP.dhcp.fingerprint[0] != '\0')
+            ndEF->dhcp.fingerprint.assign(ndEFNFP.dhcp.fingerprint);
+        if (ndEFNFP.dhcp.class_ident[0] != '\0')
+            ndEF->dhcp.class_ident.assign(ndEFNFP.dhcp.class_ident);
         break;
     case ND_PROTO_SSH:
-        snprintf(ndEF->ssh.client_agent, ND_FLOW_SSH_UALEN,
-          "%s", ndEFNFP.ssh.client_signature);
-        snprintf(ndEF->ssh.server_agent, ND_FLOW_SSH_UALEN,
-          "%s", ndEFNFP.ssh.server_signature);
+        if (ndEFNFP.ssh.client_signature[0] != '\0')
+            ndEF->ssh.client_agent.assign(ndEFNFP.ssh.client_signature);
+        if (ndEFNFP.ssh.server_signature[0] != '\0')
+            ndEF->ssh.server_agent.assign(ndEFNFP.ssh.server_signature);
         break;
     case ND_PROTO_BITTORRENT:
-#if 0
-        if (ndEFNFP.bittorrent.hash_valid) {
-            ndEF->bt.info_hash_valid = true;
-            memcpy(
-                ndEF->bt.info_hash,
-                ndEFNFP.bittorrent.hash,
-                ND_FLOW_BTIHASH_LEN
-            );
+        if (ndEFNFP.bittorrent.hash[0] != '\0') {
+            ndEF->bt.info_hash.reserve(SHA1_DIGEST_LENGTH);
+            ndEF->bt.info_hash.resize(SHA1_DIGEST_LENGTH);
+            memcpy(&ndEF->bt.info_hash[0],
+              ndEFNFP.bittorrent.hash, SHA1_DIGEST_LENGTH);
         }
-#endif
         break;
     default: break;
     }
