@@ -245,9 +245,6 @@ void ndNetifyApiThread::CreateHeaders(const Headers &headers) {
     header.append(nd_get_version_and_features());
     headers_tx = curl_slist_append(headers_tx, header.c_str());
 
-    headers_tx = curl_slist_append(headers_tx,
-      "Content-Type: application/json");
-
     for (auto &h : headers) {
         header = h.first;
         header.append(": ");
