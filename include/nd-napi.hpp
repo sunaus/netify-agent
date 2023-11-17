@@ -62,13 +62,18 @@ protected:
     void DestroyHeaders(void);
 
     void Perform(Method method, const string &url,
-      const Headers &headers);
+      const Headers &headers, const string &payload = "");
 
     CURL *ch;
+
     CURLcode curl_rc;
     long http_rc;
+
     Headers headers_rx;
     struct curl_slist *headers_tx;
+
+    string payload;
+
     string content;
     string content_type;
     string content_filename;

@@ -265,8 +265,8 @@ void ndNetifyApiThread::DestroyHeaders(void) {
     }
 }
 
-void ndNetifyApiThread::Perform(Method method,
-  const string &url, const Headers &headers) {
+void ndNetifyApiThread::Perform(Method method, const string &url,
+  const Headers &headers, const string &payload) {
     curl_rc = CURLE_OK;
     curl_easy_setopt(ch, CURLOPT_URL, url.c_str());
 
@@ -286,18 +286,20 @@ void ndNetifyApiThread::Perform(Method method,
     case METHOD_HEAD:
         curl_easy_setopt(ch, CURLOPT_POST, 0);
         curl_easy_setopt(ch, CURLOPT_NOBODY, 1);
+
         nd_dprintf("%s: %s: %s\n", tag.c_str(), "HEAD",
           url.c_str());
         break;
     case METHOD_POST:
         curl_easy_setopt(ch, CURLOPT_POST, 1);
-        curl_easy_setopt(ch, CURLOPT_POSTFIELDSIZE, 0);
-#if 0
-      curl_easy_setopt(ch, CURLOPT_POSTFIELDS,
-                       payload.c_str());
-#endif
-        nd_dprintf("%s: %s: %s\n", tag.c_str(), "POST",
-          url.c_str());
+        curl_easy_setopt(ch, CURLOPT_POSTFIELDSIZE, payload.size());
+        if (payload.size()) {
+            curl_easy_setopt(ch, CURLOPT_POSTFIELDS,
+              payload.c_str());
+        }
+
+        nd_dprintf("%s: %s: %s: %u byte(s)\n", tag.c_str(),
+          "POST", url.c_str(), payload.size());
         break;
     }
 
