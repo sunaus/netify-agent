@@ -30,7 +30,7 @@ path_pid_file = ${path_state_volatile}/netifyd.pid
 ##############################################################################
 [netify-api]
 
-# Enable/disable integration with Netify Informatices
+# Enable/disable integration with Netify Informatics
 enable = no
 
 # Protocol Dissector Options

@@ -317,14 +317,17 @@ bool ndFlow::HasMDNSDomainName(void) const {
       ! mdns.domain_name.empty());
 }
 
-void ndFlow::Print(uint8_t pflags) const {
+void ndFlow::Print(uint8_t pflags, const string &prefix) const {
     bool multiline = false;
     ndDebugLogStream dls(ndDebugLogStream::DLT_FLOW);
+
+    const string &p = (prefix.empty()) ? iface->ifname : prefix;
+    size_t plen = p.size();
 
     nd_output_lock();
 
     try {
-        dls << iface->ifname.c_str() << ": ";
+        dls << p << ": ";
 
         if ((pflags & PRINTF_HASHES)) {
             for (unsigned i = 0; i < 5; i++) {
@@ -425,7 +428,7 @@ void ndFlow::Print(uint8_t pflags) const {
 
             dls
               << endl
-              << setw(iface->ifname.size()) << " "
+              << setw(plen) << " "
               << ": " << detected_protocol_name
               << ((! detected_application_name.empty()) ? "." : "")
               << ((! detected_application_name.empty()) ?
@@ -436,7 +439,7 @@ void ndFlow::Print(uint8_t pflags) const {
               ! host_server_name.empty())
             {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 if (! dns_host_name.empty())
                     dls << " D: " << dns_host_name;
@@ -447,7 +450,7 @@ void ndFlow::Print(uint8_t pflags) const {
 
             if (HasMDNSDomainName()) {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 dls << " MDNS/DN: " << mdns.domain_name;
             }
@@ -457,14 +460,14 @@ void ndFlow::Print(uint8_t pflags) const {
                 nd_sha1_to_string(bt.info_hash, digest);
 
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 dls << " BT/HASH: " << digest;
             }
 
             if (HasDhcpFingerprint() || HasDhcpClassIdent()) {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 if (HasDhcpFingerprint())
                     dls << " DHCP/FP: " << dhcp.fingerprint;
@@ -474,21 +477,21 @@ void ndFlow::Print(uint8_t pflags) const {
 
             if (HasHttpUserAgent() || HasSSDPUserAgent()) {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 dls << " HTTP/UA: " << http.user_agent;
             }
 
             if (HasHttpURL()) {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 dls << " URL: " << http.url;
             }
 
             if (HasSSHClientAgent() || HasSSHServerAgent()) {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 if (HasSSHClientAgent())
                     dls << " SSH/CA: " << ssh.client_agent;
@@ -501,7 +504,7 @@ void ndFlow::Print(uint8_t pflags) const {
               (ssl.version || ssl.cipher_suite))
             {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ": ";
                 dls << "V: 0x" << setfill('0') << setw(4) << hex
                     << ssl.version << setfill(' ') << dec;
@@ -516,7 +519,7 @@ void ndFlow::Print(uint8_t pflags) const {
 
             if (HasTLSClientSNI() || HasTLSServerCN()) {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 if (HasTLSClientSNI())
                     dls << " TLS/SNI: " << host_server_name;
@@ -526,7 +529,7 @@ void ndFlow::Print(uint8_t pflags) const {
 
             if (HasTLSIssuerDN() || HasTLSSubjectDN()) {
                 dls << endl
-                    << setw(iface->ifname.size()) << " "
+                    << setw(plen) << " "
                     << ":";
                 if (HasTLSIssuerDN())
                     dls << " TLS/IDN: " << ssl.issuer_dn;
@@ -540,21 +543,18 @@ void ndFlow::Print(uint8_t pflags) const {
             {
                 auto r = risks.begin();
                 if (r != risks.end()) {
-                    dls
-                      << endl
-                      << setw(iface->ifname.size()) << " "
-                      << setw(0) << ": RID" << setw(3)
-                      << (*r) << ": " << setw(0)
-                      << nd_risk_get_name(*r);
+                    dls << endl
+                        << setw(plen) << " " << setw(0)
+                        << ": RID" << setw(3) << (*r) << ": "
+                        << setw(0) << nd_risk_get_name(*r);
                 }
                 if (risks.size() > 1) {
                     for (r = next(risks.begin()); r != risks.end(); r++)
                     {
                         dls
                           << endl
-                          << setw(iface->ifname.size())
-                          << " " << setw(0) << ": RID"
-                          << setw(3) << (*r) << ": "
+                          << setw(plen) << " " << setw(0)
+                          << ": RID" << setw(3) << (*r) << ": "
                           << setw(0) << nd_risk_get_name(*r);
                     }
                 }
@@ -567,7 +567,7 @@ void ndFlow::Print(uint8_t pflags) const {
             dls.imbue(locale(""));
 
             dls << endl
-                << setw(iface->ifname.size()) << " "
+                << setw(plen) << " "
                 << ": "
                 << "DP: "
                 << ndLogFormat(ndLogFormat::FORMAT_BYTES,

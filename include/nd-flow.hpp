@@ -191,7 +191,8 @@ public:
           PRINTF_STATS | PRINTF_STATS_FULL | PRINTF_RISKS)
     };
 
-    void Print(uint8_t pflags = PRINTF_METADATA) const;
+    void Print(uint8_t pflags = PRINTF_METADATA,
+      const string &prefix = "") const;
 
     void UpdateLowerMaps(void);
     void GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
