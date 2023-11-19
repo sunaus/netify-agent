@@ -742,7 +742,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         if (ndEFNFP.tls_quic.issuerDN != nullptr) {
             ndEF->ssl.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
 
-            nd_trim(ndEF->tls_quic.issuerDN);
+            nd_trim(ndEF->ssl.issuer_dn);
 
             free(ndEFNFP.tls_quic.issuerDN);
             ndEFNFP.tls_quic.issuerDN = nullptr;
@@ -751,7 +751,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         if (ndEFNFP.tls_quic.subjectDN != nullptr) {
             ndEF->ssl.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
 
-            nd_trim(ndEF->tls_quic.subjectDN);
+            nd_trim(ndEF->ssl.subject_dn);
 
             free(ndEFNFP.tls_quic.subjectDN);
             ndEFNFP.tls_quic.subjectDN = nullptr;
