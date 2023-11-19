@@ -42,9 +42,6 @@
 // Enable to log STUN debug
 // #define _ND_LOG_STUN 1
 
-// Enable to log risks debug
-// #define _ND_LOG_RISKS 1
-
 #define ndEF    entry->flow
 #define ndEFNF  entry->flow->ndpi_flow
 #define ndEFNFP entry->flow->ndpi_flow->protos
@@ -683,7 +680,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     // Determine application by host_server_name if still
     // unknown.
     if (ndEF->detected_application == ND_APP_UNKNOWN) {
-        if (ndEF->host_server_name[0] != '\0')
+        if (! ndEF->host_server_name.empty())
             SetDetectedApplication(entry,
               ndi.apps.Find(ndEF->host_server_name));
     }
@@ -691,7 +688,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     // Determine application by dns_host_name if still
     // unknown.
     if (ndEF->detected_application == ND_APP_UNKNOWN) {
-        if (ndEF->dns_host_name[0] != '\0')
+        if (! ndEF->dns_host_name.empty())
             SetDetectedApplication(entry,
               ndi.apps.Find(ndEF->dns_host_name));
     }
@@ -726,12 +723,13 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         ndEF->ssl.version = ndEFNFP.tls_quic.ssl_version;
         ndEF->ssl.cipher_suite = ndEFNFP.tls_quic.server_cipher;
 
-        if (ndEF->ssl.server_cn[0] == '\0' &&
+        if (ndEF->ssl.server_cn.empty() &&
           ndEFNFP.tls_quic.serverCN != nullptr)
         {
             nd_set_hostname(ndEF->ssl.server_cn,
               ndEFNFP.tls_quic.serverCN,
               ND_FLOW_TLS_CNLEN);
+
             free(ndEFNFP.tls_quic.serverCN);
             ndEFNFP.tls_quic.serverCN = nullptr;
 
@@ -744,12 +742,16 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         if (ndEFNFP.tls_quic.issuerDN != nullptr) {
             ndEF->ssl.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
 
+            nd_trim(ndEF->tls_quic.issuerDN);
+
             free(ndEFNFP.tls_quic.issuerDN);
             ndEFNFP.tls_quic.issuerDN = nullptr;
         }
 
         if (ndEFNFP.tls_quic.subjectDN != nullptr) {
             ndEF->ssl.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
+
+            nd_trim(ndEF->tls_quic.subjectDN);
 
             free(ndEFNFP.tls_quic.subjectDN);
             ndEFNFP.tls_quic.subjectDN = nullptr;
@@ -761,12 +763,17 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         if (ndEFNF->http.user_agent != nullptr) {
             ndEF->http.user_agent.assign(ndEFNF->http.user_agent);
 
+            nd_trim(ndEF->http.user_agent);
+
             free(ndEFNF->http.user_agent);
             ndEFNF->http.user_agent = nullptr;
         }
 
         if (ndEFNF->http.url != nullptr) {
             ndEF->http.url.assign(ndEFNF->http.url);
+
+            nd_trim(ndEF->http.url);
+
             free(ndEFNF->http.url);
             ndEFNF->http.url = nullptr;
         }
@@ -974,18 +981,7 @@ void ndDetectionThread::ProcessRisks(ndDetectionQueueEntry *entry) {
                 ndEF->risks.insert(nd_ndpi_risk_find(i));
             }
         }
-#ifdef _ND_LOG_RISKS
-        if (! ndEF->risks.empty() &&
-          ! (ndEF->risks.size() == 1 && ndEF->risks[0] == 46))
-        {
-            ndDebugLogStream dls(ndDebugLogStream::DLT_FLOW);
-            nd_output_lock();
-            dls << tag << ": risks:";
-            for (auto &i : ndEF->risks) dls << " " << i;
-            dls << endl;
-            nd_output_unlock();
-        }
-#endif
+
         ndEF->ndpi_risk_score = ndpi_risk2score(ndEFNF->risk,
           &ndEF->ndpi_risk_score_client,
           &ndEF->ndpi_risk_score_server);
