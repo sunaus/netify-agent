@@ -284,7 +284,8 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
             vector<uint8_t> header;
             header = json::to_msgpack(jheader);
 
-            output.insert(output.begin(), header.begin(), header.end());
+            output.insert(output.begin(), header.begin(),
+              header.end());
         }
 
         DispatchSinkPayload(target, channels, output, flags);
@@ -303,7 +304,8 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
             nd_json_to_string(jheader, header, false);
             header.append("\n");
 
-            output.insert(output.begin(), header.begin(), header.end());
+            output.insert(output.begin(), header.begin(),
+              header.end());
             output.append("\n");
         }
 
