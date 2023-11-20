@@ -978,6 +978,8 @@ nd_process_ip:
             }
 #endif
         }
+
+        ndi.flow_buckets->Release(flow_digest);
     }
     else {
         if (ndGC.max_flows > 0 &&
@@ -1080,11 +1082,11 @@ nd_process_ip:
             }
         }
 
+        ndi.flow_buckets->Release(flow_digest);
+
         ndi.plugins.BroadcastProcessorEvent(
           ndPluginProcessor::EVENT_FLOW_NEW);
     }
-
-    ndi.flow_buckets->Release(flow_digest);
 
     stats.pkt.wire_bytes += packet->length + 24;
 

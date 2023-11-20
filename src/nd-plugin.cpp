@@ -284,7 +284,7 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
             vector<uint8_t> header;
             header = json::to_msgpack(jheader);
 
-            DispatchSinkPayload(target, channels, header, flags);
+            output.insert(output.begin(), header.begin(), header.end());
         }
 
         DispatchSinkPayload(target, channels, output, flags);
@@ -296,17 +296,15 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
         flags |= ndPlugin::DF_FORMAT_JSON;
 
         if ((flags & ndPlugin::DF_ADD_HEADER)) {
-            output.append("\n");
-
             json jheader;
-            jheader["length"] = output.size();
+            jheader["length"] = output.size() + 1;
 
             string header;
             nd_json_to_string(jheader, header, false);
             header.append("\n");
 
-            DispatchSinkPayload(target, channels, header.size(),
-              (const uint8_t *)header.c_str(), flags);
+            output.insert(output.begin(), header.begin(), header.end());
+            output.append("\n");
         }
 
         DispatchSinkPayload(target, channels, output.size(),
