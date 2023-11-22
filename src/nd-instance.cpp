@@ -1902,6 +1902,9 @@ bool ndInstance::Reload(bool broadcast) {
         result = apps.LoadLegacy(ndGC.path_legacy_config);
 
     result = categories.Load(ndGC.path_cat_config);
+    // XXX: Uncomment if converting from legacy format:
+    //categories.Save("/tmp/netify-categories.json");
+
     if (ndGC_DOTD_CATEGORIES) {
         result = categories.LoadDotDirectory(ndGC.path_categories);
     }
