@@ -452,7 +452,7 @@ bool ndCategories::LoadDotDirectory(const string &path) {
             string type = line.substr(0, p);
             if (type == "dom")
                 entries.insert(line.substr(p + 1));
-            else if (type != "net") {
+            else if (type == "net") {
                 ndAddr addr(line.substr(p + 1));
 
                 if (! addr.IsValid() || ! addr.IsIP()) {
@@ -494,21 +494,43 @@ bool ndCategories::LoadDotDirectory(const string &path) {
                       line.substr(p + 1).c_str(), e.what());
                 }
             }
+            else if (type == "rxp") {
+                try {
+                    rxps.emplace(tag->second,
+                      regex(line.substr(p + 1),
+                        regex::extended | regex::icase |
+                          regex::optimize));
+                }
+                catch (const regex_error &e) {
+                    string error;
+                    nd_regex_error(e, error);
+                    nd_printf(
+                      "WARNING: Error compiling category "
+                      "regex: "
+                      "%s: %s [%d]\n",
+                      line.substr(p + 1).c_str(),
+                      error.c_str(), e.code());
+                }
+                catch (bad_alloc &e) {
+                    throw ndSystemException(__PRETTY_FUNCTION__,
+                      "new regex", ENOMEM);
+                }
+            }
         }
 
         if (! entries.empty()) {
             domains.insert(make_pair(tag->second, entries));
 
             nd_dprintf(
-              "Loaded %u %s domains from category file: "
-              "%s\n",
+              "Loaded %u %s domains from category "
+              "file: %s\n",
               entries.size(), tag->first.c_str(), it.c_str());
         }
 
         if (networks) {
             nd_dprintf(
-              "Loaded %u %s networks from category file: "
-              "%s\n",
+              "Loaded %u %s networks from category "
+              "file: %s\n",
               networks, tag->first.c_str(), it.c_str());
         }
     }
@@ -518,6 +540,10 @@ bool ndCategories::LoadDotDirectory(const string &path) {
 
 nd_cat_id_t ndCategories::LookupDotDirectory(const string &domain) {
     lock_guard<mutex> ul(lock);
+
+    for (auto &it : rxps) {
+        if (regex_match(domain, it.second)) return it.first;
+    }
 
     string search(domain);
     size_t p = string::npos;

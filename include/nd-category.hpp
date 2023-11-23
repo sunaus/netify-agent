@@ -79,6 +79,9 @@ protected:
     typedef unordered_map<nd_cat_id_t, unordered_set<string>> cat_domain_map;
     cat_domain_map domains;
 
+    typedef unordered_map<nd_cat_id_t, regex> cat_rx_map;
+    cat_rx_map rxps;
+
     bool LoadLegacy(const json &jdata);
 
     void ResetCategories(void);
