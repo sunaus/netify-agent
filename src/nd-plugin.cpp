@@ -24,6 +24,7 @@
 
 #include <dlfcn.h>
 
+#include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-plugin.hpp"
 
@@ -64,12 +65,18 @@ ndPluginSink::ndPluginSink(const string &tag,
     pthread_condattr_setclock(&cond_attr, CLOCK_MONOTONIC);
 
     if ((rc = pthread_cond_init(&plq_cond, &cond_attr)) != 0)
-        throw ndPluginException("pthread_cond_init", strerror(rc));
+    {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_cond_init", rc);
+    }
 
     pthread_condattr_destroy(&cond_attr);
 
-    if ((rc = pthread_mutex_init(&plq_cond_mutex, NULL)) != 0)
-        throw ndPluginException("pthread_mutex_init", strerror(rc));
+    if ((rc = pthread_mutex_init(&plq_cond_mutex, nullptr)) != 0)
+    {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_mutex_init", rc);
+    }
 
 #ifdef _ND_LOG_PLUGIN_DEBUG
     nd_dprintf("Sink plugin created: %s\n", tag.c_str());
@@ -98,11 +105,6 @@ ndPluginSinkPayload *ndPluginSinkPayload::Create(size_t length,
           &buffer[0], channels, flags);
     }
 
-    if (p == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new sink payload", ENOMEM);
-    }
-
     return p;
 }
 
@@ -116,8 +118,8 @@ void ndPluginSink::QueuePayload(ndPluginSinkPayload *payload) {
     int rc;
 
     if ((rc = pthread_cond_broadcast(&plq_cond)) != 0) {
-        throw ndPluginException("pthread_cond_broadcast",
-          strerror(rc));
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_cond_broadcast", rc);
     }
 }
 
@@ -157,14 +159,14 @@ size_t ndPluginSink::WaitOnPayloadQueue(unsigned timeout) {
 
         int rc;
         if ((rc = pthread_mutex_lock(&plq_cond_mutex)) != 0) {
-            throw ndPluginException("pthread_mutex_lock",
-              strerror(rc));
+            throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+              "pthread_mutex_lock", rc);
         }
 
         struct timespec ts_cond;
         if (clock_gettime(CLOCK_MONOTONIC, &ts_cond) != 0) {
-            throw ndPluginException("clock_gettime",
-              strerror(errno));
+            throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+              "clock_gettime");
         }
 
         ts_cond.tv_sec += timeout;
@@ -173,14 +175,14 @@ size_t ndPluginSink::WaitOnPayloadQueue(unsigned timeout) {
                &plq_cond_mutex, &ts_cond)) != 0 &&
           rc != ETIMEDOUT)
         {
-            throw ndPluginException(
-              "pthread_cond_timedwait", strerror(rc));
+            throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+              "pthread_cond_timedwait", rc);
         }
 
         if ((rc = pthread_mutex_unlock(&plq_cond_mutex)) != 0)
         {
-            throw ndPluginException("pthread_mutex_unlock",
-              strerror(rc));
+            throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+              "pthread_mutex_unlock", rc);
         }
 
         Lock();
@@ -225,10 +227,8 @@ ndPluginProcessor::ndPluginProcessor(const string &tag,
 
                 if (i != sink_targets.end()) {
                     if (! i->second.insert(channel).second) {
-                        throw ndPluginException(
-                            "duplicate channel specified",
-                            channel
-                        );
+                        throw ndException("%s: duplicate channel: %s",
+                          target.c_str(), channel.c_str());
                     }
                 }
                 else {
@@ -236,10 +236,8 @@ ndPluginProcessor::ndPluginProcessor(const string &tag,
 
                     if (! sink_targets.insert(
                         make_pair(target, channels)).second) {
-                        throw ndPluginException(
-                            "error creating target",
-                            target
-                        );
+                            throw ndException("%s: error creating target",
+                              target.c_str());
                     }
                 }
             }
@@ -267,8 +265,7 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
 
     if (ndi.plugins.DispatchSinkPayload(target, sp)) return;
 
-    throw ndPluginException("sink target not found",
-      target.c_str());
+    throw ndException("%s: sink target not found", target.c_str());
 }
 
 void ndPluginProcessor::DispatchSinkPayload(const string &target,
@@ -316,10 +313,10 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
 
 ndPluginLoader::ndPluginLoader(const string &tag,
   const string &so_name, const ndPlugin::Params &params)
-  : tag(tag), so_name(so_name), so_handle(NULL) {
+  : tag(tag), so_name(so_name), so_handle(nullptr) {
     so_handle = dlopen(so_name.c_str(), RTLD_NOW);
-    if (so_handle == NULL)
-        throw ndPluginException(tag, dlerror());
+    if (so_handle == nullptr)
+        throw ndException("%s: %s", tag.c_str(), dlerror());
 
     char *dlerror_string;
     ndPlugin *(*ndPluginInit)(const string &,
@@ -329,17 +326,18 @@ ndPluginLoader::ndPluginLoader(const string &tag,
     *(void **)(&ndPluginInit) = dlsym(so_handle,
       "ndPluginInit");
 
-    if ((dlerror_string = dlerror()) != NULL) {
+    if ((dlerror_string = dlerror()) != nullptr) {
         dlclose(so_handle);
-        so_handle = NULL;
-        throw ndPluginException(tag, dlerror_string);
+        so_handle = nullptr;
+        throw ndException("%s: %s", tag.c_str(), dlerror_string);
     }
 
     plugin = (*ndPluginInit)(tag, params);
-    if (plugin == NULL) {
+    if (plugin == nullptr) {
         dlclose(so_handle);
-        so_handle = NULL;
-        throw ndPluginException(tag, "ndPluginInit");
+        so_handle = nullptr;
+        throw ndException("%s: %s", tag.c_str(),
+          "ndPluginInit");
     }
 
     nd_dprintf("Plugin loaded: %s: %s\n", tag.c_str(),
@@ -347,7 +345,7 @@ ndPluginLoader::ndPluginLoader(const string &tag,
 }
 
 ndPluginLoader::~ndPluginLoader() {
-    if (so_handle != NULL) {
+    if (so_handle != nullptr) {
         dlclose(so_handle);
 #ifdef _ND_LOG_PLUGIN_DEBUG
         nd_dprintf("Plugin dereferenced: %s: %s\n",
@@ -383,9 +381,10 @@ void ndPluginManager::Load(ndPlugin::Type type, bool create) {
             loader = new ndPluginLoader(i.first,
               i.second.first, i.second.second);
 
-            if (loader->GetPlugin()->GetType() != t.first)
-                throw ndPluginException(i.first,
+            if (loader->GetPlugin()->GetType() != t.first) {
+                throw ndException("%s: %s", i.first.c_str(),
                   "wrong type");
+            }
 
             if (create) loader->GetPlugin()->Create();
 
@@ -397,22 +396,22 @@ void ndPluginManager::Load(ndPlugin::Type type, bool create) {
                 break;
             case ndPlugin::TYPE_SINK: mp = &sinks; break;
             default:
-                throw ndPluginException(i.first,
-                  "invalid type");
+                throw ndException("%s: %s", i.first.c_str(),
+                  "wrong type");
                 break;
             }
 
             auto pl = mp->find(t.second);
 
             if (pl != mp->end()) {
-                throw ndPluginException(i.first,
+                throw ndException("%s: %s", i.first.c_str(),
                   "duplicate plugin tag");
             }
 
             if (! mp->insert(make_pair(i.first, loader)).second)
             {
-                throw ndPluginException(i.first,
-                  "failed to insert loader");
+                throw ndException("%s: %s", i.first.c_str(),
+                  "failed to insert plugin loader");
             }
         }
     }
@@ -431,7 +430,7 @@ bool ndPluginManager::Create(ndPlugin::Type type) {
         case ndPlugin::TYPE_PROC: mp = &processors; break;
         case ndPlugin::TYPE_SINK: mp = &sinks; break;
         default:
-            throw ndPluginException(t.second,
+            throw ndException("%s: %s", t.second.c_str(),
               "invalid type");
             break;
         }
@@ -439,7 +438,7 @@ bool ndPluginManager::Create(ndPlugin::Type type) {
         auto pl = mp->find(t.second);
 
         if (pl == mp->end()) {
-            throw ndPluginException(t.second,
+            throw ndException("%s: %s", t.second.c_str(),
               "plugin not found");
         }
 
@@ -516,7 +515,7 @@ size_t ndPluginManager::Reap(ndPlugin::Type type) {
         case ndPlugin::TYPE_PROC: mp = &processors; break;
         case ndPlugin::TYPE_SINK: mp = &sinks; break;
         default:
-            throw ndPluginException(t.second,
+            throw ndException("%s: %s", t.second.c_str(),
               "invalid type");
             break;
         }
@@ -559,7 +558,7 @@ void ndPluginManager::BroadcastEvent(ndPlugin::Type type,
         case ndPlugin::TYPE_PROC: mp = &processors; break;
         case ndPlugin::TYPE_SINK: mp = &sinks; break;
         default:
-            throw ndPluginException(t.second,
+            throw ndException("%s: %s", t.second.c_str(),
               "invalid type");
             break;
         }
@@ -687,7 +686,7 @@ void ndPluginManager::DumpVersions(ndPlugin::Type type) {
         case ndPlugin::TYPE_PROC: mp = &processors; break;
         case ndPlugin::TYPE_SINK: mp = &sinks; break;
         default:
-            throw ndPluginException(t.second,
+            throw ndException("%s: %s", t.second.c_str(),
               "invalid type");
             break;
         }

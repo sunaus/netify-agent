@@ -25,18 +25,10 @@
 #include <string>
 
 #include "nd-addr.hpp"
-#include "nd-except.hpp"
 
 using namespace std;
 
 #define ND_NETLINK_BUFSIZ 4096
-
-class ndNetlinkException : public runtime_error
-{
-public:
-    explicit ndNetlinkException(const string &what_arg)
-      : runtime_error(what_arg) { }
-};
 
 class ndNetlink
 {

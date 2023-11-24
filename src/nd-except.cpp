@@ -22,41 +22,14 @@
 #include "config.h"
 #endif
 
-#include <cstring>
-#include <sstream>
+#include <cstdarg>
+#include <cstdio>
 
 #include "nd-except.hpp"
 
-ndException::ndException(const string &where_arg,
-  const string &what_arg) throw()
-  : runtime_error(what_arg), where_arg(where_arg),
-    what_arg(what_arg), message(NULL) {
-    ostringstream os;
-    os << where_arg << ": " << what_arg;
-    message = strdup(os.str().c_str());
-}
-
-ndException::~ndException() throw() {
-    if (message != NULL) free((void *)message);
-}
-
-const char *ndException::what() const throw() {
-    return message;
-}
-
-ndSystemException::ndSystemException(const string &where_arg,
-  const string &what_arg, int why_arg) throw()
-  : runtime_error(what_arg), where_arg(where_arg),
-    what_arg(what_arg), why_arg(why_arg), message(NULL) {
-    ostringstream os;
-    os << where_arg << ": " << what_arg << ": " << strerror(why_arg);
-    message = strdup(os.str().c_str());
-}
-
-ndSystemException::~ndSystemException() throw() {
-    if (message != NULL) free((void *)message);
-}
-
-const char *ndSystemException::what() const throw() {
-    return message;
+ndException::ndException(const char *format, ...) throw() {
+    va_list ap;
+    va_start(ap, format);
+    vsnprintf(message, _ND_EXCEPT_MAX_MESSAGE, format, ap);
+    va_end(ap);
 }

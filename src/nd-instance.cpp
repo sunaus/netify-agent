@@ -154,24 +154,19 @@ ndInstance::~ndInstance() {
 
 ndInstance &ndInstance::Create(const string &tag) {
     if (instance != nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "instance exists", EEXIST);
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "instance", strerror(EEXIST));
     }
 
     instance = new ndInstance(tag);
-
-    if (instance == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new ndInstance", ENOMEM);
-    }
 
     return *instance;
 }
 
 void ndInstance::Destroy(void) {
     if (instance == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "instance not found", ENOENT);
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "instance", strerror(EINVAL));
     }
 
     delete instance;
@@ -1075,10 +1070,6 @@ bool ndInstance::AddInterface(const string &ifname,
       nd_file_exists(ifname))
     {
         nd_config_pcap *pcap = new nd_config_pcap;
-        if (pcap == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new nd_config_pcap", ENOMEM);
-        }
 
         pcap->capture_filename = ifname;
         string iface("offline");
@@ -1477,7 +1468,9 @@ bool ndInstance::DisplayAgentStatus(void) {
                         }
                     }
                 }
-                catch (...) {
+                catch (json::exception &e) {
+                    nd_dprintf("%s: JSON exception: %s\n",
+                      tag.c_str(), e.what());
                 }
 
                 fprintf(stderr,
@@ -1583,7 +1576,7 @@ bool ndInstance::DisplayAgentStatus(void) {
               ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
         }
     }
-    catch (runtime_error &e) {
+    catch (exception &e) {
         fprintf(stderr,
           "%s%s%s agent run-time status exception: "
           "%s%s%s\n",
@@ -1612,36 +1605,15 @@ int ndInstance::Run(void) {
 
     ndInterface::UpdateAddrs(interfaces);
 
-    if (ndGC_USE_DHC) {
-        dns_hint_cache = new ndDNSHintCache();
-        if (dns_hint_cache == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new ndDNSHintCache", ENOMEM);
-        }
-    }
+    if (ndGC_USE_DHC) dns_hint_cache = new ndDNSHintCache();
 
-    if (ndGC_USE_FHC) {
+    if (ndGC_USE_FHC)
         flow_hash_cache = new ndFlowHashCache(ndGC.max_fhc);
-        if (flow_hash_cache == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new ndFlowHashCache", ENOMEM);
-        }
-    }
 
     flow_buckets = new ndFlowMap(ndGC.fm_buckets);
-    if (flow_buckets == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new ndFlowMap", ENOMEM);
-    }
 
 #ifdef _ND_USE_NETLINK
-    if (ndGC_USE_NETLINK) {
-        netlink = new ndNetlink();
-        if (netlink == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new ndNetlink", ENOMEM);
-        }
-    }
+    if (ndGC_USE_NETLINK) netlink = new ndNetlink();
 #endif
 
     try {
@@ -1680,24 +1652,6 @@ int ndInstance::Run(void) {
             if (++cpu == cpus) cpu = 0;
         }
     }
-#ifdef _ND_USE_CONNTRACK
-    catch (ndConntrackThreadException &e) {
-        nd_printf(
-          "%s: Fatal conntrack thread exception: %s\n",
-          tag.c_str(), e.what());
-        goto ndInstance_RunReturn;
-    }
-#endif
-    catch (ndPluginException &e) {
-        nd_printf("%s: Fatal plugin exception: %s\n",
-          tag.c_str(), e.what());
-        goto ndInstance_RunReturn;
-    }
-    catch (ndThreadException &e) {
-        nd_printf("%s: Fatal thread exception: %s\n",
-          tag.c_str(), e.what());
-        goto ndInstance_RunReturn;
-    }
     catch (exception &e) {
         nd_printf("%s: Fatal exception: %s\n", tag.c_str(),
           e.what());
@@ -1713,17 +1667,8 @@ int ndInstance::Run(void) {
         goto ndInstance_RunReturn;
     }
 
-    try {
-        ndThread::Create();
-        exit_code = EXIT_SUCCESS;
-    }
-    catch (exception &e) {
-        exit_code = EXIT_FAILURE;
-        nd_printf(
-          "%s: Exception while starting instance thread: "
-          "%s\n",
-          tag.c_str(), e.what());
-    }
+    ndThread::Create();
+    exit_code = EXIT_SUCCESS;
 
 ndInstance_RunReturn:
     return exit_code;
@@ -1736,72 +1681,42 @@ void *ndInstance::ndInstance::Entry(void) {
     // Process an initial update on start-up
     ProcessUpdate(thread_capture);
 
-    if (ndGC_USE_NETLINK) {
-        try {
 #ifdef _ND_USE_NETLINK
-            netlink->Refresh();
+    if (ndGC_USE_NETLINK) netlink->Refresh();
 #endif
-        }
-        catch (exception &e) {
+
+    if (ndGC.ttl_capture_delay != 0) {
+        for (unsigned i = 0; i < ndGC.ttl_capture_delay; i++)
+        {
             nd_printf(
-              "%s: Exception while refreshing Netlink: "
-              "%s\n",
-              tag.c_str(), e.what());
-            exit_code = EXIT_FAILURE;
-            goto ndInstance_EntryReturn;
+              "%s: starting capture thread(s) in "
+              "%us...\n",
+              tag.c_str(), ndGC.ttl_capture_delay - i);
+            sleep(1);
         }
     }
 
-    try {
-        if (ndGC.ttl_capture_delay != 0) {
-            for (unsigned i = 0; i < ndGC.ttl_capture_delay; i++)
-            {
-                nd_printf(
-                  "%s: starting capture thread(s) in "
-                  "%us...\n",
-                  tag.c_str(), ndGC.ttl_capture_delay - i);
-                sleep(1);
-            }
-        }
+    // Create and start capture threads
+    if (! ReloadCaptureThreads(thread_capture))
+        return nullptr;
 
-        // Create and start capture threads
-        if (! ReloadCaptureThreads(thread_capture))
-            return nullptr;
-        ndGC.Close();
-    }
-    catch (exception &e) {
-        nd_printf(
-          "%s: Exception while starting capture threads: "
-          "%s\n",
-          tag.c_str(), e.what());
-        exit_code = EXIT_FAILURE;
-        goto ndInstance_EntryReturn;
-    }
+    ndGC.Close();
 
-    try {
-        struct itimerspec itspec;
-        itspec.it_value.tv_sec = ndGC.update_interval;
+    struct itimerspec itspec;
+    itspec.it_value.tv_sec = ndGC.update_interval;
+    itspec.it_value.tv_nsec = 0;
+    itspec.it_interval.tv_sec = ndGC.update_interval;
+    itspec.it_interval.tv_nsec = 0;
+
+    timer_update.Set(itspec);
+
+    if (ndGC_USE_NAPI) {
+        itspec.it_value.tv_sec = min(5u, ndGC.ttl_napi_tick);
         itspec.it_value.tv_nsec = 0;
-        itspec.it_interval.tv_sec = ndGC.update_interval;
+        itspec.it_interval.tv_sec = ndGC.ttl_napi_tick;
         itspec.it_interval.tv_nsec = 0;
 
-        timer_update.Set(itspec);
-
-        if (ndGC_USE_NAPI) {
-            itspec.it_value.tv_sec = min(5u, ndGC.ttl_napi_tick);
-            itspec.it_value.tv_nsec = 0;
-            itspec.it_interval.tv_sec = ndGC.ttl_napi_tick;
-            itspec.it_interval.tv_nsec = 0;
-
-            timer_update_napi.Set(itspec);
-        }
-    }
-    catch (exception &e) {
-        nd_printf(
-          "%s: Exception while starting timer(s): %s\n",
-          tag.c_str(), e.what());
-        exit_code = EXIT_FAILURE;
-        goto ndInstance_EntryReturn;
+        timer_update_napi.Set(itspec);
     }
 
     for (;;) {
@@ -1867,7 +1782,8 @@ void *ndInstance::ndInstance::Entry(void) {
 
     do {
         nd_dprintf(
-          "%s: waiting on %d processor plugins to exit.\n",
+          "%s: waiting on %d processor plugins to "
+          "exit.\n",
           tag.c_str(), proc_plugins);
 
         proc_plugins -= plugins.Reap(ndPlugin::TYPE_PROC);
@@ -2034,7 +1950,8 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 #endif
         default:
             nd_printf(
-              "%s: WARNING: Unsupported capture type: %s: "
+              "%s: WARNING: Unsupported capture type: "
+              "%s: "
               "%hu\n",
               tag.c_str(), it.second->ifname.c_str(),
               it.second->capture_type);
@@ -2107,7 +2024,8 @@ size_t ndInstance::ReapCaptureThreads(nd_capture_threads &threads) {
       ! ndGC_RUN_WITHOUT_SOURCES)
     {
         nd_printf(
-          "%s: Exiting, no remaining capture threads.\n",
+          "%s: Exiting, no remaining capture "
+          "threads.\n",
           tag.c_str());
 
         DestroyCaptureThreads(threads, ndGC_AUTO_FLOW_EXPIRY);
@@ -2224,18 +2142,8 @@ bool ndInstance::ReloadCaptureThreads(nd_capture_threads &threads) {
 
     nd_capture_threads threads_new;
 
-    try {
-        if (! CreateCaptureThreads(ifaces_new, threads_new))
-            return false;
-    }
-    catch (exception &e) {
-        nd_printf(
-          "%s: Exception while starting capture threads: "
-          "%s\n",
-          tag.c_str(), e.what());
-
+    if (! CreateCaptureThreads(ifaces_new, threads_new))
         return false;
-    }
 
     for (auto &iface : ifaces_new) {
         interfaces.insert(iface);
@@ -2269,14 +2177,15 @@ int ndInstance::WaitForIPC(int timeout) {
           NULL, NULL, &tv);
 
         if (rc == -1) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "select", errno);
+            throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+              "select");
         }
 
         if (rc > 0) {
             if (! FD_ISSET(fd_ipc[IPC_PE_READ], &fds_read)) {
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  "select returned invalid descriptor", EINVAL);
+                throw ndException(
+                  "%s: %s: invalid descriptor",
+                  __PRETTY_FUNCTION__, "select");
             }
 
             ipc = (int)RecvIPC();

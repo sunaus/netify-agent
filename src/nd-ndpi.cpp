@@ -35,9 +35,10 @@ void ndpi_global_init(void) {
     nd_dprintf("Initializing nDPI v%s, API v%u...\n",
       ndpi_revision(), NDPI_API_VERSION);
 
-    if (ndpi_get_api_version() != NDPI_API_VERSION)
-        throw ndThreadException(
-          "nDPI library version mis-match");
+    if (ndpi_get_api_version() != NDPI_API_VERSION) {
+        throw ndException(
+          "%s: nDPI library version mis-match", __PRETTY_FUNCTION__);
+    }
 
     set_ndpi_malloc(nd_mem_alloc);
     set_ndpi_free(nd_mem_free);
@@ -101,7 +102,7 @@ void ndpi_global_init(void) {
 
         if (id == ND_PROTO_UNKNOWN) {
             id = nd_ndpi_proto_find(
-              (unsigned)strtoul(it.first.c_str(), NULL, 0));
+              (unsigned)strtoul(it.first.c_str(), nullptr, 0));
 
             if (id == ND_PROTO_UNKNOWN) continue;
         }
@@ -132,12 +133,14 @@ void ndpi_global_init(void) {
 }
 
 struct ndpi_detection_module_struct *nd_ndpi_init(void) {
-    struct ndpi_detection_module_struct *ndpi = NULL;
+
+    struct ndpi_detection_module_struct *ndpi = nullptr;
     ndpi = ndpi_init_detection_module(nd_ndpi_prefs);
 
-    if (ndpi == NULL)
-        throw ndThreadException(
-          "nDPI initialization failure");
+    if (ndpi == nullptr) {
+        throw ndException("%s: %s", __PRETTY_FUNCTION__,
+          "ndpi_init_detection_module");
+    }
 
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
     if (ndGC_DEBUG) {

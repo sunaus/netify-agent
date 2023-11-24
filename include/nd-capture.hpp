@@ -24,13 +24,6 @@
 #include "nd-instance.hpp"
 #include "nd-thread.hpp"
 
-class ndCaptureThreadException : public runtime_error
-{
-public:
-    explicit ndCaptureThreadException(const string &what_arg)
-      : runtime_error(what_arg) { }
-};
-
 class ndCaptureThread : public ndThread, public ndInstanceClient
 {
 public:

@@ -20,17 +20,9 @@
 
 #pragma once
 
-#include "nd-except.hpp"
 #include "nd-flow-parser.hpp"
 
 class ndSocketThread;
-
-class ndDetectionThreadException : public runtime_error
-{
-public:
-    explicit ndDetectionThreadException(const string &what_arg)
-      : runtime_error(what_arg) { }
-};
 
 class ndDetectionQueueEntry
 {

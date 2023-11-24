@@ -40,6 +40,7 @@
 #endif
 
 #include "nd-capture-nfq.hpp"
+#include "nd-except.hpp"
 
 #define _ND_LOG_WARNINGS 1
 //#define _ND_LOG_DEBUG    1
@@ -123,10 +124,6 @@ static int ndCaptureNFQueue_Callback(
     // One-and-only packet copy...
     uint8_t *pkt_data =
       new uint8_t[sizeof(struct ether_header) + pkt_len];
-    if (pkt_data == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new pkt_data", errno);
-    }
 
     struct ether_header *hdr_eth = (struct ether_header *)pkt_data;
     memset(hdr_eth, 0, sizeof(struct ether_addr));
@@ -155,11 +152,7 @@ static int ndCaptureNFQueue_Callback(
     pkt = new ndPacket(ndPacket::STATUS_OK, pkt_caplen,
       sizeof(struct ether_header) + pkt_len, pkt_data, tv);
 
-    if (pkt != nullptr) nfq->PushPacket(pkt);
-    else {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new ndPacket", errno);
-    }
+    nfq->PushPacket(pkt);
 
     if (skbinfo & NFQA_SKB_GSO)
         nd_dprintf("%s: GSO packet.\n", tag);
@@ -201,23 +194,18 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     nl = mnl_socket_open(NETLINK_NETFILTER);
 
     if (nl == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_open", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_open");
     }
 
     if (mnl_socket_bind(nl, 0, MNL_SOCKET_AUTOPID) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_bind", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_bind");
     }
 
     port_id = mnl_socket_get_portid(nl);
 
     buffer = new uint8_t[buffer_size];
-
-    if (buffer == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new buffer", errno);
-    }
 
     struct nlmsghdr *nlh;
 
@@ -226,8 +214,8 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     nfq_nlmsg_cfg_put_cmd(nlh, AF_INET6, NFQNL_CFG_CMD_BIND);
 
     if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_sendto", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_sendto");
     }
 
     nlh = nfq_nlmsg_put((char *)buffer, NFQNL_MSG_CONFIG, queue_id);
@@ -240,8 +228,8 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     mnl_attr_put_u32(nlh, NFQA_CFG_MASK, htonl(flags));
 
     if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_sendto", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_sendto");
     }
 
     // int enable = 1;
@@ -281,8 +269,8 @@ void *ndCaptureNFQueue::Entry(void) {
         rc = select(fd + 1, &fds_read, NULL, NULL, &tv);
 
         if (rc == -1) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "select", errno);
+            throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+              "select");
         }
 
         if (rc == 0 || ! FD_ISSET(fd, &fds_read)) continue;

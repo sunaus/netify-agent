@@ -389,11 +389,6 @@ void ndApplications::Reset(bool free_only) {
         nd_rn4_app *rn4 = new nd_rn4_app;
         nd_rn6_app *rn6 = new nd_rn6_app;
 
-        if (rn4 == nullptr || rn6 == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new", ENOMEM);
-        }
-
         app_networks4 = static_cast<void *>(rn4);
         app_networks6 = static_cast<void *>(rn6);
     }
@@ -428,11 +423,6 @@ ndApplications::AddApp(nd_app_id_t id, const string &tag) {
 
     ndApplication *app = new ndApplication(id, tag);
 
-    if (app == nullptr) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new ndApplication", ENOMEM);
-    }
-
     apps.insert(make_pair(id, app));
     app_tags.insert(make_pair(tag, app));
 
@@ -466,10 +456,6 @@ bool ndApplications::AddDomainTransform(const string &search,
           "regex: "
           "%s: %s [%d]\n",
           search.c_str(), error.c_str(), e.code());
-    }
-    catch (bad_alloc &e) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "new regex", ENOMEM);
     }
 
     return false;

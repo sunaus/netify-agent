@@ -606,8 +606,8 @@ int nd_file_load(const string &filename, string &data) {
 
     if (fd < 0) {
         if (errno != ENOENT) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              filename, errno);
+            throw ndException("%s: open(%s): %s", __PRETTY_FUNCTION__,
+              filename.c_str(), strerror(errno));
         }
         else {
             nd_dprintf("Unable to load file: %s: %s\n",
@@ -618,12 +618,14 @@ int nd_file_load(const string &filename, string &data) {
 
     if (flock(fd, LOCK_SH) < 0) {
         close(fd);
-        throw ndSystemException(__PRETTY_FUNCTION__, filename, errno);
+        throw ndException("%s: flock(LOCK_SH, %s): %s",
+          __PRETTY_FUNCTION__, filename.c_str(), strerror(errno));
     }
 
     if (fstat(fd, &sb) < 0) {
         close(fd);
-        throw ndSystemException(__PRETTY_FUNCTION__, filename, errno);
+        throw ndException("%s: fstat(%s): %s", __PRETTY_FUNCTION__,
+          filename.c_str(), strerror(errno));
     }
 
     if (sb.st_size == 0) data.clear();
@@ -631,8 +633,8 @@ int nd_file_load(const string &filename, string &data) {
         auto buffer = make_shared<vector<uint8_t>>(sb.st_size);
         if (read(fd, (void *)buffer->data(), sb.st_size) < 0)
         {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              filename, errno);
+            throw ndException("%s: read(%s): %s", __PRETTY_FUNCTION__,
+              filename.c_str(), strerror(errno));
         }
         data.assign((const char *)buffer->data(), sb.st_size);
     }
@@ -651,53 +653,62 @@ void nd_file_save(const string &filename, const string &data,
 
     if (fd < 0) {
         if (errno != ENOENT) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              filename, errno);
+            throw ndException("%s: open(%s): %s", __PRETTY_FUNCTION__,
+              filename.c_str(), strerror(errno));
         }
         fd = open(filename.c_str(), O_WRONLY | O_CREAT, mode);
         if (fd < 0) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              filename, errno);
+            throw ndException("%s: open(%s): %s", __PRETTY_FUNCTION__,
+              filename.c_str(), strerror(errno));
         }
 
         if (user != nullptr) {
             owner_user = getpwnam(user);
             if (owner_user == nullptr) {
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  filename, errno);
+                throw ndException("%s: getpwnam(%s): %s",
+                  __PRETTY_FUNCTION__, user, strerror(errno));
             }
         }
 
         if (group != nullptr) {
             owner_group = getgrnam(group);
             if (owner_group == nullptr) {
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  filename, errno);
+                throw ndException("%s: getgrnam(%s): %s",
+                  __PRETTY_FUNCTION__, group, strerror(errno));
             }
         }
 
         if (fchown(fd,
               (owner_user != nullptr) ? owner_user->pw_uid : -1,
               (owner_group != nullptr) ? owner_group->gr_gid : -1) < 0)
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              filename, errno);
+        {
+            throw ndException("%s: fchown(%s, %s, %s): %s",
+              __PRETTY_FUNCTION__, (user != nullptr) ? user : "-1",
+              (group != nullptr) ? group : "-1",
+              filename.c_str(), strerror(errno));
+        }
     }
 
     if (flock(fd, LOCK_EX) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__, filename, errno);
+        throw ndException("%s: flock(LOCK_EX, %s): %s",
+          __PRETTY_FUNCTION__, filename.c_str(), strerror(errno));
     }
 
     if (lseek(fd, 0, (! append) ? SEEK_SET : SEEK_END) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__, filename, errno);
+        throw ndException("%s: lseek(0, %s, %s): %s",
+          __PRETTY_FUNCTION__, (! append) ? "SEEK_SET" : "SEEK_END",
+          filename.c_str(), strerror(errno));
     }
 
     if (! append && ftruncate(fd, 0) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__, filename, errno);
+        throw ndException("%s: ftruncate(%s): %s",
+          __PRETTY_FUNCTION__, filename.c_str(), strerror(errno));
     }
 
     if (write(fd, (const void *)data.c_str(), data.length()) < 0)
     {
-        throw ndSystemException(__PRETTY_FUNCTION__, filename, errno);
+        throw ndException("%s: write(%s): %s", __PRETTY_FUNCTION__,
+          filename.c_str(), strerror(errno));
     }
 
     flock(fd, LOCK_UN);
@@ -958,15 +969,19 @@ ndLogDirectory::ndLogDirectory(const string &path,
     if (stat(path.c_str(), &sb) == -1) {
         if (errno == ENOENT) {
             if (mkdir(path.c_str(), 0750) != 0)
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  path, errno);
+                throw ndException("%s: mkdir(%s): %s",
+                  __PRETTY_FUNCTION__, filename.c_str(),
+                  strerror(errno));
         }
-        else
-            throw ndSystemException(__PRETTY_FUNCTION__, path, errno);
+        else {
+            throw ndException("%s: stat(%s): %s", __PRETTY_FUNCTION__,
+              filename.c_str(), strerror(errno));
+        }
 
-        if (! S_ISDIR(sb.st_mode))
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              path, EINVAL);
+        if (! S_ISDIR(sb.st_mode)) {
+            throw ndException("%s: ! S_ISDIR(%s)",
+              __PRETTY_FUNCTION__, filename.c_str());
+        }
     }
 }
 
@@ -977,7 +992,8 @@ ndLogDirectory::~ndLogDirectory() {
 FILE *ndLogDirectory::Open(const string &ext) {
     if (hf_cur != nullptr) {
         nd_dprintf(
-          "Log file already open; close or discard first: "
+          "Log file already open; close or discard "
+          "first: "
           "%s\n",
           filename.c_str());
         return nullptr;
@@ -1046,12 +1062,14 @@ void nd_regex_error(const regex_error &e, string &error) {
     switch (e.code()) {
     case regex_constants::error_collate:
         error =
-          "The expression contains an invalid collating "
+          "The expression contains an invalid "
+          "collating "
           "element name";
         break;
     case regex_constants::error_ctype:
         error =
-          "The expression contains an invalid character "
+          "The expression contains an invalid "
+          "character "
           "class name";
         break;
     case regex_constants::error_escape:
@@ -1071,22 +1089,26 @@ void nd_regex_error(const regex_error &e, string &error) {
         break;
     case regex_constants::error_paren:
         error =
-          "The expression contains mismatched parentheses "
+          "The expression contains mismatched "
+          "parentheses "
           "('(' and ')')";
         break;
     case regex_constants::error_brace:
         error =
-          "The expression contains mismatched curly braces "
+          "The expression contains mismatched curly "
+          "braces "
           "('{' and '}')";
         break;
     case regex_constants::error_badbrace:
         error =
-          "The expression contains an invalid range in a "
+          "The expression contains an invalid range in "
+          "a "
           "{} expression";
         break;
     case regex_constants::error_range:
         error =
-          "The expression contains an invalid character "
+          "The expression contains an invalid "
+          "character "
           "range (e.g. [b-a])";
         break;
     case regex_constants::error_space:
@@ -1096,17 +1118,20 @@ void nd_regex_error(const regex_error &e, string &error) {
         break;
     case regex_constants::error_badrepeat:
         error =
-          "one of *?+{ was not preceded by a valid regular "
+          "one of *?+{ was not preceded by a valid "
+          "regular "
           "expression";
         break;
     case regex_constants::error_complexity:
         error =
-          "The complexity of an attempted match exceeded a "
+          "The complexity of an attempted match "
+          "exceeded a "
           "predefined level";
         break;
     case regex_constants::error_stack:
         error =
-          "There was not enough memory to perform a match";
+          "There was not enough memory to perform a "
+          "match";
         break;
     default: error = e.what(); break;
     }
@@ -1243,8 +1268,8 @@ void nd_gz_deflate(size_t length, const uint8_t *data,
           15 /* window bits */ | 16 /* enable GZIP format */,
           8, Z_DEFAULT_STRATEGY) != Z_OK)
     {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "deflateInit2", EINVAL);
+        throw ndException("%s: deflateInit2: %s",
+          __PRETTY_FUNCTION__, strerror(EINVAL));
     }
 
     zs.next_in = (uint8_t *)data;
@@ -1254,8 +1279,8 @@ void nd_gz_deflate(size_t length, const uint8_t *data,
         zs.avail_out = ND_ZLIB_CHUNK_SIZE;
         zs.next_out = chunk;
         if ((rc = deflate(&zs, Z_FINISH)) == Z_STREAM_ERROR) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "deflate", EINVAL);
+            throw ndException("%s: deflate: %s",
+              __PRETTY_FUNCTION__, strerror(EINVAL));
         }
         for (size_t i = 0; i < ND_ZLIB_CHUNK_SIZE - zs.avail_out; i++)
         {
@@ -1267,8 +1292,8 @@ void nd_gz_deflate(size_t length, const uint8_t *data,
     deflateEnd(&zs);
 
     if (rc != Z_STREAM_END) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "deflate", EINVAL);
+        throw ndException("%s: deflate: %s",
+          __PRETTY_FUNCTION__, strerror(EINVAL));
     }
 #if 0
     nd_dprintf(
@@ -1283,8 +1308,8 @@ void ndTimer::Create(int sig) {
     this->sig = sig;
 
     if (valid) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "invalid timer", EEXIST);
+        throw ndException("%s: timer: %s",
+          __PRETTY_FUNCTION__, strerror(EEXIST));
     }
 
     struct sigevent sigev;
@@ -1293,8 +1318,8 @@ void ndTimer::Create(int sig) {
     sigev.sigev_signo = sig;
 
     if (timer_create(CLOCK_MONOTONIC, &sigev, &id) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "timer_create", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "timer_create");
     }
 
     valid = true;
@@ -1309,13 +1334,13 @@ void ndTimer::Reset(void) {
 
 void ndTimer::Set(const struct itimerspec &itspec) {
     if (! valid) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "invalid timer", EINVAL);
+        throw ndException("%s: timer: %s",
+          __PRETTY_FUNCTION__, strerror(EEXIST));
     }
 
     if (timer_settime(id, 0, &itspec, nullptr) != 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "timer_settime", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "timer_settime");
     }
 }
 
@@ -1384,8 +1409,8 @@ time_t nd_time_monotonic(void) {
     struct timespec ts;
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "clock_gettime", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "clock_gettime");
     }
 
     return ts.tv_sec;
@@ -1407,7 +1432,8 @@ void nd_tmpfile(const string &prefix, string &filename) {
         const string base = prefix.substr(p + 1) + "XXXXXX";
         if (chdir(path.c_str()) != 0) {
             nd_dprintf(
-              "WARNING: unable to change working directory "
+              "WARNING: unable to change working "
+              "directory "
               "to: "
               "%s\n",
               path.c_str());
@@ -1420,8 +1446,8 @@ void nd_tmpfile(const string &prefix, string &filename) {
     filename.clear();
 
     if ((fd = mkstemp(&buffer[0])) < 0) {
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          &buffer[0], errno);
+        throw ndException("%s: mkstemp(%s): %s",
+          __PRETTY_FUNCTION__, "clock_gettime", strerror(errno));
     }
 
     close(fd);
@@ -1443,7 +1469,8 @@ bool nd_copy_file(const string &src, const string &dst, mode_t mode) {
 
     if (chmod(dst.c_str(), mode) != 0) {
         nd_dprintf(
-          "WARNING: unable to change file permissions: %s: "
+          "WARNING: unable to change file permissions: "
+          "%s: "
           "%s\n",
           dst.c_str(), strerror(errno));
     }

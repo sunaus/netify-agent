@@ -27,35 +27,12 @@
 #include <ctime>
 #include <unordered_map>
 
-#include "nd-except.hpp"
 #include "nd-flow.hpp"
 #include "nd-thread.hpp"
 
 #ifndef _ND_CT_FLOW_TTL
 #define _ND_CT_FLOW_TTL 900
 #endif
-
-class ndConntrackThreadException : public runtime_error
-{
-public:
-    explicit ndConntrackThreadException(const string &what_arg)
-      : runtime_error(what_arg) { }
-};
-
-class ndConntrackSystemException : public ndSystemException
-{
-public:
-    explicit ndConntrackSystemException(const string &where_arg,
-      const string &what_arg, int why_arg) throw()
-      : ndSystemException(where_arg, what_arg, why_arg) { }
-};
-
-class ndConntrackFlowException : public runtime_error
-{
-public:
-    explicit ndConntrackFlowException(const string &what_arg)
-      : runtime_error(what_arg) { }
-};
 
 enum ndConntrackFlowDirection {
     ndCT_DIR_SRC = 0,

@@ -24,7 +24,6 @@
 #include <set>
 
 #include "nd-config.hpp"
-#include "nd-except.hpp"
 #include "nd-flow-map.hpp"
 #include "nd-json.hpp"
 #include "nd-packet.hpp"
@@ -42,7 +41,6 @@ class ndInstanceStatus;
     ndPlugin *ndPluginInit(const string &tag, \
       const ndPlugin::Params &params) { \
         class_name *p = new class_name(tag, params); \
-        if (p == nullptr) return nullptr; \
         if (p->GetType() != ndPlugin::TYPE_PROC && \
           p->GetType() != ndPlugin::TYPE_SINK) \
         { \
@@ -54,14 +52,6 @@ class ndInstanceStatus;
         return dynamic_cast<ndPlugin *>(p); \
     } \
     }
-
-class ndPluginException : public ndException
-{
-public:
-    explicit ndPluginException(const string &where_arg,
-      const string &what_arg) throw()
-      : ndException(where_arg, what_arg) { }
-};
 
 class ndPlugin : public ndThread, public ndSerializer
 {
@@ -160,12 +150,6 @@ public:
       : length(length), data(nullptr), channels(channels),
         flags(flags) {
         this->data = new uint8_t[length];
-
-        if (this->data == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new sink payload data", ENOMEM);
-        }
-
         memcpy(this->data, data, length);
     }
 

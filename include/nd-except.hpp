@@ -21,36 +21,26 @@
 #pragma once
 
 #include <stdexcept>
-#include <string>
 
 using namespace std;
 
-class ndException : public runtime_error
+#define _ND_EXCEPT_MAX_MESSAGE 128
+
+class ndException : public exception
 {
 public:
-    explicit ndException(const string &where_arg,
-      const string &what_arg) throw();
-    virtual ~ndException() throw();
+    explicit ndException(const char *format, ...) throw();
 
-    virtual const char *what() const throw();
+    virtual const char *what() const throw() {
+        return message;
+    }
 
-    string where_arg;
-    string what_arg;
-    const char *message;
+protected:
+    char message[_ND_EXCEPT_MAX_MESSAGE];
 };
 
-class ndSystemException : public runtime_error
-{
-public:
-    explicit ndSystemException(const string &where_arg,
-      const string &what_arg,
-      int why_arg) throw();
-    virtual ~ndSystemException() throw();
+#define ndExceptionSystemError(ctag, what) \
+    ndException("%s: %s: %s", ctag, what, strerror(errno));
 
-    virtual const char *what() const throw();
-
-    string where_arg;
-    string what_arg;
-    int why_arg;
-    const char *message;
-};
+#define ndExceptionSystemErrno(ctag, what, errno) \
+    ndException("%s: %s: %s", ctag, what, strerror(errno));

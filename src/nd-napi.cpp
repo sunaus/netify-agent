@@ -130,8 +130,10 @@ ndNetifyApiThread::ndNetifyApiThread()
   : ndThread("netify-api"), ch(nullptr), curl_rc(CURLE_OK),
     http_rc(-1), headers_tx(nullptr) {
 
-    if ((ch = curl_easy_init()) == nullptr)
-        throw ndThreadException("curl_easy_init");
+    if ((ch = curl_easy_init()) == nullptr) {
+        throw ndException(__PRETTY_FUNCTION__,
+          "curl_easy_init");
+    }
 
     curl_easy_setopt(ch, CURLOPT_MAXREDIRS, 3);
     curl_easy_setopt(ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -195,21 +197,18 @@ ndNetifyApiThread::~ndNetifyApiThread() {
 
 void ndNetifyApiThread::AppendContent(const char *data,
   size_t length) {
-    try {
-        if (content_filename.empty())
-            content.append(data, length);
-        else {
-            ofstream ofs(content_filename, ofstream::app);
-            if (! ofs.is_open())
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  content_filename, EINVAL);
-            string buffer;
-            buffer.assign(data, length);
-            ofs << buffer;
+    if (content_filename.empty())
+        content.append(data, length);
+    else {
+        ofstream ofs(content_filename, ofstream::app);
+        if (! ofs.is_open()) {
+            throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+              content_filename.c_str(), strerror(EINVAL));
         }
-    }
-    catch (exception &e) {
-        throw ndThreadException(e.what());
+
+        string buffer;
+        buffer.assign(data, length);
+        ofs << buffer;
     }
 }
 
@@ -358,10 +357,7 @@ ndNetifyApiDownload::ndNetifyApiDownload(const string &token,
     url(url), digest(nullptr) {
     if (! filename.empty()) {
         digest = new uint8_t[SHA1_DIGEST_LENGTH];
-        if (digest == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new SHA1 digest", ENOMEM);
-        }
+
         if (nd_sha1_file(filename, digest) < 0) {
             delete[] digest;
             digest = nullptr;
@@ -451,11 +447,6 @@ bool ndNetifyApiManager::Update(void) {
     }
     else {
         ndNetifyApiBootstrap *bootstrap = new ndNetifyApiBootstrap();
-        if (bootstrap == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new ndNetifyApiBootstrap",
-              ENOMEM);
-        }
 
         auto request = requests.insert(
           make_pair(REQUEST_BOOTSTRAP, bootstrap));
@@ -465,7 +456,7 @@ bool ndNetifyApiManager::Update(void) {
             try {
                 request.first->second->Create();
             }
-            catch (ndThreadException &e) {
+            catch (exception &e) {
                 nd_printf(
                   "netify-api: Error creating bootstrap "
                   "request: %s\n",
@@ -537,11 +528,6 @@ bool ndNetifyApiManager::Update(void) {
 
                 ndNetifyApiDownload *download = new ndNetifyApiDownload(
                   token, url.second, filename);
-                if (download == nullptr) {
-                    throw ndSystemException(__PRETTY_FUNCTION__,
-                      "new ndNetifyApidownload",
-                      ENOMEM);
-                }
 
                 auto request = requests.insert(
                   make_pair(url.first, download));
@@ -551,7 +537,7 @@ bool ndNetifyApiManager::Update(void) {
                     try {
                         request.first->second->Create();
                     }
-                    catch (ndThreadException &e) {
+                    catch (exception &e) {
                         nd_printf(
                           "netify-api: Error creating "
                           "download "
@@ -758,7 +744,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
         urls[REQUEST_DOWNLOAD_CONFIG] = japps->get<string>();
         urls[REQUEST_DOWNLOAD_CATEGORIES] = jcats->get<string>();
     }
-    catch (exception &e) {
+    catch (json::exception &e) {
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] =
           "Exception encountered while assigning signature "
@@ -766,7 +752,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
         nd_printf(
           "netify-api: Failed to decode bootstrap "
           "content.\n");
-        nd_dprintf("netify-api: Exception: %s\n", e.what());
+        nd_dprintf("netify-api: JSON exception: %s\n", e.what());
         return false;
     }
 

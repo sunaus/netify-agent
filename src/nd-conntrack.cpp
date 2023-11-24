@@ -23,6 +23,7 @@
 #endif
 
 #include "nd-conntrack.hpp"
+#include "nd-except.hpp"
 
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_CONNTRACK     1
@@ -54,9 +55,10 @@ static int
 nd_ct_netlink_callback(const struct nlmsghdr *nlh, void *data) {
     struct nf_conntrack *ct = nfct_new();
 
-    if (ct == NULL)
-        throw ndConntrackSystemException(__PRETTY_FUNCTION__,
-          "nfct_new", errno);
+    if (ct == nullptr) {
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "nfct_new");
+    }
 
     if (nfct_nlmsg_parse(nlh, ct) == 0) {
         ndConntrackThread *thread =
@@ -71,16 +73,16 @@ nd_ct_netlink_callback(const struct nlmsghdr *nlh, void *data) {
 
 ndConntrackThread::ndConntrackThread(int16_t cpu)
   : ndThread("nd-conntrack", (long)cpu), ctfd(-1),
-    cth(NULL), cb_registered(-1) {
+    cth(nullptr), cb_registered(-1) {
+
     cth = nfct_open(NFNL_SUBSYS_CTNETLINK, NFCT_ALL_CT_GROUPS);
-    if (cth == NULL) {
-        if (errno == EPROTONOSUPPORT) {
-            nd_printf(
-              "%s: nfnetlink kernel module not loaded?\n",
-              tag.c_str());
-        }
-        throw ndConntrackSystemException(__PRETTY_FUNCTION__,
-          "nfct_open", errno);
+
+    if (cth == nullptr) {
+        throw ndException("%s: nfct_open: %s%s",
+          tag.c_str(), strerror(errno),
+          (errno == EPROTONOSUPPORT) ?
+            " (nfnetlink not loaded?)" :
+            "");
     }
 
     ctfd = nfct_fd(cth);
@@ -96,8 +98,8 @@ ndConntrackThread::ndConntrackThread(int16_t cpu)
     if ((cb_registered = nfct_callback_register(cth, NFCT_T_ALL,
            nd_ct_event_callback, (void *)this)) < 0)
     {
-        throw ndConntrackSystemException(__PRETTY_FUNCTION__,
-          "nfct_callback_register", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "nfct_callback_register");
     }
 
     DumpConntrackTable();
@@ -108,7 +110,7 @@ ndConntrackThread::ndConntrackThread(int16_t cpu)
 ndConntrackThread::~ndConntrackThread() {
     Join();
 
-    if (cth != NULL) {
+    if (cth != nullptr) {
         if (cb_registered != -1)
             nfct_callback_unregister(cth);
         nfct_close(cth);
@@ -131,14 +133,14 @@ void ndConntrackThread::DumpConntrackTable(void) {
     unsigned int seq, portid;
 
     nl = mnl_socket_open(NETLINK_NETFILTER);
-    if (nl == NULL) {
-        throw ndConntrackSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_open", errno);
+    if (nl == nullptr) {
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_open");
     }
 
     if (mnl_socket_bind(nl, 0, MNL_SOCKET_AUTOPID) < 0) {
-        throw ndConntrackSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_bind", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_bind");
     }
 
     portid = mnl_socket_get_portid(nl);
@@ -156,15 +158,15 @@ void ndConntrackThread::DumpConntrackTable(void) {
 
     rc = mnl_socket_sendto(nl, nlh, nlh->nlmsg_len);
     if (rc == -1) {
-        throw ndConntrackSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_sendto", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_sendto");
     }
 
     rc = mnl_socket_recvfrom(nl, buffer, sizeof(buffer));
-    if (errno == EINVAL)
-        nd_printf(
-          "Is the nf_conntrack_netlink kernel module "
-          "loaded?\n");
+    if (rc == -1) {
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_recvfrom");
+    }
 
     while (rc > 0) {
         rc = mnl_cb_run(buffer, rc, seq, portid,
@@ -174,8 +176,8 @@ void ndConntrackThread::DumpConntrackTable(void) {
     }
 
     if (rc == -1) {
-        throw ndConntrackSystemException(__PRETTY_FUNCTION__,
-          "mnl_socket_recvfrom", errno);
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "mnl_socket_recvfrom");
     }
 
     mnl_socket_close(nl);
@@ -196,28 +198,28 @@ void *ndConntrackThread::Entry(void) {
 
         struct timeval tv = { 1, 0 };
 
-        rc = select(ctfd + 1, &fds_read, NULL, NULL, &tv);
+        rc = select(ctfd + 1, &fds_read, nullptr, NULL, &tv);
 
         if (rc == -1) {
-            throw ndConntrackSystemException(
-              __PRETTY_FUNCTION__, "select", errno);
+            throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+              "select");
         }
 
         if (FD_ISSET(ctfd, &fds_read)) {
             if (nfct_catch(cth) < 0) {
-                throw ndConntrackSystemException(
-                  __PRETTY_FUNCTION__, "nfct_catch", errno);
+                throw ndExceptionSystemError(
+                  __PRETTY_FUNCTION__, "nfct_catch");
             }
         }
     }
 
     nd_dprintf("%s: Exit.\n", tag.c_str());
-    return NULL;
+    return nullptr;
 }
 
 void ndConntrackThread::ProcessConntrackEvent(
   enum nf_conntrack_msg_type type, struct nf_conntrack *ct) {
-    ndConntrackFlow *ct_flow = NULL;
+    ndConntrackFlow *ct_flow = nullptr;
     nd_ct_id_map::iterator id_iter;
     nd_ct_flow_map::iterator flow_iter;
 
@@ -240,9 +242,10 @@ void ndConntrackThread::ProcessConntrackEvent(
         try {
             ct_flow = new ndConntrackFlow(id, ct);
         }
-        catch (ndConntrackFlowException &e) {
+        catch (exception &e) {
             nd_printf("%s: %s.\n", tag.c_str(), e.what());
-            goto Unlock_ProcessConntrackEvent;
+            Unlock();
+            return;
         }
 
         ct_id_map[id] = ct_flow->digest;
@@ -263,16 +266,20 @@ void ndConntrackThread::ProcessConntrackEvent(
     case NFCT_T_UPDATE:
 
         id_iter = ct_id_map.find(id);
-        if (id_iter == ct_id_map.end())
-            goto Unlock_ProcessConntrackEvent;
+        if (id_iter == ct_id_map.end()) {
+            Unlock();
+            return;
+        }
 
         flow_iter = ct_flow_map.find(id_iter->second);
         if (flow_iter == ct_flow_map.end()) {
             nd_dprintf(
-              "%s: [U:%u] Digest not found in flow map.\n",
+              "%s: [U:%u] Digest not found in flow "
+              "map.\n",
               tag.c_str(), id);
             ct_id_map.erase(id_iter);
-            goto Unlock_ProcessConntrackEvent;
+            Unlock();
+            return;
         }
 
         ct_flow = flow_iter->second;
@@ -307,7 +314,8 @@ void ndConntrackThread::ProcessConntrackEvent(
 
     default:
         nd_printf(
-          "%s: Unhandled connection tracking message type: "
+          "%s: Unhandled connection tracking message "
+          "type: "
           "0x%02x\n",
           tag.c_str(), type);
     }
@@ -320,7 +328,6 @@ void ndConntrackThread::ProcessConntrackEvent(
 #endif
     }
 #endif
-Unlock_ProcessConntrackEvent:
     Unlock();
 }
 
@@ -329,8 +336,8 @@ void ndConntrackThread::PrintFlow(ndConntrackFlow *flow,
     int addr_cmp = 0;
     ostringstream os;
     char ip[INET6_ADDRSTRLEN];
-    struct sockaddr_in *sa_src = NULL, *sa_dst = NULL;
-    struct sockaddr_in6 *sa6_src = NULL, *sa6_dst = NULL;
+    struct sockaddr_in *sa_src = nullptr, *sa_dst = NULL;
+    struct sockaddr_in6 *sa6_src = nullptr, *sa6_dst = NULL;
     char buffer[1024];
 
     sprintf(buffer, "l3_proto: %hu, l4_proto: %hhu",
@@ -488,10 +495,10 @@ void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
     string digest;
     uint8_t _digest[SHA1_DIGEST_LENGTH];
     sa_family_t family;
-    struct sockaddr_in *sa_orig_src = NULL, *sa_orig_dst = NULL;
-    struct sockaddr_in *sa_repl_src = NULL, *sa_repl_dst = NULL;
-    struct sockaddr_in6 *sa6_orig_src = NULL, *sa6_orig_dst = NULL;
-    struct sockaddr_in6 *sa6_repl_src = NULL, *sa6_repl_dst = NULL;
+    struct sockaddr_in *sa_orig_src = nullptr, *sa_orig_dst = NULL;
+    struct sockaddr_in *sa_repl_src = nullptr, *sa_repl_dst = NULL;
+    struct sockaddr_in6 *sa6_orig_src = nullptr, *sa6_orig_dst = NULL;
+    struct sockaddr_in6 *sa6_repl_src = nullptr, *sa6_repl_dst = NULL;
     nd_ct_flow_map::iterator flow_iter;
 
     if (flow->ip_version == 4) family = AF_INET;
@@ -634,19 +641,21 @@ void ndConntrackFlow::Update(struct nf_conntrack *ct) {
     repl_addr_valid[ndCT_DIR_SRC] = false;
     repl_addr_valid[ndCT_DIR_DST] = false;
 
-    if (! nfct_attr_is_set(ct, ATTR_ORIG_L3PROTO))
-        throw ndConntrackFlowException(
-          "ATTR_ORIG_L3PROTO not set");
+    if (! nfct_attr_is_set(ct, ATTR_ORIG_L3PROTO)) {
+        throw ndException("%s: ATTR_ORIG_L3PROTO not set",
+          __PRETTY_FUNCTION__);
+    }
 
     sa_family_t af = l3_proto = nfct_get_attr_u8(ct,
       ATTR_ORIG_L3PROTO);
-    if (af != AF_INET && af != AF_INET6)
-        throw ndConntrackFlowException(
-          "Unsupported address family");
-
-    if (! nfct_attr_is_set(ct, ATTR_ORIG_L4PROTO))
-        throw ndConntrackFlowException(
-          "ATTR_ORIG_L4PROTO not set");
+    if (af != AF_INET && af != AF_INET6) {
+        throw ndException("%s: unsupported address family",
+          __PRETTY_FUNCTION__);
+    }
+    if (! nfct_attr_is_set(ct, ATTR_ORIG_L4PROTO)) {
+        throw ndException("%s: ATTR_ORIG_L4PROTO not set",
+          __PRETTY_FUNCTION__);
+    }
 
     l4_proto = nfct_get_attr_u8(ct, ATTR_ORIG_L4PROTO);
 
@@ -654,8 +663,10 @@ void ndConntrackFlow::Update(struct nf_conntrack *ct) {
           ! nfct_attr_is_set(ct, ATTR_ORIG_IPV6_SRC)) ||
       (! nfct_attr_is_set(ct, ATTR_ORIG_IPV4_DST) &&
         ! nfct_attr_is_set(ct, ATTR_ORIG_IPV6_DST)))
-        throw ndConntrackFlowException(
-          "ATTR_ORIG_SRC/DST not set");
+    {
+        throw ndException("%s: ATTR_ORIG_SRC/DST not set",
+          __PRETTY_FUNCTION__);
+    }
 
     switch (af) {
     case AF_INET:
@@ -752,8 +763,8 @@ void ndConntrackFlow::Hash(void) {
     sha1 ctx;
     int addr_cmp = 0;
     uint8_t _digest[SHA1_DIGEST_LENGTH];
-    struct sockaddr_in *sa_src = NULL, *sa_dst = NULL;
-    struct sockaddr_in6 *sa6_src = NULL, *sa6_dst = NULL;
+    struct sockaddr_in *sa_src = nullptr, *sa_dst = NULL;
+    struct sockaddr_in6 *sa6_src = nullptr, *sa6_dst = NULL;
 
     sha1_init(&ctx);
 

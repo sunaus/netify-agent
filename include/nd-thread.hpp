@@ -28,22 +28,6 @@ using namespace std;
 
 #define ND_THREAD_MAX_PROCNAMELEN 16
 
-class ndThreadException : public runtime_error
-{
-public:
-    explicit ndThreadException(const string &what_arg)
-      : runtime_error(what_arg) { }
-};
-
-class ndThreadSystemException : public ndSystemException
-{
-public:
-    explicit ndThreadSystemException(const string &where_arg,
-      const string &what_arg,
-      int why_arg) throw()
-      : ndSystemException(where_arg, what_arg, why_arg) { }
-};
-
 class ndThread
 {
 public:

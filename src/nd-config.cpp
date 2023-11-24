@@ -366,9 +366,6 @@ bool ndGlobalConfig::Load(const string &filename) {
             struct sockaddr *saddr =
               reinterpret_cast<struct sockaddr *>(
                 new uint8_t[rp->ai_addrlen]);
-            if (! saddr)
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  "new", ENOMEM);
             memcpy(saddr, rp->ai_addr, rp->ai_addrlen);
             privacy_filter_host.push_back(saddr);
         }
@@ -403,10 +400,6 @@ bool ndGlobalConfig::Load(const string &filename) {
               "%s: %s [%d]\n",
               filename.c_str(), search.c_str(),
               error.c_str(), e.code());
-        }
-        catch (bad_alloc &e) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new", ENOMEM);
         }
     }
 
@@ -663,27 +656,13 @@ bool ndGlobalConfig::AddInterface(const string &iface,
         case ndCT_PCAP:
         case ndCT_PCAP_OFFLINE:
             config = static_cast<void *>(new nd_config_pcap);
-            if (config == nullptr) {
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  "new nd_config_pcap",
-                  ENOMEM);
-            }
             break;
         case ndCT_TPV3:
             config = static_cast<void *>(new nd_config_tpv3);
-            if (config == nullptr) {
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  "new  nd_config_tpv3",
-                  ENOMEM);
-            }
             memcpy(config, &tpv3_defaults, sizeof(nd_config_tpv3));
             break;
         case ndCT_NFQ:
             config = static_cast<void *>(new nd_config_nfq);
-            if (config == nullptr) {
-                throw ndSystemException(__PRETTY_FUNCTION__,
-                  "new nd_config_nfq", ENOMEM);
-            }
         default: break;
         }
     }
@@ -948,10 +927,7 @@ enum nd_capture_type ndGlobalConfig::LoadCaptureType(
     else if (capture_type == "nfqueue") ct = ndCT_NFQ;
 #endif
     else {
-        fprintf(stderr, "Invalid capture type: %s\n",
-          capture_type.c_str());
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "invalid capture type", EINVAL);
+        throw ndException("invalid capture type", capture_type);
     }
 
     return ct;

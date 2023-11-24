@@ -75,8 +75,10 @@ void *ndCapturePcap::Entry(void) {
               nullptr, &tv);
 
             if (rc == 0) continue;
-            else if (rc == -1)
-                throw ndCaptureThreadException(strerror(errno));
+            else if (rc == -1) {
+                throw ndExceptionSystemError(
+                  __PRETTY_FUNCTION__, "select");
+            }
 #if 0
             if (FD_ISSET(fd_ipc[0], &fds_read)) {
                 // TODO: Not used.
@@ -91,14 +93,10 @@ void *ndCapturePcap::Entry(void) {
             {
                 // One-and-only packet copy...
                 uint8_t *pd = new uint8_t[pkt_header->caplen];
-                if (pd == nullptr)
-                    throw ndCaptureThreadException(strerror(ENOMEM));
                 memcpy(pd, pkt_data, pkt_header->caplen);
 
                 pkt = new ndPacket(pkt_status, pkt_header->len,
                   pkt_header->caplen, pd, pkt_header->ts);
-                if (pkt == nullptr)
-                    throw ndCaptureThreadException(strerror(ENOMEM));
 
                 Lock();
 

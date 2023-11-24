@@ -1017,8 +1017,6 @@ nd_process_ip:
         }
 
         nf = make_shared<ndFlow>(flow);
-        if (! nf)
-            throw ndCaptureThreadException(strerror(ENOMEM));
 
         nf->direction = addr_cmp;
 
@@ -1026,7 +1024,8 @@ nd_process_ip:
         {
             ndi.flow_buckets->Release(flow_digest);
             // Flow exists in map!  Impossible!
-            throw ndCaptureThreadException(strerror(EINVAL));
+            throw ndException("%s: flow exists in map",
+              tag.c_str());
         }
 
         ndi.status.flows++;
@@ -1198,11 +1197,9 @@ nd_process_ip:
             packet = NULL;
         }
         else {
-            nd_dprintf(
-              "ERROR: detection thread ID not found: %hd\n",
-              nf->dpi_thread_id);
-            throw ndCaptureThreadException(
-              "detection thread ID not found!");
+            throw ndException(
+              "%s: detection thread ID not found (%hd)",
+              tag.c_str(), nf->dpi_thread_id);
         }
     }
 

@@ -28,9 +28,6 @@
 ndFlowMap::ndFlowMap(size_t buckets) : buckets(buckets) {
     for (size_t i = 0; i < buckets; i++) {
         nd_flow_map *b = new nd_flow_map;
-        if (b == NULL)
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new nd_flow_map", ENOMEM);
 #ifdef HAVE_CXX11
         b->reserve(ND_HASH_BUCKETS_FLOWS);
 #endif
@@ -99,9 +96,10 @@ bool ndFlowMap::Delete(const string &digest) {
 }
 
 nd_flow_map &ndFlowMap::Acquire(size_t b) {
-    if (b >= buckets)
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "bucket", EINVAL);
+    if (b >= buckets) {
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "bucket", strerror(EINVAL));
+    }
 
     bucket_lock[b]->lock();
 
@@ -109,9 +107,10 @@ nd_flow_map &ndFlowMap::Acquire(size_t b) {
 }
 
 const nd_flow_map &ndFlowMap::AcquireConst(size_t b) const {
-    if (b >= buckets)
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "bucket", EINVAL);
+    if (b >= buckets) {
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "bucket", strerror(EINVAL));
+    }
 
     bucket_lock[b]->lock();
 
@@ -119,9 +118,10 @@ const nd_flow_map &ndFlowMap::AcquireConst(size_t b) const {
 }
 
 void ndFlowMap::Release(size_t b) const {
-    if (b >= buckets)
-        throw ndSystemException(__PRETTY_FUNCTION__,
-          "bucket", EINVAL);
+    if (b >= buckets) {
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "bucket", strerror(EINVAL));
+    }
 
     bucket_lock[b]->unlock();
 }

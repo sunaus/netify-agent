@@ -73,11 +73,6 @@ void ndCategories::ResetNetworks(bool free_only) {
         nd_rn4_cat *rn4 = new nd_rn4_cat;
         nd_rn6_cat *rn6 = new nd_rn6_cat;
 
-        if (rn4 == nullptr || rn6 == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "new", ENOMEM);
-        }
-
         networks4 = static_cast<void *>(rn4);
         networks6 = static_cast<void *>(rn6);
     }
@@ -506,14 +501,9 @@ bool ndCategories::LoadDotDirectory(const string &path) {
                     nd_regex_error(e, error);
                     nd_printf(
                       "WARNING: Error compiling category "
-                      "regex: "
-                      "%s: %s [%d]\n",
+                      "regex: %s: %s [%d]\n",
                       line.substr(p + 1).c_str(),
                       error.c_str(), e.code());
-                }
-                catch (bad_alloc &e) {
-                    throw ndSystemException(__PRETTY_FUNCTION__,
-                      "new regex", ENOMEM);
                 }
             }
         }

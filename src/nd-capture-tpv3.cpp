@@ -44,6 +44,7 @@
 
 #include "nd-capture-tpv3.hpp"
 #include "nd-detection.hpp"
+#include "nd-except.hpp"
 
 #define _ND_VLAN_OFFSET (2 * ETH_ALEN)
 
@@ -162,22 +163,21 @@ ndPacketRing::ndPacketRing(const string &ifname,
   const nd_config_tpv3 &config,
   ndPacketStats *stats)
   : ifname(ifname), sd(-1), buffer(nullptr), tp_hdr_len(0),
-    tp_reserved(0), tp_frame_size(0),
-    tp_ring_size(0), tp_req{ 0 }, filter{ 0 }, stats(stats) {
+    tp_reserved(0), tp_frame_size(0), tp_ring_size(0),
+    tp_req{ 0 }, filter{ 0 }, stats(stats) {
     unsigned so_uintval;
 
     struct ifreq ifr;
-    if (nd_ifreq(ifname.c_str(), SIOCGIFINDEX, &ifr) < 0)
-        throw ndCaptureThreadException(
-          "error getting interface index");
+    if (nd_ifreq(ifname.c_str(), SIOCGIFINDEX, &ifr) < 0) {
+        throw ndException("%s: %s", ifname.c_str(),
+          "nd_ifreq");
+    }
 
     sd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 
     if (sd < 0) {
-        nd_dprintf("%s: socket: %s\n", ifname.c_str(),
-          strerror(errno));
-        throw ndCaptureThreadException(
-          "error creating socket");
+        throw ndExceptionSystemError(ifname.c_str(),
+          "socket");
     }
 
     nd_dprintf("%s: AF_PACKET socket created: %d\n",
@@ -188,10 +188,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
     if (getsockopt(sd, SOL_PACKET, PACKET_HDRLEN,
           (void *)&so_uintval, &so_vallen) < 0)
     {
-        nd_dprintf("%s: getsockopt(PACKET_HDRLEN): %s\n",
-          ifname.c_str(), strerror(errno));
-        throw ndCaptureThreadException(
-          "TPACKET_V3 not supported");
+        throw ndExceptionSystemError(ifname.c_str(),
+          "getsockopt(TPACKET_V3)");
     }
 
     tp_hdr_len = (size_t)so_uintval;
@@ -202,12 +200,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
     if (setsockopt(sd, SOL_PACKET, PACKET_VERSION,
           (const void *)&so_uintval, sizeof(so_uintval)) < 0)
     {
-        nd_dprintf(
-          "%s: setsockopt(PACKET_VERSION): TPACKET_V3: "
-          "%s\n",
-          ifname.c_str(), strerror(errno));
-        throw ndCaptureThreadException(
-          "error selecting TPACKET_V3");
+        throw ndExceptionSystemError(ifname.c_str(),
+          "setsockopt(TPACKET_V3)");
     }
 
     struct sockaddr_ll sa_ll_bind;
@@ -219,10 +213,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
     if (bind(sd, (const struct sockaddr *)&sa_ll_bind,
           sizeof(struct sockaddr_ll)) < 0)
     {
-        nd_dprintf("%s: bind: %s\n", ifname.c_str(),
-          strerror(errno));
-        throw ndCaptureThreadException(
-          "unable to bind socket to interface");
+        throw ndExceptionSystemError(ifname.c_str(),
+          "bind(TPACKET_V3)");
     }
 
     nd_dprintf("%s: AF_PACKET socket bound to: %s [%d]\n",
@@ -241,12 +233,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
         if (setsockopt(sd, SOL_PACKET, PACKET_ADD_MEMBERSHIP,
               (const void *)&pmreq, sizeof(struct packet_mreq)) < 0)
         {
-            nd_dprintf(
-              "%s: setsockopt(PACKET_ADD_MEMBERSHIP:%hu): "
-              "%s\n",
-              ifname.c_str(), pmreq.mr_type, strerror(errno));
-            throw ndCaptureThreadException(
-              "error while adding membership(s)");
+            throw ndExceptionSystemError(ifname.c_str(),
+              "setsockopt(PACKET_ADD_MEMBERSHIP)");
         }
     }
 #ifdef PACKET_FANOUT
@@ -298,8 +286,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
 #endif
             break;
         default:
-            throw ndCaptureThreadException(
-              "invalid fanout mode");
+            throw ndException("%s: invalid fanout mode: %d",
+              ifname.c_str(), config.fanout_mode);
         }
 #ifdef PACKET_FANOUT_FLAG_DEFRAG
         if (config.fanout_flags & ndFOF_DEFRAG)
@@ -327,11 +315,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
         if (setsockopt(sd, SOL_PACKET, PACKET_FANOUT,
               (const void *)&so_uintval, sizeof(so_uintval)) < 0)
         {
-            nd_dprintf(
-              "%s: setsockopt(PACKET_FANOUT): %s\n",
-              ifname.c_str(), strerror(errno));
-            throw ndCaptureThreadException(
-              "error enabling fanout");
+            throw ndExceptionSystemError(ifname.c_str(),
+              "setsockopt(PACKET_FANOUT)");
         }
     }
 #else
@@ -341,10 +326,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
     if (setsockopt(sd, SOL_PACKET, PACKET_RESERVE,
           (const void *)&so_uintval, sizeof(so_uintval)) < 0)
     {
-        nd_dprintf("%s: setsockopt(PACKET_RESERVE): %s\n",
-          ifname.c_str(), strerror(errno));
-        throw ndCaptureThreadException(
-          "error reserving VLAN TAG space");
+        throw ndExceptionSystemError(ifname.c_str(),
+          "setsockopt(PACKET_RESERVE)");
     }
 
     so_uintval = 0;
@@ -352,20 +335,16 @@ ndPacketRing::ndPacketRing(const string &ifname,
     if (getsockopt(sd, SOL_PACKET, PACKET_RESERVE,
           (void *)&so_uintval, &so_vallen) < 0)
     {
-        nd_dprintf("%s: getsockopt(PACKET_RESERVE): %s\n",
-          ifname.c_str(), strerror(errno));
-        throw ndCaptureThreadException(
-          "error getting reserved VLAN TAG size");
+        throw ndExceptionSystemError(ifname.c_str(),
+          "getsockopt(PACKET_RESERVE)");
     }
 
     tp_reserved = (size_t)so_uintval;
     if (tp_reserved != sizeof(struct vlan_tag)) {
-        nd_dprintf(
-          "%s: PACKET_RESERVE: unexpected size: %lu != "
-          "%u\n",
+        throw ndException(
+          "%s: unexpected reserved VLAN TAG size (%lu != "
+          "%u)",
           ifname.c_str(), tp_reserved, sizeof(struct vlan_tag));
-        throw ndCaptureThreadException(
-          "unexpected reserved VLAN TAG size");
     }
 
     tp_req.tp_block_size = config.rb_block_size;
@@ -386,20 +365,17 @@ ndPacketRing::ndPacketRing(const string &ifname,
     if (setsockopt(sd, SOL_PACKET, PACKET_RX_RING,
           (const void *)&tp_req, sizeof(struct tpacket_req3)) < 0)
     {
-        nd_dprintf("%s: setsockopt(PACKET_RX_RING): %s\n",
+        throw ndException(
+          "%s: setsockopt(PACKET_RX_RING): %s",
           ifname.c_str(), strerror(errno));
-        throw ndCaptureThreadException(
-          "error requesting RX ring");
     }
 
     buffer = mmap(0, tp_req.tp_block_size * tp_req.tp_block_nr,
       PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED, sd, 0);
     if (buffer == MAP_FAILED) {
-        nd_dprintf("%s: mmap(%u): %s\n", ifname.c_str(),
+        throw ndException("%s: mmap(%u): %s", ifname.c_str(),
           tp_req.tp_block_size * tp_req.tp_block_nr,
           strerror(errno));
-        throw ndCaptureThreadException(
-          "error mapping RX ring");
     }
 
     for (unsigned b = 0; b < tp_req.tp_block_nr; b++) {
@@ -424,7 +400,7 @@ void ndPacketRing::SetFilter(const string &expr) {
 #ifdef HAVE_PCAP_OPEN_DEAD
     pcap_t *pcap = pcap_open_dead(DLT_EN10MB, ndGC.max_capture_length);
     if (pcap == nullptr) {
-        throw ndCaptureThreadException(
+        throw ndException(__PRETTY_FUNCTION__,
           "error creating PCAP context");
     }
     if (pcap_compile(pcap, &filter, expr.c_str(), 1,
@@ -435,7 +411,7 @@ void ndPacketRing::SetFilter(const string &expr) {
           &filter, expr.c_str(), 1, PCAP_NETMASK_UNKNOWN) == -1)
     {
 #endif
-        throw ndCaptureThreadException(
+        throw ndException(__PRETTY_FUNCTION__,
           "error compiling BPF filter");
     }
 

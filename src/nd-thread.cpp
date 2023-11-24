@@ -29,9 +29,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <cerrno>
 #include <csignal>
 #include <cstring>
 
+#include "nd-except.hpp"
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
@@ -44,14 +46,18 @@ static void *nd_thread_entry(void *param) {
     sigdelset(&signal_set, SIGPROF);
 
     try {
-        if (pthread_sigmask(SIG_BLOCK, &signal_set, NULL) != 0)
-            throw ndThreadException("pthread_sigmask");
+        int rc;
+        if ((rc = pthread_sigmask(SIG_BLOCK, &signal_set, NULL)) != 0)
+        {
+            throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+              "pthread_sigmask", rc);
+        }
 
         thread = reinterpret_cast<ndThread *>(param);
         thread->SetProcName();
         rv = thread->Entry();
     }
-    catch (exception &e) {
+    catch (ndException &e) {
         nd_printf("%s: Exception: %s\n",
           thread->GetTag().c_str(), e.what());
     }
@@ -68,16 +74,22 @@ ndThread::ndThread(const string &tag, long cpu, bool ipc)
 
     int rc;
 
-    if ((rc = pthread_attr_init(&attr)) != 0)
-        throw ndThreadException(strerror(rc));
+    if ((rc = pthread_attr_init(&attr)) != 0) {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_attr_init", rc);
+    }
 
-    if ((rc = pthread_mutex_init(&lock, NULL)) != 0)
-        throw ndThreadException(strerror(rc));
+    if ((rc = pthread_mutex_init(&lock, NULL)) != 0) {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_mutex_init", rc);
+    }
 
     if (ipc &&
       socketpair(AF_LOCAL, SOCK_STREAM | SOCK_NONBLOCK, 0, fd_ipc) < 0)
-        throw ndThreadSystemException(__PRETTY_FUNCTION__,
-          "socketpair", errno);
+    {
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "socketpair");
+    }
 
     if (cpu == -1) return;
 #if defined(HAVE_PTHREAD_ATTR_SETAFFINITY_NP)
@@ -116,38 +128,50 @@ void ndThread::SetProcName(void) {
 void ndThread::Create(void) {
     int rc;
 
-    if (id != 0)
-        throw ndThreadException(
-          "Thread previously created");
+    if (id != 0) {
+        throw ndException("%s: thread already constructed",
+          __PRETTY_FUNCTION__);
+    }
     if ((rc = pthread_create(&id, &attr, nd_thread_entry,
            static_cast<void *>(this))) != 0)
-        throw ndThreadException(strerror(rc));
+    {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_create", rc);
+    }
 }
 
 int ndThread::Join(void) {
-    int rc = -1;
-
     if (id == 0) {
-        nd_dprintf("%s: Thread ID invalid.\n", tag.c_str());
-        return rc;
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "thread ID", strerror(EINVAL));
     }
 
-    rc = pthread_join(id, NULL);
-    id = 0;
+    int rc;
+    if ((rc = pthread_join(id, NULL)) != 0) {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_join", rc);
+    }
 
-    return rc;
+    id = 0;
+    return 0;
 }
 
 void ndThread::Lock(void) {
     int rc = pthread_mutex_lock(&lock);
 
-    if (rc != 0) throw ndThreadException(strerror(rc));
+    if (rc != 0) {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_mutex_lock", rc);
+    }
 }
 
 void ndThread::Unlock(void) {
     int rc = pthread_mutex_unlock(&lock);
 
-    if (rc != 0) throw ndThreadException(strerror(rc));
+    if (rc != 0) {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_mutex_unlock", rc);
+    }
 }
 
 void ndThread::SendIPC(uint32_t id) {
@@ -157,9 +181,9 @@ void ndThread::SendIPC(uint32_t id) {
       sizeof(uint32_t), 0);
 
     if (bytes_wrote != sizeof(uint32_t)) {
-        nd_dprintf("%s: Failed to send IPC message: %s\n",
-          tag.c_str(), strerror(errno));
-        throw ndThreadException(strerror(errno));
+        throw ndException(
+          "%s: failed to send IPC message: %s", tag.c_str(),
+          strerror(errno));
     }
 }
 
@@ -171,10 +195,9 @@ uint32_t ndThread::RecvIPC(void) {
       sizeof(uint32_t), 0);
 
     if (bytes_read != sizeof(uint32_t)) {
-        nd_dprintf(
-          "%s: Failed to receive IPC message: %s\n",
+        throw ndException(
+          "%s: failed to receive IPC message: %s",
           tag.c_str(), strerror(errno));
-        throw ndThreadException(strerror(errno));
     }
 
     return id;

@@ -136,8 +136,8 @@ public:
 
     static inline ndInstance &GetInstance() {
         if (instance == nullptr) {
-            throw ndSystemException(__PRETTY_FUNCTION__,
-              "instance not found", ENOENT);
+            throw ndException("%s: instance not found",
+              __PRETTY_FUNCTION__);
         }
         return *instance;
     }

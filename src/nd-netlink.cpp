@@ -29,12 +29,12 @@
 #include <linux/rtnetlink.h>
 #include <net/if.h>
 
+#include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-netlink.hpp"
 
 ndNetlink::ndNetlink(void)
   : nd(-1), seq(0), sa{ 0 }, buffer{ 0 } {
-    int rc;
 
     sa.nl_family = AF_NETLINK;
     sa.nl_pid = getpid();
@@ -43,42 +43,32 @@ ndNetlink::ndNetlink(void)
 
     nd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
     if (nd < 0) {
-        rc = errno;
-        nd_printf("Error creating netlink socket: %s\n",
-          strerror(rc));
-        throw ndNetlinkException(strerror(rc));
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "socket");
     }
 
     if (::bind(nd, (struct sockaddr *)&sa,
           sizeof(struct sockaddr_nl)) < 0)
     {
-        rc = errno;
-        nd_printf("Error binding netlink socket: %s\n",
-          strerror(rc));
-        throw ndNetlinkException(strerror(rc));
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "bind");
     }
 
     if (fcntl(nd, F_SETOWN, getpid()) < 0) {
-        rc = errno;
-        nd_printf(
-          "Error setting netlink socket owner: %s\n", strerror(rc));
-        throw ndNetlinkException(strerror(errno));
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "fnctl(F_SETOWN)");
     }
 
     if (fcntl(nd, F_SETSIG, SIGIO) < 0) {
-        rc = errno;
-        nd_printf("Error setting netlink I/O signal: %s\n",
-          strerror(rc));
-        throw ndNetlinkException(strerror(errno));
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "fnctl(F_SETSIG)");
     }
 
     int flags = fcntl(nd, F_GETFL);
     if (fcntl(nd, F_SETFL, flags | O_ASYNC | O_NONBLOCK) < 0)
     {
-        rc = errno;
-        nd_printf(
-          "Error setting netlink socket flags: %s\n", strerror(rc));
-        throw ndNetlinkException(strerror(rc));
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "fnctl(F_SETFL)");
     }
 }
 
@@ -87,7 +77,6 @@ ndNetlink::~ndNetlink() {
 }
 
 void ndNetlink::Refresh(void) {
-    int rc;
     struct nlmsghdr *nlh;
 
     nlh = (struct nlmsghdr *)buffer;
@@ -99,10 +88,8 @@ void ndNetlink::Refresh(void) {
     nlh->nlmsg_seq = seq++;
 
     if (send(nd, nlh, nlh->nlmsg_len, 0) < 0) {
-        rc = errno;
-        nd_printf("Error refreshing interface routes: %s\n",
-          strerror(rc));
-        throw ndNetlinkException(strerror(rc));
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "send");
     }
 
     ProcessEvent();
@@ -116,11 +103,8 @@ void ndNetlink::Refresh(void) {
     nlh->nlmsg_seq = seq++;
 
     if (send(nd, nlh, nlh->nlmsg_len, 0) < 0) {
-        rc = errno;
-        nd_printf(
-          "Error refreshing interface addresses: %s\n",
-          strerror(rc));
-        throw ndNetlinkException(strerror(rc));
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "send");
     }
 
     ProcessEvent();

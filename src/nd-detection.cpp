@@ -23,6 +23,7 @@
 #endif
 
 #include "nd-detection.hpp"
+#include "nd-except.hpp"
 #include "nd-protos.hpp"
 #include "nd-risks.hpp"
 #include "nd-sha1.h"
@@ -77,11 +78,17 @@ ndDetectionThread::ndDetectionThread(int16_t cpu, const string &tag,
     pthread_condattr_init(&cond_attr);
     pthread_condattr_setclock(&cond_attr, CLOCK_MONOTONIC);
     if ((rc = pthread_cond_init(&pkt_queue_cond, &cond_attr)) != 0)
-        throw ndDetectionThreadException(strerror(rc));
+    {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_cond_init", rc);
+    }
     pthread_condattr_destroy(&cond_attr);
 
     if ((rc = pthread_mutex_init(&pkt_queue_cond_mutex, nullptr)) != 0)
-        throw ndDetectionThreadException(strerror(rc));
+    {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_mutex_init", rc);
+    }
 
     nd_dprintf("%s: detection thread created on CPU: %hu\n",
       tag.c_str(), cpu);
@@ -122,9 +129,6 @@ void ndDetectionThread::QueuePacket(nd_flow_ptr &flow,
     ndDetectionQueueEntry *entry = new ndDetectionQueueEntry(
       flow, packet, data, length);
 
-    if (entry == nullptr)
-        throw ndDetectionThreadException(strerror(ENOMEM));
-
     Lock();
 
     pkt_queue.push(entry);
@@ -132,8 +136,10 @@ void ndDetectionThread::QueuePacket(nd_flow_ptr &flow,
     Unlock();
 
     int rc;
-    if ((rc = pthread_cond_broadcast(&pkt_queue_cond)) != 0)
-        throw ndDetectionThreadException(strerror(rc));
+    if ((rc = pthread_cond_broadcast(&pkt_queue_cond)) != 0) {
+        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+          "pthread_cond_broadcast", rc);
+    }
 }
 
 void *ndDetectionThread::Entry(void) {
@@ -141,11 +147,16 @@ void *ndDetectionThread::Entry(void) {
 
     do {
         if ((rc = pthread_mutex_lock(&pkt_queue_cond_mutex)) != 0)
-            throw ndDetectionThreadException(strerror(rc));
+        {
+            throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+              "pthread_mutex_lock", rc);
+        }
 
         struct timespec ts_cond;
-        if (clock_gettime(CLOCK_MONOTONIC, &ts_cond) != 0)
-            throw ndDetectionThreadException(strerror(rc));
+        if (clock_gettime(CLOCK_MONOTONIC, &ts_cond) != 0) {
+            throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+              "clock_gettime");
+        }
 
         ts_cond.tv_sec += 1;
 
@@ -153,11 +164,15 @@ void *ndDetectionThread::Entry(void) {
                &pkt_queue_cond_mutex, &ts_cond)) != 0 &&
           rc != ETIMEDOUT)
         {
-            throw ndDetectionThreadException(strerror(rc));
+            throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+              "pthread_cond_timedwait", rc);
         }
 
         if ((rc = pthread_mutex_unlock(&pkt_queue_cond_mutex)) != 0)
-            throw ndDetectionThreadException(strerror(rc));
+        {
+            throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
+              "pthread_mutex_unlock", rc);
+        }
 
         ProcessPacketQueue();
     }
@@ -235,8 +250,10 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
 
         ndEFNF = (ndpi_flow_struct *)ndpi_malloc(
           sizeof(ndpi_flow_struct));
-        if (ndEFNF == nullptr)
-            throw ndDetectionThreadException(strerror(ENOMEM));
+        if (ndEFNF == nullptr) {
+            throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+              "ndpi_malloc");
+        }
 
         memset(ndEFNF, 0, sizeof(ndpi_flow_struct));
     }
