@@ -927,7 +927,8 @@ enum nd_capture_type ndGlobalConfig::LoadCaptureType(
     else if (capture_type == "nfqueue") ct = ndCT_NFQ;
 #endif
     else {
-        throw ndException("invalid capture type", capture_type);
+        throw ndException("invalid capture type: %s",
+          capture_type.c_str());
     }
 
     return ct;
