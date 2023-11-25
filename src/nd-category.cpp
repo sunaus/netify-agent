@@ -42,7 +42,7 @@ ndCategories::ndCategories()
 }
 
 ndCategories::~ndCategories() {
-    ResetNetworks(true);
+    ResetNetworks();
 }
 
 void ndCategories::ResetCategories(void) {
@@ -389,7 +389,7 @@ bool ndCategories::LoadDotDirectory(const string &path) {
     if (! nd_scan_dotd(path, files)) return true;
 
     ResetDomains();
-    ResetNetworks();
+    ResetNetworks(false);
 
     for (auto &it : files) {
         size_t p1 = it.find_first_of("-");

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+#!/bin/bash -x
 
 set -euo pipefail
 
+: ${OPTION_GDB:=disable}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
 : ${NETIFYD_OPTIONS:=-d --run-without-sources}
 : ${NETIFYD_CONF:=$(pwd)/netifyd.conf}
@@ -11,6 +13,7 @@ if [ -z "${NETIFYD_CONF}" -a -f netifyd.conf ]; then
 fi
 
 echo "Options:"
+echo " OPTION_GDB: ${OPTION_GDB}"
 echo " NETIFYD_PREFIX: ${NETIFYD_PREFIX}"
 echo " NETIFYD_OPTIONS: ${NETIFYD_OPTIONS}"
 
@@ -36,13 +39,22 @@ fi
 export LD_LIBRARY_PATH=$(dirname ${NETIFYD_SO})
 echo " LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}"
 
+ARGS="-c ${NETIFYD_CONF} ${NETIFYD_OPTIONS} $@"
+echo -e "Arguments:\n $ARGS"
+
 SUDO=$(which sudo)
 
 if [ -z "${SUDO}" ]; then
   echo "WARNING: sudo not found, running as current user."
-  exec ${NETIFYD_PREFIX}/usr/sbin/netifyd -c ${NETIFYD_CONF} ${NETIFYD_OPTIONS} "$@"
+  exec ${NETIFYD_PREFIX}/usr/sbin/netifyd "$ARGS"
 else
-  exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ${NETIFYD_PREFIX}/usr/sbin/netifyd -c ${NETIFYD_CONF} ${NETIFYD_OPTIONS} "$@"
+  if [ "${OPTION_GDB}" == "disable" ]; then
+    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+      ${NETIFYD_PREFIX}/usr/sbin/netifyd "$ARGS"
+  else
+    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+      gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+  fi
 fi
 
 exit 0
