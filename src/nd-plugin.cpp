@@ -700,12 +700,11 @@ void ndPluginManager::DumpVersions(ndPlugin::Type type) {
             if (version.empty())
                 version = "Error loading plugin!";
 
-            size_t w = strlen("proc-dev-discovery") + 2;
-
-            cerr << setw(w) << p.second->GetTag() << setw(0)
-                 << ": " << version << endl
-                 << setw(w) << " " << setw(0) << "  "
-                 << p.second->GetObjectName() << endl;
+            cerr
+              << " " << p.second->GetTag() << ": " << version << endl
+              << "    "
+              << p.second->GetPlugin()->GetConfiguration() << endl
+              << "    " << p.second->GetObjectName() << endl;
         }
     }
 }

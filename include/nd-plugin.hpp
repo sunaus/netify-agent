@@ -72,6 +72,10 @@ public:
 
     virtual void GetVersion(string &version) = 0;
 
+    inline const string &GetConfiguration(void) {
+        return conf_filename;
+    }
+
     template <class T>
     void GetStatus(T &output) const {
         switch (type) {
