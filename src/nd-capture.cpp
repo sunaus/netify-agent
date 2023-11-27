@@ -968,6 +968,7 @@ nd_process_ip:
                         else if (hdr_gtpv1->teid != nf->gtp.lower_teid)
                             nf->gtp.lower_teid = hdr_gtpv1->teid;
                         break;
+                    default: break;
                     }
                 }
             }
@@ -1078,6 +1079,7 @@ nd_process_ip:
             case ndFlow::ORIGIN_UPPER:
                 nf->gtp.upper_teid = hdr_gtpv1->teid;
                 break;
+            default: break;
             }
         }
 
@@ -1122,8 +1124,8 @@ nd_process_ip:
     nf->ts_last_seen = ts_pkt;
 
     if (nf->ip_protocol == IPPROTO_TCP) {
-        if (hdr_tcp->th_seq <= nf->tcp_last_seq) {
-            nf->tcp_last_seq = hdr_tcp->th_seq;
+        if (hdr_tcp->th_seq <= nf->tcp.last_seq) {
+            nf->tcp.last_seq = hdr_tcp->th_seq;
 #ifdef _ND_EXTENDED_STATS
             nf->stats.tcp_seq_errors++;
             // TODO: tcp_retrans detection
@@ -1133,7 +1135,7 @@ nd_process_ip:
 
         if ((hdr_tcp->th_flags & TH_FIN) &&
           (hdr_tcp->th_flags & TH_ACK))
-            nf->flags.tcp_fin_ack++;
+            nf->tcp.fin_ack++;
         if (hdr_tcp->th_flags & TH_RST) {
 #ifdef _ND_EXTENDED_STATS
             nf->stats.tcp_resets++;

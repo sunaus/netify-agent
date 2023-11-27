@@ -21,6 +21,7 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -44,16 +45,12 @@ public:
         total_packets(0), detection_packets(0)
 #ifdef _ND_EXTENDED_STATS
         ,
+        lower_rate_samples(ndGC.update_interval, 0),
+        upper_rate_samples(ndGC.update_interval, 0),
         lower_rate(0), upper_rate(0), tcp_seq_errors(0),
         tcp_resets(0), tcp_retrans(0)
 #endif
     {
-#ifdef _ND_EXTENDED_STATS
-        for (unsigned i = 0; i < ndGC.update_interval; i++) {
-            lower_rate_samples.push_back(0);
-            upper_rate_samples.push_back(0);
-        }
-#endif
     }
 
     ndFlowStats(const ndFlowStats &stats)
@@ -66,6 +63,8 @@ public:
         detection_packets(stats.detection_packets.load())
 #ifdef _ND_EXTENDED_STATS
         ,
+        lower_rate_samples(ndGC.update_interval, 0),
+        upper_rate_samples(ndGC.update_interval, 0),
         lower_rate(stats.lower_rate.load()),
         upper_rate(stats.upper_rate.load()),
         tcp_seq_errors(stats.tcp_seq_errors.load()),
@@ -73,12 +72,6 @@ public:
         tcp_retrans(stats.tcp_retrans.load())
 #endif
     {
-#ifdef _ND_EXTENDED_STATS
-        for (unsigned i = 0; i < ndGC.update_interval; i++) {
-            lower_rate_samples.push_back(0);
-            upper_rate_samples.push_back(0);
-        }
-#endif
     }
 
     inline ndFlowStats &operator=(const ndFlowStats &fs) {
@@ -105,10 +98,7 @@ public:
         lower_packets = 0;
         upper_packets = 0;
 #ifdef _ND_EXTENDED_STATS
-        for (unsigned i = 0; i < ndGC.update_interval; i++) {
-            lower_rate_samples[i] = 0;
-            upper_rate_samples[i] = 0;
-        }
+        lower_rate_samples.assign(ndGC.update_interval, 0);
         tcp_seq_errors = 0;
         tcp_resets = 0;
         tcp_retrans = 0;
@@ -147,12 +137,193 @@ public:
 class ndFlow : public ndSerializer
 {
 public:
+    nd_iface_ptr iface;
+
+    ndAddr lower_mac;
+    ndAddr upper_mac;
+
+    ndAddr lower_addr;
+    ndAddr upper_addr;
+
+    ndAddr::Type lower_type;
+    ndAddr::Type upper_type;
+
+    int direction;
+
+    uint8_t ip_version;
+    uint8_t ip_protocol;
+
+    uint16_t vlan_id;
+
+    uint64_t ts_first_seen;
+    atomic<uint64_t> ts_last_seen;
+
+    enum LowerMap {
+        LOWER_UNKNOWN = 0,
+        LOWER_LOCAL = 1,
+        LOWER_OTHER = 2
+    };
+
+    LowerMap lower_map;
+
+    enum OtherType {
+        OTHER_UNKNOWN = 0,
+        OTHER_UNSUPPORTED = 1,
+        OTHER_LOCAL = 2,
+        OTHER_MULTICAST = 3,
+        OTHER_BROADCAST = 4,
+        OTHER_REMOTE = 5,
+        OTHER_ERROR = 6
+    };
+
+    OtherType other_type;
+
+    enum TunnelType { TUNNEL_NONE = 0, TUNNEL_GTP = 1 };
+
+    TunnelType tunnel_type;
+
+    enum Origin {
+        ORIGIN_UNKNOWN,
+        ORIGIN_LOWER,
+        ORIGIN_UPPER,
+    };
+
+    Origin origin;
+
+    enum PrivacyMask {
+        PRIVATE_LOWER = 0x01,
+        PRIVATE_UPPER = 0x02
+    };
+
+    uint8_t privacy_mask;
+
+    enum AddrType {
+        TYPE_LOWER,
+        TYPE_UPPER,
+
+        TYPE_MAX
+    };
+
+    vector<uint8_t> digest_lower;
+    vector<uint8_t> digest_mdata;
+
+    struct {
+        atomic<bool> detection_complete;
+        atomic<bool> detection_guessed;
+        atomic<bool> detection_init;
+        atomic<bool> detection_updated;
+        atomic<bool> dhc_hit;
+        atomic<bool> fhc_hit;
+        atomic<bool> expired;
+        atomic<bool> expiring;
+        atomic<bool> ip_nat;
+        atomic<bool> soft_dissector;
+    } flags;
+
+    struct {
+        atomic<uint8_t> fin_ack;
+        atomic<uint32_t> last_seq;
+    } tcp;
+
+#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+    struct {
+        uint32_t id;
+        uint32_t mark;
+    } conntrack;
+#endif
+
+    struct {
+        uint8_t version;
+        uint8_t ip_version;
+        uint32_t lower_teid;
+        uint32_t upper_teid;
+        ndAddr::Type lower_type;
+        ndAddr::Type upper_type;
+        ndAddr lower_addr;
+        ndAddr upper_addr;
+        LowerMap lower_map;
+        OtherType other_type;
+    } gtp;
+
+    string dns_host_name;
+    string host_server_name;
+
+    nd_proto_id_t detected_protocol;
+    string detected_protocol_name;
+
+    nd_app_id_t detected_application;
+    string detected_application_name;
+
+    struct {
+        nd_cat_id_t application;
+        nd_cat_id_t protocol;
+        nd_cat_id_t domain;
+        nd_cat_id_t network;
+    } category;
+
+    struct {
+        string user_agent;
+        string url;
+    } http;
+
+    struct {
+        string fingerprint;
+        string class_ident;
+    } dhcp;
+
+    struct {
+        string client_agent;
+        string server_agent;
+    } ssh;
+
+    struct {
+        uint16_t version;
+        uint16_t cipher_suite;
+
+        string subject_dn;
+        string issuer_dn;
+        string server_cn;
+        string client_ja3;
+        string server_ja3;
+        vector<uint8_t> cert_fingerprint;
+        vector<string> alpn, alpn_server;
+    } tls;
+
+    struct {
+        bool tls;
+    } smtp;
+
+    struct {
+        vector<uint8_t> info_hash;
+    } bt;
+
+    struct {
+        string domain_name;
+    } mdns;
+
+    struct {
+        typedef set<nd_risk_id_t> Risks;
+        Risks risks;
+
+        uint16_t ndpi_score;
+        uint16_t ndpi_score_client;
+        uint16_t ndpi_score_server;
+    } risk;
+
+    ndFlowStats stats;
+
+    mutable recursive_mutex lock;
+
+    int16_t dpi_thread_id;
+
+    struct ndpi_flow_struct *ndpi_flow;
+
     ndFlow(nd_iface_ptr &iface);
     ndFlow(const ndFlow &flow);
     virtual ~ndFlow();
 
     void Hash(const string &device, bool hash_mdata = false,
-      const uint8_t *key = NULL, size_t key_length = 0);
+      const uint8_t *key = nullptr, size_t key_length = 0);
 
     void Reset(bool full_reset = false);
 
@@ -174,9 +345,6 @@ public:
     bool HasTLSServerJA3(void) const;
     bool HasBTInfoHash(void) const;
     bool HasSSDPUserAgent(void) const;
-#if 0
-    bool HasMiningVariant(void) const;
-#endif
     bool HasMDNSDomainName(void) const;
 
     enum PrintFlags {
@@ -196,7 +364,7 @@ public:
 
     void UpdateLowerMaps(void);
     void GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
-      uint8_t &lm, uint8_t &ot);
+      LowerMap &lm, OtherType &ot);
 
     enum EncodeFlags {
         ENCODE_NONE = 0x00,
@@ -209,6 +377,9 @@ public:
     template <class T>
     void Encode(T &output, const ndFlowStats &stats,
       uint8_t encode_includes = ENCODE_ALL) const {
+
+        lock_guard<recursive_mutex> lg(lock);
+
         string _other_type = "unknown";
         string _lower_mac = "local_mac",
                _upper_mac = "other_mac";
@@ -273,6 +444,7 @@ public:
             _upper_rate = "local_rate";
 #endif
             break;
+        default: break;
         }
 
         switch (other_type) {
@@ -288,6 +460,7 @@ public:
             _other_type = "unsupported";
             break;
         case OTHER_ERROR: _other_type = "error"; break;
+        default: break;
         }
 
         if (encode_includes & ENCODE_METADATA) {
@@ -432,10 +605,10 @@ public:
             {
                 char tohex[7];
 
-                sprintf(tohex, "0x%04hx", ssl.version);
+                sprintf(tohex, "0x%04hx", tls.version);
                 serialize(output, { "ssl", "version" }, tohex);
 
-                sprintf(tohex, "0x%04hx", ssl.cipher_suite);
+                sprintf(tohex, "0x%04hx", tls.cipher_suite);
                 serialize(output, { "ssl", "cipher_suite" }, tohex);
 
                 if (HasTLSClientSNI())
@@ -444,35 +617,35 @@ public:
 
                 if (HasTLSServerCN())
                     serialize(output,
-                      { "ssl", "server_cn" }, ssl.server_cn);
+                      { "ssl", "server_cn" }, tls.server_cn);
 
                 if (HasTLSIssuerDN())
                     serialize(output,
-                      { "ssl", "issuer_dn" }, ssl.issuer_dn);
+                      { "ssl", "issuer_dn" }, tls.issuer_dn);
 
                 if (HasTLSSubjectDN())
                     serialize(output,
-                      { "ssl", "subject_dn" }, ssl.subject_dn);
+                      { "ssl", "subject_dn" }, tls.subject_dn);
 
                 if (HasTLSClientJA3())
                     serialize(output,
-                      { "ssl", "client_ja3" }, ssl.client_ja3);
+                      { "ssl", "client_ja3" }, tls.client_ja3);
 
                 if (HasTLSServerJA3())
                     serialize(output,
-                      { "ssl", "server_ja3" }, ssl.server_ja3);
+                      { "ssl", "server_ja3" }, tls.server_ja3);
 
-                if (! ssl.cert_fingerprint.empty()) {
-                    nd_sha1_to_string(ssl.cert_fingerprint, digest);
+                if (! tls.cert_fingerprint.empty()) {
+                    nd_sha1_to_string(tls.cert_fingerprint, digest);
                     serialize(output,
                       { "ssl", "fingerprint" }, digest);
                 }
 
-                if (tls_alpn_set.load())
-                    serialize(output, { "ssl", "alpn" }, tls_alpn);
-                if (tls_alpn_server_set.load())
+                if (! tls.alpn.empty())
+                    serialize(output, { "ssl", "alpn" }, tls.alpn);
+                if (! tls.alpn_server.empty())
                     serialize(output,
-                      { "ssl", "alpn_server" }, tls_alpn_server);
+                      { "ssl", "alpn_server" }, tls.alpn_server);
             }
 
             if (HasBTInfoHash()) {
@@ -496,15 +669,15 @@ public:
 
             serialize(output, { "first_seen_at" }, ts_first_seen);
 
-            serialize(output, { "risks", "risks" }, risks);
+            serialize(output, { "risks", "risks" }, risk.risks);
             serialize(output, { "risks", "ndpi_risk_score" },
-              ndpi_risk_score);
+              risk.ndpi_score);
             serialize(output,
               { "risks", "ndpi_risk_score_client" },
-              ndpi_risk_score_client);
+              risk.ndpi_score_client);
             serialize(output,
               { "risks", "ndpi_risk_score_server" },
-              ndpi_risk_score_server);
+              risk.ndpi_score_server);
         }
 
         if (encode_includes & ENCODE_TUNNELS) {
@@ -530,6 +703,7 @@ public:
                     _upper_port = "local_port";
                     _upper_teid = "local_teid";
                     break;
+                default: break;
                 }
 
                 switch (gtp.other_type) {
@@ -565,6 +739,7 @@ public:
                   _other_type);
 
                 break;
+            default: break;
             }
         }
 
@@ -602,183 +777,6 @@ public:
 #endif
         }
     }
-
-    nd_iface_ptr iface;
-
-    int16_t dpi_thread_id;
-
-    uint8_t ip_version;
-    uint8_t ip_protocol;
-
-    uint16_t vlan_id;
-
-    uint32_t tcp_last_seq;
-
-    uint64_t ts_first_seen;
-    atomic<uint64_t> ts_last_seen;
-
-    enum {
-        LOWER_UNKNOWN = 0x00,
-        LOWER_LOCAL = 0x01,
-        LOWER_OTHER = 0x02
-    };
-
-    uint8_t lower_map;
-
-    enum {
-        OTHER_UNKNOWN = 0x00,
-        OTHER_UNSUPPORTED = 0x01,
-        OTHER_LOCAL = 0x02,
-        OTHER_MULTICAST = 0x03,
-        OTHER_BROADCAST = 0x04,
-        OTHER_REMOTE = 0x05,
-        OTHER_ERROR = 0x06
-    };
-
-    uint8_t other_type;
-
-    ndAddr lower_mac;
-    ndAddr upper_mac;
-
-    ndAddr lower_addr;
-    ndAddr upper_addr;
-
-    enum { TUNNEL_NONE = 0x00, TUNNEL_GTP = 0x01 };
-
-    uint8_t tunnel_type;
-
-    nd_proto_id_t detected_protocol;
-    nd_app_id_t detected_application;
-
-    string detected_protocol_name;
-    string detected_application_name;
-
-    struct {
-        nd_cat_id_t application;
-        nd_cat_id_t protocol;
-        nd_cat_id_t domain;
-        nd_cat_id_t network;
-    } category;
-
-    struct ndpi_flow_struct *ndpi_flow;
-
-    vector<uint8_t> digest_lower;
-    vector<uint8_t> digest_mdata;
-
-    string dns_host_name;
-    string host_server_name;
-
-    struct {
-        string user_agent;
-        string url;
-    } http;
-
-    struct {
-        string fingerprint;
-        string class_ident;
-    } dhcp;
-
-    struct {
-        string client_agent;
-        string server_agent;
-    } ssh;
-
-    struct {
-        uint16_t version;
-        uint16_t cipher_suite;
-
-        string subject_dn;
-        string issuer_dn;
-        string server_cn;
-        string client_ja3;
-        string server_ja3;
-        vector<uint8_t> cert_fingerprint;
-    } ssl;
-
-    struct {
-        bool tls;
-    } smtp;
-
-    struct {
-        vector<uint8_t> info_hash;
-    } bt;
-
-    struct {
-        string domain_name;
-    } mdns;
-
-    vector<string> tls_alpn, tls_alpn_server;
-    atomic<bool> tls_alpn_set, tls_alpn_server_set;
-
-    enum {
-        TYPE_LOWER,
-        TYPE_UPPER,
-
-        TYPE_MAX
-    };
-
-    enum { PRIVATE_LOWER = 0x01, PRIVATE_UPPER = 0x02 };
-
-    uint8_t privacy_mask;
-
-    // Indicate flow origin.  This indicates which side sent
-    // the first packet.
-    // XXX: If the service has missed a flow's initial
-    // packets, the origin's accuracy would be 50%.
-    enum {
-        ORIGIN_UNKNOWN = 0x00,
-        ORIGIN_LOWER = 0x01,
-        ORIGIN_UPPER = 0x02
-    };
-
-    uint8_t origin;
-
-    int direction;
-
-    // Start of conditional members.  These must be at the end
-    // or else access from plugins compiled without various
-    // options will have incorrect addresses
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-    uint32_t ct_id;
-    uint32_t ct_mark;
-#endif
-    ndAddr::Type lower_type;
-    ndAddr::Type upper_type;
-
-    struct {
-        atomic<bool> detection_complete;
-        atomic<bool> detection_guessed;
-        atomic<bool> detection_init;
-        atomic<bool> detection_updated;
-        atomic<bool> dhc_hit;
-        atomic<bool> fhc_hit;
-        atomic<bool> expired;
-        atomic<bool> expiring;
-        atomic<bool> ip_nat;
-        atomic<bool> risks_checked;
-        atomic<bool> soft_dissector;
-        atomic<uint8_t> tcp_fin_ack;
-    } flags;
-
-    struct {
-        uint8_t version;
-        uint8_t ip_version;
-        uint32_t lower_teid;
-        uint32_t upper_teid;
-        ndAddr::Type lower_type;
-        ndAddr::Type upper_type;
-        ndAddr lower_addr;
-        ndAddr upper_addr;
-        uint8_t lower_map;
-        uint8_t other_type;
-    } gtp;
-
-    set<nd_risk_id_t> risks;
-    uint16_t ndpi_risk_score;
-    uint16_t ndpi_risk_score_client;
-    uint16_t ndpi_risk_score_server;
-
-    ndFlowStats stats;
 };
 
 typedef shared_ptr<ndFlow> nd_flow_ptr;

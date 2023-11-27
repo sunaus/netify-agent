@@ -2363,7 +2363,7 @@ void ndInstance::ProcessFlows(void) {
             if (i->second->flags.expired.load() == false) {
                 time_t ttl = ((i->second->ip_protocol != IPPROTO_TCP) ?
                     ndGC.ttl_idle_flow :
-                    ((i->second->flags.tcp_fin_ack.load()) ?
+                    ((i->second->tcp.fin_ack.load()) ?
                         ndGC.ttl_idle_flow :
                         ndGC.ttl_idle_tcp_flow));
 

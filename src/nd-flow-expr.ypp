@@ -23,6 +23,8 @@
 #include "config.h"
 #endif
 
+#include <mutex>
+
 #include <radix/radix_tree.hpp>
 
 #include "nd-flow-parser.hpp"
@@ -149,7 +151,7 @@ typedef void* yyscan_t;
 %type <bool_result> expr_local_port expr_other_port
 %type <bool_result> expr_tunnel_type expr_detection_guessed expr_detection_updated
 %type <bool_result> expr_category
-%type <bool_result> expr_risks expr_ndpi_risk_score expr_ndpi_risk_score_client expr_ndpi_risk_score_server
+%type <bool_result> expr_risks expr_risk_ndpi_score expr_risk_ndpi_score_client expr_risk_ndpi_score_server
 %type <bool_result> expr_app expr_app_id expr_app_name expr_app_category
 %type <bool_result> expr_domain_category expr_network_category
 %type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category
@@ -180,9 +182,9 @@ expr:
     | expr_detection_updated
     | expr_category
     | expr_risks
-    | expr_ndpi_risk_score
-    | expr_ndpi_risk_score_client
-    | expr_ndpi_risk_score_server
+    | expr_risk_ndpi_score
+    | expr_risk_ndpi_score_client
+    | expr_risk_ndpi_score_server
     | expr_app
     | expr_app_category
     | expr_domain_category
@@ -581,12 +583,12 @@ expr_tunnel_type:
         switch ($3) {
         case _NDFP_TUNNEL_NONE:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::TUNNEL_NONE
+                _NDFP_flow->tunnel_type == ndFlow::TUNNEL_NONE
             );
             break;
         case _NDFP_TUNNEL_GTP:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::TUNNEL_GTP
+                _NDFP_flow->tunnel_type == ndFlow::TUNNEL_GTP
             );
             break;
         default:
@@ -600,12 +602,12 @@ expr_tunnel_type:
         switch ($3) {
         case _NDFP_TUNNEL_NONE:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::TUNNEL_NONE
+                _NDFP_flow->tunnel_type != ndFlow::TUNNEL_NONE
             );
             break;
         case _NDFP_TUNNEL_GTP:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::TUNNEL_GTP
+                _NDFP_flow->tunnel_type != ndFlow::TUNNEL_GTP
             );
             break;
         default:
@@ -876,11 +878,11 @@ expr_category:
 
 expr_risks:
       FLOW_RISKS {
-        _NDFP_result = ($$ = (_NDFP_flow->risks.size() != 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.risks.size() != 0));
         _NDFP_debugf("Risks detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_RISKS {
-        _NDFP_result = ($$ = (_NDFP_flow->risks.size() == 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.risks.size() == 0));
         _NDFP_debugf("Risks not detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_RISKS CMP_EQUAL VALUE_NAME {
@@ -893,7 +895,7 @@ expr_risks:
         nd_risk_id_t id = nd_risk_lookup(risk);
 
         _NDFP_result = false;
-        for (auto &i : _NDFP_flow->risks) {
+        for (auto &i : _NDFP_flow->risk.risks) {
             if (i != id) continue;
             _NDFP_result = true;
             break;
@@ -911,7 +913,7 @@ expr_risks:
         nd_risk_id_t id = nd_risk_lookup(risk);
 
         _NDFP_result = false;
-        for (auto &i : _NDFP_flow->risks) {
+        for (auto &i : _NDFP_flow->risk.risks) {
             if (i != id) continue;
             _NDFP_result = true;
             break;
@@ -922,107 +924,107 @@ expr_risks:
     }
     ;
 
-expr_ndpi_risk_score:
+expr_risk_ndpi_score:
       FLOW_NDPI_RISK_SCORE {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score != 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score != 0));
         _NDFP_debugf("nDPI risk score is true? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_NDPI_RISK_SCORE {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score == 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score == 0));
         _NDFP_debugf("nDPI risk score is false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE CMP_EQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score == $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score == $3));
         _NDFP_debugf("nDPI risk score == %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE CMP_NOTEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score != $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score != $3));
         _NDFP_debugf("nDPI risk score != %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE CMP_GTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score >= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score >= $3));
         _NDFP_debugf("nDPI risk score >= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE CMP_LTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score <= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score <= $3));
         _NDFP_debugf("nDPI risk score <= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE '>' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score > $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score > $3));
         _NDFP_debugf("nDPI risk score > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE '<' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score < $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score < $3));
         _NDFP_debugf("nDPI risk score > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
-expr_ndpi_risk_score_client:
+expr_risk_ndpi_score_client:
       FLOW_NDPI_RISK_SCORE_CLIENT {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client != 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client != 0));
         _NDFP_debugf("nDPI risk client score is true? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_NDPI_RISK_SCORE_CLIENT {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client == 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client == 0));
         _NDFP_debugf("nDPI risk client score is false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_CLIENT CMP_EQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client == $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client == $3));
         _NDFP_debugf("nDPI risk client score == %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_CLIENT CMP_NOTEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client != $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client != $3));
         _NDFP_debugf("nDPI risk client score != %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_CLIENT CMP_GTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client >= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client >= $3));
         _NDFP_debugf("nDPI risk client score >= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_CLIENT CMP_LTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client <= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client <= $3));
         _NDFP_debugf("nDPI risk client score <= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_CLIENT '>' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client > $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client > $3));
         _NDFP_debugf("nDPI risk client score > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_CLIENT '<' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_client < $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_client < $3));
         _NDFP_debugf("nDPI risk client score > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
-expr_ndpi_risk_score_server:
+expr_risk_ndpi_score_server:
       FLOW_NDPI_RISK_SCORE_SERVER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server != 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server != 0));
         _NDFP_debugf("nDPI risk server score is true? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_NDPI_RISK_SCORE_SERVER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server == 0));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server == 0));
         _NDFP_debugf("nDPI risk server score is false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_SERVER CMP_EQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server == $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server == $3));
         _NDFP_debugf("nDPI risk server score == %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_SERVER CMP_NOTEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server != $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server != $3));
         _NDFP_debugf("nDPI risk server score != %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_SERVER CMP_GTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server >= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server >= $3));
         _NDFP_debugf("nDPI risk server score >= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_SERVER CMP_LTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server <= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server <= $3));
         _NDFP_debugf("nDPI risk server score <= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_SERVER '>' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server > $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server > $3));
         _NDFP_debugf("nDPI risk server score > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NDPI_RISK_SCORE_SERVER '<' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ndpi_risk_score_server < $3));
+        _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server < $3));
         _NDFP_debugf("nDPI risk server score > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -1405,70 +1407,70 @@ expr_fwmark:
 
 expr_ssl_version:
       FLOW_SSL_VERSION {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version != 0));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version != 0));
         _NDFP_debugf("SSL version set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_SSL_VERSION {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version == 0));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version == 0));
         _NDFP_debugf("SSL version not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_VERSION CMP_EQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version == $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version == $3));
         _NDFP_debugf("SSL version == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_VERSION CMP_NOTEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version != $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version != $3));
         _NDFP_debugf("SSL version != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_VERSION CMP_GTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version >= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version >= $3));
         _NDFP_debugf("SSL version >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_VERSION CMP_LTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version <= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version <= $3));
         _NDFP_debugf("SSL version <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_VERSION '>' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version > $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version > $3));
         _NDFP_debugf("SSL version > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_VERSION '<' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.version < $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.version < $3));
         _NDFP_debugf("SSL version < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
 expr_ssl_cipher:
       FLOW_SSL_CIPHER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite != 0));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite != 0));
         _NDFP_debugf("SSL cipher suite set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_SSL_CIPHER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite == 0));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite == 0));
         _NDFP_debugf("SSL cipher suite not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_CIPHER CMP_EQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite == $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite == $3));
         _NDFP_debugf("SSL cipher suite == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_CIPHER CMP_NOTEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite != $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite != $3));
         _NDFP_debugf("SSL cipher suite != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_CIPHER CMP_GTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite >= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite >= $3));
         _NDFP_debugf("SSL cipher suite >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_CIPHER CMP_LTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite <= $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite <= $3));
         _NDFP_debugf("SSL cipher suite <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_CIPHER '>' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite > $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite > $3));
         _NDFP_debugf("SSL cipher suite > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SSL_CIPHER '<' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->ssl.cipher_suite < $3));
+        _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite < $3));
         _NDFP_debugf("SSL cipher suite < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -1522,6 +1524,8 @@ bool ndFlowParser::Parse(nd_flow_ptr const& flow, const string &expr)
 {
     this->flow = flow;
     expr_result = false;
+
+    lock_guard<recursive_mutex> lg(flow->lock);
 
     switch (flow->lower_map) {
     case ndFlow::LOWER_LOCAL:

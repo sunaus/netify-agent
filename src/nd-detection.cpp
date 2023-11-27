@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include <mutex>
+
 #include "nd-detection.hpp"
 #include "nd-except.hpp"
 #include "nd-protos.hpp"
@@ -262,6 +264,8 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
       ndEFNF, entry->data, entry->length,
       ndEF->ts_last_seen.load(), nullptr);
 
+    lock_guard<recursive_mutex> lg(ndEF->lock);
+
     if (ndpi_rc.master_protocol == NDPI_PROTOCOL_STUN &&
       ndpi_rc.app_protocol != NDPI_PROTOCOL_UNKNOWN)
     {
@@ -343,19 +347,19 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         switch (ndEF->GetMasterProtocol()) {
         case ND_PROTO_TLS:
         case ND_PROTO_QUIC:
-            if (ndEF->ssl.cipher_suite == 0 &&
+            if (ndEF->tls.cipher_suite == 0 &&
               ndEFNFP.tls_quic.server_cipher != 0)
             {
-                ndEF->ssl.cipher_suite = ndEFNFP.tls_quic.server_cipher;
+                ndEF->tls.cipher_suite = ndEFNFP.tls_quic.server_cipher;
 
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.server_cn.empty() &&
+            if (ndEF->tls.server_cn.empty() &&
               ndEFNFP.tls_quic.serverCN != nullptr)
             {
-                nd_set_hostname(ndEF->ssl.server_cn,
+                nd_set_hostname(ndEF->tls.server_cn,
                   ndEFNFP.tls_quic.serverCN,
                   ND_FLOW_TLS_CNLEN);
 
@@ -365,16 +369,16 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 // Detect application by server CN if still
                 // unknown.
                 SetDetectedApplication(entry,
-                  ndi.apps.Find(ndEF->ssl.server_cn));
+                  ndi.apps.Find(ndEF->tls.server_cn));
 
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.issuer_dn.empty() &&
+            if (ndEF->tls.issuer_dn.empty() &&
               ndEFNFP.tls_quic.issuerDN != nullptr)
             {
-                ndEF->ssl.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
+                ndEF->tls.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
 
                 free(ndEFNFP.tls_quic.issuerDN);
                 ndEFNFP.tls_quic.issuerDN = nullptr;
@@ -383,10 +387,10 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.subject_dn.empty() &&
+            if (ndEF->tls.subject_dn.empty() &&
               ndEFNFP.tls_quic.subjectDN != nullptr)
             {
-                ndEF->ssl.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
+                ndEF->tls.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
 
                 free(ndEFNFP.tls_quic.subjectDN);
                 ndEFNFP.tls_quic.subjectDN = nullptr;
@@ -395,22 +399,22 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.server_ja3.empty() &&
+            if (ndEF->tls.server_ja3.empty() &&
               ndEFNFP.tls_quic.ja3_server[0] != '\0')
             {
-                ndEF->ssl.server_ja3.assign(
+                ndEF->tls.server_ja3.assign(
                   ndEFNFP.tls_quic.ja3_server);
 
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
             }
 
-            if (ndEF->ssl.cert_fingerprint.empty() &&
+            if (ndEF->tls.cert_fingerprint.empty() &&
               ndEFNFP.tls_quic.fingerprint_set)
             {
-                ndEF->ssl.cert_fingerprint.reserve(SHA1_DIGEST_LENGTH);
-                ndEF->ssl.cert_fingerprint.resize(SHA1_DIGEST_LENGTH);
-                memcpy(&ndEF->ssl.cert_fingerprint[0],
+                ndEF->tls.cert_fingerprint.reserve(SHA1_DIGEST_LENGTH);
+                ndEF->tls.cert_fingerprint.resize(SHA1_DIGEST_LENGTH);
+                memcpy(&ndEF->tls.cert_fingerprint[0],
                   ndEFNFP.tls_quic.sha1_certificate_fingerprint,
                   SHA1_DIGEST_LENGTH);
 
@@ -520,22 +524,20 @@ bool ndDetectionThread::ProcessALPN(
     //        tag.c_str(), (client) ? "client" : "server",
     //        detected_alpn);
 
-    if (client && ! ndEF->tls_alpn_set.load()) {
+    if (client && ndEF->tls.alpn.empty()) {
         stringstream ss(detected_alpn);
 
         while (ss.good()) {
             string alpn;
             getline(ss, alpn, ',');
 
-            ndEF->tls_alpn.push_back(alpn);
+            ndEF->tls.alpn.push_back(alpn);
         }
 
-        flow_update = (ndEF->tls_alpn.size() > 0);
-        ndEF->tls_alpn_set = flow_update;
+        flow_update = (! ndEF->tls.alpn.empty());
     }
-    else if (! ndEF->tls_alpn_server_set.load()) {
-        ndEF->tls_alpn_server.push_back(detected_alpn);
-        ndEF->tls_alpn_server_set = true;
+    else if (ndEF->tls.alpn_server.empty()) {
+        ndEF->tls.alpn_server.push_back(detected_alpn);
 
         auto alpn = nd_alpn_protos.find(detected_alpn);
         if (alpn != nd_alpn_protos.end() &&
@@ -563,6 +565,9 @@ bool ndDetectionThread::ProcessALPN(
 }
 
 void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
+
+    lock_guard<recursive_mutex> lg(ndEF->lock);
+
     ndi.addr_types.Classify(ndEF->lower_type, ndEF->lower_addr);
     ndi.addr_types.Classify(ndEF->upper_type, ndEF->upper_addr);
 
@@ -737,13 +742,13 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     switch (ndEF->GetMasterProtocol()) {
     case ND_PROTO_TLS:
     case ND_PROTO_QUIC:
-        ndEF->ssl.version = ndEFNFP.tls_quic.ssl_version;
-        ndEF->ssl.cipher_suite = ndEFNFP.tls_quic.server_cipher;
+        ndEF->tls.version = ndEFNFP.tls_quic.ssl_version;
+        ndEF->tls.cipher_suite = ndEFNFP.tls_quic.server_cipher;
 
-        if (ndEF->ssl.server_cn.empty() &&
+        if (ndEF->tls.server_cn.empty() &&
           ndEFNFP.tls_quic.serverCN != nullptr)
         {
-            nd_set_hostname(ndEF->ssl.server_cn,
+            nd_set_hostname(ndEF->tls.server_cn,
               ndEFNFP.tls_quic.serverCN,
               ND_FLOW_TLS_CNLEN);
 
@@ -753,22 +758,22 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
             // Detect application by server CN if still unknown.
             if (ndEF->detected_application == ND_APP_UNKNOWN)
                 SetDetectedApplication(entry,
-                  ndi.apps.Find(ndEF->ssl.server_cn));
+                  ndi.apps.Find(ndEF->tls.server_cn));
         }
 
         if (ndEFNFP.tls_quic.issuerDN != nullptr) {
-            ndEF->ssl.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
+            ndEF->tls.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
 
-            nd_trim(ndEF->ssl.issuer_dn);
+            nd_trim(ndEF->tls.issuer_dn);
 
             free(ndEFNFP.tls_quic.issuerDN);
             ndEFNFP.tls_quic.issuerDN = nullptr;
         }
 
         if (ndEFNFP.tls_quic.subjectDN != nullptr) {
-            ndEF->ssl.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
+            ndEF->tls.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
 
-            nd_trim(ndEF->ssl.subject_dn);
+            nd_trim(ndEF->tls.subject_dn);
 
             free(ndEFNFP.tls_quic.subjectDN);
             ndEFNFP.tls_quic.subjectDN = nullptr;
@@ -810,8 +815,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         break;
     case ND_PROTO_BITTORRENT:
         if (ndEFNFP.bittorrent.hash[0] != '\0') {
-            ndEF->bt.info_hash.reserve(SHA1_DIGEST_LENGTH);
-            ndEF->bt.info_hash.resize(SHA1_DIGEST_LENGTH);
+            ndEF->bt.info_hash.assign(SHA1_DIGEST_LENGTH, 0);
             memcpy(&ndEF->bt.info_hash[0],
               ndEFNFP.bittorrent.hash, SHA1_DIGEST_LENGTH);
         }
@@ -995,16 +999,14 @@ void ndDetectionThread::ProcessRisks(ndDetectionQueueEntry *entry) {
     if (ndEFNF->risk != NDPI_NO_RISK) {
         for (unsigned i = 0; i < NDPI_MAX_RISK; i++) {
             if (NDPI_ISSET_BIT(ndEFNF->risk, i) != 0) {
-                ndEF->risks.insert(nd_ndpi_risk_find(i));
+                ndEF->risk.risks.insert(nd_ndpi_risk_find(i));
             }
         }
 
-        ndEF->ndpi_risk_score = ndpi_risk2score(ndEFNF->risk,
-          &ndEF->ndpi_risk_score_client,
-          &ndEF->ndpi_risk_score_server);
+        ndEF->risk.ndpi_score = ndpi_risk2score(ndEFNF->risk,
+          &ndEF->risk.ndpi_score_client,
+          &ndEF->risk.ndpi_score_server);
     }
-
-    ndEF->flags.risks_checked = true;
 }
 
 void ndDetectionThread::SetDetectedApplication(
@@ -1040,11 +1042,13 @@ void ndDetectionThread::SetGuessedProtocol(
 void ndDetectionThread::SetDetectionComplete(
   ndDetectionQueueEntry *entry) {
 
+    lock_guard<recursive_mutex> lg(ndEF->lock);
+
     if (ndEF->flags.detection_complete.load()) return;
 
+    ProcessRisks(entry);
+
     ndEF->flags.detection_complete = true;
-    if (ndEF->flags.risks_checked.load() == false)
-        ProcessRisks(entry);
 
     FlowUpdate(entry);
 }

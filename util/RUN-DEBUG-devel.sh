@@ -4,6 +4,7 @@
 set -euo pipefail
 
 : ${OPTION_GDB:=disable}
+: ${OPTION_VALGRIND:=disable}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
 : ${NETIFYD_OPTIONS:=-d --run-without-sources}
 : ${NETIFYD_CONF:=$(pwd)/netifyd.conf}
@@ -14,6 +15,7 @@ fi
 
 echo "Options:"
 echo " OPTION_GDB: ${OPTION_GDB}"
+echo " OPTION_VALGRIND: ${OPTION_VALGRIND}"
 echo " NETIFYD_PREFIX: ${NETIFYD_PREFIX}"
 echo " NETIFYD_OPTIONS: ${NETIFYD_OPTIONS}"
 
@@ -46,14 +48,18 @@ SUDO=$(which sudo)
 
 if [ -z "${SUDO}" ]; then
   echo "WARNING: sudo not found, running as current user."
-  exec ${NETIFYD_PREFIX}/usr/sbin/netifyd "$ARGS"
+  exec ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
 else
-  if [ "${OPTION_GDB}" == "disable" ]; then
-    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      ${NETIFYD_PREFIX}/usr/sbin/netifyd "$ARGS"
-  else
+  if [ "${OPTION_GDB}" == "enable" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+  elif [ "${OPTION_VALGRIND}" != "disable" ]; then
+    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+      valgrind --tool=${OPTION_VALGRIND} --vgdb=yes --track-origins=yes \
+        --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+  else
+    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+      ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
   fi
 fi
 
