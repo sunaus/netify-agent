@@ -302,12 +302,12 @@ public:
     } mdns;
 
     struct {
-        typedef set<nd_risk_id_t> Risks;
-        Risks risks;
-
         uint16_t ndpi_score;
         uint16_t ndpi_score_client;
         uint16_t ndpi_score_server;
+
+        typedef set<nd_risk_id_t> Risks;
+        Risks risks;
     } risk;
 
     ndFlowStats stats;

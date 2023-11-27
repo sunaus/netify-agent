@@ -71,7 +71,7 @@ ndFlow::ndFlow(nd_iface_ptr &iface)
     gtp{}, detected_protocol(ND_PROTO_UNKNOWN),
     detected_protocol_name("Unknown"),
     detected_application(ND_APP_UNKNOWN), category{ 0 },
-    tls{ .version = 0, .cipher_suite = 0 }, smtp{ .tls = false },
+    tls{ .version = 0, .cipher_suite = 0 }, smtp{ 0 },
     risk{ .ndpi_score = 0, .ndpi_score_client = 0, .ndpi_score_server = 0 },
     dpi_thread_id(-1), ndpi_flow(nullptr) {
 
