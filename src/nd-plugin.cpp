@@ -23,6 +23,7 @@
 #endif
 
 #include <dlfcn.h>
+#include <iostream>
 
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
@@ -696,11 +697,15 @@ void ndPluginManager::DumpVersions(ndPlugin::Type type) {
         for (auto &p : *mp) {
             string version;
             p.second->GetPlugin()->GetVersion(version);
+            if (version.empty())
+                version = "Error loading plugin!";
 
-            fprintf(stderr, "%16s: %s: v%s\n",
-              p.second->GetTag().c_str(),
-              p.second->GetObjectName().c_str(),
-              (version.empty()) ? "?.?.?" : version.c_str());
+            size_t w = strlen("proc-dev-discovery") + 2;
+
+            cerr << setw(w) << p.second->GetTag() << setw(0)
+                 << ": " << version << endl
+                 << setw(w) << " " << setw(0) << "  "
+                 << p.second->GetObjectName() << endl;
         }
     }
 }
