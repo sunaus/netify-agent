@@ -7,10 +7,10 @@ set -euo pipefail
 : ${OPTION_VALGRIND:=disable}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
 : ${NETIFYD_OPTIONS:=-d --run-without-sources}
-: ${NETIFYD_CONF:=$(pwd)/netifyd.conf}
+: ${NETIFYD_CONF:=$(pwd)/netifyd-debug.conf}
 
-if [ -z "${NETIFYD_CONF}" -a -f netifyd.conf ]; then
-  NETIFYD_CONF="$(pwd)/netifyd.conf"
+if [ -z "${NETIFYD_CONF}" -a -f netifyd-debug.conf ]; then
+  NETIFYD_CONF="$(pwd)/netifyd-debug.conf"
 fi
 
 echo "Options:"
