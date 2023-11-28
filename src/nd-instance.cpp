@@ -916,13 +916,13 @@ void ndInstance::CommandLineHelp(bool version_only) {
         try {
             plugins.Load(ndPlugin::TYPE_BASE, false);
 
-            if (ndGC.plugin_processors.size()) {
-                fprintf(stderr, "\nProcessor plugins:\n");
+            if (! ndGC.plugin_processors.empty()) {
+                fprintf(stderr, "\nProcessor plugins:\n\n");
                 plugins.DumpVersions(ndPlugin::TYPE_PROC);
             }
 
-            if (ndGC.plugin_sinks.size()) {
-                fprintf(stderr, "\nSink plugins:\n");
+            if (! ndGC.plugin_sinks.empty()) {
+                fprintf(stderr, "\nSink plugins:\n\n");
                 plugins.DumpVersions(ndPlugin::TYPE_SINK);
             }
         }

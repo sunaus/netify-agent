@@ -47,7 +47,7 @@ echo -e "Arguments:\n $ARGS"
 SUDO=$(which sudo)
 
 if [ -z "${SUDO}" ]; then
-  echo "WARNING: sudo not found, running as current user."
+  echo "WARNING: sudo not found, running as: ${USER}"
   exec ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
 else
   if [ "${OPTION_GDB}" == "enable" ]; then
