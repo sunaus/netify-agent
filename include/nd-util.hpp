@@ -101,7 +101,9 @@ public:
             (streambuf *)new ndDebugLogBuffer :
             ((type == DLT_UNLOCKED) ?
                 (streambuf *)new ndDebugLogBufferUnlocked :
-                (streambuf *)new ndDebugLogBufferFlow)) { }
+                (streambuf *)new ndDebugLogBufferFlow)) {
+        imbue(locale());
+    }
 
     virtual ~ndDebugLogStream() { delete rdbuf(); }
 };

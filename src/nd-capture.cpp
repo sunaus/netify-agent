@@ -22,6 +22,9 @@
 #include "config.h"
 #endif
 
+#include <cstddef>
+#include <mutex>
+
 #if defined(__FreeBSD__)
 // XXX: Needed for u_char.  Must be included before
 // net/ethernet.h below
@@ -71,7 +74,6 @@
 #if defined(__linux__)
 #define _ND_ADDROFF(ptr, typeof, member) &ptr->member
 #elif defined(__FreeBSD__)
-#include <cstddef>
 // XXX: FreeBSD network structures such as 'struct ip' are
 // packed.  Eliminate unaligned address warnings.
 #define _ND_ADDROFF(ptr, typeof, member) \
@@ -251,17 +253,17 @@ const ndPacket *
 ndCaptureThread::ProcessPacket(const ndPacket *packet) {
     nd_flow_ptr nf;
 
-    const struct ether_header *hdr_eth = NULL;
-    const struct sll_header *hdr_sll = NULL;
-    const struct ip *hdr_ip = NULL;
-    const struct ip6_hdr *hdr_ip6 = NULL;
-    const struct tcphdr *hdr_tcp = NULL;
-    const struct udphdr *hdr_udp = NULL;
+    const struct ether_header *hdr_eth = nullptr;
+    const struct sll_header *hdr_sll = nullptr;
+    const struct ip *hdr_ip = nullptr;
+    const struct ip6_hdr *hdr_ip6 = nullptr;
+    const struct tcphdr *hdr_tcp = nullptr;
+    const struct udphdr *hdr_udp = nullptr;
 #ifdef _ND_DISSECT_GTP
-    const struct nd_gtpv1_header_t *hdr_gtpv1 = NULL;
-    const struct nd_gtpv2_header_t *hdr_gtpv2 = NULL;
+    const struct nd_gtpv1_header_t *hdr_gtpv1 = nullptr;
+    const struct nd_gtpv2_header_t *hdr_gtpv2 = nullptr;
 #endif
-    const uint8_t *l3 = NULL, *l4 = NULL, *pkt = NULL;
+    const uint8_t *l3 = nullptr, *l4 = nullptr, *pkt = nullptr;
     uint16_t l2_len, l3_len, l4_len = 0, pkt_len = 0;
     uint16_t type = 0;
     uint16_t ppp_proto;
@@ -952,7 +954,7 @@ nd_process_ip:
         // Flow exists in map.
         if (nf->direction != addr_cmp) {
 #if _ND_DISSECT_GTP
-            if (hdr_gtpv1 != NULL && hdr_gtpv1->flags.version == 1)
+            if (hdr_gtpv1 != nullptr && hdr_gtpv1->flags.version == 1)
             {
                 if (nf->tunnel_type == ndFlow::TUNNEL_GTP) {
                     switch (nf->origin) {
@@ -972,7 +974,7 @@ nd_process_ip:
                     }
                 }
             }
-            else if (hdr_gtpv2 != NULL &&
+            else if (hdr_gtpv2 != nullptr &&
               hdr_gtpv2->flags.version == 2)
             {
                 // TODO: Implemented GTPv2.
@@ -1144,7 +1146,7 @@ nd_process_ip:
         }
     }
 
-    if (dhc != NULL && pkt != NULL &&
+    if (dhc != nullptr && pkt != nullptr &&
       pkt_len > sizeof(struct nd_dns_header_t) &&
       packet->caplen == packet->length)
     {
@@ -1169,6 +1171,8 @@ nd_process_ip:
                 // Reset flow in case we have another query from the
                 // same client and server, using the same local and
                 // remote ports.
+                lock_guard<recursive_mutex> lg(nf->lock);
+
                 nf->Reset(true);
                 nf->stats = flow.stats;
 #ifdef _ND_LOG_DHC
@@ -1196,7 +1200,7 @@ nd_process_ip:
               packet->caplen - l2_len);
 
             // Hand over packet ownership to the DPI queue
-            packet = NULL;
+            packet = nullptr;
         }
         else {
             throw ndException(
@@ -1214,7 +1218,7 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
   uint16_t proto) {
     ns_rr rr;
     ns_msg ns_h;
-    const char *host = NULL;
+    const char *host = nullptr;
     int rc = ns_initparse(pkt, pkt_len, &ns_h);
 
     if (rc < 0) {
@@ -1270,7 +1274,8 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
     }
 
     // Is query?
-    if (host != NULL && ns_msg_getflag(ns_h, ns_f_qr) == 0) {
+    if (host != nullptr && ns_msg_getflag(ns_h, ns_f_qr) == 0)
+    {
 #ifdef _ND_LOG_DHC
         nd_dprintf("%s: DNS query, returning...\n", tag.c_str());
 #endif
@@ -1364,7 +1369,8 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
         if (ns_rr_type(rr) != ns_t_a && ns_rr_type(rr) != ns_t_aaaa)
             continue;
 
-        if (proto != ND_PROTO_DNS || host == NULL) continue;
+        if (proto != ND_PROTO_DNS || host == nullptr)
+            continue;
 
         // Add responses to DHC...
         ndAddr addr((ns_rr_type(rr) == ns_t_a) ?

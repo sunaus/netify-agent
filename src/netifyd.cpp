@@ -24,6 +24,8 @@
 
 #include <syslog.h>
 
+#include <exception>
+#include <iostream>
 #include <locale>
 
 #include "nd-instance.hpp"
@@ -35,7 +37,15 @@ int main(int argc, char* argv[]) {
     int rc = 0;
     uint32_t result;
 
-    setlocale(LC_ALL, "");
+    try {
+        locale::global(locale(""));
+
+        cout.imbue(locale());
+        cerr.imbue(locale());
+    }
+    catch (exception& e) {
+        fprintf(stderr, "Exception while setting locale.\n");
+    }
 
     openlog(PACKAGE_TARNAME,
       LOG_NDELAY | LOG_PID | LOG_PERROR, LOG_DAEMON);

@@ -570,8 +570,6 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
         if ((pflags & PRINTF_STATS)) {
             multiline = true;
 
-            dls.imbue(locale(""));
-
             dls << endl
                 << setw(plen) << " "
                 << ": "
@@ -590,8 +588,6 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
                   << ndLogFormat(ndLogFormat::FORMAT_BYTES,
                        stats.total_bytes.load());
             }
-
-            dls.imbue(locale("C"));
         }
 
         if (multiline) dls << endl;
