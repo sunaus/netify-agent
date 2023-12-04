@@ -514,7 +514,8 @@ bool ndNetifyApiManager::Update(void) {
         time_t now = nd_time_monotonic();
 
         if (downloads == 0 &&
-          now > (ttl_last_update + ndGC.ttl_napi_update))
+          (ttl_last_update == 0 ||
+            now > (ttl_last_update + ndGC.ttl_napi_update)))
         {
             ttl_last_update = now;
 
