@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     uint32_t result;
 
     try {
-        locale::global(locale(""));
+        locale::global(locale("C"));
 
         cout.imbue(locale());
         cerr.imbue(locale());
