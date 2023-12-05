@@ -1315,6 +1315,8 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
                 continue;
             }
 
+            lock_guard<recursive_mutex> lg(flow->lock);
+
             if (flow->HasMDNSDomainName() != false) {
 #ifdef _ND_LOG_DHC
                 nd_dprintf(
