@@ -5,7 +5,7 @@
 
 %{
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated <http://www.egloo.ca>
+// Copyright (C) 2015-2024 eGloo Incorporated <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 %%
 ip_protocol             return FLOW_IP_PROTO;
 ip_version              return FLOW_IP_VERSION;
-ip_nat                  return FLOW_IP_NAT;
 vlan_id                 return FLOW_VLAN_ID;
 other_type              return FLOW_OTHER_TYPE;
 other_unknown           yylval->us_number = _NDFP_OTHER_UNKNOWN; return FLOW_OTHER_UNKNOWN;
@@ -50,8 +49,16 @@ other_port              return FLOW_OTHER_PORT;
 tunnel_type             return FLOW_TUNNEL_TYPE;
 tunnel_none             yylval->us_number = _NDFP_TUNNEL_NONE; return FLOW_TUNNEL_NONE;
 tunnel_gtp              yylval->us_number = _NDFP_TUNNEL_GTP; return FLOW_TUNNEL_GTP;
+detection_complete      return FLOW_DETECTION_COMPLETE;
 detection_guessed       return FLOW_DETECTION_GUESSED;
+detection_init          return FLOW_DETECTION_INIT;
 detection_updated       return FLOW_DETECTION_UPDATED;
+dhc_hit                 return FLOW_DHC_HIT;
+fhc_hit                 return FLOW_FHC_HIT;
+ip_nat                  return FLOW_IP_NAT;
+expiring                return FLOW_EXPIRING;
+expired                 return FLOW_EXPIRED;
+soft_dissector          return FLOW_SOFT_DISSECTOR;
 app                     return FLOW_APPLICATION;
 application             return FLOW_APPLICATION;
 application_id          return FLOW_APPLICATION;

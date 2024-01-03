@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -31,7 +31,7 @@
 #include <ios>
 #include <iostream>
 
-#if defined(_ND_USE_LIBTCMALLOC) && \
+#if defined(_ND_ENABLE_LIBTCMALLOC) && \
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H)
 #include <gperftools/malloc_extension.h>
 #elif defined(HAVE_MALLOC_TRIM)
@@ -42,13 +42,13 @@
 #include "nd-detection.hpp"
 #include "nd-instance.hpp"
 #include "nd-util.hpp"
-#ifdef _ND_USE_LIBPCAP
+#ifdef _ND_ENABLE_LIBPCAP
 #include "nd-capture-pcap.hpp"
 #endif
-#ifdef _ND_USE_TPACKETV3
+#ifdef _ND_ENABLE_TPACKETV3
 #include "nd-capture-tpv3.hpp"
 #endif
-#ifdef _ND_USE_NFQUEUE
+#ifdef _ND_ENABLE_NFQUEUE
 #include "nd-capture-nfq.hpp"
 #endif
 
@@ -62,7 +62,7 @@ ndInstanceStatus::ndInstanceStatus()
     flows_expired(0), flows_active(0), flows_in_use(0),
     cpu_user(0), cpu_user_prev(0), cpu_system(0),
     cpu_system_prev(0), maxrss_kb(0), maxrss_kb_prev(0),
-#if (defined(_ND_USE_LIBTCMALLOC) && \
+#if (defined(_ND_ENABLE_LIBTCMALLOC) && \
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
     tcm_alloc_kb(0), tcm_alloc_kb_prev(0),
 #endif
@@ -75,10 +75,10 @@ ndInstance::ndInstance(const string &tag)
   : ndThread(tag, -1, true), exit_code(EXIT_FAILURE),
     dns_hint_cache(nullptr), flow_hash_cache(nullptr),
     flow_buckets(nullptr),
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     netlink(nullptr),
 #endif
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
     thread_conntrack(nullptr),
 #endif
     tag(tag.empty() ? PACKAGE_TARNAME : tag),
@@ -96,7 +96,7 @@ ndInstance::~ndInstance() {
     api_manager.Terminate();
 
     for (unsigned p = 0; p < 2; p++) {
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
         if (ndGC_USE_CONNTRACK && thread_conntrack) {
             if (p == 0) thread_conntrack->Terminate();
             else {
@@ -116,11 +116,13 @@ ndInstance::~ndInstance() {
     }
 
     if (dns_hint_cache != nullptr) {
+        dns_hint_cache->Save();
         delete dns_hint_cache;
         dns_hint_cache = nullptr;
     }
 
     if (flow_hash_cache != nullptr) {
+        flow_hash_cache->Save();
         delete flow_hash_cache;
         flow_hash_cache = nullptr;
     }
@@ -130,7 +132,7 @@ ndInstance::~ndInstance() {
         flow_buckets = nullptr;
     }
 
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     if (netlink != nullptr) {
         delete netlink;
         netlink = nullptr;
@@ -1396,12 +1398,12 @@ bool ndInstance::DisplayAgentStatus(void) {
           "%.1fs\n",
           color, icon, ND_C_RESET, cpu_user_delta, cpu_system_delta);
 
-#if (defined(_ND_USE_LIBTCMALLOC) && \
+#if (defined(_ND_ENABLE_LIBTCMALLOC) && \
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
         fprintf(stderr,
           "%s%s%s current memory usage: %u kB\n", ND_C_GREEN, ND_I_INFO,
           ND_C_RESET, jstatus["tcm_kb"].get<unsigned>());
-#endif  // _ND_USE_LIBTCMALLOC
+#endif  // _ND_ENABLE_LIBTCMALLOC
         fprintf(stderr,
           "%s%s%s maximum memory usage: %u kB\n", ND_C_GREEN, ND_I_INFO,
           ND_C_RESET, jstatus["maxrss_kb"].get<unsigned>());
@@ -1605,19 +1607,24 @@ int ndInstance::Run(void) {
 
     ndInterface::UpdateAddrs(interfaces);
 
-    if (ndGC_USE_DHC) dns_hint_cache = new ndDNSHintCache();
+    if (ndGC_USE_DHC) {
+        dns_hint_cache = new ndDNSHintCache(ndGC.max_dhc);
+        dns_hint_cache->Load();
+    }
 
-    if (ndGC_USE_FHC)
+    if (ndGC_USE_FHC) {
         flow_hash_cache = new ndFlowHashCache(ndGC.max_fhc);
+        flow_hash_cache->Load();
+    }
 
     flow_buckets = new ndFlowMap(ndGC.fm_buckets);
 
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     if (ndGC_USE_NETLINK) netlink = new ndNetlink();
 #endif
 
     try {
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
         if (ndGC_USE_CONNTRACK) {
             thread_conntrack = new ndConntrackThread(ndGC.ca_conntrack);
             thread_conntrack->Create();
@@ -1639,10 +1646,10 @@ int ndInstance::Run(void) {
         for (int16_t i = 0; i < cpus; i++) {
             thread_detection[i] = new ndDetectionThread(cpu,
               string("dpi") + to_string(cpu),
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
               netlink,
 #endif
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
               (! ndGC_USE_CONNTRACK) ? nullptr : thread_conntrack,
 #endif
               dns_hint_cache, flow_hash_cache, (uint8_t)cpu);
@@ -1681,7 +1688,7 @@ void *ndInstance::ndInstance::Entry(void) {
     // Process an initial update on start-up
     ProcessUpdate(thread_capture);
 
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     if (ndGC_USE_NETLINK) netlink->Refresh();
 #endif
 
@@ -1727,7 +1734,7 @@ void *ndInstance::ndInstance::Entry(void) {
         case ndIPC_NETLINK_IO:
             nd_dprintf("%s: received IPC: [%d] %s\n",
               tag.c_str(), ipc, "Netlink data available");
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
             if (ndGC_USE_NETLINK && netlink != nullptr)
                 netlink->ProcessEvent();
 #endif
@@ -1850,13 +1857,13 @@ void ndInstance::CreateCaptureInterfaces(ndInterfaces &ifaces) {
                     result.first->second->SetConfig(
                       static_cast<nd_config_pcap *>(i.second.second));
                     break;
-#if defined(_ND_USE_TPACKETV3)
+#if defined(_ND_ENABLE_TPACKETV3)
                 case ndCT_TPV3:
                     result.first->second->SetConfig(
                       static_cast<nd_config_tpv3 *>(i.second.second));
                     break;
 #endif
-#if defined(_ND_USE_NFQUEUE)
+#if defined(_ND_ENABLE_NFQUEUE)
                 case ndCT_NFQ:
                     result.first->second->SetConfig(
                       static_cast<nd_config_nfq *>(i.second.second));
@@ -1903,7 +1910,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
             thread_group.push_back(thread);
             break;
         }
-#if defined(_ND_USE_TPACKETV3)
+#if defined(_ND_ENABLE_TPACKETV3)
         case ndCT_TPV3:
         {
             unsigned instances = it.second->config_tpv3.fanout_instances;
@@ -1925,7 +1932,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
             break;
         }
 #endif
-#if defined(_ND_USE_NFQUEUE)
+#if defined(_ND_ENABLE_NFQUEUE)
         case ndCT_NFQ:
         {
             unsigned instances = it.second->config_nfq.instances;
@@ -2198,7 +2205,7 @@ int ndInstance::WaitForIPC(int timeout) {
 }
 
 void ndInstance::UpdateStatus(void) {
-#if defined(_ND_USE_LIBTCMALLOC) && \
+#if defined(_ND_ENABLE_LIBTCMALLOC) && \
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H)
     size_t tcm_alloc_bytes = 0;
 
@@ -2260,12 +2267,14 @@ bool ndInstance::ExpireFlow(nd_flow_ptr &flow) {
 
 void ndInstance::ProcessUpdate(nd_capture_threads &threads) {
     UpdateStatus();
-#if ! defined(_ND_USE_LIBTCMALLOC) && defined(HAVE_MALLOC_TRIM)
+#if ! defined(_ND_ENABLE_LIBTCMALLOC) && defined(HAVE_MALLOC_TRIM)
     // Attempt to release heap back to OS when supported
     malloc_trim(0);
 #endif
     if (ndGC_USE_DHC && dns_hint_cache != nullptr)
-        dns_hint_cache->Purge();
+        dns_hint_cache->Scoreboard(tag + ": DHC");
+    if (ndGC_USE_FHC && flow_hash_cache != nullptr)
+        flow_hash_cache->Scoreboard(tag + ": FHC");
 
     plugins.BroadcastEvent(ndPlugin::TYPE_BASE,
       ndPlugin::EVENT_STATUS_UPDATE);

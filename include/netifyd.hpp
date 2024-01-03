@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -34,7 +34,7 @@
 #error Unable to define ETH_ALEN.
 #endif
 
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
 #include <linux/netlink.h>
 #endif
 
@@ -71,15 +71,15 @@
     30  // Purge idle flows older than this (30s)
 #define ND_TTL_IDLE_TCP_FLOW \
     300  // Purge idle TCP flows older than this (5m)
-#define ND_TTL_IDLE_DHC_ENTRY \
-    (60 * 30)  // Purge TTL for idle DNS cache entries.
 #define ND_HASH_BUCKETS_FLOWS \
     1613  // Initial flows map bucket count.
 #define ND_HASH_BUCKETS_DNSARS \
     1613  // DNS cache address record hash buckets.
 
+#define ND_MAX_DHC_ENTRIES \
+    1000  // Maximum number of DNS hint cache entries.
 #define ND_MAX_FHC_ENTRIES \
-    10000  // Maximum number of flow hash cache entries.
+    1000  // Maximum number of flow hash cache entries.
 #define ND_FHC_PURGE_DIVISOR \
     10  // Divisor of FHC_ENTRIES to delete on purge.
 

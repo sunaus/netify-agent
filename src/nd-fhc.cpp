@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -25,145 +25,173 @@
 #include "config.h"
 #endif
 
-#include <cstring>
+#include <fstream>
+#include <vector>
 
 #include "nd-config.hpp"
 #include "nd-fhc.hpp"
+#include "nd-util.hpp"
 
-void ndFlowHashCache::Push(const string &lower_hash,
-  const string &upper_hash) {
-    lock_guard<mutex> lg(lock);
-
-    nd_fhc_map::const_iterator i = lookup.find(lower_hash);
-
-    if (i != lookup.end()) {
-        nd_dprintf(
-          "WARNING: Found existing hash in flow hash cache "
-          "on push.\n");
-    }
-    else {
-        if (lookup.size() == cache_size) {
-#if _ND_DEBUG_FHC
-            nd_dprintf(
-              "Purging flow hash cache entries, size: "
-              "%lu\n",
-              lookup.size());
-#endif
-            for (size_t n = 0; n < cache_size / ndGC.fhc_purge_divisor;
-                 n++)
-            {
-                pair<string, string> j = index.back();
-
-                nd_fhc_map::iterator k = lookup.find(j.first);
-                if (k == lookup.end()) {
-                    nd_dprintf(
-                      "WARNING: flow hash cache index not "
-                      "found in "
-                      "map\n");
-                }
-                else lookup.erase(k);
-
-                index.pop_back();
-            }
-        }
-
-        index.push_front(make_pair(lower_hash, upper_hash));
-        lookup[lower_hash] = index.begin();
-#if _ND_DEBUG_FHC
-        nd_dprintf("Flow hash cache entries: %lu\n", lookup.size());
-#endif
-    }
-}
-
-bool ndFlowHashCache::Pop(const string &lower_hash,
-  string &upper_hash) {
-    bool found = false;
-
-    lock_guard<mutex> lg(lock);
-
-    nd_fhc_map::iterator i = lookup.find(lower_hash);
-
-    if ((found = (i != lookup.end()))) {
-        upper_hash = i->second->second;
-
-        index.erase(i->second);
-
-        index.push_front(make_pair(lower_hash, upper_hash));
-
-        i->second = index.begin();
-    }
-
-    return found;
+ndFlowHashCache::ndFlowHashCache(size_t cache_size)
+  : ndLRUCache<string, ndFlowHashCacheEntry>(cache_size, true) {
 }
 
 void ndFlowHashCache::Load(void) {
     string filename;
+    size_t loaded = 0, ln = 0;
 
     switch (ndGC.fhc_save) {
     case ndFHC_PERSISTENT:
-        filename = ndGC.path_state_persistent + ND_FLOW_HC_FILE_NAME;
+        filename = ndGC.path_state_persistent + ND_FHC_FILE_NAME;
         break;
     case ndFHC_VOLATILE:
-        filename = ndGC.path_state_volatile + ND_FLOW_HC_FILE_NAME;
+        filename = ndGC.path_state_volatile + ND_FHC_FILE_NAME;
         break;
     default: return;
     }
 
-    FILE *hf = fopen(filename.c_str(), "rb");
-    if (hf != NULL) {
-        do {
-            string digest_lower, digest_mdata;
-            uint8_t digest[SHA1_DIGEST_LENGTH * 2];
+    ifstream ifs(filename);
 
-            if (fread(digest, SHA1_DIGEST_LENGTH * 2, 1, hf) != 1)
-                break;
-
-            digest_lower.assign((const char *)digest,
-              SHA1_DIGEST_LENGTH);
-            digest_mdata.assign(
-              (const char *)&digest[SHA1_DIGEST_LENGTH],
-              SHA1_DIGEST_LENGTH);
-
-            Push(digest_lower, digest_mdata);
-        }
-        while (! feof(hf));
-
-        fclose(hf);
-    }
-
-    if (index.size())
-        nd_dprintf("Loaded %lu flow hash cache entries.\n",
-          index.size());
-}
-
-void ndFlowHashCache::Save(void) {
-    string filename;
-
-    switch (ndGC.fhc_save) {
-    case ndFHC_PERSISTENT:
-        filename = ndGC.path_state_persistent + ND_FLOW_HC_FILE_NAME;
-        break;
-    case ndFHC_VOLATILE:
-        filename = ndGC.path_state_volatile + ND_FLOW_HC_FILE_NAME;
-        break;
-    default: return;
-    }
-
-    FILE *hf = fopen(filename.c_str(), "wb");
-    if (hf == NULL) {
-        nd_printf(
-          "WARNING: Error saving flow hash cache: %s: %s\n",
+    if (! ifs.is_open()) {
+        nd_printf("Error loading flow hash cache: %s: %s\n",
           filename.c_str(), strerror(errno));
         return;
     }
 
-    nd_fhc_list::iterator i;
-    for (i = index.begin(); i != index.end(); i++) {
-        fwrite((*i).first.c_str(), 1, SHA1_DIGEST_LENGTH, hf);
-        fwrite((*i).second.c_str(), 1, SHA1_DIGEST_LENGTH, hf);
-    }
-    fclose(hf);
+    string line;
+    while (getline(ifs, line)) {
+        nd_ltrim(line);
+        if (! ifs.good() || ++ln == 1 || line.empty())
+            continue;
 
-    nd_dprintf("Saved %lu flow hash cache entries.\n",
-      index.size());
+        size_t p;
+        if ((p = line.find_first_of(",")) == string::npos) {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+
+        string digest_lower(line.begin(), line.begin() + p);
+        nd_trim(digest_lower);
+
+        ndFlowHashCacheEntry entry;
+
+        line = line.substr(p + 1);
+        if ((p = line.find_first_of(",")) == string::npos) {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+
+        if (! nd_string_to_sha1(line.substr(0, p), entry.digest))
+        {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+
+        line = line.substr(p + 1);
+        if ((p = line.find_first_of(",")) == string::npos) {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+
+        string value(line.substr(0, p));
+        nd_trim(value);
+
+        try {
+            entry.app_id = (nd_app_id_t)stoul(value);
+        }
+        catch (invalid_argument &e) {
+            nd_dprintf(
+              "error converting string to app ID: %s: %s\n",
+              e.what(), value.c_str());
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+        catch (out_of_range &e) {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+
+        value = line.substr(p + 1);
+        nd_trim(value);
+
+        try {
+            entry.proto_id = (nd_proto_id_t)stoul(value);
+        }
+        catch (invalid_argument &e) {
+            nd_dprintf(
+              "error converting string to protocol ID: "
+              "%s: %s\n",
+              e.what(), value.c_str());
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+        catch (out_of_range &e) {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+
+        vector<uint8_t> digest;
+        if (! nd_string_to_sha1(digest_lower, digest)) {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
+
+        Insert(digest, entry);
+
+        loaded++;
+    }
+
+    nd_dprintf("Loaded %u flow hash cache entries.\n", loaded);
+}
+
+void ndFlowHashCache::Save(void) const {
+    string filename;
+    size_t saved = 0;
+
+    switch (ndGC.fhc_save) {
+    case ndFHC_PERSISTENT:
+        filename = ndGC.path_state_persistent + ND_FHC_FILE_NAME;
+        break;
+    case ndFHC_VOLATILE:
+        filename = ndGC.path_state_volatile + ND_FHC_FILE_NAME;
+        break;
+    default: return;
+    }
+
+    lock_guard<mutex> lg(lock);
+
+    ofstream ofs(filename, ofstream::trunc);
+    if (! ofs.is_open()) {
+        nd_printf("Error saving flow hash cache: %s: %s\n",
+          filename.c_str(), strerror(errno));
+        return;
+    }
+
+    ofs << "\"lower_digest\",\"mdata_digest\",\"app_id\","
+           "\"proto_id\""
+        << endl;
+
+    for (auto &i : kvmap) {
+        string digest;
+        nd_sha1_to_string((const uint8_t *)i.first.c_str(), digest);
+        ofs << digest << "," << i.second.first << endl;
+        if (ofs.good()) saved++;
+        else {
+            nd_dprintf(
+              "Error while saving flow hash cache: %s\n",
+              filename.c_str());
+            break;
+        }
+    }
+
+    nd_dprintf("Saved %u flow hash cache entries.\n", saved);
 }

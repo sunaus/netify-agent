@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#!/bin/bash -x
+
+# Debug CPPFLAGS for clang
+# CPPFLAGS="-pipe -gdwarf-4 -O0"
 
 : ${COMPILER:=gcc}
 : ${CPPFLAGS:="-pipe -g -O1 -fexceptions -Wall"}
@@ -116,13 +120,16 @@ if [ $# -gt 0 -a "x$1" == "xhelp" ]; then exit 0; fi
 
 cat << EOF > compile_flags.txt
 -std=gnu++11
--DHAVE_CONFIG_H
 -I./
 -I../include/
 -I./include/
 -I./libs/inih/cpp/
 -I./libs/ndpi/src/include/
 -I./libs/gperftools/src/
+-DHAVE_CONFIG_H
 EOF
+
+grep -E '^#define' config.h |\
+  sed -e 's/^#define //' -e 's/^\(\w\+\) /-D\1=/' >> compile_flags.txt
 
 exit 0

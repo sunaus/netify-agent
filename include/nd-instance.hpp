@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -39,11 +39,11 @@
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
 #include "nd-conntrack.hpp"
 #endif
 
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
 #include "nd-netlink.hpp"
 #endif
 
@@ -70,8 +70,7 @@ public:
     double cpu_system_prev;
     size_t maxrss_kb;
     size_t maxrss_kb_prev;
-#if (defined(_ND_USE_LIBTCMALLOC) && \
-  defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
+#ifdef _ND_ENABLE_LIBTCMALLOC
     size_t tcm_alloc_kb;
     size_t tcm_alloc_kb_prev;
 #endif
@@ -99,12 +98,11 @@ public:
         serialize(output, { "flows_in_use" }, flows_in_use);
         serialize(output, { "maxrss_kb" }, maxrss_kb);
         serialize(output, { "maxrss_kb_prev" }, maxrss_kb_prev);
-#if (defined(_ND_USE_LIBTCMALLOC) && \
-  defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
+#ifdef _ND_ENABLE_LIBTCMALLOC
         serialize(output, { "tcm_kb" }, (unsigned)tcm_alloc_kb);
         serialize(output, { "tcm_kb_prev" },
           (unsigned)tcm_alloc_kb_prev);
-#endif  // _ND_USE_LIBTCMALLOC
+#endif  // _ND_ENABLE_LIBTCMALLOC
         serialize(output, { "dhc_status" }, dhc_status);
         if (dhc_status)
             serialize(output, { "dhc_size" }, dhc_size);
@@ -114,7 +112,7 @@ public:
 class ndCaptureThread;
 class ndDetectionThread;
 class ndNetifyApiManager;
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
 class ndConntrackThread;
 #endif
 
@@ -275,7 +273,7 @@ public:
     }
     inline bool SendSignal(const siginfo_t &si) {
         switch (si.si_signo) {
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
         case SIGIO:
             if (ndGC_USE_NETLINK && netlink != nullptr &&
               netlink->GetDescriptor() == si.si_fd)
@@ -295,6 +293,13 @@ public:
 #endif
             ndThread::SendIPC((uint32_t)ndIPC_TERMINATE);
             return true;
+        case SIGUSR1:
+            if (dns_hint_cache != nullptr)
+                dns_hint_cache->Save();
+            if (flow_hash_cache != nullptr)
+                flow_hash_cache->Save();
+            break;
+        case SIGUSR2: break;
         default:
             if (timer_update.GetSignal() >= 0 &&
               si.si_signo == timer_update.GetSignal())
@@ -324,11 +329,11 @@ public:
     ndDNSHintCache *dns_hint_cache;
     ndFlowHashCache *flow_hash_cache;
     ndFlowMap *flow_buckets;
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     ndNetlink *netlink;
 #endif
     ndNetifyApiManager api_manager;
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
     ndConntrackThread *thread_conntrack;
 #endif
     nd_detection_threads thread_detection;

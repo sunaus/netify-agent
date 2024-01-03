@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -52,7 +52,9 @@
 #include <deque>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <mutex>
+#include <sstream>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -124,7 +126,7 @@ void nd_flow_printf(const char *format, ...) {
     va_end(ap);
 }
 
-#ifdef NDPI_ENABLE_DEBUG_MESSAGES
+#ifdef _ND_ENABLE_NDPI_DEBUG
 void nd_ndpi_debug_printf(uint32_t protocol, void *ndpi,
   ndpi_log_level_t level, const char *file,
   const char *func, unsigned line, const char *format, ...) {
@@ -260,7 +262,7 @@ void nd_sha1_to_string(const uint8_t *digest_bin, string &digest_str) {
     char *p = _digest;
 
     for (int i = 0; i < SHA1_DIGEST_LENGTH; i++, p += 2)
-        sprintf(p, "%02x", digest_bin[i]);
+        sprintf(p, "%02hhx", digest_bin[i]);
 
     digest_str.assign(_digest);
 }
@@ -268,6 +270,39 @@ void nd_sha1_to_string(const uint8_t *digest_bin, string &digest_str) {
 void nd_sha1_to_string(const vector<uint8_t> &digest_bin,
   string &digest_str) {
     nd_sha1_to_string((const uint8_t *)&digest_bin[0], digest_str);
+}
+
+bool nd_string_to_sha1(const string &digest_str,
+  vector<uint8_t> &digest_bin) {
+    digest_bin.clear();
+
+    istringstream is(digest_str);
+    while (is.good()) {
+        string octet;
+        is >> setw(2) >> octet;
+        if (octet.size() == 2) {
+            try {
+                uint8_t byte = (uint8_t)stoul(octet, nullptr, 16);
+                digest_bin.push_back(byte);
+            }
+            catch (invalid_argument &e) {
+                nd_dprintf(
+                  "error converting string to SHA1: %s: "
+                  "%s\n",
+                  e.what(), octet.c_str());
+                return false;
+            }
+            catch (out_of_range &e) {
+                nd_dprintf(
+                  "error converting string to SHA1: %s: "
+                  "%s\n",
+                  e.what(), octet.c_str());
+                return false;
+            }
+        }
+    }
+
+    return (digest_bin.size() == SHA1_DIGEST_LENGTH);
 }
 
 bool nd_string_to_mac(const string &src, uint8_t *mac) {
@@ -542,13 +577,13 @@ const string &nd_get_version_and_features(void) {
         if (ndGC_USE_CONNTRACK) ident << "; conntrack";
         if (ndGC_USE_NETLINK) ident << "; netlink";
         if (ndGC_USE_DHC) ident << "; dns-cache";
-#ifdef _ND_USE_TPACKETV3
+#ifdef _ND_ENABLE_TPACKETV3
         ident << "; tpv3";
 #endif
-#ifdef _ND_USE_NFQUEUE
+#ifdef _ND_ENABLE_NFQUEUE
         ident << "; nfqueue";
 #endif
-#ifdef _ND_USE_LIBTCMALLOC
+#ifdef _ND_ENABLE_LIBTCMALLOC
         ident << "; tcmalloc";
 #endif
         if (ndGC_SSL_USE_TLSv1) ident << "; ssl-tlsv1";

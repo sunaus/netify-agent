@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -251,10 +251,10 @@ public:
     unsigned fhc_purge_divisor;
     unsigned fm_buckets;
     unsigned max_detection_pkts;
+    unsigned max_dhc;
     unsigned max_fhc;
     unsigned max_flows;
     unsigned ttl_capture_delay;
-    unsigned ttl_dns_entry;
     unsigned ttl_idle_flow;
     unsigned ttl_idle_tcp_flow;
     unsigned ttl_napi_tick;

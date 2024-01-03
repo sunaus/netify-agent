@@ -4,7 +4,7 @@
 
 %code top {
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated <http://www.egloo.ca>
+// Copyright (C) 2015-2024 eGloo Incorporated <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -111,12 +111,14 @@ typedef void* yyscan_t;
     bool bool_result;
 }
 
-%token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_IP_NAT FLOW_VLAN_ID FLOW_OTHER_TYPE
+%token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_VLAN_ID FLOW_OTHER_TYPE
 %token FLOW_LOCAL_MAC FLOW_OTHER_MAC FLOW_LOCAL_IP FLOW_OTHER_IP
 %token FLOW_LOCAL_PORT FLOW_OTHER_PORT
 %token FLOW_TUNNEL_TYPE
-%token FLOW_DETECTION_GUESSED
-%token FLOW_DETECTION_UPDATED
+%token FLOW_DETECTION_COMPLETE FLOW_DETECTION_GUESSED
+%token FLOW_DETECTION_INIT FLOW_DETECTION_UPDATED
+%token FLOW_DHC_HIT FLOW_FHC_HIT FLOW_IP_NAT
+%token FLOW_EXPIRING FLOW_EXPIRED FLOW_SOFT_DISSECTOR
 %token FLOW_CATEGORY
 %token FLOW_RISKS FLOW_NDPI_RISK_SCORE FLOW_NDPI_RISK_SCORE_CLIENT FLOW_NDPI_RISK_SCORE_SERVER
 %token FLOW_DOMAIN_CATEGORY FLOW_NETWORK_CATEGORY
@@ -146,10 +148,14 @@ typedef void* yyscan_t;
 %type <buffer> value_addr_ip
 %type <us_number> value_tunnel_type
 
-%type <bool_result> expr expr_ip_proto expr_ip_version expr_ip_nat expr_vlan_id expr_other_type
+%type <bool_result> expr expr_ip_proto expr_ip_version expr_vlan_id expr_other_type
 %type <bool_result> expr_local_mac expr_other_mac expr_local_ip expr_other_ip
 %type <bool_result> expr_local_port expr_other_port
-%type <bool_result> expr_tunnel_type expr_detection_guessed expr_detection_updated
+%type <bool_result> expr_tunnel_type
+%type <bool_result> expr_detection_complete expr_detection_guessed
+%type <bool_result> expr_detection_init expr_detection_updated
+%type <bool_result> expr_dhc_hit expr_fhc_hit expr_ip_nat
+%type <bool_result> expr_expiring expr_expired expr_soft_dissector
 %type <bool_result> expr_category
 %type <bool_result> expr_risks expr_risk_ndpi_score expr_risk_ndpi_score_client expr_risk_ndpi_score_server
 %type <bool_result> expr_app expr_app_id expr_app_name expr_app_category
@@ -168,7 +174,6 @@ exprs:
 expr:
       expr_ip_proto
     | expr_ip_version
-    | expr_ip_nat
     | expr_vlan_id
     | expr_other_type
     | expr_local_mac
@@ -178,8 +183,16 @@ expr:
     | expr_local_port
     | expr_other_port
     | expr_tunnel_type
+    | expr_detection_complete
     | expr_detection_guessed
+    | expr_detection_init
     | expr_detection_updated
+    | expr_dhc_hit
+    | expr_fhc_hit
+    | expr_ip_nat
+    | expr_expiring
+    | expr_expired
+    | expr_soft_dissector
     | expr_category
     | expr_risks
     | expr_risk_ndpi_score
@@ -251,33 +264,6 @@ expr_ip_version:
     | FLOW_IP_VERSION CMP_NOTEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->ip_version != $3));
         _NDFP_debugf("IP Version != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_ip_nat:
-      FLOW_IP_NAT {
-        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == true));
-        _NDFP_debugf("IP NAT is true? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | '!' FLOW_IP_NAT {
-        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == false));
-        _NDFP_debugf("IP NAT is false? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_IP_NAT CMP_EQUAL VALUE_TRUE {
-        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == true));
-        _NDFP_debugf("IP NAT == true? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_IP_NAT CMP_EQUAL VALUE_FALSE {
-        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == false));
-        _NDFP_debugf("IP NAT == false? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_IP_NAT CMP_NOTEQUAL VALUE_TRUE {
-        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() != true));
-        _NDFP_debugf("IP NAT != true? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_IP_NAT CMP_NOTEQUAL VALUE_FALSE {
-        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() != false));
-        _NDFP_debugf("IP NAT != false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -623,6 +609,51 @@ value_tunnel_type:
       FLOW_TUNNEL_NONE { $$ = $1; }
     | FLOW_TUNNEL_GTP { $$ = $1; }
 
+expr_detection_complete:
+      FLOW_DETECTION_COMPLETE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.detection_complete.load()));
+        _NDFP_debugf("Detection was complete? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!'  FLOW_DETECTION_COMPLETE {
+        _NDFP_result = ($$ = !(_NDFP_flow->flags.detection_complete.load()));
+        _NDFP_debugf(
+            "Detection was not complete? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_COMPLETE CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_complete.load() == true
+        ));
+        _NDFP_debugf(
+            "Detection complete == true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_COMPLETE CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_complete.load() == false
+        ));
+        _NDFP_debugf(
+            "Detection complete == false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_COMPLETE CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_complete.load() != true
+        ));
+        _NDFP_debugf(
+            "Detection complete != true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_COMPLETE CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_complete.load() != false
+        ));
+        _NDFP_debugf(
+            "Detection complete != false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    ;
+
 expr_detection_guessed:
       FLOW_DETECTION_GUESSED {
         _NDFP_result = ($$ = (_NDFP_flow->flags.detection_guessed.load()));
@@ -664,6 +695,51 @@ expr_detection_guessed:
         ));
         _NDFP_debugf(
             "Detection guessed != false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    ;
+
+expr_detection_init:
+      FLOW_DETECTION_INIT {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.detection_init.load()));
+        _NDFP_debugf("Detection was init? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!'  FLOW_DETECTION_INIT {
+        _NDFP_result = ($$ = !(_NDFP_flow->flags.detection_init.load()));
+        _NDFP_debugf(
+            "Detection was not init? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_INIT CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_init.load() == true
+        ));
+        _NDFP_debugf(
+            "Detection init == true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_INIT CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_init.load() == false
+        ));
+        _NDFP_debugf(
+            "Detection init == false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_INIT CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_init.load() != true
+        ));
+        _NDFP_debugf(
+            "Detection init != true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DETECTION_INIT CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.detection_init.load() != false
+        ));
+        _NDFP_debugf(
+            "Detection init != false? %s\n", (_NDFP_result) ? "yes" : "no"
         );
     }
     ;
@@ -710,6 +786,204 @@ expr_detection_updated:
         _NDFP_debugf(
             "Detection updated != false? %s\n", (_NDFP_result) ? "yes" : "no"
         );
+    }
+    ;
+
+expr_dhc_hit:
+      FLOW_DHC_HIT {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.dhc_hit.load()));
+        _NDFP_debugf("DHC was hit? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!'  FLOW_DHC_HIT {
+        _NDFP_result = ($$ = !(_NDFP_flow->flags.dhc_hit.load()));
+        _NDFP_debugf(
+            "DHC was hit? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DHC_HIT CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.dhc_hit.load() == true
+        ));
+        _NDFP_debugf(
+            "DHC hit == true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DHC_HIT CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.dhc_hit.load() == false
+        ));
+        _NDFP_debugf(
+            "DHC hit == false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DHC_HIT CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.dhc_hit.load() != true
+        ));
+        _NDFP_debugf(
+            "DHC hit != true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_DHC_HIT CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.dhc_hit.load() != false
+        ));
+        _NDFP_debugf(
+            "DHC hit != false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    ;
+
+expr_fhc_hit:
+      FLOW_FHC_HIT {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.fhc_hit.load()));
+        _NDFP_debugf("FHC was hit? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!'  FLOW_FHC_HIT {
+        _NDFP_result = ($$ = !(_NDFP_flow->flags.fhc_hit.load()));
+        _NDFP_debugf(
+            "FHC was hit? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_FHC_HIT CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.fhc_hit.load() == true
+        ));
+        _NDFP_debugf(
+            "FHC hit == true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_FHC_HIT CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.fhc_hit.load() == false
+        ));
+        _NDFP_debugf(
+            "FHC hit == false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_FHC_HIT CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.fhc_hit.load() != true
+        ));
+        _NDFP_debugf(
+            "FHC hit != true? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_FHC_HIT CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->flags.fhc_hit.load() != false
+        ));
+        _NDFP_debugf(
+            "FHC hit != false? %s\n", (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    ;
+
+expr_ip_nat:
+      FLOW_IP_NAT {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == true));
+        _NDFP_debugf("IP NAT is true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_IP_NAT {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == false));
+        _NDFP_debugf("IP NAT is false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IP_NAT CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == true));
+        _NDFP_debugf("IP NAT == true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IP_NAT CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() == false));
+        _NDFP_debugf("IP NAT == false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IP_NAT CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() != true));
+        _NDFP_debugf("IP NAT != true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IP_NAT CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.ip_nat.load() != false));
+        _NDFP_debugf("IP NAT != false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_expiring:
+      FLOW_EXPIRING {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expiring.load() == true));
+        _NDFP_debugf("Flow expiring is true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_EXPIRING {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expiring.load() == false));
+        _NDFP_debugf("Flow expiring is false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRING CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expiring.load() == true));
+        _NDFP_debugf("Flow expiring == true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRING CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expiring.load() == false));
+        _NDFP_debugf("Flow expiring == false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRING CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expiring.load() != true));
+        _NDFP_debugf("Flow expiring != true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRING CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expiring.load() != false));
+        _NDFP_debugf("Flow expiring != false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_expired:
+      FLOW_EXPIRED {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expired.load() == true));
+        _NDFP_debugf("Flow expired is true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_EXPIRED {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expired.load() == false));
+        _NDFP_debugf("Flow expired is false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRED CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expired.load() == true));
+        _NDFP_debugf("Flow expired == true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRED CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expired.load() == false));
+        _NDFP_debugf("Flow expired == false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRED CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expired.load() != true));
+        _NDFP_debugf("Flow expired != true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_EXPIRED CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.expired.load() != false));
+        _NDFP_debugf("Flow expired != false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_soft_dissector:
+      FLOW_SOFT_DISSECTOR {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.soft_dissector.load() == true));
+        _NDFP_debugf("Soft dissector matched is true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_SOFT_DISSECTOR {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.soft_dissector.load() == false));
+        _NDFP_debugf("Soft dissector matched is false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SOFT_DISSECTOR CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.soft_dissector.load() == true));
+        _NDFP_debugf("Soft dissector matched == true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SOFT_DISSECTOR CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.soft_dissector.load() == false));
+        _NDFP_debugf("Soft dissector matched == false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SOFT_DISSECTOR CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.soft_dissector.load() != true));
+        _NDFP_debugf("Soft dissector matched != true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SOFT_DISSECTOR CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.soft_dissector.load() != false));
+        _NDFP_debugf("Soft dissector matched != false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -1340,7 +1614,7 @@ expr_detected_hostname:
 
 expr_fwmark:
       FLOW_CT_MARK {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark != 0));
         _NDFP_debugf("FWMARK set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
@@ -1348,7 +1622,7 @@ expr_fwmark:
 #endif
     }
     | '!' FLOW_CT_MARK {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark == 0));
         _NDFP_debugf("FWMARK not set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
@@ -1356,7 +1630,7 @@ expr_fwmark:
 #endif
     }
     | FLOW_CT_MARK CMP_EQUAL VALUE_NUMBER {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark == $3));
         _NDFP_debugf("FWMARK == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
@@ -1364,7 +1638,7 @@ expr_fwmark:
 #endif
     }
     | FLOW_CT_MARK CMP_NOTEQUAL VALUE_NUMBER {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark != $3));
         _NDFP_debugf("FWMARK != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
@@ -1372,7 +1646,7 @@ expr_fwmark:
 #endif
     }
     | FLOW_CT_MARK CMP_GTHANEQUAL VALUE_NUMBER {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark >= $3));
         _NDFP_debugf("FWMARK >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
@@ -1380,7 +1654,7 @@ expr_fwmark:
 #endif
     }
     | FLOW_CT_MARK CMP_LTHANEQUAL VALUE_NUMBER {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark <= $3));
         _NDFP_debugf("FWMARK <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
@@ -1388,7 +1662,7 @@ expr_fwmark:
 #endif
     }
     | FLOW_CT_MARK '>' VALUE_NUMBER {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark > $3));
         _NDFP_debugf("FWMARK > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
@@ -1396,7 +1670,7 @@ expr_fwmark:
 #endif
     }
     | FLOW_CT_MARK '<' VALUE_NUMBER {
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->ct_mark < $3));
         _NDFP_debugf("FWMARK < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else

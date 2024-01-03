@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -23,13 +23,19 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 
+#include <atomic>
 #include <cstddef>
 #include <ctime>
 #include <iomanip>
+#include <list>
 #include <map>
+#include <mutex>
 #include <regex>
 #include <sstream>
+#include <unordered_map>
 #include <vector>
+
+#include "nd-except.hpp"
 
 using namespace std;
 
@@ -195,7 +201,7 @@ void nd_dprintf(const char *format, ...);
 void nd_dprintf(const char *format, va_list ap);
 void nd_flow_printf(const char *format, ...);
 
-#ifdef NDPI_ENABLE_DEBUG_MESSAGES
+#ifdef _ND_ENABLE_NDPI_DEBUG
 void nd_ndpi_debug_printf(uint32_t protocol, void *ndpi,
   ndpi_log_level_t level, const char *file,
   const char *func, unsigned line, const char *format, ...);
@@ -210,6 +216,9 @@ int nd_sha1_file(const string &filename, uint8_t *digest);
 void nd_sha1_to_string(const uint8_t *digest_bin, string &digest_str);
 void nd_sha1_to_string(const vector<uint8_t> &digest_bin,
   string &digest_str);
+
+bool nd_string_to_sha1(const string &digest_str,
+  vector<uint8_t> &digest_bin);
 
 bool nd_string_to_mac(const string &src, uint8_t *mac);
 sa_family_t
@@ -334,3 +343,122 @@ bool nd_copy_file(const string &src, const string &dst,
   mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP);
 
 void nd_time_ago(time_t seconds, string &ago);
+
+template <typename K, typename V = K>
+class ndLRUCache
+{
+public:
+    class CacheStats
+    {
+    public:
+        atomic<uint64_t> insert_hit{ 0 };
+        atomic<uint64_t> insert_miss{ 0 };
+        atomic<uint64_t> lookup_hit{ 0 };
+        atomic<uint64_t> lookup_miss{ 0 };
+    };
+
+    CacheStats stats;
+
+    ndLRUCache(size_t max_size, bool lockable = false)
+      : max_size(max_size), lockable(lockable) {
+        if (! max_size)
+            throw ndException(
+              "maxiumum LRU cache size cannot be zero");
+    }
+
+    size_t GetSize(void) const {
+        if (lockable) {
+            lock_guard<mutex> lg(lock);
+            return kvmap.size();
+        }
+        return kvmap.size();
+    }
+
+    void Scoreboard(const string &tag) const {
+        size_t cache_size = 0;
+
+        if (lockable) {
+            lock_guard<mutex> lg(lock);
+            cache_size = kvmap.size();
+        }
+
+        uint64_t insert_hit = stats.insert_hit;
+        uint64_t insert_miss = stats.insert_miss;
+        uint64_t insert_total = insert_hit + insert_miss;
+
+        float insert_hit_pct = 100.0f * (float)insert_hit /
+          (float)insert_total;
+
+        uint64_t lookup_hit = stats.lookup_hit;
+        uint64_t lookup_miss = stats.lookup_miss;
+        uint64_t lookup_total = lookup_hit + lookup_miss;
+
+        float lookup_hit_pct = 100.0f * (float)lookup_hit /
+          (float)lookup_total;
+
+        nd_dprintf(
+          "%s entries: %u, inserts: %u (%.01f%%), "
+          "lookups: %u (%.01f%%)\n",
+          tag.c_str(), cache_size, insert_total,
+          insert_hit_pct, lookup_total, lookup_hit_pct);
+    }
+
+protected:
+    void CacheInsert(const K &key, const V &value) {
+        unique_lock<mutex> lg(lock, std::defer_lock);
+
+        if (lockable) lg.lock();
+
+        auto i = kvmap.find(key);
+        if (i == kvmap.end()) {
+            stats.insert_miss++;
+
+            entries.push_front(key);
+            kvmap[key] = { value, entries.begin() };
+
+            while (kvmap.size() > max_size) {
+                kvmap.erase(entries.back());
+                entries.pop_back();
+            }
+        }
+        else {
+            stats.insert_hit++;
+
+            entries.erase(i->second.second);
+            entries.push_front(key);
+
+            i->second.second = entries.begin();
+        }
+    }
+
+    bool CacheLookup(const K key, V &value) {
+        unique_lock<mutex> lg(lock, defer_lock);
+
+        if (lockable) lg.lock();
+
+        auto i = kvmap.find(key);
+        if (i == kvmap.end()) {
+            stats.lookup_miss++;
+            return false;
+        }
+
+        stats.lookup_hit++;
+
+        entries.erase(i->second.second);
+        entries.push_front(key);
+
+        i->second.second = entries.begin();
+
+        value = i->second.first;
+
+        return true;
+    }
+
+    size_t max_size;
+    bool lockable;
+
+    mutable mutex lock;
+
+    list<K> entries;
+    unordered_map<K, pair<V, typename list<K>::iterator>> kvmap;
+};

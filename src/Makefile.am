@@ -1,5 +1,5 @@
 # Netify Agent Source Automake File
-# Copyright (C) 2016-2022 eGloo Incorporated
+# Copyright (C) 2016-2024 eGloo Incorporated
 #
 # This is free software, licensed under the GNU General Public License v3.
 
@@ -9,7 +9,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_YFLAGS = -dy --warnings=no-yacc
 BUILT_SOURCES = nd-flow-expr.cpp nd-flow-expr.hpp
 
-AM_CPPFLAGS = $(CPPFLAGS) -D_GNU_SOURCE \
+AM_CPPFLAGS = $(CPPFLAGS) -D_GNU_SOURCE $(ND_DEFINES) \
 	-I $(top_srcdir)/include \
 	-I $(top_srcdir)/libs/ndpi/src/include -I $(top_srcdir)/libs/inih/cpp \
 	$(LIBCURL_CFLAGS) $(ZLIB_CFLAGS) \

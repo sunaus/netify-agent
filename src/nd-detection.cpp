@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -18,12 +18,15 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "nd-fhc.hpp"
+#include <netinet/in.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include <mutex>
 
+#include "nd-apps.hpp"
 #include "nd-detection.hpp"
 #include "nd-except.hpp"
 #include "nd-protos.hpp"
@@ -34,7 +37,7 @@
 #include "ndpi_protocol_ids.h"
 
 // Enable flow hash cache debug logging
-// #define _ND_LOG_FHC             1
+// #define _ND_LOG_FHC 1
 
 // Enable to log unknown protocol debug
 // #define _ND_LOG_PROTO_UNKNOWN   1
@@ -50,18 +53,18 @@
 #define ndEFNFP entry->flow->ndpi_flow->protos
 
 ndDetectionThread::ndDetectionThread(int16_t cpu, const string &tag,
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
   ndNetlink *netlink,
 #endif
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
   ndConntrackThread *thread_conntrack,
 #endif
   ndDNSHintCache *dhc, ndFlowHashCache *fhc, uint8_t private_addr)
   : ndThread(tag, (long)cpu, true), ndInstanceClient(),
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     netlink(netlink),
 #endif
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
     thread_conntrack(thread_conntrack),
 #endif
     ndpi(nullptr), dhc(dhc), fhc(fhc), flows(0) {
@@ -823,49 +826,79 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     default: break;
     }
 
-    if (fhc != nullptr && ndEF->lower_addr.GetPort(false) != 0 &&
-      ndEF->upper_addr.GetPort(false) != 0)
+    ndEF->Hash(tag, true);
+
+    if (fhc != nullptr && ! ndEF->flags.fhc_hit &&
+      ndEF->ip_protocol != IPPROTO_ICMP &&
+      ndEF->ip_protocol != IPPROTO_ICMPV6 &&
+      ndEF->ip_protocol != IPPROTO_IGMP &&
+      ndEF->GetMasterProtocol() != ND_PROTO_DNS)
     {
-        flow_digest.assign(ndEF->digest_lower.begin(),
-          ndEF->digest_lower.end());
+        if (ndEF->detected_protocol == ND_PROTO_UNKNOWN ||
+          ndEF->detected_application == ND_APP_UNKNOWN)
+        {
+            ndFlowHashCacheEntry result;
+            if (fhc->Lookup(ndEF->digest_lower, result)) {
+                if (! equal(result.digest.begin(),
+                      result.digest.end(),
+                      ndEF->digest_mdata.begin()))
+                {
+                    ndEF->flags.fhc_hit = true;
 
-        if (! fhc->Pop(flow_digest, flow_digest_mdata)) {
-            ndEF->Hash(tag, true);
-
-            flow_digest_mdata.assign(ndEF->digest_mdata.begin(),
-              ndEF->digest_mdata.end());
-
-            if (equal(ndEF->digest_lower.begin(),
-                  ndEF->digest_lower.end(),
-                  ndEF->digest_mdata.begin()))
-            {
-                fhc->Push(flow_digest, flow_digest_mdata);
-            }
-        }
-        else {
-            if (equal(ndEF->digest_mdata.begin(),
-                  ndEF->digest_mdata.end(),
-                  flow_digest_mdata.begin()))
-            {
-                nd_printf(
-                  "%s: restored flow metadata hash "
-                  "from "
-                  "cache.\n",
-                  tag.c_str());
+                    if (result.proto_id != ND_PROTO_UNKNOWN &&
+                      result.proto_id != ndEF->detected_protocol)
+                    {
 #ifdef _ND_LOG_FHC
-                nd_dprintf(
-                  "%s: restored flow metadata hash "
-                  "from "
-                  "cache.\n",
-                  tag.c_str());
+                        string proto_from = nd_proto_get_name(
+                          ndEF->detected_protocol);
+                        string proto_to = nd_proto_get_name(
+                          result.proto_id);
+                        nd_dprintf(
+                          "%s: updated proto from flow "
+                          "hash cache: %s -> %s\n",
+                          tag.c_str(), proto_from.c_str(),
+                          proto_to.c_str());
 #endif
-                ndEF->digest_mdata.assign(flow_digest_mdata.begin(),
-                  flow_digest_mdata.end());
-                ndEF->flags.fhc_hit = true;
+                        ndEF->detected_protocol = result.proto_id;
+                    }
+
+                    if (result.app_id != ND_APP_UNKNOWN &&
+                      result.app_id != ndEF->detected_application)
+                    {
+#ifdef _ND_LOG_FHC
+                        string app_from;
+                        ndi.apps.Lookup(
+                          ndEF->detected_application, app_from);
+                        string app_to;
+                        ndi.apps.Lookup(result.app_id, app_to);
+                        nd_dprintf(
+                          "%s: update app from flow hash "
+                          "cache: %s -> %s\n",
+                          tag.c_str(), app_from.c_str(),
+                          app_to.c_str());
+#endif
+                        ndEF->detected_application = result.app_id;
+                        ndi.apps.Lookup(result.app_id,
+                          ndEF->detected_application_name);
+                    }
+
+                    ndEF->digest_mdata.assign(
+                      result.digest.begin(), result.digest.end());
+#ifdef _ND_LOG_FHC
+                    nd_dprintf(
+                      "%s: resurrected flow metadata "
+                      "hash.\n",
+                      tag.c_str());
+#endif
+                }
             }
         }
+
+        if (! ndEF->flags.fhc_hit &&
+          (ndEF->detected_protocol != ND_PROTO_UNKNOWN ||
+            ndEF->detected_application != ND_APP_UNKNOWN))
+            fhc->Insert(ndEF);
     }
-    else ndEF->Hash(tag, true);
 
     for (int t = ndFlow::TYPE_LOWER; t < ndFlow::TYPE_MAX; t++)
     {
@@ -900,7 +933,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         ndEF->iface->PushEndpoint(*mac, *ip);
     }
 
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
     if (thread_conntrack != nullptr && ndEF->iface->role != ndIR_LAN)
     {
         if ((ndEF->lower_type == ndAddr::atLOCAL &&

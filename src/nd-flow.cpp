@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -18,17 +18,17 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-category.hpp"
-#include "nd-sha1.h"
-#include <mutex>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include <iomanip>
 #include <locale>
+#include <mutex>
 
+#include "nd-category.hpp"
 #include "nd-flow.hpp"
+#include "nd-sha1.h"
 
 // Enable lower map debug output
 // #define _ND_DEBUG_LOWER_MAP	1
@@ -65,7 +65,7 @@ ndFlow::ndFlow(nd_iface_ptr &iface)
     origin(ORIGIN_UNKNOWN), privacy_mask(0),
     digest_lower(SHA1_DIGEST_LENGTH, 0),
     digest_mdata(SHA1_DIGEST_LENGTH, 0), flags{}, tcp{},
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
     conntrack{ 0 },
 #endif
     gtp{}, detected_protocol(ND_PROTO_UNKNOWN),
@@ -92,7 +92,7 @@ ndFlow::ndFlow(const ndFlow &flow)
     digest_lower(flow.digest_lower.begin(),
       flow.digest_lower.end()),
     digest_mdata(SHA1_DIGEST_LENGTH, 0), flags{}, tcp{},
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
     conntrack(flow.conntrack),
 #endif
     gtp(flow.gtp), detected_protocol(ND_PROTO_UNKNOWN),

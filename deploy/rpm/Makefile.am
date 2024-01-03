@@ -1,5 +1,5 @@
 # Netify Agent RPM Automake File
-# Copyright (C) 2022 eGloo Incorporated
+# Copyright (C) 2024 eGloo Incorporated
 
 RPMFILES = netifyd.spec
 RPMFILES_IN = netifyd.spec.in

@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -20,44 +20,28 @@
 
 #pragma once
 
-#include <ctime>
 #include <string>
-#include <unordered_map>
-#include <utility>
 
 #include "nd-addr.hpp"
+#include "nd-util.hpp"
 
 using namespace std;
 
 #define ND_DHC_FILE_NAME "/dns-cache.csv"
 
-typedef pair<time_t, string> nd_dns_tuple;
-typedef unordered_map<string, nd_dns_tuple> nd_dns_ar;
-typedef pair<nd_dns_ar::iterator, bool> nd_dhc_insert;
-typedef pair<string, nd_dns_tuple> nd_dhc_insert_pair;
-
-class ndDNSHintCache
+class ndDNSHintCache : public ndLRUCache<string, string>
 {
 public:
-    ndDNSHintCache();
+    ndDNSHintCache(size_t cache_size);
 
     void Insert(const ndAddr &addr, const string &hostname);
     void Insert(const string &digest, const string &hostname);
 
     bool Lookup(const ndAddr &addr, string &hostname);
-    bool Lookup(const string &digest, string &hostname);
-
-    size_t Purge(void);
+    inline bool Lookup(const string &digest, string &hostname) {
+        return CacheLookup(digest, hostname);
+    }
 
     void Load(void);
-    void Save(void);
-
-    size_t GetSize(void) {
-        lock_guard<mutex> ul(lock);
-        return map_ar.size();
-    };
-
-protected:
-    mutex lock;
-    nd_dns_ar map_ar;
+    void Save(void) const;
 };

@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -47,10 +47,10 @@ class ndDetectionThread : public ndThread, public ndInstanceClient
 {
 public:
     ndDetectionThread(int16_t cpu, const string &tag,
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
       ndNetlink *netlink,
 #endif
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
       ndConntrackThread *thread_conntrack,
 #endif
       ndDNSHintCache *dhc = NULL,
@@ -73,10 +73,10 @@ public:
     virtual void *Entry(void);
 
 protected:
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     ndNetlink *netlink;
 #endif
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
     ndConntrackThread *thread_conntrack;
 #endif
     struct ndpi_detection_module_struct *ndpi;

@@ -51,8 +51,9 @@ if [ -z "${SUDO}" ]; then
   exec ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
 else
   if [ "${OPTION_GDB}" == "enable" ]; then
+    grep -E '^#define' config.h | sed -e 's/#define/macro define/g' > defines.gdb
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+      gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
   elif [ "${OPTION_VALGRIND}" != "disable" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       valgrind --tool=${OPTION_VALGRIND} --vgdb=yes --track-origins=yes \

@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -43,7 +43,7 @@ public:
       : lower_bytes(0), upper_bytes(0), total_bytes(0),
         lower_packets(0), upper_packets(0),
         total_packets(0), detection_packets(0)
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
         ,
         lower_rate_samples(ndGC.update_interval, 0),
         upper_rate_samples(ndGC.update_interval, 0),
@@ -61,7 +61,7 @@ public:
         upper_packets(stats.upper_packets.load()),
         total_packets(stats.total_packets.load()),
         detection_packets(stats.detection_packets.load())
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
         ,
         lower_rate_samples(ndGC.update_interval, 0),
         upper_rate_samples(ndGC.update_interval, 0),
@@ -82,7 +82,7 @@ public:
         upper_packets = fs.upper_packets.load();
         total_packets = fs.total_packets.load();
         detection_packets = fs.detection_packets.load();
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
         lower_rate = fs.lower_rate.load();
         upper_rate = fs.upper_rate.load();
         tcp_seq_errors = fs.tcp_seq_errors.load();
@@ -97,7 +97,7 @@ public:
         upper_bytes = 0;
         lower_packets = 0;
         upper_packets = 0;
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
         lower_rate_samples.assign(ndGC.update_interval, 0);
         tcp_seq_errors = 0;
         tcp_resets = 0;
@@ -105,7 +105,7 @@ public:
 #endif
         if (full_reset) {
             detection_packets = 0;
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
 #endif
         }
     }
@@ -120,7 +120,7 @@ public:
 
     atomic<uint8_t> detection_packets;
 
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
     vector<float> lower_rate_samples;
     vector<float> upper_rate_samples;
     atomic<float> lower_rate;
@@ -225,7 +225,7 @@ public:
         atomic<uint32_t> last_seq;
     } tcp;
 
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
     struct {
         uint32_t id;
         uint32_t mark;
@@ -395,7 +395,7 @@ public:
                _upper_bytes = "other_bytes";
         string _lower_packets = "local_packets",
                _upper_packets = "other_packets";
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
         string _lower_rate = "local_rate";
         string _upper_rate = "other_rate";
 #endif
@@ -423,7 +423,7 @@ public:
             _upper_port = "other_port";
             _upper_bytes = "other_bytes";
             _upper_packets = "other_packets";
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
             _lower_rate = "local_rate";
             _upper_rate = "other_rate";
 #endif
@@ -439,7 +439,7 @@ public:
             _upper_port = "local_port";
             _upper_bytes = "local_bytes";
             _upper_packets = "local_packets";
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
             _lower_rate = "other_rate";
             _upper_rate = "local_rate";
 #endif
@@ -470,7 +470,7 @@ public:
               (bool)flags.dhc_hit.load());
             serialize(output, { "soft_dissector" },
               (bool)flags.soft_dissector.load());
-#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
             serialize(output, { "ct_id" }, ct_id);
             serialize(output, { "ct_mark" }, ct_mark);
 #endif
@@ -659,13 +659,11 @@ public:
                       { "ssdp", "user_agent" }, http.user_agent);
                 }
             }
-#if 0
-            if (HasMiningVariant())
-                serialize(output, { "mining", "variant" }, mining.variant);
-#endif
-            if (HasMDNSDomainName())
+
+            if (HasMDNSDomainName()) {
                 serialize(output, { "mdns", "answer" },
                   mdns.domain_name);
+            }
 
             serialize(output, { "first_seen_at" }, ts_first_seen);
 
@@ -759,7 +757,7 @@ public:
             serialize(output, { "detection_packets" },
               stats.detection_packets.load());
 
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
             serialize(output, { _lower_rate },
               stats.lower_rate.load());
             serialize(output, { _upper_rate },

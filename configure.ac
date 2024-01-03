@@ -7,7 +7,7 @@ m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
 
 AC_PREREQ([2.69])
-AC_INIT([Netify Agent], [5.0.15],
+AC_INIT([Netify Agent], [5.0.16],
     [https://gitlab.com/netify.ai/public/netify-agent/issues],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
@@ -70,8 +70,8 @@ AC_CHECK_FUNC([pcap_open_dead], [
 ])
 
 AS_IF([test "$ac_cv_lib_pcap_pcap_open_live" = "yes"], [
-    AC_DEFINE([_ND_USE_LIBPCAP], [1], [Define if libpcap is available.])
-    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_USE_LIBPCAP=1"])
+    AC_DEFINE([_ND_ENABLE_LIBPCAP], [1], [Define if libpcap is available.])
+    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_LIBPCAP=1"])
     AM_CONDITIONAL(USE_LIBPCAP, true)
 ], [
     AM_CONDITIONAL(USE_LIBPCAP, false)
@@ -106,11 +106,11 @@ case "${host_os}" in
             [enable_conntrack=yes])
 
         AS_IF([test "x$enable_conntrack" = "xyes"], [
-            AC_DEFINE([_ND_USE_CONNTRACK], [1],
+            AC_DEFINE([_ND_ENABLE_CONNTRACK], [1],
                 [Define to enable connection tracking support.])
             PKG_CHECK_MODULES([LIBMNL], [libmnl >= 1.0.3])
             PKG_CHECK_MODULES([LIBNETFILTER_CONNTRACK], [libnetfilter_conntrack >= 1.0.4])
-            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_USE_CONNTRACK=1"])
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK=1"])
             AM_CONDITIONAL(USE_CONNTRACK, true)
         ], [
             AM_CONDITIONAL(USE_CONNTRACK, false)
@@ -136,10 +136,10 @@ case "${host_os}" in
             [enable_netlink=yes])
 
         AS_IF([test "x$enable_netlink" = "xyes"], [
-            AC_DEFINE([_ND_USE_NETLINK], [1],
+            AC_DEFINE([_ND_ENABLE_NETLINK], [1],
                 [Define to enable Netlink socket support.])
             AM_CONDITIONAL(USE_NETLINK, true)
-            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_USE_NETLINK=1"])
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_NETLINK=1"])
         ], [
             AM_CONDITIONAL(USE_NETLINK, false)
         ])
@@ -155,10 +155,10 @@ case "${host_os}" in
             AC_CHECK_HEADERS([linux/if_packet.h], [],
                 AC_MSG_ERROR([linux/if_packet.h header(s) not found.])
             )
-            AC_DEFINE([_ND_USE_TPACKETV3], [1],
+            AC_DEFINE([_ND_ENABLE_TPACKETV3], [1],
                 [Define to enable TPACKETv3 capture support.])
             AM_CONDITIONAL(USE_TPACKETV3, true)
-            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_USE_TPACKETV3=1"])
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_TPACKETV3=1"])
         ], [
             AM_CONDITIONAL(USE_TPACKETV3, false)
         ])
@@ -172,10 +172,10 @@ case "${host_os}" in
 
         AS_IF([test "x$enable_nfqueue" = "xyes"], [
             PKG_CHECK_MODULES([LIBNETFILTER_QUEUE], [libnetfilter_queue >= 1.0.4])
-            AC_DEFINE([_ND_USE_NFQUEUE], [1],
+            AC_DEFINE([_ND_ENABLE_NFQUEUE], [1],
                 [Define to enable NFQUEUE capture support.])
             AM_CONDITIONAL(USE_NFQUEUE, true)
-            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_USE_NFQUEUE=1"])
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_NFQUEUE=1"])
         ], [
             AM_CONDITIONAL(USE_NFQUEUE, false)
         ])
@@ -275,15 +275,17 @@ AM_CONDITIONAL(USE_LIBTCMALLOC_BUNDLED, false)
 
 AS_IF([test "x$enable_libtcmalloc" = "xyes"], [
 
-    AC_DEFINE([_ND_USE_LIBTCMALLOC], [1],
+    AC_DEFINE([_ND_ENABLE_LIBTCMALLOC], [1],
         [Define to enable Thread Caching malloc support.])
-    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_USE_LIBTCMALLOC=1"])
+    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_LIBTCMALLOC=1"])
 
     PKG_CHECK_MODULES([LIBTCMALLOC], [libtcmalloc_minimal], [
         AM_CONDITIONAL(USE_LIBTCMALLOC, true)
 
         AC_LANG_PUSH([C++])
-        AC_CHECK_HEADERS([gperftools/malloc_extension.h])
+        AC_CHECK_HEADERS([gperftools/malloc_extension.h], [], [
+          AC_MSG_ERROR([malloc_extensions.h not found])
+        ])
         AC_LANG_POP([C++])
     ], [
         AM_CONDITIONAL(USE_LIBTCMALLOC, true)
@@ -294,11 +296,9 @@ AS_IF([test "x$enable_libtcmalloc" = "xyes"], [
     ])
 
     AM_COND_IF([USE_LIBTCMALLOC_BUNDLED], [
-        AC_CONFIG_SUBDIRS([libs/gperftools])
-        AC_MSG_NOTICE([using tcmalloc (gperftools) from bundled libs...])
-        AC_DEFINE([HAVE_GPERFTOOLS_MALLOC_EXTENSION_H], [1],
-            [Define to 1 if you have the <gperftools/malloc_extension.h> header file.])
-    ])
+         AC_CONFIG_SUBDIRS([libs/gperftools])
+         AC_MSG_NOTICE([using tcmalloc (gperftools) from bundled libs...])
+     ])
 ])
 
 AC_ARG_ENABLE([lean-and-mean],
@@ -321,9 +321,9 @@ AC_ARG_ENABLE([extended-stats],
     [enable_extended_stats=yes])
 
 AS_IF([test "x$enable_extended_stats" = "xyes"], [
-    AC_DEFINE([_ND_EXTENDED_STATS], [1],
+    AC_DEFINE([_ND_ENABLE_EXTENDED_STATS], [1],
         [Define to enable the collection of additional flow statistics.])
-    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_EXTENDED_STATS=1"])
+    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_EXTENDED_STATS=1"])
     AM_CONDITIONAL(ENABLE_EXTENDED_STATS, true)
 ], [
     AM_CONDITIONAL(ENABLE_EXTENDED_STATS, false)
@@ -335,9 +335,9 @@ AC_ARG_ENABLE([ndpi-debug],
     [enable_ndpi_debug=no])
 
 AS_IF([test "x$enable_ndpi_debug" = "xyes"], [
-    AC_DEFINE([NDPI_ENABLE_DEBUG_MESSAGES], [1],
+    AC_DEFINE([_ND_ENABLE_NDPI_DEBUG], [1],
         [Define to enable nDPI debug messages.])
-    AS_VAR_APPEND([ND_DEFINES], [" -DNDPI_ENABLE_DEBUG_MESSAGES=1"])
+    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_NDPI_DEBUG=1"])
 ])
 
 # Checks for required header files.

@@ -1,5 +1,5 @@
 // Netify Agent 🥷
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -68,19 +68,19 @@ ndGlobalConfig::ndGlobalConfig()
     fhc_purge_divisor(ND_FHC_PURGE_DIVISOR),
     fm_buckets(ND_FLOW_MAP_BUCKETS),
     max_detection_pkts(ND_MAX_DETECTION_PKTS),
+    max_dhc(ND_MAX_DHC_ENTRIES),
     max_fhc(ND_MAX_FHC_ENTRIES), max_flows(0),
-    ttl_capture_delay(0), ttl_dns_entry(ND_TTL_IDLE_DHC_ENTRY),
-    ttl_idle_flow(ND_TTL_IDLE_FLOW),
+    ttl_capture_delay(0), ttl_idle_flow(ND_TTL_IDLE_FLOW),
     ttl_idle_tcp_flow(ND_TTL_IDLE_TCP_FLOW),
     ttl_napi_tick(ND_TTL_API_TICK),
     ttl_napi_update(ND_TTL_API_UPDATE), update_imf(1),
     update_interval(ND_STATS_INTERVAL), reader(nullptr) {
     flags |= ndGF_SSL_VERIFY;
     flags |= ndGF_AUTO_FLOW_EXPIRY;
-#ifdef _ND_USE_CONNTRACK
+#ifdef _ND_ENABLE_CONNTRACK
     flags |= ndGF_USE_CONNTRACK;
 #endif
-#ifdef _ND_USE_NETLINK
+#ifdef _ND_ENABLE_NETLINK
     flags |= ndGF_USE_NETLINK;
 #endif
     flags |= ndGF_SOFT_DISSECTORS;
@@ -257,11 +257,11 @@ bool ndGlobalConfig::Load(const string &filename) {
       "capture-defaults", "capture_type");
 
     if (capture_type == ndCT_NONE) {
-#if defined(_ND_USE_LIBPCAP)
+#if defined(_ND_ENABLE_LIBPCAP)
         capture_type = ndCT_PCAP;
-#elif defined(_ND_USE_TPACKETV3)
+#elif defined(_ND_ENABLE_TPACKETV3)
         capture_type = ndCT_TPV3;
-#elif defined(_ND_USE_NFQUEUE)
+#elif defined(_ND_ENABLE_NFQUEUE)
         capture_type = ndCT_TPV3;
 #else
         fprintf(stderr,
@@ -311,8 +311,8 @@ bool ndGlobalConfig::Load(const string &filename) {
         dhc_save = ndDHC_VOLATILE;
     else dhc_save = ndDHC_DISABLED;
 
-    ttl_dns_entry = (unsigned)r->GetInteger(
-      "dns-hint-cache", "ttl", ND_TTL_IDLE_DHC_ENTRY);
+    max_dhc = (unsigned)r->GetInteger("dns-hint-cache",
+      "cache-size", ND_MAX_DHC_ENTRIES);
 
     // Privacy filter section
     for (int i = 0;; i++) {
@@ -909,21 +909,21 @@ enum nd_capture_type ndGlobalConfig::LoadCaptureType(
     string capture_type = r->Get(section, key, "auto");
 
     if (capture_type == "auto") {
-#if defined(_ND_USE_LIBPCAP)
+#if defined(_ND_ENABLE_LIBPCAP)
         ct = ndCT_PCAP;
-#elif defined(_ND_USE_TPACKETV3)
+#elif defined(_ND_ENABLE_TPACKETV3)
         ct = ndCT_TPV3;
 #else
 #error "No available capture types!"
 #endif
     }
-#if defined(_ND_USE_LIBPCAP)
+#if defined(_ND_ENABLE_LIBPCAP)
     else if (capture_type == "pcap") ct = ndCT_PCAP;
 #endif
-#if defined(_ND_USE_TPACKETV3)
+#if defined(_ND_ENABLE_TPACKETV3)
     else if (capture_type == "tpv3") ct = ndCT_TPV3;
 #endif
-#if defined(_ND_USE_NFQUEUE)
+#if defined(_ND_ENABLE_NFQUEUE)
     else if (capture_type == "nfqueue") ct = ndCT_NFQ;
 #endif
     else {

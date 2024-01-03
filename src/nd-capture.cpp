@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -1111,14 +1111,14 @@ nd_process_ip:
     if (addr_cmp < 0) {
         nf->stats.lower_packets++;
         nf->stats.lower_bytes += packet->length;
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
         nf->stats.UpdateRate(true, ts_pkt, packet->length);
 #endif
     }
     else {
         nf->stats.upper_packets++;
         nf->stats.upper_bytes += packet->length;
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
         nf->stats.UpdateRate(false, ts_pkt, packet->length);
 #endif
     }
@@ -1128,7 +1128,7 @@ nd_process_ip:
     if (nf->ip_protocol == IPPROTO_TCP) {
         if (hdr_tcp->th_seq <= nf->tcp.last_seq) {
             nf->tcp.last_seq = hdr_tcp->th_seq;
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
             nf->stats.tcp_seq_errors++;
             // TODO: tcp_retrans detection
 #endif
@@ -1139,7 +1139,7 @@ nd_process_ip:
           (hdr_tcp->th_flags & TH_ACK))
             nf->tcp.fin_ack++;
         if (hdr_tcp->th_flags & TH_RST) {
-#ifdef _ND_EXTENDED_STATS
+#ifdef _ND_ENABLE_EXTENDED_STATS
             nf->stats.tcp_resets++;
 #endif
             stats.pkt.tcp_resets++;

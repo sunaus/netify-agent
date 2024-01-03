@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -20,38 +20,70 @@
 
 #pragma once
 
-#include <list>
-#include <mutex>
+#include <ostream>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 using namespace std;
 
+#include "nd-apps.hpp"
+#include "nd-flow.hpp"
+#include "nd-protos.hpp"
 #include "nd-util.hpp"
-#include "netifyd.hpp"
 
-// Hash cache filename
-#define ND_FLOW_HC_FILE_NAME "/flow-hash-cache.dat"
+using namespace std;
 
-typedef list<pair<string, string>> nd_fhc_list;
-typedef unordered_map<string, nd_fhc_list::iterator> nd_fhc_map;
+#define ND_FHC_FILE_NAME "/flow-hash-cache.csv"
 
-class ndFlowHashCache
+class ndFlowHashCacheEntry
 {
 public:
-    ndFlowHashCache(size_t cache_size = ND_MAX_FHC_ENTRIES)
-      : cache_size(cache_size) { }
+    ndFlowHashCacheEntry()
+      : app_id(ND_APP_UNKNOWN), proto_id(ND_PROTO_UNKNOWN) { }
+    ndFlowHashCacheEntry(const nd_flow_ptr &flow)
+      : digest(flow->digest_mdata.begin(),
+          flow->digest_mdata.end()),
+        app_id(flow->detected_application),
+        proto_id(flow->detected_protocol) { }
 
-    void Push(const string &lower_hash, const string &upper_hash);
-    bool Pop(const string &lower_hash, string &upper_hash);
+    friend ostream &operator<<(ostream &stream,
+      const ndFlowHashCacheEntry &entry) {
+        string _digest;
+        nd_sha1_to_string(entry.digest, _digest);
+        stream << _digest << "," << entry.app_id << ","
+               << entry.proto_id;
+        return stream;
+    }
+
+    vector<uint8_t> digest;
+    nd_app_id_t app_id;
+    nd_proto_id_t proto_id;
+};
+
+class ndFlowHashCache : public ndLRUCache<string, ndFlowHashCacheEntry>
+{
+public:
+    ndFlowHashCache(size_t cache_size);
+
+    inline void Insert(const nd_flow_ptr &flow) {
+        const string key(flow->digest_lower.begin(),
+          flow->digest_lower.end());
+        CacheInsert(key, ndFlowHashCacheEntry(flow));
+    }
+
+    inline void Insert(const vector<uint8_t> &digest_lower,
+      const ndFlowHashCacheEntry &entry) {
+        const string key(digest_lower.begin(), digest_lower.end());
+        CacheInsert(key, entry);
+    }
+
+    inline bool Lookup(const vector<uint8_t> &digest_lower,
+      ndFlowHashCacheEntry &entry) {
+        const string key(digest_lower.begin(), digest_lower.end());
+        if (! CacheLookup(key, entry)) return false;
+        return true;
+    }
 
     void Load(void);
-    void Save(void);
-
-protected:
-    mutex lock;
-
-    size_t cache_size;
-    nd_fhc_list index;
-    nd_fhc_map lookup;
+    void Save(void) const;
 };

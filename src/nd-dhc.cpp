@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -22,14 +22,18 @@
 #include "config.h"
 #endif
 
+#include <algorithm>
+#include <fstream>
+#include <vector>
+
+#include "nd-config.hpp"
 #include "nd-dhc.hpp"
 #include "nd-instance.hpp"
 #include "nd-util.hpp"
 
-ndDNSHintCache::ndDNSHintCache() {
-#ifdef HAVE_CXX11
-    map_ar.reserve(ND_HASH_BUCKETS_DNSARS);
-#endif
+ndDNSHintCache::ndDNSHintCache(size_t cache_size)
+  : ndLRUCache<string, string>(cache_size, true) {
+    kvmap.reserve(ND_HASH_BUCKETS_DNSARS);
 }
 
 void ndDNSHintCache::Insert(const ndAddr &addr,
@@ -66,38 +70,17 @@ void ndDNSHintCache::Insert(const ndAddr &addr,
     digest.assign((const char *)sha1_result(&ctx, _digest),
       SHA1_DIGEST_LENGTH);
 
-    lock_guard<mutex> ul(lock);
-
-    nd_dns_tuple ar(
-      time_t(nd_time_monotonic() + ndGC.ttl_dns_entry), hostname);
-    nd_dhc_insert i = map_ar.insert(nd_dhc_insert_pair(digest, ar));
-
-    if (! i.second)
-        i.first->second.first = nd_time_monotonic() + ndGC.ttl_dns_entry;
+    CacheInsert(digest, hostname);
 }
 
 void ndDNSHintCache::Insert(const string &digest,
   const string &hostname) {
-    int i = 0;
-    uint8_t v;
-    const char *p = digest.c_str();
-    string _digest;
+    vector<uint8_t> _digest_bin;
 
-    // TODO: Verify length of digest (must be
-    // SHA1_DIGEST_LENGTH).
-
-    do {
-        if (sscanf(p, "%2hhx", &v) != 1) break;
-        _digest.append(1, v);
-        p += 2;
+    if (nd_string_to_sha1(digest, _digest_bin)) {
+        string _digest(_digest_bin.begin(), _digest_bin.end());
+        CacheInsert(_digest, hostname);
     }
-    while (++i < SHA1_DIGEST_LENGTH);
-
-    if (_digest.size() != SHA1_DIGEST_LENGTH) return;
-
-    nd_dns_tuple ar(
-      time_t(nd_time_monotonic() + ndGC.ttl_dns_entry), hostname);
-    map_ar.insert(nd_dhc_insert_pair(_digest, ar));
 }
 
 bool ndDNSHintCache::Lookup(const ndAddr &addr, string &hostname) {
@@ -126,53 +109,13 @@ bool ndDNSHintCache::Lookup(const ndAddr &addr, string &hostname) {
     digest.assign((const char *)sha1_result(&ctx, _digest),
       SHA1_DIGEST_LENGTH);
 
-    return Lookup(digest, hostname);
-}
-
-bool ndDNSHintCache::Lookup(const string &digest, string &hostname) {
-    bool found = false;
-    lock_guard<mutex> ul(lock);
-
-    nd_dns_ar::iterator i = map_ar.find(digest);
-    if (i != map_ar.end()) {
-        found = true;
-        hostname = i->second.second;
-        i->second.first = nd_time_monotonic() + ndGC.ttl_dns_entry;
-    }
-
-    return found;
-}
-
-size_t ndDNSHintCache::Purge(void) {
-    lock_guard<mutex> ul(lock);
-    size_t purged = 0, remaining = 0;
-
-    nd_dns_ar::iterator i = map_ar.begin();
-    while (i != map_ar.end()) {
-        if (i->second.first < nd_time_monotonic()) {
-            i = map_ar.erase(i);
-            purged++;
-        }
-        else i++;
-    }
-
-    remaining = map_ar.size();
-
-    if (purged > 0 && remaining > 0)
-        nd_dprintf(
-          "Purged %u DNS cache entries, %u active.\n",
-          purged, remaining);
-
-    return purged;
+    //    return Lookup(digest, hostname);
+    return CacheLookup(digest, hostname);
 }
 
 void ndDNSHintCache::Load(void) {
-    int rc;
-    long ttl;
-    char header[1024], *host, *digest;
-    size_t loaded = 0, line = 1;
     string filename;
-    FILE *hf = NULL;
+    size_t loaded = 0, ln = 0;
 
     switch (ndGC.dhc_save) {
     case ndDHC_PERSISTENT:
@@ -184,47 +127,68 @@ void ndDNSHintCache::Load(void) {
     default: return;
     }
 
-    if (! (hf = fopen(filename.c_str(), "r"))) return;
+    ifstream ifs(filename);
 
-    if (fgets(header, sizeof(header), hf) == NULL) {
-        fclose(hf);
+    if (! ifs.is_open()) {
+        nd_printf("Error loading DHC hint cache: %s: %s\n",
+          filename.c_str(), strerror(errno));
         return;
     }
 
-    lock_guard<mutex> ul(lock);
+    string line;
+    while (getline(ifs, line)) {
+        nd_ltrim(line);
+        if (! ifs.good() || ++ln == 1 || line.empty())
+            continue;
 
-    while (! feof(hf)) {
-        line++;
-        if ((rc = fscanf(hf,
-               " \"%m[0-9A-z.-]\" , %m[0-9A-Fa-f] , %ld\n",
-               &host, &digest, &ttl)) != 3)
-        {
-            nd_printf("%s: parse error at line #%u [%d]\n",
-              filename.c_str(), line, rc);
-            if (rc >= 1) free(host);
-            if (rc >= 2) free(digest);
-            break;
+        size_t fc = count_if(line.begin(), line.end(),
+          [](unsigned char c) {
+            if (c == ',') return true;
+            return false;
+        });
+
+        size_t p, dp;
+        if ((p = line.find_first_of(",")) == string::npos) {
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
         }
 
-        Insert(digest, host);
+        string hostname(line.begin(), line.begin() + p);
 
-        free(host);
-        free(digest);
+        nd_trim(hostname);
+        nd_trim(hostname, '"');
+
+        switch (fc) {
+        case 1: Insert(line.substr(p + 1), hostname); break;
+        case 2:
+            nd_dprintf(
+              "Legacy-format DNS hint cache detected.\n");
+
+            dp = p + 1;
+            if ((p = line.find_first_of(",", dp)) == string::npos)
+            {
+                nd_printf("%s: parse error at line #%u\n",
+                  filename.c_str(), ln);
+                return;
+            }
+            Insert(line.substr(dp, p), hostname);
+            break;
+        default:
+            nd_printf("%s: parse error at line #%u\n",
+              filename.c_str(), ln);
+            return;
+        }
 
         loaded++;
     }
 
-    nd_dprintf("Loaded %u of %u DNS cache entries.\n",
-      map_ar.size(), loaded);
-
-    fclose(hf);
+    nd_dprintf("Loaded %u DNS hint cache entries.\n", loaded);
 }
 
-void ndDNSHintCache::Save(void) {
-    string digest;
-    size_t saved = 0;
+void ndDNSHintCache::Save(void) const {
     string filename;
-    FILE *hf = NULL;
+    size_t saved = 0;
 
     switch (ndGC.dhc_save) {
     case ndDHC_PERSISTENT:
@@ -236,24 +200,29 @@ void ndDNSHintCache::Save(void) {
     default: return;
     }
 
-    if (! (hf = fopen(filename.c_str(), "w"))) return;
+    lock_guard<mutex> lg(lock);
 
-    lock_guard<mutex> ul(lock);
-
-    fprintf(hf, "\"host\",\"addr_digest\",\"ttl\"\n");
-
-    for (nd_dns_ar::iterator i = map_ar.begin(); i != map_ar.end(); i++)
-    {
-        nd_sha1_to_string((const uint8_t *)i->first.c_str(), digest);
-
-        if (fprintf(hf, "\"%s\",%s,%u\n",
-              i->second.second.c_str(), digest.c_str(),
-              (unsigned)(i->second.first - nd_time_monotonic())) > 0)
-            saved++;
+    ofstream ofs(filename, ofstream::trunc);
+    if (! ofs.is_open()) {
+        nd_printf("Error saving DHC hint cache: %s: %s\n",
+          filename.c_str(), strerror(errno));
+        return;
     }
 
-    nd_dprintf("Saved %u of %u DNS cache entries.\n", saved,
-      map_ar.size());
+    ofs << "\"host\",\"addr_digest\"" << endl;
 
-    fclose(hf);
+    for (auto &i : kvmap) {
+        string digest;
+        nd_sha1_to_string((const uint8_t *)i.first.c_str(), digest);
+        ofs << "\"" << i.second.first << "\"," << digest << endl;
+        if (ofs.good()) saved++;
+        else {
+            nd_dprintf(
+              "Error while saving DNS hint cache: %s\n",
+              filename.c_str());
+            break;
+        }
+    }
+
+    nd_dprintf("Saved %u DNS hint cache entries.\n", saved);
 }

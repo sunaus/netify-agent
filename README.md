@@ -1,7 +1,7 @@
 # Netify Agent
 https://netify.ai
 
-Copyright ©2015-2023 eGloo Incorporated ([www.egloo.ca](https://www.egloo.ca))
+Copyright ©2015-2024 eGloo Incorporated ([www.egloo.ca](https://www.egloo.ca))
 
 CI Status: [![pipeline status](https://gitlab.com/netify.ai/public/netify-agent/badges/master/pipeline.svg)](https://gitlab.com/netify.ai/public/netify-agent/-/commits/master)
 

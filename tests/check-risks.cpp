@@ -1,5 +1,5 @@
 // Netify Agent Test Suite
-// Copyright (C) 2022 eGloo Incorporated
+// Copyright (C) 2024 eGloo Incorporated
 // <http://www.egloo.ca>
 
 #ifdef HAVE_CONFIG_H

@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2023 eGloo Incorporated
+// Copyright (C) 2015-2024 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -39,6 +39,7 @@
 #include <radix/radix_tree.hpp>
 #include <set>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include <utility>
 
@@ -738,8 +739,8 @@ public:
 
     template <class T>
     void Encode(T &output, const string &key) const {
-        if (addrs.empty()) return;
         lock_guard<mutex> ul(lock);
+        if (addrs.empty()) return;
         vector<string> addresses;
         for (auto &a : addrs)
             addresses.push_back(a.GetString());
@@ -803,12 +804,12 @@ public:
         case ndCT_PCAP:
             config_pcap = iface.config_pcap;
             break;
-#if defined(_ND_USE_TPACKETV3)
+#if defined(_ND_ENABLE_TPACKETV3)
         case ndCT_TPV3:
             config_tpv3 = iface.config_tpv3;
             break;
 #endif
-#if defined(_ND_USE_NFQUEUE)
+#if defined(_ND_ENABLE_NFQUEUE)
         case ndCT_NFQ: config_nfq = iface.config_nfq; break;
 #endif
         default: break;
@@ -921,15 +922,16 @@ public:
                 output[i.first.GetString()].insert(j);
         }
     }
+
     inline void SetConfig(const nd_config_pcap *pcap) {
         config_pcap = *pcap;
     }
-#if defined(_ND_USE_TPACKETV3)
+#if defined(_ND_ENABLE_TPACKETV3)
     inline void SetConfig(const nd_config_tpv3 *tpv3) {
         config_tpv3 = *tpv3;
     }
 #endif
-#if defined(_ND_USE_NFQUEUE)
+#if defined(_ND_ENABLE_NFQUEUE)
     inline void SetConfig(const nd_config_nfq *nfq) {
         config_nfq = *nfq;
     }
@@ -944,11 +946,11 @@ public:
         case ndCT_PCAP:
         case ndCT_PCAP_OFFLINE:
             return (config_pcap == i.config_pcap);
-#if defined(_ND_USE_TPACKETV3)
+#if defined(_ND_ENABLE_TPACKETV3)
         case ndCT_TPV3:
             return (config_tpv3 == i.config_tpv3);
 #endif
-#if defined(_ND_USE_NFQUEUE)
+#if defined(_ND_ENABLE_NFQUEUE)
         case ndCT_NFQ: return (config_nfq == i.config_nfq);
 #endif
         }
@@ -961,10 +963,10 @@ public:
     nd_interface_role role;
 
     nd_config_pcap config_pcap;
-#if defined(_ND_USE_TPACKETV3)
+#if defined(_ND_ENABLE_TPACKETV3)
     nd_config_tpv3 config_tpv3;
 #endif
-#if defined(_ND_USE_NFQUEUE)
+#if defined(_ND_ENABLE_NFQUEUE)
     nd_config_nfq config_nfq;
 #endif
 
