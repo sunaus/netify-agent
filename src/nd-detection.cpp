@@ -350,6 +350,14 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         switch (ndEF->GetMasterProtocol()) {
         case ND_PROTO_TLS:
         case ND_PROTO_QUIC:
+            if (ndEF->tls.client_sni.empty() &&
+              ! ndEF->host_server_name.empty())
+            {
+                flow_update = true;
+                ndEF->flags.detection_updated = true;
+                ndEF->tls.client_sni = ndEF->host_server_name;
+            }
+
             if (ndEF->tls.cipher_suite == 0 &&
               ndEFNFP.tls_quic.server_cipher != 0)
             {
@@ -589,20 +597,14 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
               ndEF->upper_addr, hostname);
         }
 
-        if (ndEF->flags.dhc_hit.load()) {
+        if (ndEF->flags.dhc_hit.load())
             ndEF->dns_host_name = hostname;
-            if (ndEFNF->host_server_name[0] == '\0' ||
-              nd_is_ipaddr((const char *)ndEFNF->host_server_name))
-            {
-                snprintf((char *)ndEFNF->host_server_name,
-                  sizeof(ndEFNF->host_server_name) - 1,
-                  "%s", hostname.c_str());
-            }
-        }
     }
 
-    ndEF->host_server_name.assign(ndEFNF->host_server_name);
-    nd_set_hostname(ndEF->host_server_name);
+    if (ndEFNF->host_server_name[0] != '\0') {
+        ndEF->host_server_name.assign(ndEFNF->host_server_name);
+        nd_set_hostname(ndEF->host_server_name);
+    }
 
     // Determine application based on master protocol metadata
     // for Protocol / Application "Twins"
@@ -748,6 +750,10 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         ndEF->tls.version = ndEFNFP.tls_quic.ssl_version;
         ndEF->tls.cipher_suite = ndEFNFP.tls_quic.server_cipher;
 
+        if (ndEF->tls.client_sni.empty() &&
+          ! ndEF->host_server_name.empty())
+            ndEF->tls.client_sni = ndEF->host_server_name;
+
         if (ndEF->tls.server_cn.empty() &&
           ndEFNFP.tls_quic.serverCN != nullptr)
         {
@@ -828,77 +834,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
 
     ndEF->Hash(tag, true);
 
-    if (fhc != nullptr && ! ndEF->flags.fhc_hit &&
-      ndEF->ip_protocol != IPPROTO_ICMP &&
-      ndEF->ip_protocol != IPPROTO_ICMPV6 &&
-      ndEF->ip_protocol != IPPROTO_IGMP &&
-      ndEF->GetMasterProtocol() != ND_PROTO_DNS)
-    {
-        if (ndEF->detected_protocol == ND_PROTO_UNKNOWN ||
-          ndEF->detected_application == ND_APP_UNKNOWN)
-        {
-            ndFlowHashCacheEntry result;
-            if (fhc->Lookup(ndEF->digest_lower, result)) {
-                if (! equal(result.digest.begin(),
-                      result.digest.end(),
-                      ndEF->digest_mdata.begin()))
-                {
-                    ndEF->flags.fhc_hit = true;
-
-                    if (result.proto_id != ND_PROTO_UNKNOWN &&
-                      result.proto_id != ndEF->detected_protocol)
-                    {
-#ifdef _ND_LOG_FHC
-                        string proto_from = nd_proto_get_name(
-                          ndEF->detected_protocol);
-                        string proto_to = nd_proto_get_name(
-                          result.proto_id);
-                        nd_dprintf(
-                          "%s: updated proto from flow "
-                          "hash cache: %s -> %s\n",
-                          tag.c_str(), proto_from.c_str(),
-                          proto_to.c_str());
-#endif
-                        ndEF->detected_protocol = result.proto_id;
-                    }
-
-                    if (result.app_id != ND_APP_UNKNOWN &&
-                      result.app_id != ndEF->detected_application)
-                    {
-#ifdef _ND_LOG_FHC
-                        string app_from;
-                        ndi.apps.Lookup(
-                          ndEF->detected_application, app_from);
-                        string app_to;
-                        ndi.apps.Lookup(result.app_id, app_to);
-                        nd_dprintf(
-                          "%s: update app from flow hash "
-                          "cache: %s -> %s\n",
-                          tag.c_str(), app_from.c_str(),
-                          app_to.c_str());
-#endif
-                        ndEF->detected_application = result.app_id;
-                        ndi.apps.Lookup(result.app_id,
-                          ndEF->detected_application_name);
-                    }
-
-                    ndEF->digest_mdata.assign(
-                      result.digest.begin(), result.digest.end());
-#ifdef _ND_LOG_FHC
-                    nd_dprintf(
-                      "%s: resurrected flow metadata "
-                      "hash.\n",
-                      tag.c_str());
-#endif
-                }
-            }
-        }
-
-        if (! ndEF->flags.fhc_hit &&
-          (ndEF->detected_protocol != ND_PROTO_UNKNOWN ||
-            ndEF->detected_application != ND_APP_UNKNOWN))
-            fhc->Insert(ndEF);
-    }
+    HashCacheLookup(entry);
 
     for (int t = ndFlow::TYPE_LOWER; t < ndFlow::TYPE_MAX; t++)
     {
@@ -1084,6 +1020,8 @@ void ndDetectionThread::SetDetectionComplete(
     ndEF->flags.detection_complete = true;
 
     FlowUpdate(entry);
+
+    HashCacheLookup(entry, true);
 }
 
 void ndDetectionThread::FlowUpdate(ndDetectionQueueEntry *entry) {
@@ -1201,5 +1139,87 @@ void ndDetectionThread::FlowUpdate(ndDetectionQueueEntry *entry) {
         }
 
         if (output) ndEF->Print(flags);
+    }
+}
+
+void ndDetectionThread::HashCacheLookup(
+  ndDetectionQueueEntry *entry, bool insert) {
+
+    if (fhc != nullptr && ! ndEF->flags.fhc_hit &&
+      ndEF->ip_protocol != IPPROTO_ICMP &&
+      ndEF->ip_protocol != IPPROTO_ICMPV6 &&
+      ndEF->ip_protocol != IPPROTO_IGMP &&
+      ndEF->GetMasterProtocol() != ND_PROTO_DNS)
+    {
+        if (insert) {
+            if (! ndEF->flags.fhc_hit &&
+              ! ndEF->flags.detection_guessed &&
+              (ndEF->detected_protocol != ND_PROTO_UNKNOWN ||
+                ndEF->detected_application != ND_APP_UNKNOWN))
+            {
+                fhc->Insert(ndEF);
+            }
+            return;
+        }
+
+        if (ndEF->detected_protocol == ND_PROTO_UNKNOWN ||
+          ndEF->detected_application == ND_APP_UNKNOWN)
+        {
+            ndFlowHashCacheEntry result;
+            if (fhc->Lookup(ndEF->digest_lower, result)) {
+                if (! equal(result.digest.begin(),
+                      result.digest.end(),
+                      ndEF->digest_mdata.begin()))
+                {
+                    ndEF->flags.fhc_hit = true;
+
+                    if (result.proto_id != ND_PROTO_UNKNOWN &&
+                      result.proto_id != ndEF->detected_protocol)
+                    {
+#ifdef _ND_LOG_FHC
+                        string proto_from = nd_proto_get_name(
+                          ndEF->detected_protocol);
+                        string proto_to = nd_proto_get_name(
+                          result.proto_id);
+                        nd_dprintf(
+                          "%s: updated proto from flow "
+                          "hash cache: %s -> %s\n",
+                          tag.c_str(), proto_from.c_str(),
+                          proto_to.c_str());
+#endif
+                        ndEF->detected_protocol = result.proto_id;
+                    }
+
+                    if (result.app_id != ND_APP_UNKNOWN &&
+                      result.app_id != ndEF->detected_application)
+                    {
+#ifdef _ND_LOG_FHC
+                        string app_from;
+                        ndi.apps.Lookup(
+                          ndEF->detected_application, app_from);
+                        string app_to;
+                        ndi.apps.Lookup(result.app_id, app_to);
+                        nd_dprintf(
+                          "%s: updated app from flow hash "
+                          "cache: %s -> %s\n",
+                          tag.c_str(), app_from.c_str(),
+                          app_to.c_str());
+#endif
+                        ndEF->detected_application = result.app_id;
+                        ndi.apps.Lookup(result.app_id,
+                          ndEF->detected_application_name);
+                    }
+
+                    ndEF->digest_mdata.assign(
+                      result.digest.begin(), result.digest.end());
+#ifdef _ND_LOG_FHC
+                    nd_dprintf(
+                      "%s: resurrected flow metadata "
+                      "hash.\n",
+                      tag.c_str());
+#endif
+                }
+            }
+        }
     }
 }

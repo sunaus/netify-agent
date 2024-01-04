@@ -109,4 +109,7 @@ protected:
     void SetDetectionComplete(ndDetectionQueueEntry *entry);
 
     void FlowUpdate(ndDetectionQueueEntry *entry);
+
+    void HashCacheLookup(ndDetectionQueueEntry *entry,
+      bool insert = false);
 };

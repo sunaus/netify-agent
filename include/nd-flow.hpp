@@ -283,6 +283,7 @@ public:
         string subject_dn;
         string issuer_dn;
         string server_cn;
+        string client_sni;
         string client_ja3;
         string server_ja3;
         vector<uint8_t> cert_fingerprint;
@@ -613,7 +614,7 @@ public:
 
                 if (HasTLSClientSNI())
                     serialize(output,
-                      { "ssl", "client_sni" }, host_server_name);
+                      { "ssl", "client_sni" }, tls.client_sni);
 
                 if (HasTLSServerCN())
                     serialize(output,

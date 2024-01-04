@@ -274,7 +274,7 @@ bool ndFlow::HasSSHServerAgent(void) const {
 bool ndFlow::HasTLSClientSNI(void) const {
     return ((GetMasterProtocol() == ND_PROTO_TLS ||
               detected_protocol == ND_PROTO_QUIC) &&
-      host_server_name.empty() == false);
+      tls.client_sni.empty() == false);
 }
 
 bool ndFlow::HasTLSServerCN(void) const {
@@ -527,7 +527,7 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
                     << setw(plen) << " "
                     << ":";
                 if (HasTLSClientSNI())
-                    dls << " TLS/SNI: " << host_server_name;
+                    dls << " TLS/SNI: " << tls.client_sni;
                 if (HasTLSServerCN())
                     dls << " TLS/CN: " << tls.server_cn;
             }

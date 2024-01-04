@@ -66,7 +66,7 @@ ndInstanceStatus::ndInstanceStatus()
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
     tcm_alloc_kb(0), tcm_alloc_kb_prev(0),
 #endif
-    dhc_status(false), dhc_size(0) {
+    dhc_status(false), fhc_status(false) {
     flows = 0;
     cpus = sysconf(_SC_NPROCESSORS_ONLN);
 }
@@ -516,6 +516,10 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             break;
 
         switch (rc) {
+        case _ND_LO_LOOKUP_IP:
+            rc = LookupAddress(optarg);
+            return ndCR_Pack(ndCR_LOOKUP_ADDR, (rc) ? 0 : 1);
+            break;
         case _ND_LO_EXPORT_APPS:
 #ifndef _ND_LEAN_AND_MEAN
             rc = apps.Save("/dev/stdout");
@@ -877,8 +881,8 @@ bool ndInstance::LookupAddress(const string &ip) {
 
     nd_app_id_t id = apps.Find(addr);
 
-    cout << right << setw(6) << id << left << setw(0)
-         << apps.Lookup(id) << endl;
+    cout << right << setw(6) << id << ": " << left
+         << setw(0) << apps.Lookup(id) << endl;
 
     return true;
 }
@@ -1115,6 +1119,18 @@ bool ndInstance::SaveAgentStatus(const nd_interface_stats &stats) {
         plugins.Encode(jstatus);
         status.Encode(jstatus);
 
+        if (dns_hint_cache != nullptr) {
+            json jstats;
+            dns_hint_cache->Encode(jstats);
+            jstatus["dns_hint_cache"] = jstats;
+        }
+
+        if (flow_hash_cache != nullptr) {
+            json jstats;
+            flow_hash_cache->Encode(jstats);
+            jstatus["flow_hash_cache"] = jstats;
+        }
+
         if (ndGC_USE_NAPI) {
             json jnetify_api;
             jstatus["netify_api"] = api_manager.GetStatus();
@@ -1250,11 +1266,6 @@ bool ndInstance::DisplayAgentStatus(void) {
                         "is running",
       nd_pid);
 
-    fprintf(stderr, "%s persistent state path: %s\n",
-      ND_I_INFO, ndGC.path_state_persistent.c_str());
-    fprintf(stderr, "%s volatile state path: %s\n",
-      ND_I_INFO, ndGC.path_state_volatile.c_str());
-
     json jstatus;
 
     try {
@@ -1297,6 +1308,69 @@ bool ndInstance::DisplayAgentStatus(void) {
         nd_uptime(jstatus["uptime"].get<time_t>(), uptime);
         fprintf(stderr, "%s agent uptime: %s\n", ND_I_INFO,
           uptime.c_str());
+
+        string uuid;
+        ndGC.LoadUUID(ndGlobalConfig::UUID_AGENT, uuid);
+
+        if (uuid.size() != ND_AGENT_UUID_LEN || uuid == ND_AGENT_UUID_NULL)
+        {
+            fprintf(stderr,
+              "%s%s%s agent UUID is not set.\n", ND_C_RED,
+              ND_I_FAIL, ND_C_RESET);
+            fprintf(stderr,
+              "  %s To generate a new one, run the "
+              "following command:\n",
+              ND_I_NOTE);
+            fprintf(stderr, "  %s # netifyd --provision\n", ND_I_NOTE);
+        }
+        else {
+            fprintf(stderr, "%s%s%s agent UUID: %s\n",
+              ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
+        }
+
+        ndGC.LoadUUID(ndGlobalConfig::UUID_SERIAL, uuid);
+
+        if (! uuid.empty() && uuid != ND_AGENT_SERIAL_NULL) {
+            fprintf(stderr, "%s%s%s serial UUID: %s\n",
+              ND_C_GREEN, ND_I_INFO, ND_C_RESET, uuid.c_str());
+        }
+
+        ndGC.LoadUUID(ndGlobalConfig::UUID_SITE, uuid);
+
+        if (uuid.empty() || uuid == ND_SITE_UUID_NULL) {
+            fprintf(stderr, "%s%s%s site UUID is not set.\n",
+              ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
+            fprintf(stderr,
+              "  %s A new site UUID will be automatically "
+              "set after this agent has been "
+              "provisioned.\n",
+              ND_I_NOTE);
+        }
+        else {
+            fprintf(stderr, "%s%s%s agent site UUID: %s\n",
+              ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
+        }
+
+        fprintf(stderr, "%s%s%s API updates: %s%s%s\n",
+          (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
+          (ndGC_USE_NAPI) ? ND_I_INFO : ND_I_WARN, ND_C_RESET,
+          (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
+          (ndGC_USE_NAPI) ? "enabled" : "disabled", ND_C_RESET);
+
+        if (! ndGC_USE_NAPI) {
+            fprintf(stderr,
+              "  %s Netify API updates can be enabled from "
+              "the configuration file:\n    %s\n",
+              ND_I_NOTE, conf_filename.c_str());
+        }
+        else {
+            DisplayApiStatus(jstatus, "bootstrap",
+              "provision status");
+            DisplayApiStatus(jstatus, "applications",
+              "applications update");
+            DisplayApiStatus(jstatus, "categories",
+              "categories update");
+        }
 
         double flows = jstatus["flow_count"].get<double>();
         double flow_utilization = (ndGC.max_flows > 0) ?
@@ -1471,8 +1545,10 @@ bool ndInstance::DisplayAgentStatus(void) {
                     }
                 }
                 catch (json::exception &e) {
-                    nd_dprintf("%s: JSON exception: %s\n",
-                      tag.c_str(), e.what());
+                    fprintf(stderr,
+                      "%s%s%s: error decoding interface "
+                      "stats.\n",
+                      ND_C_RED, ND_I_FAIL, ND_C_RESET);
                 }
 
                 fprintf(stderr,
@@ -1509,73 +1585,90 @@ bool ndInstance::DisplayAgentStatus(void) {
           (dhc_status) ? "enabled" : "disabled", ND_C_RESET);
 
         if (dhc_status) {
-            fprintf(stderr,
-              "%s%s%s DNS hint cache entries: %u\n",
-              ND_C_GREEN, ND_I_INFO, ND_C_RESET,
-              jstatus["dhc_size"].get<unsigned>());
+            json jstats = jstatus["dns_hint_cache"];
+
+            size_t cache_size = 0;
+            uint64_t insert_hit = 0;
+            float insert_hit_pct = 0.0;
+            uint64_t insert_miss = 0;
+            uint64_t insert_total = 0;
+            uint64_t lookup_hit = 0;
+            float lookup_hit_pct = 0;
+            uint64_t lookup_miss = 0;
+            uint64_t lookup_total = 0;
+
+            try {
+                cache_size = jstats["cache_size"].get<unsigned>();
+                insert_hit = jstats["insert_hit"].get<uint64_t>();
+                insert_hit_pct =
+                  jstats["insert_hit_pct"].get<float>();
+                insert_miss = jstats["insert_miss"].get<uint64_t>();
+                insert_total = insert_hit + insert_miss;
+                lookup_hit = jstats["lookup_hit"].get<uint64_t>();
+                lookup_hit_pct =
+                  jstats["lookup_hit_pct"].get<float>();
+                lookup_miss = jstats["lookup_miss"].get<uint64_t>();
+                lookup_total = lookup_hit + lookup_miss;
+
+                fprintf(stderr,
+                  "%s %s entries: %lu, inserts: %lu "
+                  "(%.01f%%), "
+                  "lookups: %lu (%.01f%%)\n",
+                  ND_I_INFO, "DHC", cache_size, insert_total,
+                  insert_hit_pct, lookup_total, lookup_hit_pct);
+            }
+            catch (json::exception &e) {
+                fprintf(stderr,
+                  "%s%s%s error decoding %s status.\n",
+                  ND_C_RED, ND_I_FAIL, ND_C_RESET, "DHC");
+            }
         }
 
-        fprintf(stderr, "%s%s%s API updates: %s%s%s\n",
-          (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
-          (ndGC_USE_NAPI) ? ND_I_INFO : ND_I_WARN, ND_C_RESET,
-          (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
-          (ndGC_USE_NAPI) ? "enabled" : "disabled", ND_C_RESET);
+        bool fhc_status = jstatus["fhc_status"].get<bool>();
+        fprintf(stderr, "%s%s%s flow hash cache: %s%s%s\n",
+          (fhc_status) ? ND_C_GREEN : ND_C_YELLOW,
+          (fhc_status) ? ND_I_OK : ND_I_WARN, ND_C_RESET,
+          (fhc_status) ? ND_C_GREEN : ND_C_YELLOW,
+          (fhc_status) ? "enabled" : "disabled", ND_C_RESET);
 
-        if (! ndGC_USE_NAPI) {
-            fprintf(stderr,
-              "  %s Netify API updates can be enabled from "
-              "the configuration file:\n    %s\n",
-              ND_I_NOTE, conf_filename.c_str());
-        }
-        else {
-            DisplayApiStatus(jstatus, "bootstrap",
-              "provision status");
-            DisplayApiStatus(jstatus, "applications",
-              "applications update");
-            DisplayApiStatus(jstatus, "categories",
-              "categories update");
-        }
+        if (fhc_status) {
+            json jstats = jstatus["flow_hash_cache"];
 
-        string uuid;
-        ndGC.LoadUUID(ndGlobalConfig::UUID_AGENT, uuid);
+            size_t cache_size = 0;
+            uint64_t insert_hit = 0;
+            float insert_hit_pct = 0.0;
+            uint64_t insert_miss = 0;
+            uint64_t insert_total = 0;
+            uint64_t lookup_hit = 0;
+            float lookup_hit_pct = 0;
+            uint64_t lookup_miss = 0;
+            uint64_t lookup_total = 0;
 
-        if (uuid.size() != ND_AGENT_UUID_LEN || uuid == ND_AGENT_UUID_NULL)
-        {
-            fprintf(stderr,
-              "%s%s%s agent UUID is not set.\n", ND_C_RED,
-              ND_I_FAIL, ND_C_RESET);
-            fprintf(stderr,
-              "  %s To generate a new one, run the "
-              "following command:\n",
-              ND_I_NOTE);
-            fprintf(stderr, "  %s # netifyd --provision\n", ND_I_NOTE);
-        }
-        else {
-            fprintf(stderr, "%s%s%s agent UUID: %s\n",
-              ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
-        }
+            try {
+                cache_size = jstats["cache_size"].get<unsigned>();
+                insert_hit = jstats["insert_hit"].get<uint64_t>();
+                insert_hit_pct =
+                  jstats["insert_hit_pct"].get<float>();
+                insert_miss = jstats["insert_miss"].get<uint64_t>();
+                insert_total = insert_hit + insert_miss;
+                lookup_hit = jstats["lookup_hit"].get<uint64_t>();
+                lookup_hit_pct =
+                  jstats["lookup_hit_pct"].get<float>();
+                lookup_miss = jstats["lookup_miss"].get<uint64_t>();
+                lookup_total = lookup_hit + lookup_miss;
 
-        ndGC.LoadUUID(ndGlobalConfig::UUID_SERIAL, uuid);
-
-        if (! uuid.empty() && uuid != ND_AGENT_SERIAL_NULL) {
-            fprintf(stderr, "%s%s%s serial UUID: %s\n",
-              ND_C_GREEN, ND_I_INFO, ND_C_RESET, uuid.c_str());
-        }
-
-        ndGC.LoadUUID(ndGlobalConfig::UUID_SITE, uuid);
-
-        if (uuid.empty() || uuid == ND_SITE_UUID_NULL) {
-            fprintf(stderr, "%s%s%s site UUID is not set.\n",
-              ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
-            fprintf(stderr,
-              "  %s A new site UUID will be automatically "
-              "set after this agent has been "
-              "provisioned.\n",
-              ND_I_NOTE);
-        }
-        else {
-            fprintf(stderr, "%s%s%s agent site UUID: %s\n",
-              ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
+                fprintf(stderr,
+                  "%s %s entries: %lu, inserts: %lu "
+                  "(%.01f%%), "
+                  "lookups: %lu (%.01f%%)\n",
+                  ND_I_INFO, "FHC", cache_size, insert_total,
+                  insert_hit_pct, lookup_total, lookup_hit_pct);
+            }
+            catch (json::exception &e) {
+                fprintf(stderr,
+                  "%s%s%s error decoding %s status.\n",
+                  ND_C_RED, ND_I_FAIL, ND_C_RESET, "FHC");
+            }
         }
     }
     catch (exception &e) {
@@ -1585,6 +1678,11 @@ bool ndInstance::DisplayAgentStatus(void) {
           ND_C_RED, ND_I_FAIL, ND_C_RESET, ND_C_RED,
           e.what(), ND_C_RESET);
     }
+
+    fprintf(stderr, "%s persistent state path: %s\n",
+      ND_I_INFO, ndGC.path_state_persistent.c_str());
+    fprintf(stderr, "%s volatile state path: %s\n",
+      ND_I_INFO, ndGC.path_state_volatile.c_str());
 
     return true;
 }
@@ -2234,11 +2332,8 @@ void ndInstance::UpdateStatus(void) {
           sizeof(struct timespec));
     }
 
-    if (ndGC_USE_DHC) {
-        status.dhc_status = true;
-        status.dhc_size = dns_hint_cache->GetSize();
-    }
-    else status.dhc_status = false;
+    status.dhc_status = ndGC_USE_DHC;
+    status.fhc_status = ndGC_USE_FHC;
 }
 
 void ndInstance::DisplayDebugScoreboard(void) {
@@ -2271,9 +2366,9 @@ void ndInstance::ProcessUpdate(nd_capture_threads &threads) {
     // Attempt to release heap back to OS when supported
     malloc_trim(0);
 #endif
-    if (ndGC_USE_DHC && dns_hint_cache != nullptr)
+    if (dns_hint_cache != nullptr)
         dns_hint_cache->Scoreboard(tag + ": DHC");
-    if (ndGC_USE_FHC && flow_hash_cache != nullptr)
+    if (flow_hash_cache != nullptr)
         flow_hash_cache->Scoreboard(tag + ": FHC");
 
     plugins.BroadcastEvent(ndPlugin::TYPE_BASE,

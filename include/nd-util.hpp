@@ -35,8 +35,11 @@
 #include <unordered_map>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
 #include "nd-except.hpp"
 
+using json = nlohmann::json;
 using namespace std;
 
 #define ND_SHA1_BUFFER 4096
@@ -374,7 +377,7 @@ public:
         return kvmap.size();
     }
 
-    void Scoreboard(const string &tag) const {
+    void Encode(json &jstats) const {
         size_t cache_size = 0;
 
         if (lockable) {
@@ -396,9 +399,50 @@ public:
         float lookup_hit_pct = 100.0f * (float)lookup_hit /
           (float)lookup_total;
 
+        jstats["cache_size"] = cache_size;
+        jstats["insert_hit"] = insert_hit;
+        jstats["insert_hit_pct"] = insert_hit_pct;
+        jstats["insert_miss"] = insert_miss;
+        jstats["lookup_hit"] = lookup_hit;
+        jstats["lookup_hit_pct"] = lookup_hit_pct;
+        jstats["lookup_miss"] = lookup_miss;
+    }
+
+    void Scoreboard(const string &tag) const {
+        size_t cache_size = 0;
+        uint64_t insert_hit = 0;
+        float insert_hit_pct = 0.0;
+        uint64_t insert_miss = 0;
+        uint64_t insert_total = 0;
+        uint64_t lookup_hit = 0;
+        float lookup_hit_pct = 0;
+        uint64_t lookup_miss = 0;
+        uint64_t lookup_total = 0;
+
+        try {
+            json jstats;
+            Encode(jstats);
+
+            cache_size = jstats["cache_size"].get<unsigned>();
+            insert_hit = jstats["insert_hit"].get<uint64_t>();
+            insert_hit_pct = jstats["insert_hit_pct"].get<float>();
+            insert_miss = jstats["insert_miss"].get<uint64_t>();
+            insert_total = insert_hit + insert_miss;
+            lookup_hit = jstats["lookup_hit"].get<uint64_t>();
+            lookup_hit_pct = jstats["lookup_hit_pct"].get<float>();
+            lookup_miss = jstats["lookup_miss"].get<uint64_t>();
+            lookup_total = lookup_hit + lookup_miss;
+        }
+        catch (json::exception &e) {
+            nd_dprintf(
+              "%s: error decoding JSON status: %s\n",
+              tag.c_str(), e.what());
+            return;
+        }
+
         nd_dprintf(
-          "%s entries: %u, inserts: %u (%.01f%%), "
-          "lookups: %u (%.01f%%)\n",
+          "%s entries: %lu, inserts: %lu (%.01f%%), "
+          "lookups: %lu (%.01f%%)\n",
           tag.c_str(), cache_size, insert_total,
           insert_hit_pct, lookup_total, lookup_hit_pct);
     }

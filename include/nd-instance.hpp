@@ -75,7 +75,7 @@ public:
     size_t tcm_alloc_kb_prev;
 #endif
     bool dhc_status;
-    size_t dhc_size;
+    bool fhc_status;
 
     template <class T>
     void Encode(T &output) const {
@@ -104,8 +104,7 @@ public:
           (unsigned)tcm_alloc_kb_prev);
 #endif  // _ND_ENABLE_LIBTCMALLOC
         serialize(output, { "dhc_status" }, dhc_status);
-        if (dhc_status)
-            serialize(output, { "dhc_size" }, dhc_size);
+        serialize(output, { "fhc_status" }, fhc_status);
     }
 };
 
