@@ -28,6 +28,7 @@
 #include "nd-addr.hpp"
 #include "nd-apps.hpp"
 #include "nd-category.hpp"
+#include "nd-config.hpp"
 #include "nd-protos.hpp"
 #include "nd-serializer.hpp"
 
@@ -467,8 +468,14 @@ public:
         if (encode_includes & ENCODE_METADATA) {
             serialize(output, { "ip_nat" },
               (bool)flags.ip_nat.load());
-            serialize(output, { "dhc_hit" },
-              (bool)flags.dhc_hit.load());
+            if (ndGC_USE_DHC) {
+                serialize(output, { "dhc_hit" },
+                  (bool)flags.dhc_hit.load());
+            }
+            if (ndGC_USE_FHC) {
+                serialize(output, { "fhc_hit" },
+                  (bool)flags.fhc_hit.load());
+            }
             serialize(output, { "soft_dissector" },
               (bool)flags.soft_dissector.load());
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
