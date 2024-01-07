@@ -354,10 +354,10 @@ public:
     class CacheStats
     {
     public:
-        atomic<uint64_t> insert_hit{ 0 };
-        atomic<uint64_t> insert_miss{ 0 };
-        atomic<uint64_t> lookup_hit{ 0 };
-        atomic<uint64_t> lookup_miss{ 0 };
+        atomic<uint64_t> insert_hit = { 0 };
+        atomic<uint64_t> insert_miss = { 0 };
+        atomic<uint64_t> lookup_hit = { 0 };
+        atomic<uint64_t> lookup_miss = { 0 };
     };
 
     CacheStats stats;
