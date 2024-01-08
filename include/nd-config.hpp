@@ -212,6 +212,7 @@ typedef struct nd_config_nfq_t {
 class ndGlobalConfig
 {
 public:
+    bool napi_tls_verify;
     string napi_vendor;
     string path_agent_status;
     string path_app_config;

@@ -176,8 +176,9 @@ ndNetifyApiThread::ndNetifyApiThread()
           static_cast<void *>(this));
     }
 
-    //    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, 0);
-    //    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
+    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, ndGC.napi_tls_verify);
+
     //    curl_easy_setopt(ch, CURLOPT_SSLVERSION,
     //    CURL_SSLVERSION_TLSv1);
 }

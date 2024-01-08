@@ -39,7 +39,7 @@
 #include "netifyd.hpp"
 
 ndGlobalConfig::ndGlobalConfig()
-  : napi_vendor(ND_API_VENDOR),
+  : napi_tls_verify(true), napi_vendor(ND_API_VENDOR),
     path_agent_status(ND_AGENT_STATUS_PATH),
     path_app_config(ND_CONF_APP_PATH),
     path_cat_config(ND_CONF_CAT_PATH),
@@ -417,6 +417,8 @@ bool ndGlobalConfig::Load(const string &filename) {
     url_napi_bootstrap = r->Get("netify-api",
       "bootstrap_url", ND_URL_API_BOOTSTRAP);
     napi_vendor = r->Get("netify-api", "vendor", ND_API_VENDOR);
+    napi_tls_verify = r->GetBoolean("netify-api",
+      "tls_verify", true);
 
     // Protocols section
     r->GetSection("protocols", protocols);
