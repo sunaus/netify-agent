@@ -25,6 +25,9 @@ path_state_persistent = @persistentstatedir@
 # Where to save our PID for: netifyd --status
 path_pid_file = ${path_state_volatile}/netifyd.pid
 
+# Path to shared data files
+path_shared_data = @sharedatadir@
+
 # Netify Informatics/API Integration
 # https://www.netify.ai/products/netify-informatics
 ##############################################################################
