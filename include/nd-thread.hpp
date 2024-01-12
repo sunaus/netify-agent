@@ -21,6 +21,7 @@
 #pragma once
 
 #include <atomic>
+#include <string>
 
 #include "nd-except.hpp"
 
