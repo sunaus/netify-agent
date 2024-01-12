@@ -124,8 +124,8 @@ typedef void* yyscan_t;
 %token FLOW_DOMAIN_CATEGORY FLOW_NETWORK_CATEGORY
 %token FLOW_APPLICATION FLOW_APPLICATION_CATEGORY
 %token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY
-%token FLOW_DETECTED_HOSTNAME FLOW_SSL_VERSION FLOW_SSL_CIPHER FLOW_ORIGIN
-%token FLOW_CT_MARK
+%token FLOW_DETECTED_HOSTNAME FLOW_ORIGIN FLOW_CT_MARK
+%token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_ESNI
 
 %token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED FLOW_OTHER_LOCAL
 %token <us_number> FLOW_OTHER_MULTICAST FLOW_OTHER_BROADCAST FLOW_OTHER_REMOTE
@@ -161,8 +161,8 @@ typedef void* yyscan_t;
 %type <bool_result> expr_app expr_app_id expr_app_name expr_app_category
 %type <bool_result> expr_domain_category expr_network_category
 %type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category
-%type <bool_result> expr_detected_hostname expr_ssl_version expr_ssl_cipher
-%type <bool_result> expr_origin expr_fwmark
+%type <bool_result> expr_detected_hostname expr_origin expr_fwmark
+%type <bool_result> expr_tls_version expr_tls_cipher expr_tls_ech expr_tls_esni
 
 %%
 
@@ -205,8 +205,10 @@ expr:
     | expr_proto
     | expr_proto_category
     | expr_detected_hostname
-    | expr_ssl_version
-    | expr_ssl_cipher
+    | expr_tls_version
+    | expr_tls_cipher
+    | expr_tls_ech
+    | expr_tls_esni
     | expr_origin
     | expr_fwmark
     | expr BOOL_OR expr {
@@ -1679,73 +1681,143 @@ expr_fwmark:
     }
     ;
 
-expr_ssl_version:
-      FLOW_SSL_VERSION {
+expr_tls_version:
+      FLOW_TLS_VERSION {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version != 0));
-        _NDFP_debugf("SSL version set? %s\n", (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-    | '!' FLOW_SSL_VERSION {
+    | '!' FLOW_TLS_VERSION {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version == 0));
-        _NDFP_debugf("SSL version not set? %s\n", (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_VERSION CMP_EQUAL VALUE_NUMBER {
+    | FLOW_TLS_VERSION CMP_EQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version == $3));
-        _NDFP_debugf("SSL version == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_VERSION CMP_NOTEQUAL VALUE_NUMBER {
+    | FLOW_TLS_VERSION CMP_NOTEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version != $3));
-        _NDFP_debugf("SSL version != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_VERSION CMP_GTHANEQUAL VALUE_NUMBER {
+    | FLOW_TLS_VERSION CMP_GTHANEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version >= $3));
-        _NDFP_debugf("SSL version >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_VERSION CMP_LTHANEQUAL VALUE_NUMBER {
+    | FLOW_TLS_VERSION CMP_LTHANEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version <= $3));
-        _NDFP_debugf("SSL version <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_VERSION '>' VALUE_NUMBER {
+    | FLOW_TLS_VERSION '>' VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version > $3));
-        _NDFP_debugf("SSL version > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_VERSION '<' VALUE_NUMBER {
+    | FLOW_TLS_VERSION '<' VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.version < $3));
-        _NDFP_debugf("SSL version < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS version < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
-expr_ssl_cipher:
-      FLOW_SSL_CIPHER {
+expr_tls_cipher:
+      FLOW_TLS_CIPHER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite != 0));
-        _NDFP_debugf("SSL cipher suite set? %s\n", (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-    | '!' FLOW_SSL_CIPHER {
+    | '!' FLOW_TLS_CIPHER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite == 0));
-        _NDFP_debugf("SSL cipher suite not set? %s\n", (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_CIPHER CMP_EQUAL VALUE_NUMBER {
+    | FLOW_TLS_CIPHER CMP_EQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite == $3));
-        _NDFP_debugf("SSL cipher suite == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_CIPHER CMP_NOTEQUAL VALUE_NUMBER {
+    | FLOW_TLS_CIPHER CMP_NOTEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite != $3));
-        _NDFP_debugf("SSL cipher suite != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_CIPHER CMP_GTHANEQUAL VALUE_NUMBER {
+    | FLOW_TLS_CIPHER CMP_GTHANEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite >= $3));
-        _NDFP_debugf("SSL cipher suite >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_CIPHER CMP_LTHANEQUAL VALUE_NUMBER {
+    | FLOW_TLS_CIPHER CMP_LTHANEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite <= $3));
-        _NDFP_debugf("SSL cipher suite <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_CIPHER '>' VALUE_NUMBER {
+    | FLOW_TLS_CIPHER '>' VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite > $3));
-        _NDFP_debugf("SSL cipher suite > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_SSL_CIPHER '<' VALUE_NUMBER {
+    | FLOW_TLS_CIPHER '<' VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.cipher_suite < $3));
-        _NDFP_debugf("SSL cipher suite < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("TLS cipher suite < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_tls_ech:
+      FLOW_TLS_ECH {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version != 0));
+        _NDFP_debugf("TLS ECH version set? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_TLS_ECH {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version == 0));
+        _NDFP_debugf("TLS ECH version not set? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ECH CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version == $3));
+        _NDFP_debugf("TLS ECH version == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ECH CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version != $3));
+        _NDFP_debugf("TLS ECH version != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ECH CMP_GTHANEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version >= $3));
+        _NDFP_debugf("TLS ECH version >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ECH CMP_LTHANEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version <= $3));
+        _NDFP_debugf("TLS ECH version <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ECH '>' VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version > $3));
+        _NDFP_debugf("TLS ECH version > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ECH '<' VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version < $3));
+        _NDFP_debugf("TLS ECH version < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_tls_esni:
+      FLOW_TLS_ESNI {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite != 0));
+        _NDFP_debugf("TLS ESNI cipher suite set? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_TLS_ESNI {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite == 0));
+        _NDFP_debugf("TLS ESNI cipher suite not set? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ESNI CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite == $3));
+        _NDFP_debugf("TLS ESNI cipher suite == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ESNI CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite != $3));
+        _NDFP_debugf("TLS ESNI cipher suite != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ESNI CMP_GTHANEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite >= $3));
+        _NDFP_debugf("TLS ESNI cipher suite >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ESNI CMP_LTHANEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite <= $3));
+        _NDFP_debugf("TLS ESNI cipher suite <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ESNI '>' VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite > $3));
+        _NDFP_debugf("TLS ESNI cipher suite > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_TLS_ESNI '<' VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite < $3));
+        _NDFP_debugf("TLS ESNI cipher suite < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -1876,3 +1948,5 @@ bool ndFlowParser::Parse(nd_flow_ptr const& flow, const string &expr)
 
     return (rc == 0) ? expr_result : false;
 }
+
+// vi: set ft=cpp ei=all modelines=1 :
