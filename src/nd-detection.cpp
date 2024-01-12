@@ -446,6 +446,29 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 free(ndEFNFP.tls_quic.negotiated_alpn);
                 ndEFNFP.tls_quic.negotiated_alpn = nullptr;
             }
+
+            if (ndEF->tls.ech.version != 0 &&
+              ndEFNFP.tls_quic.encrypted_ch.version != 0)
+            {
+                ndEF->tls.ech.version =
+                  ndEFNFP.tls_quic.encrypted_ch.version;
+
+                flow_update = true;
+                ndEF->flags.detection_updated = true;
+            }
+
+            if (ndEF->tls.esni.esni.empty() &&
+              ndEFNFP.tls_quic.encrypted_sni.esni != nullptr)
+            {
+                ndEF->tls.esni.cipher_suite =
+                  ndEFNFP.tls_quic.encrypted_sni.cipher_suite;
+                ndEF->tls.esni.esni.assign(
+                  ndEFNFP.tls_quic.encrypted_sni.esni);
+
+                flow_update = true;
+                ndEF->flags.detection_updated = true;
+            }
+
             break;
         case ND_PROTO_DNS:
             // nd_dprintf("DNS flow updated.\n");
@@ -788,6 +811,21 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
             ndEFNFP.tls_quic.subjectDN = nullptr;
         }
 
+        if (ndEF->tls.ech.version != 0 &&
+          ndEFNFP.tls_quic.encrypted_ch.version != 0)
+        {
+            ndEF->tls.ech.version =
+              ndEFNFP.tls_quic.encrypted_ch.version;
+        }
+
+        if (ndEF->tls.esni.esni.empty() &&
+          ndEFNFP.tls_quic.encrypted_sni.esni != nullptr)
+        {
+            ndEF->tls.esni.cipher_suite =
+              ndEFNFP.tls_quic.encrypted_sni.cipher_suite;
+            ndEF->tls.esni.esni.assign(
+              ndEFNFP.tls_quic.encrypted_sni.esni);
+        }
         break;
     case ND_PROTO_HTTP:
     case ND_PROTO_SSDP:

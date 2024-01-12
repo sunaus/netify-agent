@@ -1,11 +1,11 @@
-offline0: i4pc-------r--- UDP [OR] 172.217.23.111:443 <-- [L] 192.168.2.27:51925
+offline0: i4pc----------- UDP [OR] 172.217.23.111:443 <-- [L] 192.168.2.27:51925
         : QUIC.netify.youtube
         : H: upload.youtube.com
         : TLS/SNI: upload.youtube.com
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu------r--- TCP [OR] 172.217.23.111:443 <-- [L] 192.168.2.27:57452
+offline0: i4pcu---------- TCP [OR] 172.217.23.111:443 <-- [L] 192.168.2.27:57452
         : HTTP/S.netify.youtube
         : H: upload.youtube.com
         : V: 0x0303 CS: 0xc02f
@@ -14,7 +14,7 @@ offline0: i4pcu------r--- TCP [OR] 172.217.23.111:443 <-- [L] 192.168.2.27:57452
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pc-------r--- UDP [OR] 172.217.23.111:443 <-- [L] 192.168.2.27:62232
+offline0: i4pc----------- UDP [OR] 172.217.23.111:443 <-- [L] 192.168.2.27:62232
         : QUIC.netify.youtube
         : H: upload.youtube.com
         : TLS/SNI: upload.youtube.com

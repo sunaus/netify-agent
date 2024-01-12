@@ -1,4 +1,4 @@
-offline0: i4pc-------r--- UDP [OR] 133.205.75.230:56528 --> [L] 208.229.157.81:443
+offline0: i4pc----------- UDP [OR] 133.205.75.230:56528 --> [L] 208.229.157.81:443
         : QUIC.netify.google
         : H: update.googleapis.com
         : V: 0x0304
@@ -6,7 +6,7 @@ offline0: i4pc-------r--- UDP [OR] 133.205.75.230:56528 --> [L] 208.229.157.81:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 147.196.90.42:61647 --> [L] 177.86.46.206:443
+offline0: i4pc----------- UDP [OR] 147.196.90.42:61647 --> [L] 177.86.46.206:443
         : QUIC.netify.google
         : H: sb-ssl.google.com
         : V: 0x0304
@@ -14,7 +14,7 @@ offline0: i4pc-------r--- UDP [OR] 147.196.90.42:61647 --> [L] 177.86.46.206:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:55376 --> [L] 212.22.246.243:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:55376 --> [L] 212.22.246.243:443
         : QUIC.netify.google
         : H: www.google.com
         : V: 0x0304
@@ -22,7 +22,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:55376 --> [L] 212.22.246.243:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 133.202.76.105:443 <-- [L] 168.144.64.5:64964
+offline0: i4pc----------- UDP [OR] 133.202.76.105:443 <-- [L] 168.144.64.5:64964
         : QUIC.netify.google-authentication
         : H: accounts.google.com
         : V: 0x0304
@@ -30,7 +30,7 @@ offline0: i4pc-------r--- UDP [OR] 133.202.76.105:443 <-- [L] 168.144.64.5:64964
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 112.1.105.138:443 <-- [L] 168.144.64.5:55844
+offline0: i4pc----------- UDP [OR] 112.1.105.138:443 <-- [L] 168.144.64.5:55844
         : QUIC.netify.android
         : H: android.clients.google.com
         : V: 0x0304
@@ -38,7 +38,7 @@ offline0: i4pc-------r--- UDP [OR] 112.1.105.138:443 <-- [L] 168.144.64.5:55844
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 37.47.218.224:443 <-- [L] 168.144.64.5:59827
+offline0: i4pc----------- UDP [OR] 37.47.218.224:443 <-- [L] 168.144.64.5:59827
         : QUIC.netify.google-ads
         : H: www.googleadservices.com
         : V: 0x0304
@@ -46,21 +46,21 @@ offline0: i4pc-------r--- UDP [OR] 37.47.218.224:443 <-- [L] 168.144.64.5:59827
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [OR] 168.144.64.5:51053 --> [L] 241.138.147.133:443
+offline0: i4pc-------r--- UDP [OR] 168.144.64.5:51053 --> [L] 241.138.147.133:443
         : QUIC.netify.google
         : H: content-autofill.googleapis.com
         : V: 0x0304
         : TLS/SNI: content-autofill.googleapis.com
         : DP: 1
 
-offline0: i4pc----------- UDP [L] 10.117.78.100:44252 --> [OR] 251.236.18.198:443
+offline0: i4pc-------r--- UDP [L] 10.117.78.100:44252 --> [OR] 251.236.18.198:443
         : QUIC.netify.google-authentication
         : H: accounts.google.com
         : V: 0x0304
         : TLS/SNI: accounts.google.com
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 10.117.78.100:55273 --> [OR] 202.152.155.121:443
+offline0: i4pc----------- UDP [L] 10.117.78.100:55273 --> [OR] 202.152.155.121:443
         : QUIC.netify.google
         : H: clients4.google.com
         : V: 0x0304
@@ -68,7 +68,7 @@ offline0: i4pc-------r--- UDP [L] 10.117.78.100:55273 --> [OR] 202.152.155.121:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53404
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53404
         : QUIC.netify.google
         : H: update.googleapis.com
         : V: 0x0304
@@ -76,7 +76,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:5340
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:53431
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:53431
         : QUIC.netify.google
         : H: fonts.gstatic.com
         : V: 0x0304
@@ -84,7 +84,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:53431
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 121.209.126.161:443 <-- [L] 168.144.64.5:50482
+offline0: i4pc----------- UDP [OR] 121.209.126.161:443 <-- [L] 168.144.64.5:50482
         : QUIC.netify.youtube
         : H: yt3.ggpht.com
         : V: 0x0304
@@ -92,7 +92,7 @@ offline0: i4pc-------r--- UDP [OR] 121.209.126.161:443 <-- [L] 168.144.64.5:5048
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 158.146.215.30:443 <-- [L] 168.144.64.5:62652
+offline0: i4pc----------- UDP [OR] 158.146.215.30:443 <-- [L] 168.144.64.5:62652
         : QUIC.netify.google-ads
         : H: static.doubleclick.net
         : V: 0x0304
@@ -100,7 +100,7 @@ offline0: i4pc-------r--- UDP [OR] 158.146.215.30:443 <-- [L] 168.144.64.5:62652
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:63136
+offline0: i4pc----------- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:63136
         : QUIC.netify.youtube
         : H: suggestqueries-clients6.youtube.com
         : V: 0x0304
@@ -108,7 +108,7 @@ offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:63136
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:51456
+offline0: i4pc----------- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:51456
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -116,7 +116,7 @@ offline0: i4pc-------r--- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:5145
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:63163
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:63163
         : QUIC.netify.google
         : H: update.googleapis.com
         : V: 0x0304
@@ -124,7 +124,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:6316
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:54016
+offline0: i4pc----------- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:54016
         : QUIC.netify.google-dns
         : H: dns.google
         : V: 0x0304
@@ -132,7 +132,7 @@ offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:54016
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 99.42.133.245:443 <-- [L] 168.144.64.5:51248
+offline0: i4pc----------- UDP [OR] 99.42.133.245:443 <-- [L] 168.144.64.5:51248
         : QUIC.netify.google-cloud
         : H: beacons.gcp.gvt2.com
         : V: 0x0304
@@ -140,7 +140,7 @@ offline0: i4pc-------r--- UDP [OR] 99.42.133.245:443 <-- [L] 168.144.64.5:51248
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 45.228.175.189:443 <-- [L] 168.144.64.5:60896
+offline0: i4pc----------- UDP [OR] 45.228.175.189:443 <-- [L] 168.144.64.5:60896
         : QUIC.netify.google
         : H: www.google.com
         : V: 0x0304
@@ -148,7 +148,7 @@ offline0: i4pc-------r--- UDP [OR] 45.228.175.189:443 <-- [L] 168.144.64.5:60896
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:60551
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:60551
         : QUIC.netify.google
         : H: beacons.gvt2.com
         : V: 0x0304
@@ -156,7 +156,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:60551
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:56488 --> [L] 177.86.46.206:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:56488 --> [L] 177.86.46.206:443
         : QUIC.netify.youtube
         : H: www.youtube.com
         : V: 0x0304
@@ -164,7 +164,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:56488 --> [L] 177.86.46.206:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:49153
+offline0: i4pc----------- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:49153
         : QUIC.netify.google-dns
         : H: dns.google
         : V: 0x0304
@@ -172,7 +172,7 @@ offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:49153
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:51296
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:51296
         : QUIC.netify.google-cloud
         : H: beacons.gcp.gvt2.com
         : V: 0x0304
@@ -180,7 +180,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:51296
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 76.83.40.87:443 <-- [L] 168.144.64.5:57767
+offline0: i4pc----------- UDP [OR] 76.83.40.87:443 <-- [L] 168.144.64.5:57767
         : QUIC.netify.youtube
         : H: r11---sn-vh5ouxa-hjuk.googlevideo.com
         : V: 0x0304
@@ -188,7 +188,7 @@ offline0: i4pc-------r--- UDP [OR] 76.83.40.87:443 <-- [L] 168.144.64.5:57767
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:63736 --> [L] 213.188.47.247:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:63736 --> [L] 213.188.47.247:443
         : QUIC.netify.youtube
         : H: r4---sn-vh5ouxa-hjud.googlevideo.com
         : V: 0x0304
@@ -196,14 +196,14 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:63736 --> [L] 213.188.47.247:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [OR] 168.144.64.5:52273 --> [L] 244.214.160.219:443
+offline0: i4pc-------r--- UDP [OR] 168.144.64.5:52273 --> [L] 244.214.160.219:443
         : QUIC.netify.youtube
         : H: r3---sn-vh5ouxa-hju6.googlevideo.com
         : V: 0x0304
         : TLS/SNI: r3---sn-vh5ouxa-hju6.googlevideo.com
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:49324
+offline0: i4pc----------- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:49324
         : QUIC.netify.google-ads
         : H: pagead2.googlesyndication.com
         : V: 0x0304
@@ -211,7 +211,7 @@ offline0: i4pc-------r--- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:49324
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 136.125.67.96:443 <-- [L] 168.144.64.5:62047
+offline0: i4pc----------- UDP [OR] 136.125.67.96:443 <-- [L] 168.144.64.5:62047
         : QUIC.netify.google
         : H: beacons4.gvt2.com
         : V: 0x0304
@@ -219,7 +219,7 @@ offline0: i4pc-------r--- UDP [OR] 136.125.67.96:443 <-- [L] 168.144.64.5:62047
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:64976 --> [L] 220.80.126.73:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:64976 --> [L] 220.80.126.73:443
         : QUIC.netify.youtube
         : H: r1---sn-hju7enel.googlevideo.com
         : V: 0x0304
@@ -227,7 +227,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:64976 --> [L] 220.80.126.73:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:61209
+offline0: i4pc----------- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:61209
         : QUIC.netify.google-ads
         : H: www.googleadservices.com
         : V: 0x0304
@@ -235,7 +235,7 @@ offline0: i4pc-------r--- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:61209
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 99.45.60.254:443 <-- [L] 168.144.64.5:50540
+offline0: i4pc----------- UDP [OR] 99.45.60.254:443 <-- [L] 168.144.64.5:50540
         : QUIC.netify.youtube
         : H: i.ytimg.com
         : V: 0x0304
@@ -243,7 +243,7 @@ offline0: i4pc-------r--- UDP [OR] 99.45.60.254:443 <-- [L] 168.144.64.5:50540
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:60809
+offline0: i4pc----------- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:60809
         : QUIC.netify.youtube
         : H: suggestqueries-clients6.youtube.com
         : V: 0x0304
@@ -251,7 +251,7 @@ offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:60809
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:55637 --> [L] 169.81.163.225:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:55637 --> [L] 169.81.163.225:443
         : QUIC.netify.youtube
         : H: r3---sn-hju7enel.googlevideo.com
         : V: 0x0304
@@ -259,7 +259,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:55637 --> [L] 169.81.163.225:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53127
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53127
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304
@@ -267,7 +267,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:5312
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 152.128.87.238:443 <-- [L] 168.144.64.5:50073
+offline0: i4pc----------- UDP [OR] 152.128.87.238:443 <-- [L] 168.144.64.5:50073
         : QUIC.netify.youtube
         : H: r3---sn-vh5ouxa-hjud.googlevideo.com
         : V: 0x0304
@@ -275,14 +275,14 @@ offline0: i4pc-------r--- UDP [OR] 152.128.87.238:443 <-- [L] 168.144.64.5:50073
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [L] 192.168.254.11:59048 --> [OR] 251.236.18.198:443
+offline0: i4pc-------r--- UDP [L] 192.168.254.11:59048 --> [OR] 251.236.18.198:443
         : QUIC.netify.google-authentication
         : H: accounts.google.com
         : V: 0x0304
         : TLS/SNI: accounts.google.com
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 192.168.254.11:38331
+offline0: i4pc----------- UDP [OR] 93.100.151.221:443 <-- [L] 192.168.254.11:38331
         : QUIC.netify.google
         : H: litepages.googlezip.net
         : V: 0x0304
@@ -290,7 +290,7 @@ offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 192.168.254.11:383
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 170.196.90.126:443 <-- [L] 192.168.254.11:45652
+offline0: i4pc----------- UDP [OR] 170.196.90.126:443 <-- [L] 192.168.254.11:45652
         : QUIC.netify.google
         : H: content-autofill.googleapis.com
         : V: 0x0304
@@ -298,7 +298,7 @@ offline0: i4pc-------r--- UDP [OR] 170.196.90.126:443 <-- [L] 192.168.254.11:456
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 98.251.203.81:443 <-- [L] 192.168.254.11:43427
+offline0: i4pc----------- UDP [OR] 98.251.203.81:443 <-- [L] 192.168.254.11:43427
         : QUIC.netify.google
         : H: optimizationguide-pa.googleapis.com
         : V: 0x0304
@@ -306,7 +306,7 @@ offline0: i4pc-------r--- UDP [OR] 98.251.203.81:443 <-- [L] 192.168.254.11:4342
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 171.182.169.23:443 <-- [L] 192.168.254.11:54692
+offline0: i4pc----------- UDP [OR] 171.182.169.23:443 <-- [L] 192.168.254.11:54692
         : QUIC.netify.bank-of-america
         : H: www.freearabianporn.com
         : V: 0x0304
@@ -314,7 +314,7 @@ offline0: i4pc-------r--- UDP [OR] 171.182.169.23:443 <-- [L] 192.168.254.11:546
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.78.153.39:443 <-- [L] 192.168.254.11:35124
+offline0: i4pc----------- UDP [OR] 168.78.153.39:443 <-- [L] 192.168.254.11:35124
         : QUIC
         : H: s-img.adskeeper.co.uk
         : V: 0x0304
@@ -322,7 +322,7 @@ offline0: i4pc-------r--- UDP [OR] 168.78.153.39:443 <-- [L] 192.168.254.11:3512
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 192.168.254.11:51075
+offline0: i4pc----------- UDP [OR] 117.148.117.30:443 <-- [L] 192.168.254.11:51075
         : QUIC.netify.google-ads
         : H: pagead2.googlesyndication.com
         : V: 0x0304
@@ -330,7 +330,7 @@ offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 192.168.254.11:510
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 87.179.155.149:443 <-- [L] 192.168.254.11:49689
+offline0: i4pc----------- UDP [OR] 87.179.155.149:443 <-- [L] 192.168.254.11:49689
         : QUIC.netify.google
         : H: www.google.com
         : V: 0x0304
@@ -338,7 +338,7 @@ offline0: i4pc-------r--- UDP [OR] 87.179.155.149:443 <-- [L] 192.168.254.11:496
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:62818
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:62818
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -346,7 +346,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:6281
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 125.136.204.4:443 <-- [L] 168.144.64.5:56425
+offline0: i4pc----------- UDP [OR] 125.136.204.4:443 <-- [L] 168.144.64.5:56425
         : QUIC.netify.youtube
         : H: r1---sn-vh5ouxa-hjuk.googlevideo.com
         : V: 0x0304
@@ -354,7 +354,7 @@ offline0: i4pc-------r--- UDP [OR] 125.136.204.4:443 <-- [L] 168.144.64.5:56425
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:59622
+offline0: i4pc----------- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:59622
         : QUIC.netify.google-dns
         : H: dns.google
         : V: 0x0304
@@ -362,7 +362,7 @@ offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:59622
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 108.171.138.182:443 <-- [L] 168.144.64.5:50552
+offline0: i4pc----------- UDP [OR] 108.171.138.182:443 <-- [L] 168.144.64.5:50552
         : QUIC.netify.google
         : H: beacons.gvt2.com
         : V: 0x0304
@@ -370,7 +370,7 @@ offline0: i4pc-------r--- UDP [OR] 108.171.138.182:443 <-- [L] 168.144.64.5:5055
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:56844
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:56844
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304
@@ -378,7 +378,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:5684
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:58414
+offline0: i4pc----------- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:58414
         : QUIC.netify.google-dns
         : H: dns.google
         : V: 0x0304
@@ -386,7 +386,7 @@ offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:58414
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 16.232.218.117:443 <-- [L] 168.144.64.5:61341
+offline0: i4pc----------- UDP [OR] 16.232.218.117:443 <-- [L] 168.144.64.5:61341
         : QUIC.netify.youtube
         : H: r9---sn-vh5ouxa-hjuk.googlevideo.com
         : V: 0x0304
@@ -394,7 +394,7 @@ offline0: i4pc-------r--- UDP [OR] 16.232.218.117:443 <-- [L] 168.144.64.5:61341
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:56683
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:56683
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304
@@ -402,7 +402,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:5668
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 16.232.218.117:443 <-- [L] 168.144.64.5:64700
+offline0: i4pc----------- UDP [OR] 16.232.218.117:443 <-- [L] 168.144.64.5:64700
         : QUIC.netify.youtube
         : H: r9---sn-vh5ouxa-hjuk.googlevideo.com
         : V: 0x0304
@@ -410,7 +410,7 @@ offline0: i4pc-------r--- UDP [OR] 16.232.218.117:443 <-- [L] 168.144.64.5:64700
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:60936
+offline0: i4pc----------- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:60936
         : QUIC.netify.youtube
         : H: suggestqueries-clients6.youtube.com
         : V: 0x0304
@@ -418,7 +418,7 @@ offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:60936
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 22.12.150.194:443 <-- [L] 168.144.64.5:59965
+offline0: i4pc----------- UDP [OR] 22.12.150.194:443 <-- [L] 168.144.64.5:59965
         : QUIC.netify.youtube
         : H: r1---sn-vh5ouxa-hju6.googlevideo.com
         : V: 0x0304
@@ -426,7 +426,7 @@ offline0: i4pc-------r--- UDP [OR] 22.12.150.194:443 <-- [L] 168.144.64.5:59965
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:64693
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:64693
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304
@@ -434,7 +434,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:6469
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:59680
+offline0: i4pc----------- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:59680
         : QUIC.netify.google-ads
         : H: googleads.g.doubleclick.net
         : V: 0x0304
@@ -442,7 +442,7 @@ offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:59680
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:57565 --> [L] 217.254.108.174:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:57565 --> [L] 217.254.108.174:443
         : QUIC.netify.youtube
         : H: r2---sn-vh5ouxa-hjuk.googlevideo.com
         : V: 0x0304
@@ -450,7 +450,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:57565 --> [L] 217.254.108.174:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 143.52.137.18:443 <-- [L] 168.144.64.5:52387
+offline0: i4pc----------- UDP [OR] 143.52.137.18:443 <-- [L] 168.144.64.5:52387
         : QUIC.netify.google-ads
         : H: pagead2.googlesyndication.com
         : V: 0x0304
@@ -458,7 +458,7 @@ offline0: i4pc-------r--- UDP [OR] 143.52.137.18:443 <-- [L] 168.144.64.5:52387
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:49860
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:49860
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304
@@ -466,7 +466,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:4986
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:60949 --> [L] 185.186.183.185:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:60949 --> [L] 185.186.183.185:443
         : QUIC.netify.google
         : H: content-autofill.googleapis.com
         : V: 0x0304
@@ -474,7 +474,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:60949 --> [L] 185.186.183.185:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 137.238.249.2:443 <-- [L] 168.144.64.5:57735
+offline0: i4pc----------- UDP [OR] 137.238.249.2:443 <-- [L] 168.144.64.5:57735
         : QUIC.netify.google-ads
         : H: ade.googlesyndication.com
         : V: 0x0304
@@ -482,7 +482,7 @@ offline0: i4pc-------r--- UDP [OR] 137.238.249.2:443 <-- [L] 168.144.64.5:57735
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:50588 --> [L] 208.229.157.81:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:50588 --> [L] 208.229.157.81:443
         : QUIC.netify.google
         : H: update.googleapis.com
         : V: 0x0304
@@ -490,7 +490,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:50588 --> [L] 208.229.157.81:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:61089 --> [L] 99.42.133.245:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:61089 --> [L] 99.42.133.245:443
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -498,7 +498,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:61089 --> [L] 99.42.133.245:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:49880 --> [L] 208.229.157.81:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:49880 --> [L] 208.229.157.81:443
         : QUIC.netify.google
         : H: update.googleapis.com
         : V: 0x0304
@@ -506,7 +506,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:49880 --> [L] 208.229.157.81:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 159.117.176.124:58337 --> [L] 208.229.157.81:443
+offline0: i4pc----------- UDP [OR] 159.117.176.124:58337 --> [L] 208.229.157.81:443
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -514,7 +514,7 @@ offline0: i4pc-------r--- UDP [OR] 159.117.176.124:58337 --> [L] 208.229.157.81:
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 159.117.176.124:49867 --> [L] 198.74.29.79:443
+offline0: i4pc----------- UDP [OR] 159.117.176.124:49867 --> [L] 198.74.29.79:443
         : QUIC.netify.google
         : H: content-autofill.googleapis.com
         : V: 0x0304
@@ -522,7 +522,7 @@ offline0: i4pc-------r--- UDP [OR] 159.117.176.124:49867 --> [L] 198.74.29.79:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:58123 --> [L] 118.89.218.46:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:58123 --> [L] 118.89.218.46:443
         : QUIC.netify.google-authentication
         : H: accounts.google.com
         : V: 0x0304
@@ -530,7 +530,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:58123 --> [L] 118.89.218.46:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:63507 --> [L] 121.209.126.161:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:63507 --> [L] 121.209.126.161:443
         : QUIC.netify.google
         : H: clients2.googleusercontent.com
         : V: 0x0304
@@ -538,7 +538,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:63507 --> [L] 121.209.126.161:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:57066 --> [L] 108.171.138.182:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:57066 --> [L] 108.171.138.182:443
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -546,7 +546,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:57066 --> [L] 108.171.138.182:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:52512 --> [L] 196.245.61.64:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:52512 --> [L] 196.245.61.64:443
         : QUIC.netify.google
         : H: safebrowsing.googleapis.com
         : V: 0x0304
@@ -554,7 +554,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:52512 --> [L] 196.245.61.64:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:51619 --> [L] 208.229.157.81:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:51619 --> [L] 208.229.157.81:443
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -562,7 +562,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:51619 --> [L] 208.229.157.81:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:58703
+offline0: i4pc----------- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:58703
         : QUIC.netify.android
         : H: android.clients.google.com
         : V: 0x0304
@@ -570,7 +570,7 @@ offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:58703
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:55066
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:55066
         : QUIC.netify.google
         : H: fonts.gstatic.com
         : V: 0x0304
@@ -578,7 +578,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:55066
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 65.33.51.74:443 <-- [L] 168.144.64.5:61886
+offline0: i4pc----------- UDP [OR] 65.33.51.74:443 <-- [L] 168.144.64.5:61886
         : QUIC.netify.google-ads
         : H: adservice.google.com
         : V: 0x0304
@@ -586,7 +586,7 @@ offline0: i4pc-------r--- UDP [OR] 65.33.51.74:443 <-- [L] 168.144.64.5:61886
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:65391
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:65391
         : QUIC.netify.google
         : H: fonts.gstatic.com
         : V: 0x0304
@@ -594,7 +594,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:65391
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:58832
+offline0: i4pc----------- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:58832
         : QUIC.netify.google-ads
         : H: googleads.g.doubleclick.net
         : V: 0x0304
@@ -602,7 +602,7 @@ offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:58832
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 38.57.8.121:443 <-- [L] 168.144.64.5:58429
+offline0: i4pc----------- UDP [OR] 38.57.8.121:443 <-- [L] 168.144.64.5:58429
         : QUIC.netify.google-ads
         : H: static.doubleclick.net
         : V: 0x0304
@@ -610,7 +610,7 @@ offline0: i4pc-------r--- UDP [OR] 38.57.8.121:443 <-- [L] 168.144.64.5:58429
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:55479
+offline0: i4pc----------- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:55479
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -618,7 +618,7 @@ offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:5547
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:60934
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:60934
         : QUIC.netify.google-cloud
         : H: beacons.gcp.gvt2.com
         : V: 0x0304
@@ -626,7 +626,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:60934
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:59785
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:59785
         : QUIC.netify.google-cloud
         : H: beacons.gcp.gvt2.com
         : V: 0x0304
@@ -634,7 +634,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:59785
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:59327
+offline0: i4pc----------- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:59327
         : QUIC.netify.google-dns
         : H: dns.google
         : V: 0x0304
@@ -642,7 +642,7 @@ offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:59327
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 39.227.72.32:443 <-- [L] 168.144.64.5:63925
+offline0: i4pc----------- UDP [OR] 39.227.72.32:443 <-- [L] 168.144.64.5:63925
         : QUIC.netify.google
         : H: beacons2.gvt2.com
         : V: 0x0304
@@ -650,7 +650,7 @@ offline0: i4pc-------r--- UDP [OR] 39.227.72.32:443 <-- [L] 168.144.64.5:63925
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 103.179.40.184:443 <-- [L] 168.144.64.5:49926
+offline0: i4pc----------- UDP [OR] 103.179.40.184:443 <-- [L] 168.144.64.5:49926
         : QUIC.netify.youtube
         : H: r5---sn-vh5ouxa-hju6.googlevideo.com
         : V: 0x0304
@@ -658,7 +658,7 @@ offline0: i4pc-------r--- UDP [OR] 103.179.40.184:443 <-- [L] 168.144.64.5:49926
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:56384
+offline0: i4pc----------- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:56384
         : QUIC.netify.google-ads
         : H: pagead2.googlesyndication.com
         : V: 0x0304
@@ -666,7 +666,7 @@ offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:56384
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 137.238.249.2:443 <-- [L] 168.144.64.5:57398
+offline0: i4pc----------- UDP [OR] 137.238.249.2:443 <-- [L] 168.144.64.5:57398
         : QUIC.netify.google-ads
         : H: www.googleadservices.com
         : V: 0x0304
@@ -674,7 +674,7 @@ offline0: i4pc-------r--- UDP [OR] 137.238.249.2:443 <-- [L] 168.144.64.5:57398
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:64497
+offline0: i4pc----------- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:64497
         : QUIC.netify.google
         : H: beacons.gvt2.com
         : V: 0x0304
@@ -682,7 +682,7 @@ offline0: i4pc-------r--- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:6449
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:55572
+offline0: i4pc----------- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:55572
         : QUIC.netify.google-ads
         : H: googleads.g.doubleclick.net
         : V: 0x0304
@@ -690,7 +690,7 @@ offline0: i4pc-------r--- UDP [OR] 117.148.117.30:443 <-- [L] 168.144.64.5:55572
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:58956
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:58956
         : QUIC.netify.google-cloud
         : H: beacons.gcp.gvt2.com
         : V: 0x0304
@@ -698,7 +698,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 168.144.64.5:58956
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:54449
+offline0: i4pc----------- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:54449
         : QUIC.netify.google
         : H: beacons3.gvt2.com
         : V: 0x0304
@@ -706,7 +706,7 @@ offline0: i4pc-------r--- UDP [OR] 102.194.207.179:443 <-- [L] 168.144.64.5:5444
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:60342
+offline0: i4pc----------- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:60342
         : QUIC.netify.youtube
         : H: suggestqueries-clients6.youtube.com
         : V: 0x0304
@@ -714,7 +714,7 @@ offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:60342
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:65186
+offline0: i4pc----------- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:65186
         : QUIC.netify.youtube
         : H: www.youtube.com
         : V: 0x0304
@@ -722,7 +722,7 @@ offline0: i4pc-------r--- UDP [OR] 9.65.169.252:443 <-- [L] 168.144.64.5:65186
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:52942
+offline0: i4pc----------- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:52942
         : QUIC.netify.google
         : H: clients2.google.com
         : V: 0x0304
@@ -730,7 +730,7 @@ offline0: i4pc-------r--- UDP [OR] 93.100.151.221:443 <-- [L] 168.144.64.5:52942
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:62114 --> [L] 198.74.29.79:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:62114 --> [L] 198.74.29.79:443
         : QUIC.netify.google
         : H: safebrowsing.googleapis.com
         : V: 0x0304
@@ -738,7 +738,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:62114 --> [L] 198.74.29.79:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:55561
+offline0: i4pc----------- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:55561
         : QUIC.netify.google-ads
         : H: googleads.g.doubleclick.net
         : V: 0x0304
@@ -746,7 +746,7 @@ offline0: i4pc-------r--- UDP [OR] 35.194.157.47:443 <-- [L] 168.144.64.5:55561
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 159.117.176.124:61202 --> [L] 198.74.29.79:443
+offline0: i4pc----------- UDP [OR] 159.117.176.124:61202 --> [L] 198.74.29.79:443
         : QUIC.netify.google
         : H: safebrowsing.googleapis.com
         : V: 0x0304
@@ -754,7 +754,7 @@ offline0: i4pc-------r--- UDP [OR] 159.117.176.124:61202 --> [L] 198.74.29.79:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 159.117.176.124:49521
+offline0: i4pc----------- UDP [OR] 128.248.24.1:443 <-- [L] 159.117.176.124:49521
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -762,7 +762,7 @@ offline0: i4pc-------r--- UDP [OR] 128.248.24.1:443 <-- [L] 159.117.176.124:4952
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:49217 --> [L] 185.186.183.185:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:49217 --> [L] 185.186.183.185:443
         : QUIC.netify.google
         : H: safebrowsing.googleapis.com
         : V: 0x0304
@@ -770,7 +770,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:49217 --> [L] 185.186.183.185:44
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:61286 --> [L] 198.74.29.79:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:61286 --> [L] 198.74.29.79:443
         : QUIC.netify.google
         : H: safebrowsing.googleapis.com
         : V: 0x0304
@@ -778,7 +778,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:61286 --> [L] 198.74.29.79:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:53260 --> [L] 102.194.207.179:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:53260 --> [L] 102.194.207.179:443
         : QUIC.netify.google
         : H: clientservices.googleapis.com
         : V: 0x0304
@@ -786,7 +786,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:53260 --> [L] 102.194.207.179:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 76.231.104.92:443 <-- [L] 168.144.64.5:50023
+offline0: i4pc----------- UDP [OR] 76.231.104.92:443 <-- [L] 168.144.64.5:50023
         : QUIC.netify.youtube
         : H: www.youtube.com
         : V: 0x0304
@@ -794,7 +794,7 @@ offline0: i4pc-------r--- UDP [OR] 76.231.104.92:443 <-- [L] 168.144.64.5:50023
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 65.33.51.74:443 <-- [L] 168.144.64.5:65360
+offline0: i4pc----------- UDP [OR] 65.33.51.74:443 <-- [L] 168.144.64.5:65360
         : QUIC.netify.google-ads
         : H: googleads.g.doubleclick.net
         : V: 0x0304
@@ -802,7 +802,7 @@ offline0: i4pc-------r--- UDP [OR] 65.33.51.74:443 <-- [L] 168.144.64.5:65360
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 159.117.176.124:64134 --> [L] 207.121.63.92:443
+offline0: i4pc----------- UDP [OR] 159.117.176.124:64134 --> [L] 207.121.63.92:443
         : QUIC.netify.google
         : H: www.google.com
         : V: 0x0304
@@ -810,7 +810,7 @@ offline0: i4pc-------r--- UDP [OR] 159.117.176.124:64134 --> [L] 207.121.63.92:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 52.187.20.175:61484 --> [L] 202.152.155.121:443
+offline0: i4pc----------- UDP [OR] 52.187.20.175:61484 --> [L] 202.152.155.121:443
         : QUIC.netify.google-authentication
         : H: ogs.google.com
         : V: 0x0304
@@ -818,7 +818,7 @@ offline0: i4pc-------r--- UDP [OR] 52.187.20.175:61484 --> [L] 202.152.155.121:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 16.205.123.234:443 <-- [L] 159.117.176.124:51856
+offline0: i4pc----------- UDP [OR] 16.205.123.234:443 <-- [L] 159.117.176.124:51856
         : QUIC.netify.whatsapp
         : H: media.fmct2-1.fna.whatsapp.net
         : V: 0x0304
@@ -826,7 +826,7 @@ offline0: i4pc-------r--- UDP [OR] 16.205.123.234:443 <-- [L] 159.117.176.124:51
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:54120
+offline0: i4pc----------- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:54120
         : QUIC.netify.google-dns
         : H: dns.google
         : V: 0x0304
@@ -834,7 +834,7 @@ offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:54120
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:52396
+offline0: i4pc----------- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:52396
         : QUIC.netify.google-dns
         : H: dns.google
         : V: 0x0304
@@ -842,7 +842,7 @@ offline0: i4pc-------r--- UDP [OR] 153.98.28.78:443 <-- [L] 168.144.64.5:52396
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 126.3.93.89:443 <-- [L] 168.144.64.5:50224
+offline0: i4pc----------- UDP [OR] 126.3.93.89:443 <-- [L] 168.144.64.5:50224
         : QUIC.netify.google
         : H: www.googleapis.com
         : V: 0x0304
@@ -850,7 +850,7 @@ offline0: i4pc-------r--- UDP [OR] 126.3.93.89:443 <-- [L] 168.144.64.5:50224
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 31.219.210.96:443 <-- [L] 168.144.64.5:62719
+offline0: i4pc----------- UDP [OR] 31.219.210.96:443 <-- [L] 168.144.64.5:62719
         : QUIC.netify.google
         : H: lh4.googleusercontent.com
         : V: 0x0304
@@ -858,7 +858,7 @@ offline0: i4pc-------r--- UDP [OR] 31.219.210.96:443 <-- [L] 168.144.64.5:62719
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 168.144.64.5:58351 --> [L] 193.68.169.100:443
+offline0: i4pc----------- UDP [OR] 168.144.64.5:58351 --> [L] 193.68.169.100:443
         : QUIC.netify.google
         : H: www.gstatic.com
         : V: 0x0304
@@ -866,7 +866,7 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:58351 --> [L] 193.68.169.100:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 7.71.118.27:443 <-- [L] 168.144.64.5:57319
+offline0: i4pc----------- UDP [OR] 7.71.118.27:443 <-- [L] 168.144.64.5:57319
         : QUIC.netify.android
         : H: android.clients.google.com
         : V: 0x0304
@@ -874,7 +874,7 @@ offline0: i4pc-------r--- UDP [OR] 7.71.118.27:443 <-- [L] 168.144.64.5:57319
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 53.101.228.200:443 <-- [L] 168.144.64.5:60919
+offline0: i4pc----------- UDP [OR] 53.101.228.200:443 <-- [L] 168.144.64.5:60919
         : QUIC.netify.google-ads
         : H: adservice.google.com
         : V: 0x0304
@@ -882,7 +882,7 @@ offline0: i4pc-------r--- UDP [OR] 53.101.228.200:443 <-- [L] 168.144.64.5:60919
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 144.237.113.58:443 <-- [L] 168.144.64.5:50423
+offline0: i4pc----------- UDP [OR] 144.237.113.58:443 <-- [L] 168.144.64.5:50423
         : QUIC.netify.google
         : H: www.google.com
         : V: 0x0304
@@ -890,7 +890,7 @@ offline0: i4pc-------r--- UDP [OR] 144.237.113.58:443 <-- [L] 168.144.64.5:50423
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 76.231.104.92:443 <-- [L] 168.144.64.5:59206
+offline0: i4pc----------- UDP [OR] 76.231.104.92:443 <-- [L] 168.144.64.5:59206
         : QUIC.netify.google-authentication
         : H: ogs.google.com
         : V: 0x0304

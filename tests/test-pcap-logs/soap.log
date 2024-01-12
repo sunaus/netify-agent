@@ -1,8 +1,8 @@
-offline0: i4pc----------- TCP [OR] 85.154.114.113:56028 --> [L] 185.32.192.30:80
+offline0: i4pc-------r--- TCP [OR] 85.154.114.113:56028 --> [L] 185.32.192.30:80
         : SOAP
         : DP: 5
 
-offline0: i4pc--x----r--- TCP [OR] 23.2.213.165:4176 <-- [L] 192.168.2.100:50100
+offline0: i4pc--x-------- TCP [OR] 23.2.213.165:4176 <-- [L] 192.168.2.100:50100
         : HTTP.netify.microsoft
         : H: go.microsoft.com
         : HTTP/UA: MICROSOFT_DEVICE_METADATA_RETRIEVAL_CLIENT
@@ -11,7 +11,7 @@ offline0: i4pc--x----r--- TCP [OR] 23.2.213.165:4176 <-- [L] 192.168.2.100:50100
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx------F- TCP [OR] 23.2.213.165:80 <-- [L] 192.168.2.100:50100
+offline0: i4pc-gx----r-F- TCP [OR] 23.2.213.165:80 <-- [L] 192.168.2.100:50100
         : Unknown
         : DP: 14
 

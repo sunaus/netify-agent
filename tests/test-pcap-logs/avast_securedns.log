@@ -1,194 +1,194 @@
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:57970
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:57970
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:61201
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:61201
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:60835
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:60835
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:62775
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:62775
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56581
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56581
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56765
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56765
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:50581
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:50581
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:61107
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:61107
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64954
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64954
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:59621
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:59621
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:52485
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:52485
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54938
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54938
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56839
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56839
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:58155
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:58155
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64487
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64487
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:49704
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:49704
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:55311
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:55311
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56111
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:56111
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64494
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64494
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51415
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51415
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:63776
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:63776
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:50008
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:50008
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:49737
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:49737
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51887
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51887
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:60127
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:60127
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54546
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54546
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64432
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64432
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:59613
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:59613
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:65063
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:65063
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51929
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51929
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:52417
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:52417
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:59474
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:59474
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:53839
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:53839
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:55948
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:55948
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51383
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:51383
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64700
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:64700
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54549
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54549
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54760
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:54760
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:49152
+offline0: i4pc----------- UDP [OR] 181.214.35.149:443 <-- [L] 192.168.2.100:49152
         : AVASTSecureDNS
         : RID 46: Unidirectional Traffic
         : DP: 1

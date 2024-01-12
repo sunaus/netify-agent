@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [L] 10.10.10.1:443 <-- [OL] 192.168.0.1:59927
+offline0: i4pcu---------- TCP [L] 10.10.10.1:443 <-- [OL] 192.168.0.1:59927
         : HTTP/S.netify.amazon-aws
         : H: bolt-prod-s3-eu-west-1.s3.eu-west-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f

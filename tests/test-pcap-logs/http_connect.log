@@ -1,4 +1,4 @@
-offline0: i4pc----------- UDP [L] 192.168.1.2:53 <-- [OL] 192.168.1.146:47767
+offline0: i4pc-------r--- UDP [L] 192.168.1.2:53 <-- [OL] 192.168.1.146:47767
         : DNS
         : H: apache.org
         : DP: 2
@@ -8,9 +8,10 @@ offline0: i4pc----------- TCP [L] 192.168.1.103:1714 --> [OL] 192.168.1.146:8080
         : H: apache.org
         : HTTP/UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0
         : URL: apache.org:443
+        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pcu---d------ TCP [OR] 151.101.2.132:443 <-- [L] 192.168.1.146:35968
+offline0: i4pcu---d--r--- TCP [OR] 151.101.2.132:443 <-- [L] 192.168.1.146:35968
         : HTTP/S
         : D: apache.org
         : V: 0x0303 CS: 0x1301

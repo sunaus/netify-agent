@@ -1,4 +1,4 @@
-offline0: i4pc-------r-F- TCP [OR] 72.249.41.52:110 <-- [L] 192.168.20.18:50583
+offline0: i4pc---------F- TCP [OR] 72.249.41.52:110 <-- [L] 192.168.20.18:50583
         : POP3
         : RID 30: TLS Certificate Expired
         : RID 36: Obsolete TLS (v1.1 or older)

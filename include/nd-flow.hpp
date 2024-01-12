@@ -146,18 +146,18 @@ public:
     ndAddr lower_addr;
     ndAddr upper_addr;
 
-    ndAddr::Type lower_type;
-    ndAddr::Type upper_type;
+    ndAddr::Type lower_type = { ndAddr::atNONE };
+    ndAddr::Type upper_type = { ndAddr::atNONE };
 
-    int direction;
+    int direction = { 0 };
 
-    uint8_t ip_version;
-    uint8_t ip_protocol;
+    uint8_t ip_version = { 0 };
+    uint8_t ip_protocol = { 0 };
 
-    uint16_t vlan_id;
+    uint16_t vlan_id = { 0 };
 
-    uint64_t ts_first_seen;
-    atomic<uint64_t> ts_last_seen;
+    uint64_t ts_first_seen = { 0 };
+    atomic<uint64_t> ts_last_seen = { 0 };
 
     enum LowerMap {
         LOWER_UNKNOWN = 0,
@@ -165,7 +165,7 @@ public:
         LOWER_OTHER = 2
     };
 
-    LowerMap lower_map;
+    LowerMap lower_map = { LOWER_UNKNOWN };
 
     enum OtherType {
         OTHER_UNKNOWN = 0,
@@ -177,11 +177,11 @@ public:
         OTHER_ERROR = 6
     };
 
-    OtherType other_type;
+    OtherType other_type = { OTHER_UNKNOWN };
 
     enum TunnelType { TUNNEL_NONE = 0, TUNNEL_GTP = 1 };
 
-    TunnelType tunnel_type;
+    TunnelType tunnel_type = { TUNNEL_NONE };
 
     enum Origin {
         ORIGIN_UNKNOWN,
@@ -189,14 +189,14 @@ public:
         ORIGIN_UPPER,
     };
 
-    Origin origin;
+    Origin origin = { ORIGIN_UNKNOWN };
 
     enum PrivacyMask {
         PRIVATE_LOWER = 0x01,
         PRIVATE_UPPER = 0x02
     };
 
-    uint8_t privacy_mask;
+    uint8_t privacy_mask = { 0 };
 
     enum AddrType {
         TYPE_LOWER,
@@ -228,38 +228,38 @@ public:
 
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
     struct {
-        uint32_t id;
-        uint32_t mark;
+        uint32_t id = { 0 };
+        uint32_t mark = { 0 };
     } conntrack;
 #endif
 
     struct {
-        uint8_t version;
-        uint8_t ip_version;
-        uint32_t lower_teid;
-        uint32_t upper_teid;
+        uint8_t version = { 0xFF };
+        uint8_t ip_version = { 0 };
+        uint32_t lower_teid = { 0 };
+        uint32_t upper_teid = { 0 };
         ndAddr::Type lower_type;
         ndAddr::Type upper_type;
         ndAddr lower_addr;
         ndAddr upper_addr;
-        LowerMap lower_map;
-        OtherType other_type;
+        LowerMap lower_map = { LOWER_UNKNOWN };
+        OtherType other_type = { OTHER_UNKNOWN };
     } gtp;
 
     string dns_host_name;
     string host_server_name;
 
-    nd_proto_id_t detected_protocol;
+    nd_proto_id_t detected_protocol = { ND_PROTO_UNKNOWN };
     string detected_protocol_name;
 
-    nd_app_id_t detected_application;
+    nd_app_id_t detected_application = { ND_APP_UNKNOWN };
     string detected_application_name;
 
     struct {
-        nd_cat_id_t application;
-        nd_cat_id_t protocol;
-        nd_cat_id_t domain;
-        nd_cat_id_t network;
+        nd_cat_id_t application = { ND_CAT_UNKNOWN };
+        nd_cat_id_t protocol = { ND_CAT_UNKNOWN };
+        nd_cat_id_t domain = { ND_CAT_UNKNOWN };
+        nd_cat_id_t network = { ND_CAT_UNKNOWN };
     } category;
 
     struct {
@@ -278,8 +278,8 @@ public:
     } ssh;
 
     struct {
-        uint16_t version;
-        uint16_t cipher_suite;
+        uint16_t version = { 0 };
+        uint16_t cipher_suite = { 0 };
 
         string subject_dn;
         string issuer_dn;
@@ -289,10 +289,19 @@ public:
         string server_ja3;
         vector<uint8_t> cert_fingerprint;
         vector<string> alpn, alpn_server;
+
+        struct {
+            uint16_t version = { 0 };
+        } ech;
+
+        struct {
+            uint16_t cipher_suite = { 0 };
+            string esni;
+        } esni;
     } tls;
 
     struct {
-        bool tls;
+        bool tls = { false };
     } smtp;
 
     struct {
@@ -304,9 +313,9 @@ public:
     } mdns;
 
     struct {
-        uint16_t ndpi_score;
-        uint16_t ndpi_score_client;
-        uint16_t ndpi_score_server;
+        uint16_t ndpi_score = { 0 };
+        uint16_t ndpi_score_client = { 0 };
+        uint16_t ndpi_score_server = { 0 };
 
         typedef set<nd_risk_id_t> Risks;
         Risks risks;
@@ -316,9 +325,9 @@ public:
 
     mutable recursive_mutex lock;
 
-    int16_t dpi_thread_id;
+    int16_t dpi_thread_id = { -1 };
 
-    struct ndpi_flow_struct *ndpi_flow;
+    struct ndpi_flow_struct *ndpi_flow = { nullptr };
 
     ndFlow(nd_iface_ptr &iface);
     ndFlow(const ndFlow &flow);
@@ -340,6 +349,8 @@ public:
     bool HasSSHClientAgent(void) const;
     bool HasSSHServerAgent(void) const;
     bool HasTLSClientSNI(void) const;
+    bool HasTLSEncryptedCH(void) const;
+    bool HasTLSEncryptedSNI(void) const;
     bool HasTLSServerCN(void) const;
     bool HasTLSIssuerDN(void) const;
     bool HasTLSSubjectDN(void) const;
@@ -622,6 +633,20 @@ public:
                 if (HasTLSClientSNI())
                     serialize(output,
                       { "ssl", "client_sni" }, tls.client_sni);
+
+                if (HasTLSEncryptedCH())
+                    serialize(output,
+                      { "ssl", "encrypted_ch_version" },
+                      tls.ech.version);
+
+                if (HasTLSEncryptedSNI()) {
+                    serialize(output,
+                      { "ssl", "encrypted_sni" },
+                      tls.esni.esni);
+                    serialize(output,
+                      { "ssl", "esni_cipher_suite" },
+                      tls.esni.cipher_suite);
+                }
 
                 if (HasTLSServerCN())
                     serialize(output,

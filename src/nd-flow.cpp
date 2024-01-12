@@ -57,53 +57,26 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
 }
 
 ndFlow::ndFlow(nd_iface_ptr &iface)
-  : iface(iface), lower_type(ndAddr::atNONE),
-    upper_type(ndAddr::atNONE), direction(0), ip_version(0),
-    ip_protocol(0), vlan_id(0), ts_first_seen(0),
-    ts_last_seen(0), lower_map(LOWER_UNKNOWN),
-    other_type(OTHER_UNKNOWN), tunnel_type(TUNNEL_NONE),
-    origin(ORIGIN_UNKNOWN), privacy_mask(0),
-    digest_lower(SHA1_DIGEST_LENGTH, 0),
+  : iface(iface), digest_lower(SHA1_DIGEST_LENGTH, 0),
     digest_mdata(SHA1_DIGEST_LENGTH, 0), flags{}, tcp{},
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-    conntrack{ 0 },
-#endif
-    gtp{}, detected_protocol(ND_PROTO_UNKNOWN),
-    detected_protocol_name("Unknown"),
-    detected_application(ND_APP_UNKNOWN), category{ 0 },
-    tls{ .version = 0, .cipher_suite = 0 }, smtp{ 0 },
-    risk{ .ndpi_score = 0, .ndpi_score_client = 0, .ndpi_score_server = 0 },
-    dpi_thread_id(-1), ndpi_flow(nullptr) {
-
-    gtp.version = 0xFF;
+    detected_protocol_name("Unknown") {
 }
 
 ndFlow::ndFlow(const ndFlow &flow)
   : iface(flow.iface), lower_mac(flow.lower_mac),
     upper_mac(flow.upper_mac), lower_addr(flow.lower_addr),
-    upper_addr(flow.upper_addr), lower_type(ndAddr::atNONE),
-    upper_type(ndAddr::atNONE), direction(flow.direction),
+    upper_addr(flow.upper_addr), direction(flow.direction),
     ip_version(flow.ip_version), ip_protocol(flow.ip_protocol),
     vlan_id(flow.vlan_id), ts_first_seen(flow.ts_first_seen),
     ts_last_seen(flow.ts_last_seen.load()),
-    lower_map(LOWER_UNKNOWN), other_type(OTHER_UNKNOWN),
-    tunnel_type(flow.tunnel_type), origin(ORIGIN_UNKNOWN),
-    privacy_mask(0),
+    tunnel_type(flow.tunnel_type),
     digest_lower(flow.digest_lower.begin(),
       flow.digest_lower.end()),
     digest_mdata(SHA1_DIGEST_LENGTH, 0), flags{}, tcp{},
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
     conntrack(flow.conntrack),
 #endif
-    gtp(flow.gtp), detected_protocol(ND_PROTO_UNKNOWN),
-    detected_protocol_name("Unknown"),
-    detected_application(ND_APP_UNKNOWN), category{ 0 }, http{},
-    dhcp{}, ssh{}, tls{ .version = 0, .cipher_suite = 0 },
-    smtp{ 0 }, bt{}, mdns{}, risk{ .ndpi_score = 0,
-        .ndpi_score_client = 0,
-        .ndpi_score_server = 0 },
-    dpi_thread_id(-1), ndpi_flow(nullptr) {
-
+    gtp(flow.gtp), detected_protocol_name("Unknown") {
     tcp.last_seq = flow.tcp.last_seq.load();
     tcp.fin_ack = flow.tcp.fin_ack.load();
 }
@@ -275,6 +248,18 @@ bool ndFlow::HasTLSClientSNI(void) const {
     return ((GetMasterProtocol() == ND_PROTO_TLS ||
               detected_protocol == ND_PROTO_QUIC) &&
       tls.client_sni.empty() == false);
+}
+
+bool ndFlow::HasTLSEncryptedCH(void) const {
+    return ((GetMasterProtocol() == ND_PROTO_TLS ||
+              detected_protocol == ND_PROTO_QUIC) &&
+      tls.ech.version != 0);
+}
+
+bool ndFlow::HasTLSEncryptedSNI(void) const {
+    return ((GetMasterProtocol() == ND_PROTO_TLS ||
+              detected_protocol == ND_PROTO_QUIC) &&
+      tls.esni.esni.empty() == false);
 }
 
 bool ndFlow::HasTLSServerCN(void) const {
@@ -530,6 +515,20 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
                     dls << " TLS/SNI: " << tls.client_sni;
                 if (HasTLSServerCN())
                     dls << " TLS/CN: " << tls.server_cn;
+            }
+
+            if (HasTLSEncryptedCH()) {
+                dls << endl
+                    << setw(plen) << " "
+                    << ": TLS/ECH: v" << hex
+                    << tls.ech.version << dec;
+            }
+
+            if (HasTLSEncryptedSNI()) {
+                dls << endl
+                    << setw(plen) << " "
+                    << ": TLS/ESNI: v" << hex << tls.esni.cipher_suite
+                    << dec << ": " << tls.esni.esni;
             }
 
             if (HasTLSIssuerDN() || HasTLSSubjectDN()) {
