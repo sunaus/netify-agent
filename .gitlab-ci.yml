@@ -269,6 +269,14 @@ OpenWrt/19.07/x86-64:
               config.buildinfo"
       expand: true
 
+# FreeBSD Targets
+
+FreeBSD/13x/x86-64:
+  extends: .freebsd13x_build
+  when: manual
+  tags:
+    - freebsd13x
+
 # -----------------------------------------------------------
 # Test
 # -----------------------------------------------------------
