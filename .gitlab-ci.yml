@@ -14,6 +14,7 @@ include:
     file:
       - /gitlab/common/global-variables.yml
       - /gitlab/agent/debian-variables.yml
+      - /gitlab/agent/freebsd-variables.yml
       - /gitlab/agent/rhel-variables.yml
       - /gitlab/agent/build-templates.yml
       - /gitlab/agent/test-templates.yml
@@ -271,11 +272,32 @@ OpenWrt/19.07/x86-64:
 
 # FreeBSD Targets
 
-FreeBSD/13x/x86-64:
-  extends: .freebsd13x_build
-  when: manual
+FreeBSD/13.2/x86-64:
+  extends: .freebsd_build
   tags:
-    - freebsd13x
+    - freebsd13.2
+  variables:
+    OS_NAME: freebsd
+    OS_ARCH: amd64
+    OS_ARCH_PATH:
+      value: $OS_ARCH
+      expand: true
+    OS_VERSION: "13.2"
+
+FreeBSD/14.0/x86-64:
+  extends: .freebsd_build
+  only:
+    - tags
+    - web
+  tags:
+    - freebsd14.0
+  variables:
+    OS_NAME: freebsd
+    OS_ARCH: amd64
+    OS_ARCH_PATH:
+      value: $OS_ARCH
+      expand: true
+    OS_VERSION: "14.0"
 
 # -----------------------------------------------------------
 # Test
