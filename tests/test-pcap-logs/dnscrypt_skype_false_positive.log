@@ -1,4 +1,5 @@
-offline0: i4pc-------r--- UDP [L] 192.168.2.100:46858 --> [OR] 212.47.228.136:443
-        : DNSCrypt
-        : DP: 2
+offline0: i4pc-gx----r--- UDP [L] 192.168.2.100:46858 --> [OR] 212.47.228.136:443
+        : Unknown
+        : RID 46: Unidirectional Traffic
+        : DP: 1
 

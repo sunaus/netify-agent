@@ -1,4 +1,4 @@
-offline0: i4pcu--------F- TCP [L] 10.8.0.1:45104 --> [OR] 104.17.115.40:443
+offline0: i4pcu------r-F- TCP [L] 10.8.0.1:45104 --> [OR] 104.17.115.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
@@ -7,7 +7,7 @@ offline0: i4pcu--------F- TCP [L] 10.8.0.1:45104 --> [OR] 104.17.115.40:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu---------- TCP [L] 10.8.0.1:50178 --> [OR] 104.17.154.236:443
+offline0: i4pcu------r--- TCP [L] 10.8.0.1:50178 --> [OR] 104.17.154.236:443
         : HTTP/S.netify.tunnelbear
         : H: api.tunnelbear.com
         : V: 0x0303 CS: 0xc02f
@@ -16,7 +16,7 @@ offline0: i4pcu---------- TCP [L] 10.8.0.1:50178 --> [OR] 104.17.154.236:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu--------F- TCP [L] 10.8.0.1:45106 --> [OR] 104.17.115.40:443
+offline0: i4pcu------r-F- TCP [L] 10.8.0.1:45106 --> [OR] 104.17.115.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
@@ -25,7 +25,7 @@ offline0: i4pcu--------F- TCP [L] 10.8.0.1:45106 --> [OR] 104.17.115.40:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu--------F- TCP [L] 10.8.0.1:45108 --> [OR] 104.17.115.40:443
+offline0: i4pcu------r-F- TCP [L] 10.8.0.1:45108 --> [OR] 104.17.115.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
@@ -34,7 +34,7 @@ offline0: i4pcu--------F- TCP [L] 10.8.0.1:45108 --> [OR] 104.17.115.40:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu--------F- TCP [L] 10.8.0.1:45114 --> [OR] 104.17.115.40:443
+offline0: i4pcu------r-F- TCP [L] 10.8.0.1:45114 --> [OR] 104.17.115.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
@@ -43,7 +43,7 @@ offline0: i4pcu--------F- TCP [L] 10.8.0.1:45114 --> [OR] 104.17.115.40:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu---------- TCP [L] 10.8.0.1:47496 --> [OR] 162.247.243.188:443
+offline0: i4pcu------r--- TCP [L] 10.8.0.1:47496 --> [OR] 162.247.243.188:443
         : HTTP/S.netify.new-relic
         : H: mobile-collector.newrelic.com
         : V: 0x0303 CS: 0xc02f
@@ -52,21 +52,21 @@ offline0: i4pcu---------- TCP [L] 10.8.0.1:47496 --> [OR] 162.247.243.188:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [L] 10.8.0.1:45126 --> [OR] 104.17.115.40:443
+offline0: i4pcu--------F- TCP [L] 10.8.0.1:45126 --> [OR] 104.17.115.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: api.polargrizzly.com
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [L] 10.8.0.1:45124 --> [OR] 104.17.115.40:443
+offline0: i4pcu--------F- TCP [L] 10.8.0.1:45124 --> [OR] 104.17.115.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: api.polargrizzly.com
         : DP: 6
 
-offline0: i4pcu---------- TCP [L] 10.8.0.1:60224 --> [OR] 157.240.7.32:443
+offline0: i4pcu------r--- TCP [L] 10.8.0.1:60224 --> [OR] 157.240.7.32:443
         : HTTP/S.netify.meta-messaging
         : H: mqtt-mini.facebook.com
         : V: 0x0303 CS: 0x1301
@@ -74,7 +74,7 @@ offline0: i4pcu---------- TCP [L] 10.8.0.1:60224 --> [OR] 157.240.7.32:443
         : RID 47: TLS ALPN Not Found
         : DP: 6
 
-offline0: i4pcu---------- TCP [L] 10.8.0.1:47594 --> [OR] 99.83.135.170:443
+offline0: i4pcu------r--- TCP [L] 10.8.0.1:47594 --> [OR] 99.83.135.170:443
         : HTTP/S.netify.grammarly
         : H: capi.grammarly.com
         : V: 0x0303 CS: 0xc02f
@@ -84,56 +84,56 @@ offline0: i4pcu---------- TCP [L] 10.8.0.1:47594 --> [OR] 99.83.135.170:443
         : RID 47: TLS ALPN Not Found
         : DP: 8
 
-offline0: i4pc--------s-- TCP [L] 10.8.0.1:47046 --> [OR] 74.125.200.188:5228
+offline0: i4pc-------rs-- TCP [L] 10.8.0.1:47046 --> [OR] 74.125.200.188:5228
         : XMPP.netify.google-chat
         : H: mtalk.google.com
         : RID 16: Known Protocol on Non-standard Port
         : RID 47: TLS ALPN Not Found
         : DP: 4
 
-offline0: i4pc--------s-- TCP [L] 10.8.0.1:47046 --> [OR] 74.125.200.188:5228
+offline0: i4pc-------rs-- TCP [L] 10.8.0.1:47046 --> [OR] 74.125.200.188:5228
         : XMPP.netify.google-chat
         : H: mtalk.google.com
         : RID 16: Known Protocol on Non-standard Port
         : RID 47: TLS ALPN Not Found
         : DP: 4
 
-offline0: i4pcu------r-F- TCP [L] 10.8.0.1:33830 --> [OR] 104.17.114.40:443
+offline0: i4pcu--------F- TCP [L] 10.8.0.1:33830 --> [OR] 104.17.114.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: api.polargrizzly.com
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [L] 10.8.0.1:33846 --> [OR] 104.17.114.40:443
+offline0: i4pcu--------F- TCP [L] 10.8.0.1:33846 --> [OR] 104.17.114.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: api.polargrizzly.com
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [L] 10.8.0.1:33842 --> [OR] 104.17.114.40:443
+offline0: i4pcu--------F- TCP [L] 10.8.0.1:33842 --> [OR] 104.17.114.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: api.polargrizzly.com
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [L] 10.8.0.1:33838 --> [OR] 104.17.114.40:443
+offline0: i4pcu--------F- TCP [L] 10.8.0.1:33838 --> [OR] 104.17.114.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: api.polargrizzly.com
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [L] 10.8.0.1:33848 --> [OR] 104.17.114.40:443
+offline0: i4pcu--------F- TCP [L] 10.8.0.1:33848 --> [OR] 104.17.114.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: api.polargrizzly.com
         : DP: 6
 
-offline0: i4pcu---------- TCP [L] 10.8.0.1:50904 --> [OR] 104.17.154.236:443
+offline0: i4pcu------r--- TCP [L] 10.8.0.1:50904 --> [OR] 104.17.154.236:443
         : HTTP/S.netify.tunnelbear
         : H: api.tunnelbear.com
         : V: 0x0303 CS: 0xc02f
@@ -142,7 +142,7 @@ offline0: i4pcu---------- TCP [L] 10.8.0.1:50904 --> [OR] 104.17.154.236:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu---------- TCP [L] 10.8.0.1:48222 --> [OR] 162.247.243.188:443
+offline0: i4pcu------r--- TCP [L] 10.8.0.1:48222 --> [OR] 162.247.243.188:443
         : HTTP/S.netify.new-relic
         : H: mobile-collector.newrelic.com
         : V: 0x0303 CS: 0xc02f
@@ -151,14 +151,14 @@ offline0: i4pcu---------- TCP [L] 10.8.0.1:48222 --> [OR] 162.247.243.188:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pc--x----r--- TCP [L] 10.8.0.1:33858 --> [OR] 104.17.114.40:443
+offline0: i4pc--x-------- TCP [L] 10.8.0.1:33858 --> [OR] 104.17.114.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303
         : TLS/SNI: api.polargrizzly.com
         : DP: 5
 
-offline0: i4pc--x-------- TCP [L] 10.158.132.91:38398 --> [OR] 104.17.114.40:443
+offline0: i4pc--x----r--- TCP [L] 10.158.132.91:38398 --> [OR] 104.17.114.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
         : V: 0x0303
@@ -166,7 +166,7 @@ offline0: i4pc--x-------- TCP [L] 10.158.132.91:38398 --> [OR] 104.17.114.40:443
         : RID 46: Unidirectional Traffic
         : DP: 5
 
-offline0: i4pc-gx----r-F- TCP [OR] 8.8.8.8:53 <-- [L] 10.158.132.91:51120
+offline0: i4pc-gx------F- TCP [OR] 8.8.8.8:53 <-- [L] 10.158.132.91:51120
         : Unknown.netify.google
         : DP: 5
 

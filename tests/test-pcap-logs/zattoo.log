@@ -1,4 +1,4 @@
-offline0: i4pcu---------- TCP [L] 10.101.0.2:2930 --> [OL] 10.102.0.2:443
+offline0: i4pcu------r--- TCP [L] 10.101.0.2:2930 --> [OL] 10.102.0.2:443
         : HTTP/S.netify.zattoo
         : H: zattoo.com
         : V: 0x0303 CS: 0x009c
@@ -9,7 +9,7 @@ offline0: i4pcu---------- TCP [L] 10.101.0.2:2930 --> [OL] 10.102.0.2:443
         : RID 47: TLS ALPN Not Found
         : DP: 5
 
-offline0: i4pc----------- TCP [L] 10.101.0.2:2936 --> [OL] 10.102.0.2:80
+offline0: i4pc-------r--- TCP [L] 10.101.0.2:2936 --> [OL] 10.102.0.2:80
         : HTTP.netify.akamai
         : H: zattosecurehd2-f.akamaihd.net
         : HTTP/UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:6.0) Gecko/20100101 Firefox/6.0

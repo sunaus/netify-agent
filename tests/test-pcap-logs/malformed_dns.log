@@ -1,4 +1,4 @@
-offline0: i4pc----------- UDP [L] 127.0.0.1:50435 --> [OL] 127.0.0.1:53
+offline0: i4pc-------r--- UDP [L] 127.0.0.1:50435 --> [OL] 127.0.0.1:53
         : DNS
         : H: www.xt.com
         : RID  6: Large DNS Packet (512+ bytes)
@@ -6,7 +6,7 @@ offline0: i4pc----------- UDP [L] 127.0.0.1:50435 --> [OL] 127.0.0.1:53
         : RID 50: Minor Issues
         : DP: 2
 
-offline0: i4pc----------- UDP [L] 127.0.0.1:50435 --> [OL] 127.0.0.1:53
+offline0: i4pc-------r--- UDP [L] 127.0.0.1:50435 --> [OL] 127.0.0.1:53
         : DNS
         : H: www.xt.com
         : RID  6: Large DNS Packet (512+ bytes)

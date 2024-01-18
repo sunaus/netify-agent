@@ -1,4 +1,4 @@
-offline0: i4pc----------- UDP [OR] 18.184.138.142:443 <-- [L] 192.168.12.169:42083
+offline0: i4pc-------r--- UDP [OR] 18.184.138.142:443 <-- [L] 192.168.12.169:42083
         : QUIC
         : RID 35: TLS SNI Extension Not Found
         : DP: 20

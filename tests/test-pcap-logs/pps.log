@@ -1,49 +1,49 @@
-offline0: i4pc-g-----r--- UDP [OR] 1.173.5.226:22636 <-- [L] 192.168.115.8:22793
+offline0: i4pc-g--------- UDP [OR] 1.173.5.226:22636 <-- [L] 192.168.115.8:22793
         : Unknown
         : DP: 32
 
-offline0: i4pc-g-----r--- UDP [OR] 114.42.0.158:7716 <-- [L] 192.168.115.8:22793
+offline0: i4pc-g--------- UDP [OR] 114.42.0.158:7716 <-- [L] 192.168.115.8:22793
         : Unknown
         : DP: 32
 
-offline0: i4pc-g-----r--- UDP [OR] 118.171.15.56:5544 <-- [L] 192.168.115.8:22793
+offline0: i4pc-g--------- UDP [OR] 118.171.15.56:5544 <-- [L] 192.168.115.8:22793
         : Unknown
         : DP: 32
 
-offline0: i4pc-g-----r--- UDP [L] 192.168.115.8:22793 --> [OR] 219.228.107.156:1250
+offline0: i4pc-g--------- UDP [L] 192.168.115.8:22793 --> [OR] 219.228.107.156:1250
         : Unknown
         : DP: 32
 
-offline0: i4pc----------- UDP [L] 192.168.115.8:22793 --> [OR] 218.61.39.103:17788
+offline0: i4pc-------r--- UDP [L] 192.168.115.8:22793 --> [OR] 218.61.39.103:17788
         : PPStream
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [OR] 183.61.167.82:17788 <-- [L] 192.168.115.8:22793
+offline0: i4pc-------r--- UDP [OR] 183.61.167.82:17788 <-- [L] 192.168.115.8:22793
         : PPStream
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [L] 192.168.115.8:22793 --> [OR] 218.61.39.87:17788
+offline0: i4pc-------r--- UDP [L] 192.168.115.8:22793 --> [OR] 218.61.39.87:17788
         : PPStream
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [OR] 119.188.133.182:17788 <-- [L] 192.168.115.8:22793
+offline0: i4pc-------r--- UDP [OR] 119.188.133.182:17788 <-- [L] 192.168.115.8:22793
         : PPStream
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [OR] 183.61.167.104:17788 <-- [L] 192.168.115.8:22793
+offline0: i4pc-------r--- UDP [OR] 183.61.167.104:17788 <-- [L] 192.168.115.8:22793
         : PPStream
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-g-----r--- UDP [L] 192.168.115.8:22793 --> [OR] 222.197.138.12:6956
+offline0: i4pc-g--------- UDP [L] 192.168.115.8:22793 --> [OR] 222.197.138.12:6956
         : Unknown
         : DP: 32
 
-offline0: i4pc----------- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50463
+offline0: i4pc-------r--- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50463
         : HTTP.netify.iqiyi
         : H: api.cupid.iqiyi.com
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -52,7 +52,7 @@ offline0: i4pc----------- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50463
         : RID 48: HTTP Obsolete Server
         : DP: 3
 
-offline0: i4pc----------- TCP [OR] 123.125.112.49:80 <-- [L] 192.168.115.8:50464
+offline0: i4pc-------r--- TCP [OR] 123.125.112.49:80 <-- [L] 192.168.115.8:50464
         : HTTP.netify.baidu
         : H: click.hm.baidu.com
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -60,7 +60,7 @@ offline0: i4pc----------- TCP [OR] 123.125.112.49:80 <-- [L] 192.168.115.8:50464
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50466 --> [OR] 203.66.182.24:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50466 --> [OR] 203.66.182.24:80
         : HTTP.netify.google
         : H: clients1.google.com
         : HTTP/UA: Microsoft-CryptoAPI/6.1
@@ -68,7 +68,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50466 --> [OR] 203.66.182.24:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50467 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50467 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -77,7 +77,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50467 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50470 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50470 --> [OR] 202.108.14.236:80
         : HTTP.netify.iqiyi
         : H: msg.iqiyi.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -86,7 +86,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50470 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50469 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50469 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -95,7 +95,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50469 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50471 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50471 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -104,7 +104,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50471 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50474 --> [OR] 202.108.14.221:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50474 --> [OR] 202.108.14.221:80
         : HTTP.netify.iqiyi
         : H: msg.iqiyi.com
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; CIBA; Alexa Toolbar; Zune 4.7)
@@ -113,7 +113,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50474 --> [OR] 202.108.14.221:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50475 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50475 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -122,14 +122,14 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50475 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 101.227.32.39:80 <-- [L] 192.168.115.8:50476
+offline0: i4pc-------r--- TCP [OR] 101.227.32.39:80 <-- [L] 192.168.115.8:50476
         : HTTP.netify.iqiyi
         : H: cache.video.iqiyi.com
         : URL: cache.video.iqiyi.com/vi/500494600/562e26caed5695900212eb3259070f8a/?src=1_11_114
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50473 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50473 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -138,7 +138,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50473 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50477 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50477 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -147,7 +147,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50477 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 140.205.243.64:80 <-- [L] 192.168.115.8:50482
+offline0: i4pc-------r--- TCP [OR] 140.205.243.64:80 <-- [L] 192.168.115.8:50482
         : HTTP.netify.tanx
         : H: cmc.tanx.com
         : HTTP/UA: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)
@@ -155,7 +155,7 @@ offline0: i4pc----------- TCP [OR] 140.205.243.64:80 <-- [L] 192.168.115.8:50482
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50483 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50483 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -164,7 +164,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50483 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50484 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50484 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -173,7 +173,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50484 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50485 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50485 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -182,12 +182,12 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50485 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.57:59648 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.57:59648 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [OR] 77.234.40.96:80 <-- [L] 192.168.115.8:50486
+offline0: i4pc-------r--- TCP [OR] 77.234.40.96:80 <-- [L] 192.168.115.8:50486
         : HTTP.netify.avast
         : H: bcu.ff.avast.com
         : HTTP/UA: {D699054D-1699-47D2-9B2B-E96F438C1160}
@@ -197,7 +197,7 @@ offline0: i4pc----------- TCP [OR] 77.234.40.96:80 <-- [L] 192.168.115.8:50486
         : RID 48: HTTP Obsolete Server
         : DP: 9
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50488 --> [OR] 223.26.106.20:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50488 --> [OR] 223.26.106.20:80
         : HTTP.netify.iqiyi
         : H: meta.video.qiyi.com
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -205,7 +205,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50488 --> [OR] 223.26.106.20:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 119.188.13.188:80 <-- [L] 192.168.115.8:50489
+offline0: i4pc-------r--- TCP [OR] 119.188.13.188:80 <-- [L] 192.168.115.8:50489
         : HTTP.netify.iqiyi
         : H: pdata.video.qiyi.com
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -214,7 +214,7 @@ offline0: i4pc----------- TCP [OR] 119.188.13.188:80 <-- [L] 192.168.115.8:50489
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 119.188.13.188:80 <-- [L] 192.168.115.8:50490
+offline0: i4pc-------r--- TCP [OR] 119.188.13.188:80 <-- [L] 192.168.115.8:50490
         : HTTP.netify.iqiyi
         : H: pdata.video.qiyi.com
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -223,7 +223,7 @@ offline0: i4pc----------- TCP [OR] 119.188.13.188:80 <-- [L] 192.168.115.8:50490
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50491 --> [OR] 223.26.106.66:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50491 --> [OR] 223.26.106.66:80
         : HTTP
         : H: 223.26.106.66
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -231,7 +231,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50491 --> [OR] 223.26.106.66:80
         : RID 10: Numeric IP Address
         : DP: 9
 
-offline0: i4pc----------- TCP [OR] 111.206.13.3:80 <-- [L] 192.168.115.8:50492
+offline0: i4pc-------r--- TCP [OR] 111.206.13.3:80 <-- [L] 192.168.115.8:50492
         : HTTP.netify.iqiyi
         : H: pdata.video.qiyi.com
         : HTTP/UA: HCDNClient_WINPC;libcurl/7.26.0 OpenSSL/1.0.1g zlib/1.2.5;QK/10.0.0.293
@@ -240,7 +240,7 @@ offline0: i4pc----------- TCP [OR] 111.206.13.3:80 <-- [L] 192.168.115.8:50492
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50493 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50493 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -249,7 +249,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50493 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65127
+offline0: i4pc-------r--- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65127
         : HTTP
         : H: api.magicansoft.com
         : HTTP/UA: Magican (unknown version) CFNetwork/720.5.7 Darwin/14.5.0 (x86_64)
@@ -258,7 +258,7 @@ offline0: i4pc----------- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65127
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50494 --> [OR] 223.26.106.66:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50494 --> [OR] 223.26.106.66:80
         : HTTP
         : H: 223.26.106.66
         : HTTP/UA: HCDNClient_WINPC;libcurl/7.26.0 OpenSSL/1.0.1g zlib/1.2.5;QK/10.0.0.293
@@ -267,12 +267,12 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50494 --> [OR] 223.26.106.66:80
         : RID 10: Numeric IP Address
         : DP: 3
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.48:63930 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.48:63930 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50495 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50495 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -281,7 +281,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50495 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50496
+offline0: i4pc-------r--- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50496
         : HTTP.netify.iqiyi
         : H: api.cupid.iqiyi.com
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -290,7 +290,7 @@ offline0: i4pc----------- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50496
         : RID 48: HTTP Obsolete Server
         : DP: 3
 
-offline0: i4pc---------F- TCP [OR] 123.125.112.49:80 <-- [L] 192.168.115.8:50497
+offline0: i4pc-------r-F- TCP [OR] 123.125.112.49:80 <-- [L] 192.168.115.8:50497
         : HTTP.netify.baidu
         : H: click.hm.baidu.com
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -298,17 +298,17 @@ offline0: i4pc---------F- TCP [OR] 123.125.112.49:80 <-- [L] 192.168.115.8:50497
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.63:39383 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.63:39383 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.63:60976 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.63:60976 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [OR] 36.110.220.15:80 <-- [L] 192.168.115.8:50498
+offline0: i4pc-------r--- TCP [OR] 36.110.220.15:80 <-- [L] 192.168.115.8:50498
         : HTTP.netify.iqiyi
         : H: msg.video.qiyi.com
         : HTTP/UA: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)
@@ -317,7 +317,7 @@ offline0: i4pc----------- TCP [OR] 36.110.220.15:80 <-- [L] 192.168.115.8:50498
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 111.206.22.76:80 <-- [L] 192.168.115.8:50499
+offline0: i4pc-------r--- TCP [OR] 111.206.22.76:80 <-- [L] 192.168.115.8:50499
         : HTTP.netify.iqiyi
         : H: msg.iqiyi.com
         : HTTP/UA: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)
@@ -326,7 +326,7 @@ offline0: i4pc----------- TCP [OR] 111.206.22.76:80 <-- [L] 192.168.115.8:50499
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 23.41.133.163:80 <-- [L] 192.168.115.8:50500
+offline0: i4pc-------r--- TCP [OR] 23.41.133.163:80 <-- [L] 192.168.115.8:50500
         : HTTP.netify.digicert
         : H: s1.symcb.com
         : HTTP/UA: Microsoft-CryptoAPI/6.1
@@ -334,7 +334,7 @@ offline0: i4pc----------- TCP [OR] 23.41.133.163:80 <-- [L] 192.168.115.8:50500
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50501 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50501 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -343,12 +343,12 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50501 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.38:58897 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.38:58897 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50502 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50502 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -357,12 +357,12 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50502 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.50:52529 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.50:52529 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65128
+offline0: i4pc-------r--- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65128
         : HTTP
         : H: api.magicansoft.com
         : HTTP/UA: Magican (unknown version) CFNetwork/720.5.7 Darwin/14.5.0 (x86_64)
@@ -371,7 +371,7 @@ offline0: i4pc----------- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65128
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50503 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50503 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -380,12 +380,12 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50503 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.28:60023 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.28:60023 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50505 --> [OR] 223.26.106.19:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50505 --> [OR] 223.26.106.19:80
         : HTTP.netify.iqiyi
         : H: static.qiyi.com
         : HTTP/UA: Downloader
@@ -394,17 +394,17 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50505 --> [OR] 223.26.106.19:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.38:1900 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.38:1900 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 192.168.5.41:50374 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.5.41:50374 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50507 --> [OR] 223.26.106.19:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50507 --> [OR] 223.26.106.19:80
         : HTTP.netify.iqiyi
         : H: static.qiyi.com
         : HTTP/UA: DownloadHelper_runxx
@@ -413,7 +413,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50507 --> [OR] 223.26.106.19:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50508 --> [OR] 223.26.106.19:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50508 --> [OR] 223.26.106.19:80
         : HTTP.netify.iqiyi
         : H: static.qiyi.com
         : HTTP/UA: QYAgent_runxx
@@ -422,7 +422,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50508 --> [OR] 223.26.106.19:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 106.38.219.107:80 <-- [L] 192.168.115.8:50509
+offline0: i4pc-------r--- TCP [OR] 106.38.219.107:80 <-- [L] 192.168.115.8:50509
         : HTTP.netify.iqiyi
         : H: iplocation.geo.qiyi.com
         : HTTP/UA: QYAgent_runxx
@@ -430,7 +430,7 @@ offline0: i4pc----------- TCP [OR] 106.38.219.107:80 <-- [L] 192.168.115.8:50509
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50766 --> [OR] 223.26.106.20:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50766 --> [OR] 223.26.106.20:80
         : HTTP.netify.iqiyi
         : H: static.qiyi.com
         : HTTP/UA: masflag_runxx
@@ -439,7 +439,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50766 --> [OR] 223.26.106.20:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50767 --> [OR] 223.26.106.20:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50767 --> [OR] 223.26.106.20:80
         : HTTP.netify.iqiyi
         : H: static.qiyi.com
         : HTTP/UA: masauto_runxx
@@ -448,7 +448,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50767 --> [OR] 223.26.106.20:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 36.110.220.15:80 <-- [L] 192.168.115.8:50765
+offline0: i4pc-------r--- TCP [OR] 36.110.220.15:80 <-- [L] 192.168.115.8:50765
         : HTTP.netify.iqiyi
         : H: msg.video.qiyi.com
         : HTTP/UA: QIYiAngent
@@ -457,7 +457,7 @@ offline0: i4pc----------- TCP [OR] 36.110.220.15:80 <-- [L] 192.168.115.8:50765
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50768 --> [OR] 223.26.106.19:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50768 --> [OR] 223.26.106.19:80
         : HTTP.netify.iqiyi
         : H: static.qiyi.com
         : HTTP/UA: masblog_runxx
@@ -466,7 +466,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50768 --> [OR] 223.26.106.19:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50769
+offline0: i4pc-------r--- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50769
         : HTTP.netify.iqiyi
         : H: api.cupid.iqiyi.com
         : HTTP/UA: CookieClear_runxx
@@ -475,7 +475,7 @@ offline0: i4pc----------- TCP [OR] 101.227.200.11:80 <-- [L] 192.168.115.8:50769
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50771 --> [OR] 202.108.14.236:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50771 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -484,7 +484,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50771 --> [OR] 202.108.14.236:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 123.125.111.70:80 <-- [L] 192.168.115.8:50772
+offline0: i4pc-------r--- TCP [OR] 123.125.111.70:80 <-- [L] 192.168.115.8:50772
         : HTTP.netify.iqiyi
         : H: nl.rcd.iqiyi.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -492,7 +492,7 @@ offline0: i4pc----------- TCP [OR] 123.125.111.70:80 <-- [L] 192.168.115.8:50772
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50773 --> [OR] 202.108.14.221:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50773 --> [OR] 202.108.14.221:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -501,7 +501,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50773 --> [OR] 202.108.14.221:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50774 --> [OR] 202.108.14.219:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50774 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -510,7 +510,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50774 --> [OR] 202.108.14.219:80
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50776
+offline0: i4pc-------r--- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50776
         : HTTP.netify.iqiyi
         : H: msg.iqiyi.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -519,7 +519,7 @@ offline0: i4pc----------- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50776
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50777
+offline0: i4pc-------r--- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50777
         : HTTP.netify.iqiyi
         : H: msg.iqiyi.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -528,7 +528,7 @@ offline0: i4pc----------- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50777
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50778 --> [OR] 223.26.106.20:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50778 --> [OR] 223.26.106.20:80
         : HTTP.netify.iqiyi
         : H: preimage1.qiyipic.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -536,12 +536,12 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50778 --> [OR] 223.26.106.20:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc-------r--- UDP [L] 192.168.115.1:50945 --> [OM] 239.255.255.250:1900
+offline0: i4pc----------- UDP [L] 192.168.115.1:50945 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc----------- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50779
+offline0: i4pc-------r--- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50779
         : HTTP.netify.iqiyi
         : H: msg.iqiyi.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -550,7 +550,7 @@ offline0: i4pc----------- TCP [OR] 111.206.22.77:80 <-- [L] 192.168.115.8:50779
         : RID 48: HTTP Obsolete Server
         : DP: 3
 
-offline0: i4pc----------- TCP [L] 192.168.115.8:50780 --> [OR] 223.26.106.20:80
+offline0: i4pc-------r--- TCP [L] 192.168.115.8:50780 --> [OR] 223.26.106.20:80
         : HTTP.netify.iqiyi
         : H: preimage1.qiyipic.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -558,7 +558,7 @@ offline0: i4pc----------- TCP [L] 192.168.115.8:50780 --> [OR] 223.26.106.20:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 123.125.111.70:80 <-- [L] 192.168.115.8:50775
+offline0: i4pc-------r--- TCP [OR] 123.125.111.70:80 <-- [L] 192.168.115.8:50775
         : HTTP.netify.iqiyi
         : H: nl.rcd.iqiyi.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -566,7 +566,7 @@ offline0: i4pc----------- TCP [OR] 123.125.111.70:80 <-- [L] 192.168.115.8:50775
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc--x-------- TCP [L] 192.168.115.8:50487 --> [OR] 202.108.14.219:80
+offline0: i4pc--x----r--- TCP [L] 192.168.115.8:50487 --> [OR] 202.108.14.219:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: QY-Player-Windows/2.0.102
@@ -574,25 +574,25 @@ offline0: i4pc--x-------- TCP [L] 192.168.115.8:50487 --> [OR] 202.108.14.219:80
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- UDP [OR] 111.249.53.196:32443 --> [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 111.249.53.196:32443 --> [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 --> [OR] 202.198.7.89:16039
+offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 --> [OR] 202.198.7.89:16039
         : Unknown
         : DP: 5
 
-offline0: i4pc-gx----r--- UDP [OR] 183.228.182.44:13913 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx-------- UDP [OR] 183.228.182.44:13913 <-- [L] 192.168.115.8:22793
         : Unknown
         : DP: 3
 
-offline0: i4pc-gx-------- UDP [OR] 114.41.144.153:10492 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 114.41.144.153:10492 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 4
 
-offline0: i4pc--x-------- TCP [L] 192.168.115.8:50781 --> [OR] 223.26.106.20:80
+offline0: i4pc--x----r--- TCP [L] 192.168.115.8:50781 --> [OR] 223.26.106.20:80
         : HTTP.netify.iqiyi
         : H: preimage1.qiyipic.com
         : HTTP/UA: Qiyi List Client PC 5.2.15.2240
@@ -600,85 +600,85 @@ offline0: i4pc--x-------- TCP [L] 192.168.115.8:50781 --> [OR] 223.26.106.20:80
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- UDP [OR] 61.227.170.88:20227 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 61.227.170.88:20227 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65125
+offline0: i4pc-gx----r-F- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65125
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 --> [OR] 210.44.232.243:21044
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 --> [OR] 210.44.232.243:21044
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 111.250.102.66:1107 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 111.250.102.66:1107 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 <-- [OR] 210.47.12.20:33738
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 <-- [OR] 210.47.12.20:33738
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc--x-------- TCP [OR] 77.234.41.35:80 <-- [L] 192.168.115.8:49174
+offline0: i4pc--x----r--- TCP [OR] 77.234.41.35:80 <-- [L] 192.168.115.8:49174
         : HTTP.netify.avast
         : H: su.ff.avast.com
         : URL: su.ff.avast.com/R/A3gKIDljY2I3ODkyM2NiMTRlMTBiNzRmZGQ3OTE4ODdhNDZlEgQCMAYWGKAEIgH_KgcIBBDmzNlDKgcIAxCrn_tBMgoIBBDmzNlDGIAKOM2RhFhCICsB593vKxQ6cVzAgCL_b9XWlsFQVx754ZgCHv1XaVp1SICCmAg=
         : RID 14: HTTP Suspicious User-Agent
         : DP: 5
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 <-- [OR] 220.130.154.23:35941
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 <-- [OR] 220.130.154.23:35941
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 <-- [OR] 202.112.31.89:29072
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 <-- [OR] 202.112.31.89:29072
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 1.169.136.116:17951 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 1.169.136.116:17951 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 4
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 <-- [OR] 210.47.12.19:33738
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 <-- [OR] 210.47.12.19:33738
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 121.248.133.93:12757 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 121.248.133.93:12757 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc--x-------- TCP [OR] 117.79.81.135:80 <-- [L] 192.168.115.8:50443
+offline0: i4pc--x----r--- TCP [OR] 117.79.81.135:80 <-- [L] 192.168.115.8:50443
         : HTTP
         : RID 14: HTTP Suspicious User-Agent
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- UDP [OR] 114.47.91.129:22576 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 114.47.91.129:22576 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 36.233.39.81:18590 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 36.233.39.81:18590 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- TCP [L] 192.168.115.8:50462 --> [OR] 202.108.14.236:80
+offline0: i4pc-gx----r--- TCP [L] 192.168.115.8:50462 --> [OR] 202.108.14.236:80
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc--x-------- TCP [L] 192.168.115.8:50504 --> [OR] 202.108.14.236:80
+offline0: i4pc--x----r--- TCP [L] 192.168.115.8:50504 --> [OR] 202.108.14.236:80
         : HTTP
         : H: msg.71.am
         : HTTP/UA: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)/QY-Player-Windows/2.0.102
@@ -686,61 +686,61 @@ offline0: i4pc--x-------- TCP [L] 192.168.115.8:50504 --> [OR] 202.108.14.236:80
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- UDP [OR] 111.117.101.81:10162 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 111.117.101.81:10162 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 --> [OR] 222.26.193.119:7133
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 --> [OR] 222.26.193.119:7133
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 <-- [OR] 210.44.171.1:29702
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 <-- [OR] 210.44.171.1:29702
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 114.37.142.173:1074 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 114.37.142.173:1074 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc--x-------- TCP [L] 192.168.115.8:50295 --> [OR] 202.108.14.219:80
+offline0: i4pc--x----r--- TCP [L] 192.168.115.8:50295 --> [OR] 202.108.14.219:80
         : HTTP
         : RID 14: HTTP Suspicious User-Agent
         : RID 46: Unidirectional Traffic
         : RID 48: HTTP Obsolete Server
         : DP: 2
 
-offline0: i4pc--x-------- TCP [L] 192.168.115.8:50506 --> [OR] 202.108.14.219:80
+offline0: i4pc--x----r--- TCP [L] 192.168.115.8:50506 --> [OR] 202.108.14.219:80
         : HTTP
         : RID 14: HTTP Suspicious User-Agent
         : RID 46: Unidirectional Traffic
         : RID 48: HTTP Obsolete Server
         : DP: 1
 
-offline0: i4pc-gx-------- UDP [OR] 1.175.128.104:5185 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 1.175.128.104:5185 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [L] 192.168.115.8:22793 --> [OR] 222.26.74.190:1037
+offline0: i4pc-gx----r--- UDP [L] 192.168.115.8:22793 --> [OR] 222.26.74.190:1037
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 115.157.62.243:29006 --> [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 115.157.62.243:29006 --> [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 36.237.154.69:4316 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 36.237.154.69:4316 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 61.223.204.67:11102 <-- [L] 192.168.115.8:22793
+offline0: i4pc-gx----r--- UDP [OR] 61.223.204.67:11102 <-- [L] 192.168.115.8:22793
         : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 2

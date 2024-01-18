@@ -347,7 +347,7 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
           << (flags.dhc_hit.load() ? 'd' : '-')
           << (flags.fhc_hit.load() ? 'f' : '-')
           << (flags.ip_nat.load() ? 'n' : '-')
-          << (risk.risks.empty() ? 'r' : '-')
+          << (risk.risks.empty() ? '-' : 'r')
           << (flags.soft_dissector.load() ? 's' : '-')
           << (tcp.fin_ack.load() ? 'F' : '-')
           << ((privacy_mask & PRIVATE_LOWER) ?
