@@ -235,19 +235,21 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         { "dump-with-categories", 0, 0, _ND_LO_DUMP_WITH_CATS },
 #define _ND_LO_EXPORT_APPS 17
         { "export-apps", 0, 0, _ND_LO_EXPORT_APPS },
-#define _ND_LO_LOOKUP_IP 18
+#define _ND_LO_EXPORT_APPS_LEGACY 18
+        { "export-legacy", 0, 0, _ND_LO_EXPORT_APPS_LEGACY },
+#define _ND_LO_LOOKUP_IP 19
         { "lookup-ip", 1, 0, _ND_LO_LOOKUP_IP },
-#define _ND_LO_CAPTURE_DELAY 19
+#define _ND_LO_CAPTURE_DELAY 20
         { "capture-delay", 1, 0, _ND_LO_CAPTURE_DELAY },
-#define _ND_LO_ALLOW_UNPRIV 20
+#define _ND_LO_ALLOW_UNPRIV 21
         { "allow-unprivileged", 0, 0, _ND_LO_ALLOW_UNPRIV },
-#define _ND_LO_IGNORE_IFACE_CONFIGS 21
+#define _ND_LO_IGNORE_IFACE_CONFIGS 22
         { "ignore-interface-configs", 0, 0, _ND_LO_IGNORE_IFACE_CONFIGS },
-#define _ND_LO_DISABLE_AUTO_FLOW_EXPIRY 22
+#define _ND_LO_DISABLE_AUTO_FLOW_EXPIRY 23
         { "disable-auto-flow-expiry", 0, 0, _ND_LO_DISABLE_AUTO_FLOW_EXPIRY },
-#define _ND_LO_RUN_WITHOUT_SOURCES 23
+#define _ND_LO_RUN_WITHOUT_SOURCES 24
         { "run-without-sources", 0, 0, _ND_LO_RUN_WITHOUT_SOURCES },
-#define _ND_LO_VERBOSE_FLAG 24
+#define _ND_LO_VERBOSE_FLAG 25
         { "verbose-flag", 1, 0, _ND_LO_VERBOSE_FLAG },
 
         { NULL, 0, 0, 0 } };
@@ -383,6 +385,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             break;
         case _ND_LO_LOOKUP_IP:
         case _ND_LO_EXPORT_APPS:
+        case _ND_LO_EXPORT_APPS_LEGACY:
         case _ND_LO_DUMP_PROTOS:
         case _ND_LO_DUMP_APPS:
         case _ND_LO_DUMP_CAT:
@@ -523,6 +526,15 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case _ND_LO_EXPORT_APPS:
 #ifndef _ND_LEAN_AND_MEAN
             rc = apps.Save("/dev/stdout");
+            return ndCR_Pack(ndCR_EXPORT_APPS, (rc) ? 0 : 1);
+#else
+            cerr << "Sorry, this feature was disabled "
+                    "(embedded).\n";
+            return ndCR_DISABLED_OPTION;
+#endif
+        case _ND_LO_EXPORT_APPS_LEGACY:
+#ifndef _ND_LEAN_AND_MEAN
+            rc = apps.SaveLegacy("/dev/stdout");
             return ndCR_Pack(ndCR_EXPORT_APPS, (rc) ? 0 : 1);
 #else
             cerr << "Sorry, this feature was disabled "

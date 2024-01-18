@@ -49,7 +49,7 @@ bool ndApplications::Load(const string &filename) {
 
     if (! ifs.is_open()) return false;
 
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     Reset();
 
@@ -128,13 +128,13 @@ bool ndApplications::Load(const string &filename) {
 }
 
 bool ndApplications::LoadLegacy(const string &filename) {
-    size_t ac = 0, dc = 0, nc = 0, xc = 0;
+    size_t ac = 0, dc = 0, nc = 0;
 
     ifstream ifs(filename);
 
     if (! ifs.is_open()) return false;
 
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     Reset();
 
@@ -198,9 +198,8 @@ bool ndApplications::LoadLegacy(const string &filename) {
     if (ac > 0) {
         nd_dprintf(
           "Loaded [legacy] %u apps, %u domains, %u "
-          "networks, "
-          "%u transforms.\n",
-          ac, dc, nc, xc);
+          "networks, %u transforms.\n",
+          ac, dc, nc, 0);
     }
 
     return (ac > 0 && (ac > 0 || nc > 0));
@@ -214,28 +213,31 @@ bool ndApplications::Save(const string &filename) {
 
     if (! ofs.is_open()) return false;
 
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     for (auto &it : apps)
         ofs << "app:" << it.first << ":" << it.second->tag << endl;
     for (auto &it : domains)
         ofs << "dom:" << it.second << ":" << it.first << endl;
+
     nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
     for (auto &it : (*rn4)) {
         string ip;
-        if (it.first.GetString(ip)) {
+        if (it.first.GetString(ip, ndAddr::mfPREFIX)) {
             ofs << "net:" << it.second << ":" << ip << endl;
             nc++;
         }
     }
+
     nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
     for (auto &it : (*rn6)) {
         string ip;
-        if (it.first.GetString(ip)) {
+        if (it.first.GetString(ip, ndAddr::mfPREFIX)) {
             ofs << "net:" << it.second << ":" << ip << endl;
             nc++;
         }
     }
+
     for (auto &it : domain_xforms)
         ofs << "xfm:" << it.first << ":" << it.second.second << endl;
 
@@ -252,8 +254,54 @@ bool ndApplications::Save(const string &filename) {
 #endif  // _ND_LEAN_AND_MEAN
 }
 
+bool ndApplications::SaveLegacy(const string &filename) {
+#ifndef _ND_LEAN_AND_MEAN
+    size_t nc = 0;
+
+    ofstream ofs(filename, ofstream::trunc);
+
+    if (! ofs.is_open()) return false;
+
+    lock_guard<recursive_mutex> ul(lock);
+
+    for (auto &it : domains) {
+        ofs << "host:\"" << it.first << "\"@"
+            << Lookup(it.second) << endl;
+    }
+
+    nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
+    for (auto &it : (*rn4)) {
+        string ip;
+        if (it.first.GetString(ip, ndAddr::mfPREFIX)) {
+            ofs << "ip:" << ip << "@" << Lookup(it.second) << endl;
+            nc++;
+        }
+    }
+
+    nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
+    for (auto &it : (*rn6)) {
+        string ip;
+        if (it.first.GetString(ip, ndAddr::mfPREFIX | ndAddr::mfIPV6_ESC))
+        {
+            ofs << "ipv6:" << ip << "@" << Lookup(it.second) << endl;
+            nc++;
+        }
+    }
+
+    nd_dprintf(
+      "Exported [legacy] %u apps, %u domains, %u networks, "
+      "%u transforms.\n",
+      apps.size(), domains.size(), nc, 0);
+    return true;
+#else
+    nd_printf(
+      "Sorry, this feature was disabled (embedded).\n");
+    return false;
+#endif  // _ND_LEAN_AND_MEAN
+}
+
 nd_app_id_t ndApplications::Find(const string &domain) {
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     vector<string> search;
 
@@ -295,7 +343,7 @@ nd_app_id_t ndApplications::Find(const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
               entry, addr))
         {
-            lock_guard<mutex> ul(lock);
+            lock_guard<recursive_mutex> ul(lock);
 
             nd_rn4_app::iterator it;
             nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
@@ -309,7 +357,7 @@ nd_app_id_t ndApplications::Find(const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
               entry, addr))
         {
-            lock_guard<mutex> ul(lock);
+            lock_guard<recursive_mutex> ul(lock);
 
             nd_rn6_app::iterator it;
             nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
@@ -322,7 +370,7 @@ nd_app_id_t ndApplications::Find(const ndAddr &addr) {
 }
 
 bool ndApplications::Lookup(nd_app_id_t id, string &dst) {
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     auto it = apps.find(id);
     if (it == apps.end()) {
@@ -334,7 +382,7 @@ bool ndApplications::Lookup(nd_app_id_t id, string &dst) {
 }
 
 const char *ndApplications::Lookup(nd_app_id_t id) {
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     auto it = apps.find(id);
     if (it != apps.end()) return it->second->tag.c_str();
@@ -342,7 +390,7 @@ const char *ndApplications::Lookup(nd_app_id_t id) {
 }
 
 nd_app_id_t ndApplications::Lookup(const string &tag) {
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     auto it = app_tags.find(tag);
     if (it != app_tags.end()) return it->second->id;
@@ -350,7 +398,7 @@ nd_app_id_t ndApplications::Lookup(const string &tag) {
 }
 
 bool ndApplications::Lookup(const string &tag, ndApplication &app) {
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     auto it = app_tags.find(tag);
     if (it != app_tags.end()) {
@@ -362,7 +410,7 @@ bool ndApplications::Lookup(const string &tag, ndApplication &app) {
 }
 
 bool ndApplications::Lookup(nd_app_id_t id, ndApplication &app) {
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     auto it = apps.find(id);
     if (it != apps.end()) {
@@ -407,7 +455,7 @@ void ndApplications::Reset(bool free_only) {
 void ndApplications::Get(nd_apps_t &apps_copy) {
     apps_copy.clear();
 
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     for (auto &app : apps)
         apps_copy.insert(make_pair(app.second->tag, app.first));
@@ -521,7 +569,7 @@ bool ndApplications::AddSoftDissector(signed aid,
 
 bool ndApplications::SoftDissectorMatch(nd_flow_ptr const &flow,
   ndFlowParser *parser, ndSoftDissector &match) {
-    lock_guard<mutex> ul(lock);
+    lock_guard<recursive_mutex> ul(lock);
 
     for (auto &it : soft_dissectors) {
         try {

@@ -90,6 +90,7 @@ public:
     bool LoadLegacy(const string &filename);
 
     bool Save(const string &filename);
+    bool SaveLegacy(const string &filename);
 
     nd_app_id_t Find(const string &domain);
     nd_app_id_t Find(const ndAddr &addr);
@@ -119,7 +120,7 @@ public:
     };
 
 protected:
-    mutex lock;
+    recursive_mutex lock;
     nd_app_id_map apps;
     nd_app_tag_map app_tags;
     nd_tlds_t tlds;

@@ -389,7 +389,9 @@ bool ndAddr::MakeString(const ndAddr &a, string &result,
             return false;
         }
 
-        result = sa;
+        if ((flags & mfIPV6_ESC)) result = "[";
+        result.append(sa);
+        if ((flags & mfIPV6_ESC)) result.append("]");
 
         if ((flags & mfPREFIX) && a.prefix > 0 &&
           a.prefix != _ND_ADDR_BITSv6)

@@ -206,6 +206,7 @@ public:
         mfNONE = 0x0,
         mfPREFIX = 0x1,
         mfPORT = 0x2,
+        mfIPV6_ESC = 0x4,
 
         mfALL = (mfPREFIX | mfPORT)
     };
@@ -572,7 +573,7 @@ public:
         else return addr < rhs.addr;
     }
 
-    bool GetString(string &ip) const {
+    bool GetString(string &ip, uint8_t flags = ndAddr::mfNONE) const {
         ndAddr a((uint8_t)prefix_len);
         switch (N) {
         case _ND_ADDR_BITSv4:
@@ -591,7 +592,7 @@ public:
             break;
         default: return false;
         }
-        return ndAddr::MakeString(a, ip);
+        return ndAddr::MakeString(a, ip, flags);
     }
 };
 
