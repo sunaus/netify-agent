@@ -1088,7 +1088,7 @@ nd_process_ip:
         ndi.flow_buckets->Release(flow_digest);
 
         ndi.plugins.BroadcastProcessorEvent(
-          ndPluginProcessor::EVENT_FLOW_NEW);
+          ndPluginProcessor::EVENT_FLOW_NEW, nf);
     }
 
     stats.pkt.wire_bytes += packet->length + 24;

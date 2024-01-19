@@ -74,9 +74,9 @@ enum nd_tpv3_fanout_mode {
 };
 
 enum nd_tpv3_fanout_flags {
-    ndFOF_NONE = 0x0,
-    ndFOF_DEFRAG = 0x1,
-    ndFOF_ROLLOVER = 0x2,
+    ndFOF_NONE = 0,
+    ndFOF_DEFRAG = (1 << 0),
+    ndFOF_ROLLOVER = (1 << 1),
 };
 
 enum nd_global_flags {
@@ -264,10 +264,10 @@ public:
     unsigned update_interval;
 
     enum VerbosityFlags {
-        VFLAG_NONE = 0x00,
-        VFLAG_EVENT_DPI_NEW = 0x01,
-        VFLAG_EVENT_DPI_UPDATE = 0x02,
-        VFLAG_EVENT_DPI_COMPLETE = 0x04,
+        VFLAG_NONE = 0,
+        VFLAG_EVENT_DPI_NEW = (1 << 0),
+        VFLAG_EVENT_DPI_UPDATE = (1 << 1),
+        VFLAG_EVENT_DPI_COMPLETE = (1 << 2),
     };
 
     typedef vector<pair<string, string>> SocketHosts;
