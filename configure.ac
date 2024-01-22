@@ -400,8 +400,8 @@ AC_CONFIG_FILES([deploy/openwrt/Makefile deploy/openwrt/files/netifyd.init \
     deploy/openwrt/files/netifyd.config])
 AC_CONFIG_FILES([libnetifyd.pc])
 AC_CONFIG_FILES(
-    [Makefile src/Makefile include/Makefile doc/Makefile \
-     tests/Makefile deploy/Makefile])
+    [Makefile src/Makefile include/Makefile deploy/Makefile \
+     doc/Makefile tests/Makefile util/Makefile])
 AC_CONFIG_FILES([deploy/buildroot/package/netifyd/netifyd.mk])
 AC_CONFIG_FILES([deploy/debian/Makefile])
 AC_CONFIG_FILES([deploy/freebsd/Makefile])
