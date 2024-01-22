@@ -54,28 +54,28 @@ class ndInstanceStatus : public ndSerializer
 public:
     ndInstanceStatus();
 
-    long cpus;
-    struct timespec ts_epoch;
-    struct timespec ts_now;
-    atomic<size_t> flows;
-    size_t flows_prev;
-    size_t flows_purged;
-    size_t flows_expiring;
-    size_t flows_expired;
-    size_t flows_active;
-    size_t flows_in_use;
-    double cpu_user;
-    double cpu_user_prev;
-    double cpu_system;
-    double cpu_system_prev;
-    size_t maxrss_kb;
-    size_t maxrss_kb_prev;
+    long cpus = { 0 };
+    struct timespec ts_epoch = { 0, 0 };
+    struct timespec ts_now = { 0, 0 };
+    atomic<size_t> flows = { 0 };
+    size_t flows_prev = { 0 };
+    size_t flows_purged = { 0 };
+    size_t flows_expiring = { 0 };
+    size_t flows_expired = { 0 };
+    size_t flows_active = { 0 };
+    size_t flows_in_use = { 0 };
+    double cpu_user = { 0 };
+    double cpu_user_prev = { 0 };
+    double cpu_system = { 0 };
+    double cpu_system_prev = { 0 };
+    size_t maxrss_kb = { 0 };
+    size_t maxrss_kb_prev = { 0 };
 #ifdef _ND_ENABLE_LIBTCMALLOC
-    size_t tcm_alloc_kb;
-    size_t tcm_alloc_kb_prev;
+    size_t tcm_alloc_kb = { 0 };
+    size_t tcm_alloc_kb_prev = { 0 };
 #endif
-    bool dhc_status;
-    bool fhc_status;
+    bool dhc_status = { false };
+    bool fhc_status = { false };
 
     template <class T>
     void Encode(T &output) const {
@@ -200,7 +200,7 @@ public:
         );
     }
 
-    bool SetConfigOption(int option, const string &arg);
+    bool SetConfigOption(int option, const string &arg) const;
 
     bool DumpList(uint8_t type = ndDUMP_TYPE_ALL);
 
@@ -209,12 +209,12 @@ public:
     void CommandLineHelp(bool version_only = false);
 
     bool AddInterface(const string &ifname,
-      nd_interface_role role, unsigned type);
+      nd_interface_role role, unsigned type) const;
 
-    bool CheckAgentUUID(void);
+    bool CheckAgentUUID(void) const;
 
     bool SaveAgentStatus(const nd_interface_stats &stats);
-    bool DisplayAgentStatus(void);
+    bool DisplayAgentStatus(void) const;
 
     int Run(void);
 
@@ -270,6 +270,7 @@ public:
     inline void SendIPC(enum ndIPCMessage id) {
         ndThread::SendIPC((uint32_t)id);
     }
+
     inline bool SendSignal(const siginfo_t &si) {
         switch (si.si_signo) {
 #ifdef _ND_ENABLE_NETLINK
@@ -317,7 +318,7 @@ public:
         return false;
     }
 
-    int exit_code;
+    int exit_code = { EXIT_FAILURE };
 
     ndInstanceStatus status;
     ndPacketStats pkt_stats_global;
@@ -325,15 +326,15 @@ public:
     ndCategories categories;
     ndInterfaces interfaces;
     ndAddrType addr_types;
-    ndDNSHintCache *dns_hint_cache;
-    ndFlowHashCache *flow_hash_cache;
-    ndFlowMap *flow_buckets;
+    ndDNSHintCache *dns_hint_cache = { nullptr };
+    ndFlowHashCache *flow_hash_cache = { nullptr };
+    ndFlowMap *flow_buckets = { nullptr };
 #ifdef _ND_ENABLE_NETLINK
-    ndNetlink *netlink;
+    ndNetlink *netlink = { nullptr };
 #endif
     ndNetifyApiManager api_manager;
 #ifdef _ND_ENABLE_CONNTRACK
-    ndConntrackThread *thread_conntrack;
+    ndConntrackThread *thread_conntrack = { nullptr };
 #endif
     nd_detection_threads thread_detection;
     ndPluginManager plugins;
@@ -347,7 +348,7 @@ protected:
 
     bool Reload(bool broadcast = true);
 
-    void CreateCaptureInterfaces(ndInterfaces &ifaces);
+    void CreateCaptureInterfaces(ndInterfaces &ifaces) const;
 
     bool CreateCaptureThreads(ndInterfaces &ifaces,
       nd_capture_threads &threads);
@@ -372,10 +373,10 @@ protected:
 
     string tag;
     string self;
-    pid_t self_pid;
+    pid_t self_pid = { -1 };
     string version;
 
-    atomic_bool terminate_force;
+    atomic_bool terminate_force = { false };
 
     string conf_filename;
 

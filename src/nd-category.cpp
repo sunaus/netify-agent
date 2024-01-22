@@ -302,7 +302,7 @@ bool ndCategories::IsMember(Type type, nd_cat_id_t cat_id,
     if (mi->second.find(id) == mi->second.end())
         return false;
 
-    return false;
+    return true;
 }
 
 bool ndCategories::IsMember(Type type,

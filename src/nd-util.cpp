@@ -785,8 +785,6 @@ void nd_basename(const string &path, string &base) {
 pid_t nd_is_running(pid_t pid, const string &exe_base) {
     pid_t rc = -1;
     struct stat sb;
-    char link_path[1024];
-    ssize_t r;
     ostringstream proc_exe_link;
 
     proc_exe_link << "/proc/" << pid << "/exe";
@@ -801,14 +799,13 @@ pid_t nd_is_running(pid_t pid, const string &exe_base) {
         return 0;
     }
 
-    r = readlink(proc_exe_link.str().c_str(), link_path,
-      sizeof(link_path));
+    vector<char> link_path(1024, '\0');
+    ssize_t length = readlink(proc_exe_link.str().c_str(),
+      &link_path[0], link_path.size());
 
-    if (r != -1) {
-        link_path[r] = '\0';
-
-        if (strncmp(basename(link_path), exe_base.c_str(),
-              exe_base.size()))
+    if (length != -1) {
+        if (strncmp(basename(&link_path[0]),
+              exe_base.c_str(), exe_base.size()))
         {
             rc = 0;
         }
@@ -918,11 +915,11 @@ int nd_dir_exists(const string &path) {
     return 1;
 }
 
-#define _ND_UT_MIN  (60)
-#define _ND_UT_HOUR (_ND_UT_MIN * 60)
-#define _ND_UT_DAY  (_ND_UT_HOUR * 24)
-
 void nd_uptime(time_t ut, string &uptime) {
+    constexpr time_t _ND_UT_MIN = 60;
+    constexpr time_t _ND_UT_HOUR = (_ND_UT_MIN * 60);
+    constexpr time_t _ND_UT_DAY = (_ND_UT_HOUR * 24);
+
     time_t seconds = ut;
     time_t days = 0, hours = 0, minutes = 0;
 
@@ -1394,8 +1391,8 @@ void nd_get_ip_protocol_name(int protocol, string &result) {
     int rc = 0;
     struct protoent *pe_result;
 #ifdef HAVE_GETPROTOBYNUMBER_R
-#define _ND_GET_PROTO_BUFSIZ 1024
     struct protoent pe_buffer;
+    constexpr size_t _ND_GET_PROTO_BUFSIZ = 1024;
     uint8_t buffer[_ND_GET_PROTO_BUFSIZ];
 
     rc = getprotobynumber_r(protocol, &pe_buffer,

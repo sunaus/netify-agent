@@ -166,11 +166,9 @@ enum nd_global_flags {
 #define ndGC ndGlobalConfig::GetInstance()
 
 #define ndGC_SetFlag(flag, value) \
-    { \
-        if (value) \
-            ndGlobalConfig::GetInstance().flags |= flag; \
-        else ndGlobalConfig::GetInstance().flags &= ~flag; \
-    }
+    if (value) \
+        ndGlobalConfig::GetInstance().flags |= flag; \
+    else ndGlobalConfig::GetInstance().flags &= ~flag
 
 typedef struct nd_config_pcap_t {
     string capture_filename;
@@ -366,9 +364,9 @@ protected:
     void ClearInterfaces(bool cmdline_entries = false);
 
     enum nd_capture_type LoadCaptureType(void *config_reader,
-      const string &section, const string &key);
+      const string &section, const string &key) const;
     bool LoadCaptureSettings(void *config_reader,
-      const string &section, unsigned &type, void *config);
+      const string &section, unsigned &type, void *config) const;
 
     bool AddPlugin(const string &filename);
 

@@ -122,8 +122,8 @@ public:
     atomic<uint8_t> detection_packets;
 
 #ifdef _ND_ENABLE_EXTENDED_STATS
-    vector<float> lower_rate_samples;
-    vector<float> upper_rate_samples;
+    vector<uint64_t> lower_rate_samples;
+    vector<uint64_t> upper_rate_samples;
     atomic<float> lower_rate;
     atomic<float> upper_rate;
 

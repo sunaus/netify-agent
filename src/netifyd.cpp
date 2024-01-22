@@ -91,12 +91,11 @@ int main(int argc, char* argv[]) {
     rc = instance.Run();
 
     if (rc == 0) {
-        int sig;
         siginfo_t si;
         const struct timespec tspec_sigwait = { 1, 0 };
 
         while (! instance.HasTerminated()) {
-            if ((sig = sigtimedwait(&sigset, &si, &tspec_sigwait)) < 0)
+            if (sigtimedwait(&sigset, &si, &tspec_sigwait) < 0)
             {
                 if (errno == EAGAIN || errno == EINTR)
                     continue;

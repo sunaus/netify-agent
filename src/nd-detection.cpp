@@ -908,17 +908,15 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     }
 
 #ifdef _ND_ENABLE_CONNTRACK
-    if (thread_conntrack != nullptr && ndEF->iface->role != ndIR_LAN)
+    if (thread_conntrack != nullptr && ndEF->iface->role == ndIR_WAN &&
+      ((ndEF->lower_type == ndAddr::atLOCAL &&
+         ndEF->upper_type == ndAddr::atOTHER) ||
+        (ndEF->lower_type == ndAddr::atOTHER &&
+          ndEF->upper_type == ndAddr::atLOCAL)))
     {
-        if ((ndEF->lower_type == ndAddr::atLOCAL &&
-              ndEF->upper_type == ndAddr::atOTHER) ||
-          (ndEF->lower_type == ndAddr::atOTHER &&
-            ndEF->upper_type == ndAddr::atLOCAL))
-        {
-            // Update flow with any collected information from the
-            // connection tracker (CT ID, mark, NAT'd).
-            thread_conntrack->UpdateFlow(ndEF);
-        }
+        // Update flow with any collected information from the
+        // connection tracker (CT ID, mark, NAT'd).
+        thread_conntrack->UpdateFlow(ndEF);
     }
 #endif
     ndEF->detected_protocol_name = nd_proto_get_name(

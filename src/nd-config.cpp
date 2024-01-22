@@ -799,14 +799,18 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
         switch (ndCT_TYPE(type)) {
         case ndCT_PCAP:
             config = static_cast<void *>(new nd_config_pcap);
-            if (! LoadCaptureSettings(r, s, type, config))
+            if (! LoadCaptureSettings(r, s, type, config)) {
+                delete static_cast<nd_config_pcap *>(config);
                 return false;
+            }
             break;
         case ndCT_TPV3:
             config = static_cast<void *>(new nd_config_tpv3);
             memcpy(config, &tpv3_defaults, sizeof(nd_config_tpv3));
-            if (! LoadCaptureSettings(r, s, type, config))
+            if (! LoadCaptureSettings(r, s, type, config)) {
+                delete static_cast<nd_config_tpv3 *>(config);
                 return false;
+            }
             break;
         case ndCT_NFQ:
             p = iface.find_first_of("0123456789");
@@ -819,8 +823,10 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
                 return false;
             }
             config = static_cast<void *>(new nd_config_nfq);
-            if (! LoadCaptureSettings(r, s, type, config))
+            if (! LoadCaptureSettings(r, s, type, config)) {
+                delete static_cast<nd_config_nfq *>(config);
                 return false;
+            }
             static_cast<nd_config_nfq *>(config)->queue_id =
               (unsigned)strtol(iface.substr(p).c_str(), NULL, 0);
             break;
@@ -903,8 +909,8 @@ void ndGlobalConfig::ClearInterfaces(bool cmdline_entries) {
     }
 }
 
-enum nd_capture_type ndGlobalConfig::LoadCaptureType(
-  void *config_reader, const string &section, const string &key) {
+enum nd_capture_type ndGlobalConfig::LoadCaptureType(void *config_reader,
+  const string &section, const string &key) const {
     INIReader *r = static_cast<INIReader *>(config_reader);
 
     enum nd_capture_type ct = ndCT_NONE;
@@ -937,7 +943,7 @@ enum nd_capture_type ndGlobalConfig::LoadCaptureType(
 }
 
 bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
-  const string &section, unsigned &type, void *config) {
+  const string &section, unsigned &type, void *config) const {
     INIReader *r = static_cast<INIReader *>(config_reader);
 
     if (ndCT_TYPE(type) == ndCT_PCAP) {

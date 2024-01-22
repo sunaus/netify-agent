@@ -40,8 +40,9 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
     unsigned index = (unsigned)fmod(
       floor((double)timestamp / (double)1000), (double)interval);
 
-    atomic<float> &rate = (lower) ? lower_rate : upper_rate;
-    vector<float> &samples = (lower) ? lower_rate_samples : upper_rate_samples;
+    atomic<float> &rate = lower ? lower_rate : upper_rate;
+    vector<uint64_t> &samples =
+      lower ? lower_rate_samples : upper_rate_samples;
 
     samples[index] += bytes;
 
@@ -622,10 +623,6 @@ void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
   LowerMap &lm, OtherType &ot) {
     if (lt == ndAddr::atERROR || ut == ndAddr::atERROR) {
         ot = OTHER_ERROR;
-    }
-    else if (lt == ndAddr::atLOCAL && ut == ndAddr::atLOCAL) {
-        lm = LOWER_LOCAL;
-        ot = OTHER_LOCAL;
     }
     else if (lt == ndAddr::atLOCAL && ut == ndAddr::atLOCAL) {
         lm = LOWER_LOCAL;

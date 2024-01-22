@@ -57,34 +57,16 @@
 ndInstance *ndInstance::instance = nullptr;
 
 ndInstanceStatus::ndInstanceStatus()
-  : cpus(0), ts_epoch{ 0, 0 }, ts_now{ 0, 0 },
-    flows_prev(0), flows_purged(0), flows_expiring(0),
-    flows_expired(0), flows_active(0), flows_in_use(0),
-    cpu_user(0), cpu_user_prev(0), cpu_system(0),
-    cpu_system_prev(0), maxrss_kb(0), maxrss_kb_prev(0),
-#if (defined(_ND_ENABLE_LIBTCMALLOC) && \
-  defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
-    tcm_alloc_kb(0), tcm_alloc_kb_prev(0),
-#endif
-    dhc_status(false), fhc_status(false) {
-    flows = 0;
-    cpus = sysconf(_SC_NPROCESSORS_ONLN);
+  : cpus(sysconf(_SC_NPROCESSORS_ONLN)) {
+    if (cpus == -1L)
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "sysconf(_SC_NPROCESSORS_ONLN)");
 }
 
 ndInstance::ndInstance(const string &tag)
-  : ndThread(tag, -1, true), exit_code(EXIT_FAILURE),
-    dns_hint_cache(nullptr), flow_hash_cache(nullptr),
-    flow_buckets(nullptr),
-#ifdef _ND_ENABLE_NETLINK
-    netlink(nullptr),
-#endif
-#ifdef _ND_ENABLE_CONNTRACK
-    thread_conntrack(nullptr),
-#endif
+  : ndThread(tag, -1, true),
     tag(tag.empty() ? PACKAGE_TARNAME : tag),
-    self(PACKAGE_TARNAME), self_pid(-1),
-    conf_filename(ND_CONF_FILE_NAME) {
-    terminate_force = false;
+    self(PACKAGE_TARNAME), conf_filename(ND_CONF_FILE_NAME) {
 }
 
 ndInstance::~ndInstance() {
@@ -698,7 +680,7 @@ bool ndInstance::Daemonize(void) {
     return true;
 }
 
-bool ndInstance::SetConfigOption(int option, const string &arg) {
+bool ndInstance::SetConfigOption(int option, const string &arg) const {
     string func, output, filename(conf_filename);
 
     switch (option) {
@@ -900,7 +882,9 @@ bool ndInstance::LookupAddress(const string &ip) {
 }
 
 void ndInstance::CommandLineHelp(bool version_only) {
-    if (! ndGC_DEBUG) ndGC_SetFlag(ndGF_QUIET, true);
+    if (! ndGC_DEBUG) {
+        ndGC_SetFlag(ndGF_QUIET, true);
+    }
 
     fprintf(stderr, "%s\n%s\n",
       nd_get_version_and_features().c_str(), PACKAGE_URL);
@@ -1081,7 +1065,7 @@ void ndInstance::CommandLineHelp(bool version_only) {
 }
 
 bool ndInstance::AddInterface(const string &ifname,
-  nd_interface_role role, unsigned type) {
+  nd_interface_role role, unsigned type) const {
     static unsigned pcap_id = 0;
 
     if ((ndCT_TYPE(type) == ndCT_PCAP || ndCT_TYPE(type) == ndCT_NONE) &&
@@ -1101,7 +1085,7 @@ bool ndInstance::AddInterface(const string &ifname,
     return ndGC.AddInterface(ifname, role, type);
 }
 
-bool ndInstance::CheckAgentUUID(void) {
+bool ndInstance::CheckAgentUUID(void) const {
     string uuid;
     ndGC.GetUUID(ndGlobalConfig::UUID_AGENT, uuid);
 
@@ -1247,7 +1231,7 @@ static void DisplayApiStatus(json &jstatus,
       code, color, message.c_str(), ND_C_RESET);
 }
 
-bool ndInstance::DisplayAgentStatus(void) {
+bool ndInstance::DisplayAgentStatus(void) const {
     const char *icon = ND_I_INFO;
     const char *color = ND_C_RESET;
 
@@ -1301,7 +1285,7 @@ bool ndInstance::DisplayAgentStatus(void) {
 
         char timestamp[64];
         time_t ts = jstatus["timestamp"].get<time_t>();
-        struct tm *tm_local = localtime(&ts);
+        const struct tm *tm_local = localtime(&ts);
 
         if (nd_pid <= 0) {
             fprintf(stderr,
@@ -1953,7 +1937,7 @@ bool ndInstance::Reload(bool broadcast) {
     return result;
 }
 
-void ndInstance::CreateCaptureInterfaces(ndInterfaces &ifaces) {
+void ndInstance::CreateCaptureInterfaces(ndInterfaces &ifaces) const {
     for (auto &r : ndGC.interfaces) {
         for (auto &i : r.second) {
             auto result = ifaces.insert(make_pair(i.first,
@@ -2012,7 +1996,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
         case ndCT_PCAP:
         case ndCT_PCAP_OFFLINE:
         {
-            ndCapturePcap *thread = new ndCapturePcap(
+            auto thread = new ndCapturePcap(
               (interfaces.size() > 1) ? cpu++ : -1,
               it.second, thread_detection, dns_hint_cache,
               (it.second->role == ndIR_LAN) ? 0 : ++private_addr);
@@ -2029,7 +2013,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
                 instances = 1;
 
             for (unsigned i = 0; i < instances; i++) {
-                ndCaptureTPv3 *thread = new ndCaptureTPv3(
+                auto thread = new ndCaptureTPv3(
                   (instances > 1) ? cpu++ : -1, it.second,
                   thread_detection, dns_hint_cache,
                   (it.second->role == ndIR_LAN) ? 0 : ++private_addr);
@@ -2050,7 +2034,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
                 instances = 1;
 
             for (unsigned i = 0; i < instances; i++) {
-                ndCaptureNFQueue *thread = new ndCaptureNFQueue(
+                auto thread = new ndCaptureNFQueue(
                   (instances > 1) ? cpu++ : -1, it.second,
                   thread_detection,
                   i,  // instance_id
