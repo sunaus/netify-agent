@@ -13,7 +13,7 @@ if USE_LIBTCMALLOC_BUNDLED
 SUBDIRS_EXTRA += libs/gperftools
 endif
 
-SUBDIRS = libs/inih libs/ndpi $(SUBDIRS_EXTRA) include src deploy doc tests
+SUBDIRS = libs/inih libs/ndpi $(SUBDIRS_EXTRA) include src deploy doc tests util
 DIST_SUBDIRS = $(SUBDIRS)
 
 EXTRA_DIST = LICENSE autogen.sh debian/compat util libs/gperftools
