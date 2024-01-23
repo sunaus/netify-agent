@@ -6,7 +6,7 @@ m4_include([m4/ax_cxx_compile_stdcxx_0x.m4])
 m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
 
 AC_PREREQ([2.68])
-AC_INIT([Netify Agent], [4.2.11],
+AC_INIT([Netify Agent], [4.2.12],
     [https://gitlab.com/netify.ai/public/netify-agent/issues],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
@@ -401,7 +401,7 @@ AC_SUBST([ND_DEFINES], [$ND_DEFINES])
 # Output files
 AC_CONFIG_FILES([deploy/openwrt/Makefile deploy/openwrt/files/netifyd.init deploy/openwrt/files/netifyd.config])
 AC_CONFIG_FILES([libnetifyd.pc])
-AC_CONFIG_FILES([Makefile src/Makefile include/Makefile doc/Makefile tests/Makefile deploy/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile include/Makefile doc/Makefile tests/Makefile deploy/Makefile util/Makefile])
 AC_CONFIG_FILES([deploy/buildroot/package/netifyd/netifyd.mk])
 AC_CONFIG_FILES([deploy/debian/Makefile])
 AC_CONFIG_FILES([deploy/edgeos/Makefile])
