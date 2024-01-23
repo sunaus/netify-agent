@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 97 "nd-flow-expr.ypp"
+#line 99 "nd-flow-expr.ypp"
 
 typedef void* yyscan_t;
 
@@ -209,7 +209,7 @@ typedef void* yyscan_t;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 104 "nd-flow-expr.ypp"
+#line 106 "nd-flow-expr.ypp"
 
     char buffer[_NDFP_MAX_BUFLEN];
 

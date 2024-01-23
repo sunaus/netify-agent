@@ -52,6 +52,9 @@
 #include "nd-capture-nfq.hpp"
 #endif
 
+using namespace std;
+using json = nlohmann::json;
+
 // #define _ND_PROCESS_FLOW_DEBUG    1
 
 ndInstance *ndInstance::instance = nullptr;

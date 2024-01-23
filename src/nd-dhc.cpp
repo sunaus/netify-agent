@@ -31,6 +31,8 @@
 #include "nd-instance.hpp"
 #include "nd-util.hpp"
 
+using namespace std;
+
 ndDNSHintCache::ndDNSHintCache(size_t cache_size)
   : ndLRUCache<string, string>(cache_size, true) {
     kvmap.reserve(ND_HASH_BUCKETS_DNSARS);

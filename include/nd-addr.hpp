@@ -48,8 +48,6 @@
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
-using namespace std;
-
 #define _ND_ADDR_BITSv4 32
 #define _ND_ADDR_BITSv6 128
 
@@ -68,13 +66,13 @@ public:
         atERROR = 0x7f,
     };
 
-    typedef pair<struct sockaddr_storage, struct sockaddr_storage> PrivatePair;
+    typedef std::pair<struct sockaddr_storage, struct sockaddr_storage> PrivatePair;
 
     ndAddr(uint8_t prefix = 0)
       : addr{ { 0 } }, prefix(prefix), cached_flags(mfNONE),
         comparison_flags(cfALL) { }
 
-    ndAddr(const string &addr)
+    ndAddr(const std::string &addr)
       : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
         comparison_flags(cfALL) {
         Create(*this, addr);
@@ -132,7 +130,7 @@ public:
       uint8_t prefix = _ND_ADDR_BITSv6)
       : ndAddr(&in6_addr, prefix) { }
 
-    static bool Create(ndAddr &a, const string &addr);
+    static bool Create(ndAddr &a, const std::string &addr);
 
     static bool
     Create(ndAddr &a, const uint8_t *hw_addr, size_t length);
@@ -211,10 +209,10 @@ public:
         mfALL = (mfPREFIX | mfPORT)
     };
 
-    static bool MakeString(const ndAddr &a, string &result,
-      uint8_t flags = mfALL);
+    static bool MakeString(const ndAddr &a,
+      std::string &result, uint8_t flags = mfALL);
 
-    inline const string &GetString(uint8_t flags = mfNONE) const {
+    inline const std::string &GetString(uint8_t flags = mfNONE) const {
         if (flags != cached_flags || cached_addr.empty()) {
             cached_flags = flags;
             ndAddr::MakeString(*this, cached_addr, cached_flags);
@@ -222,7 +220,8 @@ public:
         return cached_addr;
     }
 
-    friend ostream &operator<<(ostream &stream, const ndAddr &addr) {
+    friend std::ostream &
+    operator<<(std::ostream &stream, const ndAddr &addr) {
         stream << addr.cached_addr;
         return stream;
     }
@@ -299,7 +298,7 @@ public:
     struct ndAddrHash {
         template <class T>
         inline void hash_combine(size_t &seed, const T &v) const {
-            hash<T> hasher;
+            std::hash<T> hasher;
             seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) +
               (seed >> 2);
         }
@@ -346,7 +345,7 @@ public:
     struct ndAddrHashAll {
         template <class T>
         inline void hash_combine(size_t &seed, const T &v) const {
-            hash<T> hasher;
+            std::hash<T> hasher;
             seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) +
               (seed >> 2);
         }
@@ -448,13 +447,13 @@ public:
     uint8_t prefix;
 
     mutable uint8_t cached_flags;
-    mutable string cached_addr;
+    mutable std::string cached_addr;
 
     uint8_t comparison_flags;
 };
 
 template <size_t N>
-bool operator<(const bitset<N> &x, const bitset<N> &y) {
+bool operator<(const std::bitset<N> &x, const std::bitset<N> &y) {
     for (int i = N - 1; i >= 0; i--) {
         if (x[i] ^ y[i]) return y[i];
     }
@@ -466,7 +465,7 @@ template <size_t N>
 class ndRadixNetworkEntry
 {
 public:
-    bitset<N> addr;
+    std::bitset<N> addr;
     size_t prefix_len;
 
     ndRadixNetworkEntry() : prefix_len(0) { }
@@ -487,7 +486,7 @@ public:
             return false;
         }
 
-        bitset<N> mask;
+        std::bitset<N> mask;
 
         size_t shift = N - entry.prefix_len;
         if (shift < N) {
@@ -521,8 +520,8 @@ public:
         return false;
     }
 
-    static void
-    Create(ndRadixNetworkEntry<N> &entry, const string &addr) {
+    static void Create(ndRadixNetworkEntry<N> &entry,
+      const std::string &addr) {
         Create(ndAddr(addr));
     }
 
@@ -573,7 +572,8 @@ public:
         else return addr < rhs.addr;
     }
 
-    bool GetString(string &ip, uint8_t flags = ndAddr::mfNONE) const {
+    bool GetString(std::string &ip,
+      uint8_t flags = ndAddr::mfNONE) const {
         ndAddr a((uint8_t)prefix_len);
         switch (N) {
         case _ND_ADDR_BITSv4:
@@ -583,7 +583,7 @@ public:
         case _ND_ADDR_BITSv6:
             a.addr.ss.ss_family = AF_INET6;
             for (auto i = 0; i < 4; i++) {
-                bitset<N> b;
+                std::bitset<N> b;
                 for (size_t j = 0; j < 32; j++)
                     b[j] = addr[i * 32 + j];
                 a.addr.in6.sin6_addr.s6_addr32[3 - i] =
@@ -597,9 +597,9 @@ public:
 };
 
 template <size_t N>
-bitset<N> &operator-=(bitset<N> &x, const size_t y) {
+std::bitset<N> &operator-=(std::bitset<N> &x, const size_t y) {
     bool borrow = false;
-    bitset<N> const _y(y);
+    std::bitset<N> const _y(y);
 
     for (size_t i = 0; i < N; i++) {
         if (borrow) {
@@ -635,7 +635,7 @@ int radix_length(const ndRadixNetworkEntry<N> &entry) {
 template <size_t N>
 ndRadixNetworkEntry<N> radix_substr(
   const ndRadixNetworkEntry<N> &entry, int offset, int length) {
-    bitset<N> mask;
+    std::bitset<N> mask;
 
     if (length == N) mask = 0;
     else {
@@ -678,41 +678,42 @@ public:
     ndAddrType();
 
     bool AddAddress(ndAddr::Type type, const ndAddr &addr,
-      const string &ifname = "");
+      const std::string &ifname = "");
     inline bool AddAddress(ndAddr::Type type,
-      const string &addr,
-      const string &ifname = "") {
+      const std::string &addr,
+      const std::string &ifname = "") {
         return AddAddress(type, ndAddr(addr), ifname);
     }
 
     bool RemoveAddress(const ndAddr &addr,
-      const string &ifname = "");
-    inline bool RemoveAddress(const string &addr,
-      const string &ifname = "") {
+      const std::string &ifname = "");
+    inline bool RemoveAddress(const std::string &addr,
+      const std::string &ifname = "") {
         return RemoveAddress(ndAddr(addr), ifname);
     }
 
     void Classify(ndAddr::Type &type, const ndAddr &addr);
-    inline void Classify(ndAddr::Type &type, const string &addr) {
+    inline void
+    Classify(ndAddr::Type &type, const std::string &addr) {
         Classify(type, ndAddr(addr));
     }
 
-    size_t GetInterfaceAddresses(const string &iface,
-      set<string> &result, sa_family_t family = AF_UNSPEC);
+    size_t GetInterfaceAddresses(const std::string &iface,
+      std::set<std::string> &result, sa_family_t family = AF_UNSPEC);
 
 protected:
-    mutable mutex lock;
+    mutable std::mutex lock;
 
-    unordered_map<string, ndAddr::Type> ether_reserved;
+    std::unordered_map<std::string, ndAddr::Type> ether_reserved;
 
     nd_rn4_atype ipv4_reserved;
     nd_rn6_atype ipv6_reserved;
 
-    unordered_map<string, nd_rn4_atype> ipv4_iface;
-    unordered_map<string, nd_rn6_atype> ipv6_iface;
+    std::unordered_map<std::string, nd_rn4_atype> ipv4_iface;
+    std::unordered_map<std::string, nd_rn6_atype> ipv6_iface;
 };
 
-typedef unordered_set<ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceAddrs;
+typedef std::unordered_set<ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceAddrs;
 
 class ndInterfaceAddr : public ndSerializer
 {
@@ -726,30 +727,30 @@ public:
 
     inline void Clear(bool locked = true) {
         if (locked) {
-            lock_guard<mutex> ul(lock);
+            std::lock_guard<std::mutex> ul(lock);
             addrs.clear();
         }
         else addrs.clear();
     }
 
     inline bool Push(const ndAddr &addr) {
-        lock_guard<mutex> ul(lock);
+        std::lock_guard<std::mutex> ul(lock);
         auto result = addrs.insert(addr);
         return result.second;
     }
 
     template <class T>
-    void Encode(T &output, const string &key) const {
-        lock_guard<mutex> ul(lock);
+    void Encode(T &output, const std::string &key) const {
+        std::lock_guard<std::mutex> ul(lock);
         if (addrs.empty()) return;
-        vector<string> addresses;
+        std::vector<std::string> addresses;
         for (auto &a : addrs)
             addresses.push_back(a.GetString());
         serialize(output, { key }, addresses);
     }
 
     inline bool FindFirstOf(sa_family_t family, ndAddr &addr) const {
-        lock_guard<mutex> ul(lock);
+        std::lock_guard<std::mutex> ul(lock);
         for (auto &it : addrs) {
             if (it.addr.ss.ss_family != family) continue;
             addr = it;
@@ -758,10 +759,10 @@ public:
         return false;
     }
 
-    inline bool FindAllOf(const vector<sa_family_t> &families,
-      vector<string> &results) const {
+    inline bool FindAllOf(const std::vector<sa_family_t> &families,
+      std::vector<std::string> &results) const {
         size_t count = results.size();
-        lock_guard<mutex> ul(lock);
+        std::lock_guard<std::mutex> ul(lock);
 
         for (auto &it : addrs) {
             if (find_if(families.begin(), families.end(),
@@ -778,19 +779,19 @@ public:
 
 protected:
     ndInterfaceAddrs addrs;
-    mutable mutex lock;
+    mutable std::mutex lock;
 };
 
-typedef unordered_map<ndAddr, ndInterfaceAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceEndpoints;
+typedef std::unordered_map<ndAddr, ndInterfaceAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceEndpoints;
 
 class ndInterface;
-typedef map<string, shared_ptr<ndInterface>> ndInterfaces;
+typedef std::map<std::string, std::shared_ptr<ndInterface>> ndInterfaces;
 
 class ndInterface : public ndSerializer
 {
 public:
-    ndInterface(const string &ifname, uint32_t capture_type,
-      nd_interface_role role = ndIR_LAN)
+    ndInterface(const std::string &ifname,
+      uint32_t capture_type, nd_interface_role role = ndIR_LAN)
       : ifname(ifname), ifname_peer(ifname),
         capture_type(capture_type), role(role) {
         endpoint_snapshot = false;
@@ -868,9 +869,9 @@ public:
     }
 
     template <class T>
-    void EncodeAddrs(T &output, const vector<string> &keys,
-      const string &delim = ",") const {
-        vector<string> ip_addrs;
+    void EncodeAddrs(T &output, const std::vector<std::string> &keys,
+      const std::string &delim = ",") const {
+        std::vector<std::string> ip_addrs;
         if (addrs.FindAllOf({ AF_INET, AF_INET6 }, ip_addrs))
             serialize(output, keys, ip_addrs, delim);
     }
@@ -887,9 +888,9 @@ public:
     }
 
     inline bool PushEndpoint(const ndAddr &mac, const ndAddr &ip) {
-        lock_guard<mutex> ul(lock);
+        std::lock_guard<std::mutex> ul(lock);
         auto result = endpoints[endpoint_snapshot.load()].emplace(
-          make_pair(mac, ndInterfaceAddr(ip)));
+          std::make_pair(mac, ndInterfaceAddr(ip)));
 
         if (! result.second)
             return result.first->second.Push(ip);
@@ -898,7 +899,7 @@ public:
     }
 
     inline void ClearEndpoints(bool snapshot) {
-        lock_guard<mutex> ul(lock);
+        std::lock_guard<std::mutex> ul(lock);
         for (auto &it : endpoints[snapshot])
             it.second.Clear();
         endpoints[snapshot].clear();
@@ -906,16 +907,16 @@ public:
 
     template <class T>
     inline void EncodeEndpoints(bool snapshot, T &output) const {
-        lock_guard<mutex> ul(lock);
+        std::lock_guard<std::mutex> ul(lock);
         for (auto &i : endpoints[snapshot])
             i.second.Encode(output, i.first.GetString());
     }
 
     inline void GetEndpoints(bool snapshot,
-      unordered_map<string, unordered_set<string>> &output) const {
-        lock_guard<mutex> ul(lock);
+      std::unordered_map<std::string, std::unordered_set<std::string>> &output) const {
+        std::lock_guard<std::mutex> ul(lock);
         for (auto &i : endpoints[snapshot]) {
-            vector<string> ip_addrs;
+            std::vector<std::string> ip_addrs;
             if (! i.second.FindAllOf({ AF_INET, AF_INET6 }, ip_addrs))
                 continue;
 
@@ -958,8 +959,8 @@ public:
         return true;
     }
 
-    string ifname;
-    string ifname_peer;
+    std::string ifname;
+    std::string ifname_peer;
     uint32_t capture_type;
     nd_interface_role role;
 
@@ -974,8 +975,8 @@ public:
 protected:
     ndInterfaceAddr addrs;
     ndInterfaceEndpoints endpoints[2];
-    atomic_bool endpoint_snapshot;
-    mutable mutex lock;
+    std::atomic<bool> endpoint_snapshot;
+    mutable std::mutex lock;
 };
 
-typedef shared_ptr<ndInterface> nd_iface_ptr;
+typedef std::shared_ptr<ndInterface> nd_iface_ptr;

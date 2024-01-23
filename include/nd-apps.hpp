@@ -30,8 +30,6 @@
 
 #include "nd-addr.hpp"
 
-using namespace std;
-
 #define ND_APP_UNKNOWN     0
 #define ND_APP_UNKNOWN_TAG "netify.unclassified"
 
@@ -39,36 +37,36 @@ class ndFlow;
 class ndFlowParser;
 
 typedef uint32_t nd_app_id_t;
-typedef shared_ptr<ndFlow> nd_flow_ptr;
+typedef std::shared_ptr<ndFlow> nd_flow_ptr;
 
 class ndApplication
 {
 public:
     nd_app_id_t id;
-    string tag;
+    std::string tag;
 
     ndApplication()
       : id(ND_APP_UNKNOWN), tag(ND_APP_UNKNOWN_TAG) { }
-    ndApplication(nd_app_id_t id, const string &tag)
+    ndApplication(nd_app_id_t id, const std::string &tag)
       : id(id), tag(tag) { }
 };
 
-typedef map<string, nd_app_id_t> nd_apps_t;
-typedef map<string, ndApplication *> nd_app_tag_map;
-typedef unordered_set<string> nd_tlds_t;
-typedef unordered_map<nd_app_id_t, ndApplication *> nd_app_id_map;
-typedef unordered_map<string, nd_app_id_t> nd_domains_t;
-typedef unordered_map<string, pair<regex *, string>> nd_domain_rx_xforms_t;
+typedef std::map<std::string, nd_app_id_t> nd_apps_t;
+typedef std::map<std::string, ndApplication *> nd_app_tag_map;
+typedef std::unordered_set<std::string> nd_tlds_t;
+typedef std::unordered_map<nd_app_id_t, ndApplication *> nd_app_id_map;
+typedef std::unordered_map<std::string, nd_app_id_t> nd_domains_t;
+typedef std::unordered_map<std::string, std::pair<std::regex *, std::string>> nd_domain_rx_xforms_t;
 
 class ndSoftDissector
 {
 public:
     signed aid;
     signed pid;
-    const string expr;
+    const std::string expr;
 
     ndSoftDissector() : aid(-1), pid(-1), expr{} { }
-    ndSoftDissector(signed aid, signed pid, const string &expr)
+    ndSoftDissector(signed aid, signed pid, const std::string &expr)
       : aid(aid), pid(pid), expr(expr) { }
     ndSoftDissector &operator=(const ndSoftDissector &other) {
         aid = other.aid;
@@ -78,7 +76,7 @@ public:
     };
 };
 
-typedef vector<ndSoftDissector> nd_nsd_t;
+typedef std::vector<ndSoftDissector> nd_nsd_t;
 
 class ndApplications : public ndSerializer
 {
@@ -86,19 +84,19 @@ public:
     ndApplications();
     virtual ~ndApplications();
 
-    bool Load(const string &filename);
-    bool LoadLegacy(const string &filename);
+    bool Load(const std::string &filename);
+    bool LoadLegacy(const std::string &filename);
 
-    bool Save(const string &filename);
-    bool SaveLegacy(const string &filename);
+    bool Save(const std::string &filename);
+    bool SaveLegacy(const std::string &filename);
 
-    nd_app_id_t Find(const string &domain);
+    nd_app_id_t Find(const std::string &domain);
     nd_app_id_t Find(const ndAddr &addr);
 
-    bool Lookup(nd_app_id_t id, string &dst);
+    bool Lookup(nd_app_id_t id, std::string &dst);
     const char *Lookup(nd_app_id_t id);
-    nd_app_id_t Lookup(const string &tag);
-    bool Lookup(const string &tag, ndApplication &app);
+    nd_app_id_t Lookup(const std::string &tag);
+    bool Lookup(const std::string &tag, ndApplication &app);
     bool Lookup(nd_app_id_t id, ndApplication &app);
 
     void Get(nd_apps_t &apps_copy);
@@ -120,7 +118,7 @@ public:
     };
 
 protected:
-    recursive_mutex lock;
+    std::recursive_mutex lock;
     nd_app_id_map apps;
     nd_app_tag_map app_tags;
     nd_tlds_t tlds;
@@ -134,13 +132,13 @@ protected:
 
     void Reset(bool free_only = false);
 
-    ndApplication *AddApp(nd_app_id_t id, const string &tag);
-    bool AddDomain(nd_app_id_t id, const string &domain);
-    bool AddDomainTransform(const string &search,
-      const string &replace);
-    bool AddNetwork(nd_app_id_t id, const string &network);
+    ndApplication *AddApp(nd_app_id_t id, const std::string &tag);
+    bool AddDomain(nd_app_id_t id, const std::string &domain);
+    bool AddDomainTransform(const std::string &search,
+      const std::string &replace);
+    bool AddNetwork(nd_app_id_t id, const std::string &network);
     bool AddSoftDissector(signed aid, signed pid,
-      const string &expr);
+      const std::string &expr);
 
 private:
     void *app_networks4, *app_networks6;

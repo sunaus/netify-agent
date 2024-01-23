@@ -30,8 +30,6 @@
 #include "nd-sha1.h"
 #include "netifyd.hpp"
 
-using namespace std;
-
 enum nd_dhc_save {
     ndDHC_DISABLED,
     ndDHC_PERSISTENT,
@@ -171,7 +169,7 @@ enum nd_global_flags {
     else ndGlobalConfig::GetInstance().flags &= ~flag
 
 typedef struct nd_config_pcap_t {
-    string capture_filename;
+    std::string capture_filename;
 
     inline bool operator==(const struct nd_config_pcap_t &i) const {
         return (capture_filename == i.capture_filename);
@@ -211,25 +209,25 @@ class ndGlobalConfig
 {
 public:
     bool napi_tls_verify;
-    string napi_vendor;
-    string path_agent_status;
-    string path_app_config;
-    string path_cat_config;
-    string path_categories;
-    string path_config;
-    string path_export_json;
-    string path_functions;
-    string path_interfaces;
-    string path_legacy_config;
-    string path_pid_file;
-    string path_plugins;
-    string path_shared_data;
-    string path_state_persistent;
-    string path_state_volatile;
-    string path_uuid;
-    string path_uuid_serial;
-    string path_uuid_site;
-    string url_napi_bootstrap;
+    std::string napi_vendor;
+    std::string path_agent_status;
+    std::string path_app_config;
+    std::string path_cat_config;
+    std::string path_categories;
+    std::string path_config;
+    std::string path_export_json;
+    std::string path_functions;
+    std::string path_interfaces;
+    std::string path_legacy_config;
+    std::string path_pid_file;
+    std::string path_plugins;
+    std::string path_shared_data;
+    std::string path_state_persistent;
+    std::string path_state_volatile;
+    std::string path_uuid;
+    std::string path_uuid_serial;
+    std::string path_uuid_site;
+    std::string url_napi_bootstrap;
     enum nd_dhc_save dhc_save;
     enum nd_fhc_save fhc_save;
     enum nd_capture_type capture_type;
@@ -268,48 +266,50 @@ public:
         VFLAG_EVENT_DPI_COMPLETE = (1 << 2),
     };
 
-    typedef vector<pair<string, string>> SocketHosts;
+    typedef std::vector<std::pair<std::string, std::string>> SocketHosts;
     SocketHosts socket_host;
 
-    typedef vector<string> SocketPaths;
+    typedef std::vector<std::string> SocketPaths;
     SocketPaths socket_path;
 
-    typedef vector<struct sockaddr *> PrivacyFilterHosts;
+    typedef std::vector<struct sockaddr *> PrivacyFilterHosts;
     PrivacyFilterHosts privacy_filter_host;
 
-    typedef vector<uint8_t *> PrivacyFilterMACs;
+    typedef std::vector<uint8_t *> PrivacyFilterMACs;
     PrivacyFilterMACs privacy_filter_mac;
 
-    typedef vector<pair<regex *, string>> PrivacyFilterRegex;
+    typedef std::vector<std::pair<std::regex *, std::string>> PrivacyFilterRegex;
     PrivacyFilterRegex privacy_regex;
 
-    typedef map<string, string> InterfaceFilters;
+    typedef std::map<std::string, std::string> InterfaceFilters;
     InterfaceFilters interface_filters;
 
-    typedef map<string, pair<string, map<string, string>>> Plugins;
+    typedef std::map<std::string,
+      std::pair<std::string, std::map<std::string, std::string>>>
+      Plugins;
     Plugins plugin_processors;
     Plugins plugin_sinks;
 
-    typedef map<string, string> CustomHeaders;
+    typedef std::map<std::string, std::string> CustomHeaders;
     CustomHeaders custom_headers;
 
-    typedef map<string, string> Protocols;
+    typedef std::map<std::string, std::string> Protocols;
     Protocols protocols;
 
-    typedef map<string, pair<unsigned, void *>> Interfaces;
-    typedef map<nd_interface_role, Interfaces> InterfacesByRole;
+    typedef std::map<std::string, std::pair<unsigned, void *>> Interfaces;
+    typedef std::map<nd_interface_role, Interfaces> InterfacesByRole;
     InterfacesByRole interfaces;
 
-    typedef map<string, set<string>> InterfaceAddrs;
+    typedef std::map<std::string, std::set<std::string>> InterfaceAddrs;
     InterfaceAddrs interface_addrs;
 
-    typedef map<string, string> InterfacePeers;
+    typedef std::map<std::string, std::string> InterfacePeers;
     InterfacePeers interface_peers;
 
-    typedef map<string, string> ConfVars;
+    typedef std::map<std::string, std::string> ConfVars;
     ConfVars conf_vars;
 
-    typedef vector<string> FlowDebugExpressions;
+    typedef std::vector<std::string> FlowDebugExpressions;
     FlowDebugExpressions debug_flow_print_exprs;
 
     ndGlobalConfig(const ndGlobalConfig &) = delete;
@@ -320,10 +320,10 @@ public:
         return config;
     }
 
-    bool Open(const string &filename);
+    bool Open(const std::string &filename);
     void Close(void);
 
-    bool Load(const string &filename);
+    bool Load(const std::string &filename);
 
     enum UUID {
         UUID_NONE,
@@ -332,43 +332,44 @@ public:
         UUID_SERIAL,
     };
 
-    bool LoadUUID(UUID which, string &uuid);
-    bool SaveUUID(UUID which, const string &uuid);
-    void GetUUID(UUID which, string &uuid);
+    bool LoadUUID(UUID which, std::string &uuid);
+    bool SaveUUID(UUID which, const std::string &uuid);
+    void GetUUID(UUID which, std::string &uuid);
 
     bool ForceReset(void);
 
-    bool LoadInterfaces(const string &filename);
+    bool LoadInterfaces(const std::string &filename);
 
-    bool AddInterface(const string &iface,
+    bool AddInterface(const std::string &iface,
       nd_interface_role role,
       unsigned type = ndCT_NONE,
       void *config = nullptr);
 
-    bool AddInterfaceAddress(const string &iface,
-      const string &addr);
-    bool AddInterfacePeer(const string &iface, const string &peer);
+    bool AddInterfaceAddress(const std::string &iface,
+      const std::string &addr);
+    bool AddInterfacePeer(const std::string &iface,
+      const std::string &peer);
 
-    bool AddInterfaceFilter(const string &iface,
-      const string &filter);
+    bool AddInterfaceFilter(const std::string &iface,
+      const std::string &filter);
 
 protected:
     void *reader;
-    mutex lock_uuid;
+    std::mutex lock_uuid;
 
-    string uuid;
-    string uuid_serial;
-    string uuid_site;
+    std::string uuid;
+    std::string uuid_serial;
+    std::string uuid_site;
 
     bool LoadInterfaces(void *config_reader);
     void ClearInterfaces(bool cmdline_entries = false);
 
     enum nd_capture_type LoadCaptureType(void *config_reader,
-      const string &section, const string &key) const;
+      const std::string &section, const std::string &key) const;
     bool LoadCaptureSettings(void *config_reader,
-      const string &section, unsigned &type, void *config) const;
+      const std::string &section, unsigned &type, void *config) const;
 
-    bool AddPlugin(const string &filename);
+    bool AddPlugin(const std::string &filename);
 
     void UpdatePaths(void);
     void UpdateConfigVars(void);

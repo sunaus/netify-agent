@@ -39,9 +39,6 @@
 
 #include "nd-except.hpp"
 
-using json = nlohmann::json;
-using namespace std;
-
 #define ND_SHA1_BUFFER 4096
 
 #define ND_C_RESET     "\033[0m"
@@ -60,14 +57,14 @@ void *nd_mem_alloc(size_t size);
 
 void nd_mem_free(void *ptr);
 
-class ndLogBuffer : public streambuf
+class ndLogBuffer : public std::streambuf
 {
 public:
     int overflow(int ch = EOF);
     virtual int sync();
 
 protected:
-    ostringstream os;
+    std::ostringstream os;
 };
 
 class ndDebugLogBuffer : public ndLogBuffer
@@ -88,15 +85,15 @@ public:
     virtual int sync();
 };
 
-class ndLogStream : public ostream
+class ndLogStream : public std::ostream
 {
 public:
-    ndLogStream() : ostream(new ndLogBuffer) { }
+    ndLogStream() : std::ostream(new ndLogBuffer) { }
 
     virtual ~ndLogStream() { delete rdbuf(); }
 };
 
-class ndDebugLogStream : public ostream
+class ndDebugLogStream : public std::ostream
 {
 public:
     enum Type {
@@ -106,12 +103,12 @@ public:
     };
 
     ndDebugLogStream(Type type = DLT_NONE)
-      : ostream((type == DLT_NONE) ?
-            (streambuf *)new ndDebugLogBuffer :
+      : std::ostream((type == DLT_NONE) ?
+            (std::streambuf *)new ndDebugLogBuffer :
             ((type == DLT_UNLOCKED) ?
-                (streambuf *)new ndDebugLogBufferUnlocked :
-                (streambuf *)new ndDebugLogBufferFlow)) {
-        imbue(locale());
+                (std::streambuf *)new ndDebugLogBufferUnlocked :
+                (std::streambuf *)new ndDebugLogBufferFlow)) {
+        imbue(std::locale());
     }
 
     virtual ~ndDebugLogStream() { delete rdbuf(); }
@@ -134,6 +131,7 @@ public:
 
     friend std::ostream &
     operator<<(std::ostream &os, const ndLogFormat &f) {
+        using namespace std;
         ios old_state(nullptr);
         old_state.copyfmt(os);
         os << setw(f.width) << setprecision(f.precision);
@@ -210,68 +208,73 @@ void nd_ndpi_debug_printf(uint32_t protocol, void *ndpi,
   const char *func, unsigned line, const char *format, ...);
 #endif
 
-void nd_ltrim(string &s, unsigned char c = 0);
-void nd_rtrim(string &s, unsigned char c = 0);
-void nd_trim(string &s, unsigned char c = 0);
+void nd_ltrim(std::string &s, unsigned char c = 0);
+void nd_rtrim(std::string &s, unsigned char c = 0);
+void nd_trim(std::string &s, unsigned char c = 0);
 
-int nd_sha1_file(const string &filename, uint8_t *digest);
+int nd_sha1_file(const std::string &filename, uint8_t *digest);
 
-void nd_sha1_to_string(const uint8_t *digest_bin, string &digest_str);
-void nd_sha1_to_string(const vector<uint8_t> &digest_bin,
-  string &digest_str);
+void nd_sha1_to_string(const uint8_t *digest_bin,
+  std::string &digest_str);
+void nd_sha1_to_string(const std::vector<uint8_t> &digest_bin,
+  std::string &digest_str);
 
-bool nd_string_to_sha1(const string &digest_str,
-  vector<uint8_t> &digest_bin);
+bool nd_string_to_sha1(const std::string &digest_str,
+  std::vector<uint8_t> &digest_bin);
 
-bool nd_string_to_mac(const string &src, uint8_t *mac);
+bool nd_string_to_mac(const std::string &src, uint8_t *mac);
 sa_family_t
-nd_string_to_ip(const string &src, sockaddr_storage *ip);
-bool nd_ip_to_string(sa_family_t af, const void *addr, string &dst);
-bool nd_ip_to_string(const sockaddr_storage &ip, string &dst);
+nd_string_to_ip(const std::string &src, sockaddr_storage *ip);
+bool nd_ip_to_string(sa_family_t af, const void *addr,
+  std::string &dst);
+bool nd_ip_to_string(const sockaddr_storage &ip, std::string &dst);
 
 bool nd_is_ipaddr(const char *ip);
 
 void nd_private_ipaddr(uint8_t index, struct sockaddr_storage &addr);
 
-bool nd_load_uuid(string &uuid, const string &path, size_t length);
-bool nd_save_uuid(const string &uuid, const string &path,
-  size_t length);
+bool nd_load_uuid(std::string &uuid,
+  const std::string &path, size_t length);
+bool nd_save_uuid(const std::string &uuid,
+  const std::string &path, size_t length);
 
 void nd_seed_rng(void);
 
-void nd_generate_uuid(string &uuid);
+void nd_generate_uuid(std::string &uuid);
 
 const char *nd_get_version(void);
-const string &nd_get_version_and_features(void);
+const std::string &nd_get_version_and_features(void);
 
-bool nd_parse_app_tag(const string &tag, unsigned &id, string &name);
+bool nd_parse_app_tag(const std::string &tag, unsigned &id,
+  std::string &name);
 
-int nd_touch(const string &filename);
+int nd_touch(const std::string &filename);
 
-int nd_file_load(const string &filename, string &data);
+int nd_file_load(const std::string &filename, std::string &data);
 
-void nd_file_save(const string &filename, const string &data,
-  bool append = false, mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP,
+void nd_file_save(const std::string &filename,
+  const std::string &data, bool append = false,
+  mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP,
   const char *user = NULL, const char *group = NULL);
 
-int nd_ifreq(const string &name, unsigned long request,
+int nd_ifreq(const std::string &name, unsigned long request,
   struct ifreq *ifr);
 
-void nd_basename(const string &path, string &base);
+void nd_basename(const std::string &path, std::string &base);
 
-pid_t nd_is_running(pid_t pid, const string &exe_base);
-pid_t nd_load_pid(const string &pidfile);
-int nd_save_pid(const string &pidfile, pid_t pid);
+pid_t nd_is_running(pid_t pid, const std::string &exe_base);
+pid_t nd_load_pid(const std::string &pidfile);
+int nd_save_pid(const std::string &pidfile, pid_t pid);
 
-int nd_file_exists(const string &path);
-int nd_dir_exists(const string &path);
+int nd_file_exists(const std::string &path);
+int nd_dir_exists(const std::string &path);
 
-void nd_uptime(time_t ut, string &uptime);
+void nd_uptime(time_t ut, std::string &uptime);
 
-int nd_functions_exec(const string &func, const string &arg,
-  string &output);
+int nd_functions_exec(const std::string &func,
+  const std::string &arg, std::string &output);
 
-void nd_os_detect(string &os);
+void nd_os_detect(std::string &os);
 
 #define _ND_LOG_FILE_STAMP      "%Y%m%d-%H%M%S"
 #define _ND_LOG_FILE_STAMP_SIZE sizeof("YYYYMMDD-HHMMSS")
@@ -279,40 +282,41 @@ void nd_os_detect(string &os);
 class ndLogDirectory
 {
 public:
-    ndLogDirectory(const string &path, const string &prefix,
-      const string &suffix, bool overwrite = false);
+    ndLogDirectory(const std::string &path, const std::string &prefix,
+      const std::string &suffix, bool overwrite = false);
     virtual ~ndLogDirectory();
 
-    FILE *Open(const string &ext = "");
+    FILE *Open(const std::string &ext = "");
     void Close(void);
     void Discard(void);
 
 protected:
-    string path;
-    string prefix;
-    string suffix;
+    std::string path;
+    std::string prefix;
+    std::string suffix;
 
     bool overwrite;
 
     FILE *hf_cur;
-    string filename;
+    std::string filename;
 };
 
-void nd_regex_error(const regex_error &e, string &error);
+void nd_regex_error(const std::regex_error &e, std::string &error);
 
-bool nd_scan_dotd(const string &path, vector<string> &files);
+bool nd_scan_dotd(const std::string &path,
+  std::vector<std::string> &files);
 
-void nd_set_hostname(string &dst, bool strict = true);
-void nd_set_hostname(string &dst, const char *src,
+void nd_set_hostname(std::string &dst, bool strict = true);
+void nd_set_hostname(std::string &dst, const char *src,
   size_t length, bool strict = true);
 void nd_set_hostname(char *dst, const char *src,
   size_t length, bool strict = true);
 
-void nd_expand_variables(const string &input,
-  string &output, map<string, string> &vars);
+void nd_expand_variables(const std::string &input,
+  std::string &output, std::map<std::string, std::string> &vars);
 
 void nd_gz_deflate(size_t length, const uint8_t *data,
-  vector<uint8_t> &output);
+  std::vector<uint8_t> &output);
 
 class ndTimer
 {
@@ -334,18 +338,19 @@ protected:
     timer_t id;
 };
 
-void nd_get_ip_protocol_name(int protocol, string &result);
+void nd_get_ip_protocol_name(int protocol, std::string &result);
 
-int nd_glob(const string &pattern, vector<string> &results);
+int nd_glob(const std::string &pattern,
+  std::vector<std::string> &results);
 
 time_t nd_time_monotonic(void);
 
-void nd_tmpfile(const string &prefix, string &filename);
+void nd_tmpfile(const std::string &prefix, std::string &filename);
 
-bool nd_copy_file(const string &src, const string &dst,
+bool nd_copy_file(const std::string &src, const std::string &dst,
   mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP);
 
-void nd_time_ago(time_t seconds, string &ago);
+void nd_time_ago(time_t seconds, std::string &ago);
 
 template <typename K, typename V = K>
 class ndLRUCache
@@ -354,10 +359,10 @@ public:
     class CacheStats
     {
     public:
-        atomic<uint64_t> insert_hit = { 0 };
-        atomic<uint64_t> insert_miss = { 0 };
-        atomic<uint64_t> lookup_hit = { 0 };
-        atomic<uint64_t> lookup_miss = { 0 };
+        std::atomic<uint64_t> insert_hit = { 0 };
+        std::atomic<uint64_t> insert_miss = { 0 };
+        std::atomic<uint64_t> lookup_hit = { 0 };
+        std::atomic<uint64_t> lookup_miss = { 0 };
     };
 
     CacheStats stats;
@@ -371,17 +376,17 @@ public:
 
     size_t GetSize(void) const {
         if (lockable) {
-            lock_guard<mutex> lg(lock);
+            std::lock_guard<std::mutex> lg(lock);
             return kvmap.size();
         }
         return kvmap.size();
     }
 
-    void Encode(json &jstats) const {
+    void Encode(nlohmann::json &jstats) const {
         size_t cache_size = 0;
 
         if (lockable) {
-            lock_guard<mutex> lg(lock);
+            std::lock_guard<std::mutex> lg(lock);
             cache_size = kvmap.size();
         }
 
@@ -408,7 +413,7 @@ public:
         jstats["lookup_miss"] = lookup_miss;
     }
 
-    void Scoreboard(const string &tag) const {
+    void Scoreboard(const std::string &tag) const {
         size_t cache_size = 0;
         uint64_t insert_hit = 0;
         float insert_hit_pct = 0.0;
@@ -420,7 +425,7 @@ public:
         uint64_t lookup_total = 0;
 
         try {
-            json jstats;
+            nlohmann::json jstats;
             Encode(jstats);
 
             cache_size = jstats["cache_size"].get<unsigned>();
@@ -433,7 +438,7 @@ public:
             lookup_miss = jstats["lookup_miss"].get<uint64_t>();
             lookup_total = lookup_hit + lookup_miss;
         }
-        catch (json::exception &e) {
+        catch (nlohmann::json::exception &e) {
             nd_dprintf(
               "%s: error decoding JSON status: %s\n",
               tag.c_str(), e.what());
@@ -449,7 +454,7 @@ public:
 
 protected:
     void CacheInsert(const K &key, const V &value) {
-        unique_lock<mutex> lg(lock, std::defer_lock);
+        std::unique_lock<std::mutex> lg(lock, std::defer_lock);
 
         if (lockable) lg.lock();
 
@@ -476,7 +481,7 @@ protected:
     }
 
     bool CacheLookup(const K key, V &value) {
-        unique_lock<mutex> lg(lock, defer_lock);
+        std::unique_lock<std::mutex> lg(lock, std::defer_lock);
 
         if (lockable) lg.lock();
 
@@ -501,8 +506,8 @@ protected:
     size_t max_size;
     bool lockable;
 
-    mutable mutex lock;
+    mutable std::mutex lock;
 
-    list<K> entries;
-    unordered_map<K, pair<V, typename list<K>::iterator>> kvmap;
+    std::list<K> entries;
+    std::unordered_map<K, std::pair<V, typename std::list<K>::iterator>> kvmap;
 };

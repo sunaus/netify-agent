@@ -187,7 +187,7 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     buffer(nullptr), dropped(0) {
     dl_type = DLT_EN10MB;
 
-    tag.append("#" + to_string(instance_id));
+    tag.append("#" + std::to_string(instance_id));
 
     queue_id = iface->config_nfq.queue_id + instance_id;
 

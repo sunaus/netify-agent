@@ -30,8 +30,6 @@
 #include "nd-serializer.hpp"
 #include "nd-thread.hpp"
 
-using namespace std;
-
 class ndInstanceStatus;
 
 #define _ND_PLUGIN_VER 0x20230309
@@ -62,17 +60,17 @@ public:
         TYPE_SINK,
     };
 
-    typedef map<string, string> Params;
-    typedef set<string> Channels;
+    typedef std::map<std::string, std::string> Params;
+    typedef std::set<std::string> Channels;
 
-    ndPlugin(Type type, const string &tag, const Params &params);
+    ndPlugin(Type type, const std::string &tag, const Params &params);
     virtual ~ndPlugin();
 
     virtual void *Entry(void) = 0;
 
-    virtual void GetVersion(string &version) = 0;
+    virtual void GetVersion(std::string &version) = 0;
 
-    inline const string &GetConfiguration(void) {
+    inline const std::string &GetConfiguration(void) {
         return conf_filename;
     }
 
@@ -99,7 +97,7 @@ public:
     virtual void
     DispatchEvent(Event event, void *param = nullptr){};
 
-    static const map<ndPlugin::Type, string> types;
+    static const std::map<ndPlugin::Type, std::string> types;
 
     Type GetType(void) { return type; };
 
@@ -113,7 +111,7 @@ public:
 
 protected:
     Type type;
-    string conf_filename;
+    std::string conf_filename;
 };
 
 class ndPluginSinkPayload
@@ -137,10 +135,11 @@ public:
           payload->channels, flags);
     }
 
-    inline static ndPluginSinkPayload *Create(const json &j,
+    inline static ndPluginSinkPayload *
+    Create(const nlohmann::json &j,
       const ndPlugin::Channels &channels,
       uint8_t flags = ndPlugin::DF_NONE) {
-        string output;
+        std::string output;
         nd_json_to_string(j, output, ndGC_DEBUG);
         return Create(output.size(),
           (const uint8_t *)output.c_str(), channels, flags);
@@ -174,7 +173,7 @@ public:
 class ndPluginProcessor : public ndPlugin
 {
 public:
-    ndPluginProcessor(const string &tag,
+    ndPluginProcessor(const std::string &tag,
       const ndPlugin::Params &params);
     virtual ~ndPluginProcessor();
 
@@ -209,7 +208,7 @@ public:
     virtual void DispatchProcessorEvent(Event event,
       ndInterfaces *interfaces) { }
     virtual void DispatchProcessorEvent(Event event,
-      const string &iface, ndPacketStats *stats) { }
+      const std::string &iface, ndPacketStats *stats) { }
     virtual void DispatchProcessorEvent(Event event,
       ndPacketStats *stats) { }
     virtual void DispatchProcessorEvent(Event event,
@@ -217,21 +216,21 @@ public:
     virtual void DispatchProcessorEvent(Event event) { }
 
 protected:
-    virtual void DispatchSinkPayload(const string &target,
+    virtual void DispatchSinkPayload(const std::string &target,
       const ndPlugin::Channels &channels, size_t length,
       const uint8_t *payload, uint8_t flags = DF_NONE);
 
-    inline void DispatchSinkPayload(const string &target,
+    inline void DispatchSinkPayload(const std::string &target,
       const ndPlugin::Channels &channels,
-      const vector<uint8_t> &payload,
+      const std::vector<uint8_t> &payload,
       uint8_t flags = DF_NONE) {
         DispatchSinkPayload(target, channels,
           payload.size(), &payload[0], flags);
     }
 
-    virtual void DispatchSinkPayload(const string &target,
-      const ndPlugin::Channels &channels, const json &j,
-      uint8_t flags = DF_NONE);
+    virtual void DispatchSinkPayload(const std::string &target,
+      const ndPlugin::Channels &channels,
+      const nlohmann::json &j, uint8_t flags = DF_NONE);
 };
 
 #define _ND_PLQ_DEFAULT_MAX_SIZE 2097152
@@ -239,7 +238,8 @@ protected:
 class ndPluginSink : public ndPlugin
 {
 public:
-    ndPluginSink(const string &tag, const ndPlugin::Params &params);
+    ndPluginSink(const std::string &tag,
+      const ndPlugin::Params &params);
     virtual ~ndPluginSink();
 
     template <class T>
@@ -252,8 +252,8 @@ public:
 protected:
     size_t plq_size;
     size_t plq_size_max;
-    queue<ndPluginSinkPayload *> plq_public;
-    queue<ndPluginSinkPayload *> plq_private;
+    std::queue<ndPluginSinkPayload *> plq_public;
+    std::queue<ndPluginSinkPayload *> plq_private;
     pthread_cond_t plq_cond;
     pthread_mutex_t plq_cond_mutex;
 
@@ -272,19 +272,19 @@ protected:
 class ndPluginLoader
 {
 public:
-    ndPluginLoader(const string &tag, const string &so_name,
-      const ndPlugin::Params &params);
+    ndPluginLoader(const std::string &tag,
+      const std::string &so_name, const ndPlugin::Params &params);
     virtual ~ndPluginLoader();
 
     inline ndPlugin *GetPlugin(void) { return plugin; };
-    inline const string &GetTag(void) { return tag; };
-    inline const string &GetObjectName(void) {
+    inline const std::string &GetTag(void) { return tag; };
+    inline const std::string &GetObjectName(void) {
         return so_name;
     };
 
 protected:
-    string tag;
-    string so_name;
+    std::string tag;
+    std::string so_name;
     void *so_handle;
     ndPlugin *plugin;
 };
@@ -310,7 +310,7 @@ public:
       void *param = nullptr);
 
     void BroadcastSinkPayload(ndPluginSinkPayload *payload);
-    bool DispatchSinkPayload(const string &target,
+    bool DispatchSinkPayload(const std::string &target,
       ndPluginSinkPayload *payload);
 
     void BroadcastProcessorEvent(
@@ -320,7 +320,7 @@ public:
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
       ndInterfaces *interfaces);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
-      const string &iface, ndPacketStats *stats);
+      const std::string &iface, ndPacketStats *stats);
     void BroadcastProcessorEvent(
       ndPluginProcessor::Event event, ndPacketStats *stats);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
@@ -342,9 +342,9 @@ public:
     void DumpVersions(ndPlugin::Type type = ndPlugin::TYPE_BASE);
 
 protected:
-    mutex lock;
+    std::mutex lock;
 
-    typedef map<string, ndPluginLoader *> map_plugin;
+    typedef std::map<std::string, ndPluginLoader *> map_plugin;
 
     map_plugin processors;
     map_plugin sinks;

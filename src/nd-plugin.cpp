@@ -29,6 +29,9 @@
 #include "nd-instance.hpp"
 #include "nd-plugin.hpp"
 
+using namespace std;
+using json = nlohmann::json;
+
 // #define _ND_LOG_PLUGIN_DEBUG    1
 
 const map<ndPlugin::Type, string> ndPlugin::types = {

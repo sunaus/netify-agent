@@ -27,6 +27,8 @@
 
 #include "nd-addr.hpp"
 
+using namespace std;
+
 bool ndAddr::Create(ndAddr &a, const string &addr) {
     string _addr(addr);
 

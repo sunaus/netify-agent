@@ -66,6 +66,8 @@
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
+using namespace std;
+
 static mutex nd_printf_mutex;
 
 void *nd_mem_alloc(size_t size) {

@@ -46,7 +46,7 @@ public:
         STATE_OFFLINE,
     };
 
-    atomic_uchar capture_state;
+    std::atomic<uint8_t> capture_state;
 
 protected:
     int dl_type;
@@ -63,7 +63,7 @@ protected:
 
     ndPacketStats stats;
 
-    string flow_digest;
+    std::string flow_digest;
 
     ndDNSHintCache *dhc;
 

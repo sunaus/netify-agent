@@ -32,8 +32,6 @@
 #include "nd-protos.hpp"
 #include "nd-serializer.hpp"
 
-using namespace std;
-
 // TLS SNI hostname/common-name length. Reference: RFC 4366
 #define ND_FLOW_TLS_CNLEN 256
 
@@ -111,27 +109,27 @@ public:
         }
     }
 
-    atomic<uint64_t> lower_bytes;
-    atomic<uint64_t> upper_bytes;
-    atomic<uint64_t> total_bytes;
+    std::atomic<uint64_t> lower_bytes;
+    std::atomic<uint64_t> upper_bytes;
+    std::atomic<uint64_t> total_bytes;
 
-    atomic<uint32_t> lower_packets;
-    atomic<uint32_t> upper_packets;
-    atomic<uint32_t> total_packets;
+    std::atomic<uint32_t> lower_packets;
+    std::atomic<uint32_t> upper_packets;
+    std::atomic<uint32_t> total_packets;
 
-    atomic<uint8_t> detection_packets;
+    std::atomic<uint8_t> detection_packets;
 
 #ifdef _ND_ENABLE_EXTENDED_STATS
-    vector<uint64_t> lower_rate_samples;
-    vector<uint64_t> upper_rate_samples;
-    atomic<float> lower_rate;
-    atomic<float> upper_rate;
+    std::vector<uint64_t> lower_rate_samples;
+    std::vector<uint64_t> upper_rate_samples;
+    std::atomic<float> lower_rate;
+    std::atomic<float> upper_rate;
 
     void UpdateRate(bool lower, uint64_t timestamp, uint64_t bytes);
 
-    atomic<uint32_t> tcp_seq_errors;
-    atomic<uint32_t> tcp_resets;
-    atomic<uint32_t> tcp_retrans;
+    std::atomic<uint32_t> tcp_seq_errors;
+    std::atomic<uint32_t> tcp_resets;
+    std::atomic<uint32_t> tcp_retrans;
 #endif
 };
 
@@ -157,7 +155,7 @@ public:
     uint16_t vlan_id = { 0 };
 
     uint64_t ts_first_seen = { 0 };
-    atomic<uint64_t> ts_last_seen = { 0 };
+    std::atomic<uint64_t> ts_last_seen = { 0 };
 
     enum LowerMap {
         LOWER_UNKNOWN = 0,
@@ -205,25 +203,25 @@ public:
         TYPE_MAX
     };
 
-    vector<uint8_t> digest_lower;
-    vector<uint8_t> digest_mdata;
+    std::vector<uint8_t> digest_lower;
+    std::vector<uint8_t> digest_mdata;
 
     struct {
-        atomic<bool> detection_complete;
-        atomic<bool> detection_guessed;
-        atomic<bool> detection_init;
-        atomic<bool> detection_updated;
-        atomic<bool> dhc_hit;
-        atomic<bool> fhc_hit;
-        atomic<bool> expired;
-        atomic<bool> expiring;
-        atomic<bool> ip_nat;
-        atomic<bool> soft_dissector;
+        std::atomic<bool> detection_complete;
+        std::atomic<bool> detection_guessed;
+        std::atomic<bool> detection_init;
+        std::atomic<bool> detection_updated;
+        std::atomic<bool> dhc_hit;
+        std::atomic<bool> fhc_hit;
+        std::atomic<bool> expired;
+        std::atomic<bool> expiring;
+        std::atomic<bool> ip_nat;
+        std::atomic<bool> soft_dissector;
     } flags;
 
     struct {
-        atomic<uint8_t> fin_ack;
-        atomic<uint32_t> last_seq;
+        std::atomic<uint8_t> fin_ack;
+        std::atomic<uint32_t> last_seq;
     } tcp;
 
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
@@ -246,14 +244,14 @@ public:
         OtherType other_type = { OTHER_UNKNOWN };
     } gtp;
 
-    string dns_host_name;
-    string host_server_name;
+    std::string dns_host_name;
+    std::string host_server_name;
 
     nd_proto_id_t detected_protocol = { ND_PROTO_UNKNOWN };
-    string detected_protocol_name;
+    std::string detected_protocol_name;
 
     nd_app_id_t detected_application = { ND_APP_UNKNOWN };
-    string detected_application_name;
+    std::string detected_application_name;
 
     struct {
         nd_cat_id_t application = { ND_CAT_UNKNOWN };
@@ -263,32 +261,32 @@ public:
     } category;
 
     struct {
-        string user_agent;
-        string url;
+        std::string user_agent;
+        std::string url;
     } http;
 
     struct {
-        string fingerprint;
-        string class_ident;
+        std::string fingerprint;
+        std::string class_ident;
     } dhcp;
 
     struct {
-        string client_agent;
-        string server_agent;
+        std::string client_agent;
+        std::string server_agent;
     } ssh;
 
     struct {
         uint16_t version = { 0 };
         uint16_t cipher_suite = { 0 };
 
-        string subject_dn;
-        string issuer_dn;
-        string server_cn;
-        string client_sni;
-        string client_ja3;
-        string server_ja3;
-        vector<uint8_t> cert_fingerprint;
-        vector<string> alpn, alpn_server;
+        std::string subject_dn;
+        std::string issuer_dn;
+        std::string server_cn;
+        std::string client_sni;
+        std::string client_ja3;
+        std::string server_ja3;
+        std::vector<uint8_t> cert_fingerprint;
+        std::vector<std::string> alpn, alpn_server;
 
         struct {
             uint16_t version = { 0 };
@@ -296,7 +294,7 @@ public:
 
         struct {
             uint16_t cipher_suite = { 0 };
-            string esni;
+            std::string esni;
         } esni;
     } tls;
 
@@ -305,11 +303,11 @@ public:
     } smtp;
 
     struct {
-        vector<uint8_t> info_hash;
+        std::vector<uint8_t> info_hash;
     } bt;
 
     struct {
-        string domain_name;
+        std::string domain_name;
     } mdns;
 
     struct {
@@ -317,13 +315,13 @@ public:
         uint16_t ndpi_score_client = { 0 };
         uint16_t ndpi_score_server = { 0 };
 
-        typedef set<nd_risk_id_t> Risks;
+        typedef std::set<nd_risk_id_t> Risks;
         Risks risks;
     } risk;
 
     ndFlowStats stats;
 
-    mutable recursive_mutex lock;
+    mutable std::recursive_mutex lock;
 
     int16_t dpi_thread_id = { -1 };
 
@@ -333,7 +331,7 @@ public:
     ndFlow(const ndFlow &flow);
     virtual ~ndFlow();
 
-    void Hash(const string &device, bool hash_mdata = false,
+    void Hash(const std::string &device, bool hash_mdata = false,
       const uint8_t *key = nullptr, size_t key_length = 0);
 
     void Reset(bool full_reset = false);
@@ -373,7 +371,7 @@ public:
     };
 
     void Print(uint8_t pflags = PRINTF_METADATA,
-      const string &prefix = "") const;
+      const std::string &prefix = "") const;
 
     void UpdateLowerMaps(void);
     void GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
@@ -390,29 +388,28 @@ public:
     template <class T>
     void Encode(T &output, const ndFlowStats &stats,
       uint8_t encode_includes = ENCODE_ALL) const {
+        std::lock_guard<std::recursive_mutex> lg(lock);
 
-        lock_guard<recursive_mutex> lg(lock);
-
-        string _other_type = "unknown";
-        string _lower_mac = "local_mac",
-               _upper_mac = "other_mac";
-        string _lower_ip = "local_ip",
-               _upper_ip = "other_ip";
-        string _lower_gtp_ip = "local_ip",
-               _upper_gtp_ip = "other_ip";
-        string _lower_port = "local_port",
-               _upper_port = "other_port";
-        string _lower_gtp_port = "local_port",
-               _upper_gtp_port = "other_port";
-        string _lower_bytes = "local_bytes",
-               _upper_bytes = "other_bytes";
-        string _lower_packets = "local_packets",
-               _upper_packets = "other_packets";
+        std::string _other_type = "unknown";
+        std::string _lower_mac = "local_mac",
+                    _upper_mac = "other_mac";
+        std::string _lower_ip = "local_ip",
+                    _upper_ip = "other_ip";
+        std::string _lower_gtp_ip = "local_ip",
+                    _upper_gtp_ip = "other_ip";
+        std::string _lower_port = "local_port",
+                    _upper_port = "other_port";
+        std::string _lower_gtp_port = "local_port",
+                    _upper_gtp_port = "other_port";
+        std::string _lower_bytes = "local_bytes",
+                    _upper_bytes = "other_bytes";
+        std::string _lower_packets = "local_packets",
+                    _upper_packets = "other_packets";
 #ifdef _ND_ENABLE_EXTENDED_STATS
-        string _lower_rate = "local_rate";
-        string _upper_rate = "other_rate";
+        std::string _lower_rate = "local_rate";
+        std::string _upper_rate = "other_rate";
 #endif
-        string digest;
+        std::string digest;
         if (! digest_mdata.empty()) {
             nd_sha1_to_string(digest_mdata, digest);
             serialize(output, { "digest" }, digest);
@@ -712,8 +709,8 @@ public:
         }
 
         if (encode_includes & ENCODE_TUNNELS) {
-            string _lower_teid = "local_teid",
-                   _upper_teid = "other_teid";
+            std::string _lower_teid = "local_teid",
+                        _upper_teid = "other_teid";
 
             switch (tunnel_type) {
             case TUNNEL_GTP:
@@ -810,8 +807,8 @@ public:
     }
 };
 
-typedef shared_ptr<ndFlow> nd_flow_ptr;
-typedef unordered_map<string, nd_flow_ptr> nd_flow_map;
-typedef map<string, nd_flow_map *> nd_flows;
-typedef pair<string, nd_flow_ptr> nd_flow_pair;
-typedef pair<nd_flow_map::iterator, bool> nd_flow_insert;
+typedef std::shared_ptr<ndFlow> nd_flow_ptr;
+typedef std::unordered_map<std::string, nd_flow_ptr> nd_flow_map;
+typedef std::map<std::string, nd_flow_map *> nd_flows;
+typedef std::pair<std::string, nd_flow_ptr> nd_flow_pair;
+typedef std::pair<nd_flow_map::iterator, bool> nd_flow_insert;

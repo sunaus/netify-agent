@@ -22,11 +22,9 @@
 
 #include <stdexcept>
 
-using namespace std;
-
 #define _ND_EXCEPT_MAX_MESSAGE 128
 
-class ndException : public exception
+class ndException : public std::exception
 {
 public:
     explicit ndException(const char *format, ...) throw();

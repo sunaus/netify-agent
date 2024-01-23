@@ -33,6 +33,8 @@
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
+using namespace std;
+
 int main(int argc, char* argv[]) {
     int rc = 0;
     uint32_t result;

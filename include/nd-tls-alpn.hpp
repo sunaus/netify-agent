@@ -4,7 +4,7 @@
 
 #include "nd-protos.hpp"
 
-typedef unordered_map<const char *, nd_proto_id_t> nd_alpn_proto_map;
+typedef std::unordered_map<const char *, nd_proto_id_t> nd_alpn_proto_map;
 
 const nd_alpn_proto_map nd_alpn_protos = {
     { "http/0.9" /* HTTP/0.9 */, ND_PROTO_HTTPS },

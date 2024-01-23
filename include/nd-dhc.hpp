@@ -25,20 +25,20 @@
 #include "nd-addr.hpp"
 #include "nd-util.hpp"
 
-using namespace std;
-
 #define ND_DHC_FILE_NAME "/dns-cache.csv"
 
-class ndDNSHintCache : public ndLRUCache<string, string>
+class ndDNSHintCache : public ndLRUCache<std::string, std::string>
 {
 public:
     ndDNSHintCache(size_t cache_size);
 
-    void Insert(const ndAddr &addr, const string &hostname);
-    void Insert(const string &digest, const string &hostname);
+    void Insert(const ndAddr &addr, const std::string &hostname);
+    void Insert(const std::string &digest,
+      const std::string &hostname);
 
-    bool Lookup(const ndAddr &addr, string &hostname);
-    inline bool Lookup(const string &digest, string &hostname) {
+    bool Lookup(const ndAddr &addr, std::string &hostname);
+    inline bool
+    Lookup(const std::string &digest, std::string &hostname) {
         return CacheLookup(digest, hostname);
     }
 

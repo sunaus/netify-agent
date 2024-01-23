@@ -25,6 +25,8 @@
 #include "nd-except.hpp"
 #include "nd-flow-map.hpp"
 
+using namespace std;
+
 ndFlowMap::ndFlowMap(size_t buckets) : buckets(buckets) {
     for (size_t i = 0; i < buckets; i++) {
         nd_flow_map *b = new nd_flow_map;

@@ -46,6 +46,8 @@
 #include "nd-detection.hpp"
 #include "nd-except.hpp"
 
+using namespace std;
+
 #define _ND_VLAN_OFFSET (2 * ETH_ALEN)
 
 class ndPacketRing;

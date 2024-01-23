@@ -18,23 +18,26 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-fhc.hpp"
-#include <netinet/in.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include <mutex>
 
+#include <netinet/in.h>
+
 #include "nd-apps.hpp"
 #include "nd-detection.hpp"
 #include "nd-except.hpp"
+#include "nd-fhc.hpp"
 #include "nd-protos.hpp"
 #include "nd-risks.hpp"
 #include "nd-sha1.h"
 #include "nd-tls-alpn.hpp"
 
 #include "ndpi_protocol_ids.h"
+
+using namespace std;
 
 // Enable flow hash cache debug logging
 // #define _ND_LOG_FHC 1

@@ -75,15 +75,13 @@
 #include "nd-flow.hpp"
 #include "nd-instance.hpp"
 
-using namespace std;
-
 class ndFlowParser : public ndInstanceClient
 {
 public:
     ndFlowParser();
     virtual ~ndFlowParser();
 
-    bool Parse(nd_flow_ptr const &flow, const string &expr);
+    bool Parse(nd_flow_ptr const &flow, const std::string &expr);
 
     nd_flow_ptr flow;
     const char *local_mac;

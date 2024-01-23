@@ -47,8 +47,6 @@
 #include "nd-netlink.hpp"
 #endif
 
-using namespace std;
-
 class ndInstanceStatus : public ndSerializer
 {
 public:
@@ -57,7 +55,7 @@ public:
     long cpus = { 0 };
     struct timespec ts_epoch = { 0, 0 };
     struct timespec ts_now = { 0, 0 };
-    atomic<size_t> flows = { 0 };
+    std::atomic<size_t> flows = { 0 };
     size_t flows_prev = { 0 };
     size_t flows_purged = { 0 };
     size_t flows_expiring = { 0 };
@@ -115,15 +113,15 @@ class ndNetifyApiManager;
 class ndConntrackThread;
 #endif
 
-typedef map<int16_t, ndDetectionThread *> nd_detection_threads;
-typedef map<string, vector<ndCaptureThread *>> nd_capture_threads;
-typedef map<string, pair<uint8_t, ndPacketStats>> nd_interface_stats;
+typedef std::map<int16_t, ndDetectionThread *> nd_detection_threads;
+typedef std::map<std::string, std::vector<ndCaptureThread *>> nd_capture_threads;
+typedef std::map<std::string, std::pair<uint8_t, ndPacketStats>> nd_interface_stats;
 
 class ndInstance : public ndThread, public ndSerializer
 {
 public:
     static ndInstance &
-    Create(const string &tag = "nd-instance");
+    Create(const std::string &tag = "nd-instance");
 
     static void Destroy(void);
 
@@ -200,15 +198,15 @@ public:
         );
     }
 
-    bool SetConfigOption(int option, const string &arg) const;
+    bool SetConfigOption(int option, const std::string &arg) const;
 
     bool DumpList(uint8_t type = ndDUMP_TYPE_ALL);
 
-    bool LookupAddress(const string &ip);
+    bool LookupAddress(const std::string &ip);
 
     void CommandLineHelp(bool version_only = false);
 
-    bool AddInterface(const string &ifname,
+    bool AddInterface(const std::string &ifname,
       nd_interface_role role, unsigned type) const;
 
     bool CheckAgentUUID(void) const;
@@ -226,7 +224,7 @@ public:
         ndThread::Terminate();
     }
 
-    inline const string &GetVersion() const {
+    inline const std::string &GetVersion() const {
         return version;
     }
     inline const ndInstanceStatus &GetStatus() const {
@@ -371,17 +369,17 @@ protected:
 
     ndTimer timer_update, timer_update_napi;
 
-    string tag;
-    string self;
+    std::string tag;
+    std::string self;
     pid_t self_pid = { -1 };
-    string version;
+    std::string version;
 
-    atomic_bool terminate_force = { false };
+    std::atomic<bool> terminate_force = { false };
 
-    string conf_filename;
+    std::string conf_filename;
 
 private:
-    ndInstance(const string &tag = "nd-instance");
+    ndInstance(const std::string &tag = "nd-instance");
     virtual ~ndInstance();
 };
 

@@ -14,8 +14,6 @@
 #include <cstddef>
 #include <string>
 
-using namespace std;
+std::string base64_encode(const unsigned char* src, size_t len);
 
-string base64_encode(const unsigned char* src, size_t len);
-
-string base64_decode(const void* data, const size_t len);
+std::string base64_decode(const void* data, const size_t len);

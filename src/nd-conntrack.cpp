@@ -22,8 +22,13 @@
 #include "config.h"
 #endif
 
+#include <sstream>
+#include <string>
+
 #include "nd-conntrack.hpp"
 #include "nd-except.hpp"
+
+using namespace std;
 
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_CONNTRACK     1
@@ -116,7 +121,7 @@ ndConntrackThread::~ndConntrackThread() {
         nfct_close(cth);
     }
 
-    for (nd_ct_flow_map::const_iterator i = ct_flow_map.begin();
+    for (FlowMap::const_iterator i = ct_flow_map.begin();
          i != ct_flow_map.end();
          i++)
         delete i->second;
@@ -220,8 +225,8 @@ void *ndConntrackThread::Entry(void) {
 void ndConntrackThread::ProcessConntrackEvent(
   enum nf_conntrack_msg_type type, struct nf_conntrack *ct) {
     ndConntrackFlow *ct_flow = nullptr;
-    nd_ct_id_map::iterator id_iter;
-    nd_ct_flow_map::iterator flow_iter;
+    IdMap::iterator id_iter;
+    FlowMap::iterator flow_iter;
 
     uint32_t id = nfct_get_attr_u32(ct, ATTR_ID);
 
@@ -499,7 +504,7 @@ void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
     struct sockaddr_in *sa_repl_src = nullptr, *sa_repl_dst = NULL;
     struct sockaddr_in6 *sa6_orig_src = nullptr, *sa6_orig_dst = NULL;
     struct sockaddr_in6 *sa6_repl_src = nullptr, *sa6_repl_dst = NULL;
-    nd_ct_flow_map::iterator flow_iter;
+    FlowMap::iterator flow_iter;
 
     if (flow->ip_version == 4) family = AF_INET;
     else family = AF_INET6;
@@ -596,7 +601,7 @@ void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
 void ndConntrackThread::PurgeFlows(void) {
     Lock();
 
-    for (nd_ct_flow_map::iterator i = ct_flow_map.begin();
+    for (FlowMap::iterator i = ct_flow_map.begin();
          i != ct_flow_map.end();)
     {
         if (i->second->HasExpired()) {

@@ -51,5 +51,5 @@ protected:
     size_t buffer_size;
     uint8_t *buffer;
     size_t dropped;
-    vector<ndPacket *> pkt_queue;
+    std::vector<ndPacket *> pkt_queue;
 };

@@ -26,229 +26,232 @@
 
 #include "nd-risks.hpp"
 
-using json = nlohmann::json;
-
-using namespace std;
-
 class ndSerializer
 {
 public:
-    inline void serialize(json &j,
-      const vector<string> &keys, const json &value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys,
+      const nlohmann::json &value) const {
         if (keys.empty() || value.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, const string &value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys,
+      const std::string &value) const {
         if (keys.empty() || value.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, uint8_t value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, uint8_t value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, uint16_t value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, uint16_t value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, uint32_t value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, uint32_t value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, uint64_t value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, uint64_t value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, bool value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, bool value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, const char *value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, const char *value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, double value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, double value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j,
-      const vector<string> &keys, time_t value) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys, time_t value) const {
         if (keys.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = value;
         if (keys.size() == 1) j[keys[0]] = value;
     }
 
-    inline void serialize(json &j, const vector<string> &keys,
-      const vector<nd_risk_id_t> &values) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys,
+      const std::vector<nd_risk_id_t> &values) const {
         if (keys.empty() || values.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = values;
         if (keys.size() == 1) j[keys[0]] = values;
     }
 
-    inline void serialize(json &j, const vector<string> &keys,
-      const vector<unsigned> &values) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys,
+      const std::vector<unsigned> &values) const {
         if (keys.empty() || values.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = values;
         if (keys.size() == 1) j[keys[0]] = values;
     }
 
-    inline void serialize(json &j, const vector<string> &keys,
-      const vector<string> &values, const string &delim = "") const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys,
+      const std::vector<std::string> &values,
+      const std::string &delim = "") const {
         if (keys.empty() || values.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = values;
         if (keys.size() == 1) j[keys[0]] = values;
     }
 
-    inline void serialize(json &j, const vector<string> &keys,
-      const unordered_map<string, string> &values) const {
+    inline void serialize(nlohmann::json &j,
+      const std::vector<std::string> &keys,
+      const std::unordered_map<std::string, std::string> &values) const {
         if (keys.empty() || values.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = values;
         if (keys.size() == 1) j[keys[0]] = values;
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
-      const string &value) const {
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
+      const std::string &value) const {
         if (keys.empty() || value.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
         v.push_back(value);
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
       uint8_t value) const {
         if (keys.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
-        v.push_back(to_string(value));
+        v.push_back(std::to_string(value));
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
       uint16_t value) const {
         if (keys.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
-        v.push_back(to_string(value));
+        v.push_back(std::to_string(value));
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
       uint32_t value) const {
         if (keys.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
-        v.push_back(to_string(value));
+        v.push_back(std::to_string(value));
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
       uint64_t value) const {
         if (keys.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
-        v.push_back(to_string(value));
+        v.push_back(std::to_string(value));
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
       bool value) const {
         if (keys.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
-        v.push_back(to_string(value));
+        v.push_back(std::to_string(value));
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
       const char *value) const {
         if (keys.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
         v.push_back(value);
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
-      const vector<unsigned> &values) const {
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
+      const std::vector<unsigned> &values) const {
         if (keys.empty() || values.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
-        string _values;
+        std::string _values;
         for (auto &value : values)
             _values.append(_values.empty() ?
-                to_string(value) :
-                string(",") + to_string(value));
+                std::to_string(value) :
+                std::string(",") + std::to_string(value));
         v.push_back(_values);
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
-      const vector<nd_risk_id_t> &values) const {
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
+      const std::vector<nd_risk_id_t> &values) const {
         if (keys.empty() || values.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
-        string _values;
+        std::string _values;
         for (auto &value : values)
             _values.append(_values.empty() ?
-                to_string(value) :
-                string(",") + to_string(value));
+                std::to_string(value) :
+                std::string(",") + std::to_string(value));
         v.push_back(_values);
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
-      const vector<string> &values,
-      const string &delim = ",") const {
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
+      const std::vector<std::string> &values,
+      const std::string &delim = ",") const {
         if (values.empty()) return;
         if (! keys.empty()) {
-            string key;
+            std::string key;
             for (auto &k : keys)
-                key.append(key.empty() ? k : string(":") + k);
+                key.append(key.empty() ? k : std::string(":") + k);
             v.push_back(key);
         }
         if (delim.empty()) {
@@ -256,32 +259,32 @@ public:
         }
         else {
             v.push_back(values.empty() ?
-                string() :
+                std::string() :
                 accumulate(++values.begin(), values.end(),
                   *values.begin(),
-                  [delim](const string &a, const string &b) {
+                  [delim](const std::string &a, const std::string &b) {
                 return a + delim + b;
                 }));
         }
     }
 
-    inline void serialize(vector<string> &v,
-      const vector<string> &keys,
-      const unordered_map<string, string> &values) const {
+    inline void serialize(std::vector<std::string> &v,
+      const std::vector<std::string> &keys,
+      const std::unordered_map<std::string, std::string> &values) const {
         if (keys.empty() || values.empty()) return;
-        string key;
+        std::string key;
         for (auto &k : keys)
-            key.append(key.empty() ? k : string(":") + k);
+            key.append(key.empty() ? k : std::string(":") + k);
         v.push_back(key);
 
-        vector<string> _values;
+        std::vector<std::string> _values;
         for (auto &v : values)
             _values.push_back(v.first + ":" + v.second);
         v.push_back(_values.empty() ?
-            string() :
+            std::string() :
             accumulate(++_values.begin(), _values.end(),
               *_values.begin(),
-              [](const string &a, const string &b) {
+              [](const std::string &a, const std::string &b) {
             return a + "," + b;
             }));
     }

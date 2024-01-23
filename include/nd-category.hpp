@@ -29,9 +29,6 @@
 
 #include "nd-addr.hpp"
 
-using json = nlohmann::json;
-using namespace std;
-
 #define ND_CAT_UNKNOWN 0
 
 typedef unsigned nd_cat_id_t;
@@ -53,36 +50,37 @@ public:
     ndCategories();
     virtual ~ndCategories();
 
-    bool Load(const string &filename);
-    bool Load(Type type, json &jdata);
-    bool Save(const string &filename);
+    bool Load(const std::string &filename);
+    bool Load(Type type, nlohmann::json &jdata);
+    bool Save(const std::string &filename);
     void Dump(Type type = TYPE_MAX);
 
-    bool LoadDotDirectory(const string &path);
+    bool LoadDotDirectory(const std::string &path);
 
     bool IsMember(Type type, nd_cat_id_t cat_id, unsigned id);
-    bool IsMember(Type type, const string &cat_tag, unsigned id);
+    bool IsMember(Type type, const std::string &cat_tag, unsigned id);
 
     nd_cat_id_t Lookup(Type type, unsigned id) const;
-    nd_cat_id_t LookupTag(Type type, const string &tag) const;
-    nd_cat_id_t ResolveTag(Type type, unsigned id, string &tag) const;
+    nd_cat_id_t LookupTag(Type type, const std::string &tag) const;
+    nd_cat_id_t
+    ResolveTag(Type type, unsigned id, std::string &tag) const;
 
-    nd_cat_id_t LookupDotDirectory(const string &domain);
+    nd_cat_id_t LookupDotDirectory(const std::string &domain);
     nd_cat_id_t LookupDotDirectory(const ndAddr &addr);
 
 protected:
-    mutable mutex lock;
+    mutable std::mutex lock;
 
-    typedef map<Type, ndCategory> cat_map;
+    typedef std::map<Type, ndCategory> cat_map;
     cat_map categories;
 
-    typedef unordered_map<nd_cat_id_t, unordered_set<string>> cat_domain_map;
+    typedef std::unordered_map<nd_cat_id_t, std::unordered_set<std::string>> cat_domain_map;
     cat_domain_map domains;
 
-    typedef unordered_map<nd_cat_id_t, regex> cat_rx_map;
+    typedef std::unordered_map<nd_cat_id_t, std::regex> cat_rx_map;
     cat_rx_map rxps;
 
-    bool LoadLegacy(const json &jdata);
+    bool LoadLegacy(const nlohmann::json &jdata);
 
     void ResetCategories(void);
     inline void ResetDomains(void);
@@ -95,10 +93,10 @@ private:
 class ndCategory
 {
 public:
-    typedef map<string, nd_cat_id_t> index_tag;
-    typedef set<unsigned> set_id;
-    typedef map<nd_cat_id_t, set_id> index_cat;
-    typedef pair<nd_cat_id_t, set_id> index_cat_insert;
+    typedef std::map<std::string, nd_cat_id_t> index_tag;
+    typedef std::set<unsigned> set_id;
+    typedef std::map<nd_cat_id_t, set_id> index_cat;
+    typedef std::pair<nd_cat_id_t, set_id> index_cat_insert;
 
 protected:
     friend class ndCategories;

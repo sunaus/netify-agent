@@ -24,7 +24,7 @@
 
 #include "nd-risks.hpp"
 
-nd_risk_id_t nd_risk_lookup(const string &name) {
+nd_risk_id_t nd_risk_lookup(const std::string &name) {
     for (auto &i : nd_risks) {
         if (strcasecmp(name.c_str(), i.second)) continue;
         return (nd_risk_id_t)i.first;

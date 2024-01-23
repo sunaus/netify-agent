@@ -30,6 +30,8 @@
 #include "nd-flow-parser.hpp"
 #include "nd-flow-expr.hpp"
 
+using namespace std;
+
 extern "C" {
     #include "nd-flow-criteria.h"
 

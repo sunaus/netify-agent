@@ -26,8 +26,6 @@
 
 #include "nd-addr.hpp"
 
-using namespace std;
-
 #define ND_NETLINK_BUFSIZ 4096
 
 class ndNetlink

@@ -28,6 +28,9 @@
 #include "nd-json.hpp"
 #include "netifyd.hpp"
 
+using namespace std;
+using json = nlohmann::json;
+
 void nd_json_to_string(const json &j, string &output, bool pretty) {
     output = j.dump(pretty ? ND_JSON_INDENT : -1, ' ', true,
       json::error_handler_t::replace);

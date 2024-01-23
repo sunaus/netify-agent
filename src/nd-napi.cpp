@@ -30,6 +30,9 @@
 #include "nd-sha1.h"
 #include "nd-util.hpp"
 
+using namespace std;
+using json = nlohmann::json;
+
 static int ndNetifyApiThread_curl_debug(CURL *ch
   __attribute__((unused)),
   curl_infotype type, char *data, size_t size, void *param) {

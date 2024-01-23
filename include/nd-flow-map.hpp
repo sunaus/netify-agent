@@ -29,15 +29,7 @@
 
 #include "nd-flow.hpp"
 
-using namespace std;
-
-typedef shared_ptr<ndFlow> nd_flow_ptr;
-typedef unordered_map<string, nd_flow_ptr> nd_flow_map;
-typedef vector<nd_flow_map *> nd_flow_bucket;
-typedef vector<unique_ptr<mutex>> nd_flow_bucket_lock;
-typedef map<string, nd_flow_map *> nd_flows;
-typedef pair<string, nd_flow_ptr> nd_flow_pair;
-typedef pair<nd_flow_map::iterator, bool> nd_flow_insert;
+typedef std::shared_ptr<ndFlow> nd_flow_ptr;
 
 class ndFlowMap
 {
@@ -45,16 +37,16 @@ public:
     ndFlowMap(size_t buckets = ND_FLOW_MAP_BUCKETS);
     virtual ~ndFlowMap();
 
-    nd_flow_ptr
-    Lookup(const string &digest, bool acquire_lock = false);
-    bool Insert(const string &digest, nd_flow_ptr &flow,
-      bool unlocked = false);
-    inline bool
-    InsertUnlocked(const string &digest, nd_flow_ptr &flow) {
+    nd_flow_ptr Lookup(const std::string &digest,
+      bool acquire_lock = false);
+    bool Insert(const std::string &digest,
+      nd_flow_ptr &flow, bool unlocked = false);
+    inline bool InsertUnlocked(const std::string &digest,
+      nd_flow_ptr &flow) {
         return Insert(digest, flow, true);
     }
 
-    bool Delete(const string &digest);
+    bool Delete(const std::string &digest);
 
     nd_flow_map &Acquire(size_t b);
     const nd_flow_map &AcquireConst(size_t b) const;
@@ -65,7 +57,7 @@ public:
         Release(HashToBucket(digest));
     }
 #else
-    void Release(const string &digest) const;
+    void Release(const std::string &digest) const;
 #endif
 #ifndef _ND_LEAN_AND_MEAN
     void DumpBucketStats(void);
@@ -74,13 +66,17 @@ public:
     inline size_t GetBuckets(void) const { return buckets; }
 
 protected:
-    unsigned HashToBucket(const string &digest) const {
+    unsigned HashToBucket(const std::string &digest) const {
         const char *p = digest.c_str();
         const uint64_t *b = (const uint64_t *)&p[0];
         return (*b % buckets);
     }
 
     size_t buckets;
-    nd_flow_bucket bucket;
-    mutable nd_flow_bucket_lock bucket_lock;
+
+    typedef std::vector<nd_flow_map *> FlowBucket;
+    FlowBucket bucket;
+
+    typedef std::vector<std::unique_ptr<std::mutex>> BucketLock;
+    mutable BucketLock bucket_lock;
 };

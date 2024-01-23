@@ -30,6 +30,9 @@
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
+using namespace std;
+using json = nlohmann::json;
+
 // #define _ND_LOG_DOMAINS   1
 
 typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, nd_cat_id_t> nd_rn4_cat;

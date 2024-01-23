@@ -26,8 +26,6 @@
 #include "nd-ndpi.hpp"
 #include "ndpi_typedefs.h"
 
-using namespace std;
-
 typedef enum {
     ND_RISK_NONE = 0,
     ND_RISK_ANONYMOUS_SUBSCRIBER = 1,
@@ -89,7 +87,7 @@ typedef enum {
     ND_RISK_TODO = 0xffffffff
 } nd_risk_id_t;
 
-typedef unordered_map<unsigned, const char *> nd_risks_t;
+typedef std::unordered_map<unsigned, const char *> nd_risks_t;
 
 const nd_risks_t nd_risks = {
     { ND_RISK_NONE, "None" },
@@ -182,7 +180,7 @@ inline const char *nd_risk_get_name(nd_risk_id_t id) {
     return it->second;
 }
 
-typedef unordered_map<uint16_t, nd_risk_id_t> nd_ndpi_risk_t;
+typedef std::unordered_map<uint16_t, nd_risk_id_t> nd_ndpi_risk_t;
 
 const nd_ndpi_risk_t nd_ndpi_risks = {
     { NDPI_ANONYMOUS_SUBSCRIBER, ND_RISK_ANONYMOUS_SUBSCRIBER },
@@ -254,4 +252,4 @@ inline nd_risk_id_t nd_ndpi_risk_find(uint16_t id) {
     return it->second;
 }
 
-nd_risk_id_t nd_risk_lookup(const string &name);
+nd_risk_id_t nd_risk_lookup(const std::string &name);

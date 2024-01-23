@@ -30,6 +30,8 @@
 #include "nd-except.hpp"
 #include "nd-flow-parser.hpp"
 
+using namespace std;
+
 typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, nd_app_id_t> nd_rn4_app;
 typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, nd_app_id_t> nd_rn6_app;
 

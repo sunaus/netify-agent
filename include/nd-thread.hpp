@@ -25,17 +25,15 @@
 
 #include "nd-except.hpp"
 
-using namespace std;
-
 #define ND_THREAD_MAX_PROCNAMELEN 16
 
 class ndThread
 {
 public:
-    ndThread(const string &tag, long cpu = -1, bool ipc = false);
+    ndThread(const std::string &tag, long cpu = -1, bool ipc = false);
     virtual ~ndThread();
 
-    const string &GetTag(void) { return tag; }
+    const std::string &GetTag(void) { return tag; }
     pthread_t GetId(void) { return id; }
 
     void SetProcName(void);
@@ -62,7 +60,7 @@ public:
     uint32_t RecvIPC(void);
 
 protected:
-    string tag;
+    std::string tag;
     pthread_t id;
     long cpu;
     pthread_attr_t attr;
@@ -74,6 +72,6 @@ protected:
     int Join(void);
 
 private:
-    atomic<bool> terminate;
-    atomic<bool> terminated;
+    std::atomic<bool> terminate;
+    std::atomic<bool> terminated;
 };

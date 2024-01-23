@@ -27,8 +27,6 @@
 
 #include "nd-serializer.hpp"
 
-using namespace std;
-
 class ndPacket
 {
 public:
@@ -82,7 +80,7 @@ protected:
 class ndPacketStats : public ndSerializer
 {
 public:
-    typedef pair<string, ndPacketStats> Interface;
+    typedef std::pair<std::string, ndPacketStats> Interface;
 
     struct pkt_t {
         uint64_t raw;

@@ -125,6 +125,8 @@
 #include "nd-capture.hpp"
 #include "nd-detection.hpp"
 
+using namespace std;
+
 // Enable to log discarded packets
 // #define _ND_LOG_PKT_DISCARD     1
 
@@ -447,11 +449,10 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
         else if (type == ETHERTYPE_MPLS_UC || type == ETHERTYPE_MPLS_MC)
         {
             stats.pkt.mpls++;
-            union {
-                uint32_t u32;
-                struct nd_mpls_header_t mpls;
-            } mpls;
-            mpls.u32 = ntohl(*((uint32_t *)&packet->data[l2_len]));
+            uint32_t u32 = (uint32_t)ntohl(
+              *((uint32_t *)&packet->data[l2_len]));
+            const struct nd_mpls_header_t *mpls =
+              reinterpret_cast<const struct nd_mpls_header_t *>(&u32);
             type = ETHERTYPE_IP;
             l2_len += 4;
 
@@ -461,13 +462,12 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 #ifdef _ND_LOG_PKT_DISCARD
                 nd_dprintf(
                   "%s: discard: layer-2 + MPLS length is "
-                  "beyond "
-                  "capture length.\n",
+                  "beyond capture length.\n",
                   tag.c_str());
 #endif
             }
 
-            while (! mpls.mpls.s) {
+            while (! mpls->s) {
                 l2_len += 4;
 
                 if (l2_len > packet->caplen) {
@@ -476,13 +476,14 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 #ifdef _ND_LOG_PKT_DISCARD
                     nd_dprintf(
                       "%s: discard: layer-2 + MPLS length "
-                      "is "
-                      "beyond capture length.\n",
+                      "is beyond capture length.\n",
                       tag.c_str());
 #endif
                 }
-                mpls.u32 = ntohl(
+                u32 = (uint32_t)ntohl(
                   *((uint32_t *)&packet->data[l2_len]));
+                mpls = reinterpret_cast<const struct nd_mpls_header_t *>(
+                  &u32);
             }
         }
         else if (type == ETHERTYPE_PPPOE) {
@@ -495,8 +496,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 #ifdef _ND_LOG_PKT_DISCARD
                 nd_dprintf(
                   "%s: discard: layer-2 + PPP length is "
-                  "beyond "
-                  "capture length.\n",
+                  "beyond capture length.\n",
                   tag.c_str());
 #endif
             }
@@ -524,8 +524,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 #ifdef _ND_LOG_PKT_DISCARD
                 nd_dprintf(
                   "%s: discard: layer-2 + PPP length is "
-                  "beyond "
-                  "capture length.\n",
+                  "beyond capture length.\n",
                   tag.c_str());
 #endif
             }
@@ -618,8 +617,7 @@ nd_process_ip:
 #ifdef _ND_LOG_PKT_DISCARD
             nd_dprintf(
               "%s: discard: l3_len[%hu] > "
-              "(packet->caplen[%hu] "
-              "- l2_len[%hu])(%hu)\n",
+              "(packet->caplen[%hu] - l2_len[%hu])(%hu)\n",
               tag.c_str(), l3_len, packet->caplen, l2_len,
               packet->caplen - l2_len);
 #endif

@@ -32,6 +32,8 @@
 #include "nd-fhc.hpp"
 #include "nd-util.hpp"
 
+using namespace std;
+
 ndFlowHashCache::ndFlowHashCache(size_t cache_size)
   : ndLRUCache<string, ndFlowHashCacheEntry>(cache_size, true) {
 }

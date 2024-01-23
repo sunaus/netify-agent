@@ -38,6 +38,8 @@
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
+using namespace std;
+
 static void *nd_thread_entry(void *param) {
     void *rv = NULL;
     ndThread *thread = NULL;

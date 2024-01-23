@@ -46,7 +46,7 @@ public:
 class ndDetectionThread : public ndThread, public ndInstanceClient
 {
 public:
-    ndDetectionThread(int16_t cpu, const string &tag,
+    ndDetectionThread(int16_t cpu, const std::string &tag,
 #ifdef _ND_ENABLE_NETLINK
       ndNetlink *netlink,
 #endif
@@ -86,9 +86,9 @@ protected:
     ndDNSHintCache *dhc;
     ndFlowHashCache *fhc;
 
-    string flow_digest, flow_digest_mdata;
+    std::string flow_digest, flow_digest_mdata;
 
-    queue<ndDetectionQueueEntry *> pkt_queue;
+    std::queue<ndDetectionQueueEntry *> pkt_queue;
     pthread_cond_t pkt_queue_cond;
     pthread_mutex_t pkt_queue_cond_mutex;
 

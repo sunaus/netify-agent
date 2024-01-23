@@ -30,6 +30,8 @@
 #include "nd-flow.hpp"
 #include "nd-sha1.h"
 
+using namespace std;
+
 // Enable lower map debug output
 // #define _ND_DEBUG_LOWER_MAP	1
 

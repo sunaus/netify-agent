@@ -29,8 +29,6 @@
 #include "nd-ndpi.hpp"
 #include "ndpi_protocol_ids.h"
 
-using namespace std;
-
 typedef enum {
     ND_PROTO_UNKNOWN = 0,
     ND_PROTO_FTP_CONTROL = 1,
@@ -394,7 +392,7 @@ typedef enum {
     ND_PROTO_TODO = 0xffffffff
 } nd_proto_id_t;
 
-typedef unordered_map<unsigned, const char *> nd_protos_t;
+typedef std::unordered_map<unsigned, const char *> nd_protos_t;
 
 const nd_protos_t nd_protos = {
     { ND_PROTO_AFP, "AFP" },
@@ -640,7 +638,7 @@ inline const char *nd_proto_get_name(nd_proto_id_t id) {
     return it->second;
 }
 
-inline unsigned nd_proto_get_id(const string &name) {
+inline unsigned nd_proto_get_id(const std::string &name) {
     for (auto &it : nd_protos) {
         if (strcasecmp(it.second, name.c_str())) continue;
         return it.first;
@@ -648,7 +646,7 @@ inline unsigned nd_proto_get_id(const string &name) {
     return ND_PROTO_UNKNOWN;
 }
 
-typedef unordered_map<uint16_t, nd_proto_id_t> nd_ndpi_proto_t;
+typedef std::unordered_map<uint16_t, nd_proto_id_t> nd_ndpi_proto_t;
 
 const nd_ndpi_proto_t nd_ndpi_protos = {
     { NDPI_PROTOCOL_AFP, ND_PROTO_AFP },
@@ -877,7 +875,7 @@ const nd_ndpi_proto_t nd_ndpi_protos = {
     { NDPI_PROTOCOL_ZOOM, ND_PROTO_ZOOM },
 };
 
-typedef vector<uint16_t> nd_ndpi_disabled_protos_t;
+typedef std::vector<uint16_t> nd_ndpi_disabled_protos_t;
 
 const nd_ndpi_disabled_protos_t nd_ndpi_disabled_protos = {
     NDPI_PROTOCOL_1KXUN,  // Not a protocol (no dissector):
@@ -1147,11 +1145,11 @@ const nd_ndpi_disabled_protos_t nd_ndpi_disabled_protos = {
     NDPI_PROTOCOL_SINA_WEIBO,  // Not a protocol: ID# 356 (SinaWeibo)
 };
 
-typedef vector<uint16_t> nd_ndpi_free_protos_t;
+typedef std::vector<uint16_t> nd_ndpi_free_protos_t;
 
 const nd_ndpi_free_protos_t nd_ndpi_free_protos = {};
 
-typedef unordered_map<uint16_t, vector<pair<uint16_t, nd_proto_id_t>>> nd_ndpi_portmap_t;
+typedef std::unordered_map<uint16_t, std::vector<std::pair<uint16_t, nd_proto_id_t>>> nd_ndpi_portmap_t;
 
 const nd_ndpi_portmap_t nd_ndpi_portmap = {
     { NDPI_PROTOCOL_TLS,
@@ -1176,7 +1174,8 @@ const nd_ndpi_portmap_t nd_ndpi_portmap = {
 };
 
 class ndFlow;
-typedef shared_ptr<ndFlow> nd_flow_ptr;
+typedef std::shared_ptr<ndFlow> nd_flow_ptr;
+
 const nd_proto_id_t
 nd_ndpi_proto_find(uint16_t id, nd_flow_ptr const &flow);
 const uint16_t nd_ndpi_proto_find(unsigned id);

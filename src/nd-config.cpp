@@ -38,6 +38,8 @@
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
+using namespace std;
+
 ndGlobalConfig::ndGlobalConfig()
   : napi_tls_verify(true), napi_vendor(ND_API_VENDOR),
     path_agent_status(ND_AGENT_STATUS_PATH),

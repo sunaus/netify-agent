@@ -22,8 +22,6 @@
 
 #include <string>
 
-using namespace std;
-
 #include <ndpi_api.h>
 #include <ndpi_main.h>
 #include <ndpi_typedefs.h>

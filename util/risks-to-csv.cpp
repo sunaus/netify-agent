@@ -11,6 +11,8 @@
 #include "nd-ndpi.hpp"
 #include "nd-risks.hpp"
 
+using namespace std;
+
 int main(int argc, char* argv[]) {
     ndpi_global_init();
 
@@ -32,7 +34,7 @@ int main(int argc, char* argv[]) {
         const char* desc = ndpi_risk2str(rid);
         const char* severity = ndpi_severity2str(risk_info->severity);
 
-        uint16_t client_score = 0, server_score = 0;
+        uint16_t client_score, server_score;
         uint16_t score = ndpi_risk2score(risk,
           &client_score, &server_score);
 

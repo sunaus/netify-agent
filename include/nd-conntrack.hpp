@@ -65,7 +65,7 @@ protected:
     uint32_t id;
     uint32_t mark;
     time_t updated_at;
-    string digest;
+    std::string digest;
     sa_family_t l3_proto;
     uint8_t l4_proto;
     uint16_t orig_port[2];
@@ -75,9 +75,6 @@ protected:
     struct sockaddr_storage orig_addr[2];
     struct sockaddr_storage repl_addr[2];
 };
-
-typedef unordered_map<uint32_t, string> nd_ct_id_map;
-typedef unordered_map<string, ndConntrackFlow *> nd_ct_flow_map;
 
 class ndConntrackThread : public ndThread
 {
@@ -100,13 +97,17 @@ public:
 protected:
     void DumpConntrackTable(void);
 
-    void PrintFlow(nd_flow_ptr &flow, string &text);
-    void PrintFlow(ndConntrackFlow *flow, string &text,
+    void PrintFlow(nd_flow_ptr &flow, std::string &text);
+    void PrintFlow(ndConntrackFlow *flow, std::string &text,
       bool reorder = false, bool withreply = false);
 
     int ctfd;
     nfct_handle *cth;
     int cb_registered;
-    nd_ct_id_map ct_id_map;
-    nd_ct_flow_map ct_flow_map;
+
+    typedef std::unordered_map<uint32_t, std::string> IdMap;
+    typedef std::unordered_map<std::string, ndConntrackFlow *> FlowMap;
+
+    IdMap ct_id_map;
+    FlowMap ct_flow_map;
 };
