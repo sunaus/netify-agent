@@ -29,6 +29,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <array>
 #include <cerrno>
 #include <csignal>
 #include <cstring>
@@ -115,13 +116,14 @@ ndThread::~ndThread(void) {
 
 void ndThread::SetProcName(void) {
 #if defined(HAVE_PTHREAD_SETNAME_NP) && ! defined(_ND_LEAN_AND_MEAN)
-    char name[ND_THREAD_MAX_PROCNAMELEN];
+    array<char, ND_THREAD_MAX_PROCNAMELEN> name;
 
-    snprintf(name, ND_THREAD_MAX_PROCNAMELEN, "%s", tag.c_str());
+    snprintf(name.data(), ND_THREAD_MAX_PROCNAMELEN, "%s",
+      tag.c_str());
     if (tag.length() >= ND_THREAD_MAX_PROCNAMELEN - 1)
         name[ND_THREAD_MAX_PROCNAMELEN - 2] = '+';
 
-    pthread_setname_np(id, name);
+    pthread_setname_np(id, name.data());
 #endif
 }
 

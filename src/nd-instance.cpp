@@ -2332,8 +2332,8 @@ void ndInstance::UpdateStatus(void) {
     status.fhc_status = ndGC_USE_FHC;
 }
 
-void ndInstance::DisplayDebugScoreboard(void) {
-}
+//void ndInstance::DisplayDebugScoreboard(void) const {
+//}
 
 bool ndInstance::ExpireFlow(nd_flow_ptr &flow) {
     if (flow->flags.detection_complete.load() == true)

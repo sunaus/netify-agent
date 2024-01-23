@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <zlib.h>
 
+#include <array>
 #include <csignal>
 #include <cstdarg>
 #include <cstdlib>
@@ -1393,10 +1394,11 @@ void nd_get_ip_protocol_name(int protocol, string &result) {
 #ifdef HAVE_GETPROTOBYNUMBER_R
     struct protoent pe_buffer;
     constexpr size_t _ND_GET_PROTO_BUFSIZ = 1024;
-    uint8_t buffer[_ND_GET_PROTO_BUFSIZ];
+    array<uint8_t, _ND_GET_PROTO_BUFSIZ> buffer;
 
     rc = getprotobynumber_r(protocol, &pe_buffer,
-      (char *)buffer, _ND_GET_PROTO_BUFSIZ, &pe_result);
+      reinterpret_cast<char *>(buffer.data()),
+      _ND_GET_PROTO_BUFSIZ, &pe_result);
 #else
     // XXX: Fall back to non-reentrant version.
     // We're holding a static mutex lock here anyway...

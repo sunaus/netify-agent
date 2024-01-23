@@ -361,7 +361,7 @@ protected:
 
     void UpdateStatus(void);
 
-    void DisplayDebugScoreboard(void);
+    //void DisplayDebugScoreboard(void) const;
 
     bool ExpireFlow(nd_flow_ptr &flow);
 
