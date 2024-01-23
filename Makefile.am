@@ -19,7 +19,7 @@ SUBDIRS_EXTRA += libs/jemalloc
 endif
 endif
 
-SUBDIRS = libs/inih libs/ndpi $(SUBDIRS_EXTRA) include src deploy doc tests
+SUBDIRS = libs/inih libs/ndpi $(SUBDIRS_EXTRA) include src deploy util doc tests
 DIST_SUBDIRS = $(SUBDIRS)
 
 EXTRA_DIST = LICENSE autogen.sh debian/compat \
