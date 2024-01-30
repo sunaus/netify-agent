@@ -26,6 +26,7 @@
 #include <atomic>
 #include <cstddef>
 #include <ctime>
+#include <exception>
 #include <iomanip>
 #include <list>
 #include <map>
@@ -112,14 +113,33 @@ public:
 
     ndDebugLogStream(Type type = Type::NONE)
       : std::ostream((type == Type::NONE) ?
-            (std::streambuf *)new ndDebugLogBuffer :
+            reinterpret_cast<std::streambuf *>(new ndDebugLogBuffer) :
             ((type == Type::UNLOCKED) ?
-                (std::streambuf *)new ndDebugLogBufferUnlocked :
-                (std::streambuf *)new ndDebugLogBufferFlow)) {
+                reinterpret_cast<std::streambuf *>(new ndDebugLogBufferUnlocked) :
+                reinterpret_cast<std::streambuf *>(
+                  new ndDebugLogBufferFlow))),
+        type(type) {
         imbue(std::locale());
     }
 
-    virtual ~ndDebugLogStream() { delete rdbuf(); }
+    virtual ~ndDebugLogStream() {
+        switch (type) {
+        case Type::NONE:
+            delete reinterpret_cast<ndDebugLogBuffer *>(rdbuf());
+            break;
+        case Type::UNLOCKED:
+            delete reinterpret_cast<ndDebugLogBufferUnlocked *>(
+              rdbuf());
+            break;
+        case Type::FLOW:
+            delete reinterpret_cast<ndDebugLogBufferFlow *>(rdbuf());
+            break;
+        }
+        delete rdbuf();
+    }
+
+private:
+    Type type;
 };
 
 class ndLogFormat
@@ -521,20 +541,18 @@ protected:
 };
 
 struct ndEnumHasher {
-	template <class T>
-	inline void hash_combine(size_t &seed, const T &v) const {
-	    std::hash<T> hasher;
-	    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) +
-	      (seed >> 2);
-	}
+    template <class T>
+    inline void hash_combine(size_t &seed, const T &v) const {
+        std::hash<T> hasher;
+        seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
 
-	template <class T>
-	size_t operator()(const T &v) const {
-	    size_t ss_hash = 0;
+    template <class T>
+    size_t operator()(const T &v) const {
+        size_t ss_hash = 0;
 
-	    hash_combine<unsigned>(ss_hash,
-	      static_cast<unsigned>(v));
+        hash_combine<unsigned>(ss_hash, static_cast<unsigned>(v));
 
-	    return ss_hash;
-	}
+        return ss_hash;
+    }
 };

@@ -38,11 +38,11 @@ struct ndFlags {
     T operator=(const T &rhs) { return (flags = rhs); }
 
     bool operator==(const T &rhs) const {
-        return (flags == flags);
+        return (flags == rhs);
     }
 
     bool operator!=(const T &rhs) const {
-        return (flags != flags);
+        return (flags != rhs);
     }
 
     T operator|(const T &rhs) const {
