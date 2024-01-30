@@ -55,6 +55,7 @@
 #include <iomanip>
 #include <iostream>
 #include <mutex>
+#include <regex>
 #include <sstream>
 #include <stdexcept>
 #include <unordered_map>
@@ -67,6 +68,7 @@
 #include "netifyd.hpp"
 
 using namespace std;
+using json = nlohmann::json;
 
 static mutex nd_printf_mutex;
 
@@ -372,6 +374,21 @@ bool nd_ip_to_string(const sockaddr_storage &ip, string &dst) {
     }
 
     return false;
+}
+
+void nd_json_to_string(const json &j, string &output, bool pretty) {
+    output = j.dump(pretty ? ND_JSON_INDENT : -1, ' ', true,
+      json::error_handler_t::replace);
+
+    vector<pair<regex *, string> >::const_iterator i;
+    for (i = ndGC.privacy_regex.begin();
+         i != ndGC.privacy_regex.end();
+         i++)
+    {
+        string result = regex_replace(output, *((*i).first),
+          (*i).second);
+        if (result.size()) output = result;
+    }
 }
 
 bool nd_is_ipaddr(const char *ip) {

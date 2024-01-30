@@ -279,18 +279,18 @@ void ndNetifyApiThread::Perform(Method method, const string &url,
     curl_easy_setopt(ch, CURLOPT_NOBODY, 0);
 
     switch (method) {
-    case METHOD_GET:
+    case Method::GET:
         curl_easy_setopt(ch, CURLOPT_POST, 0);
         nd_dprintf("%s: %s: %s\n", tag.c_str(), "GET", url.c_str());
         break;
-    case METHOD_HEAD:
+    case Method::HEAD:
         curl_easy_setopt(ch, CURLOPT_POST, 0);
         curl_easy_setopt(ch, CURLOPT_NOBODY, 1);
 
         nd_dprintf("%s: %s: %s\n", tag.c_str(), "HEAD",
           url.c_str());
         break;
-    case METHOD_POST:
+    case Method::POST:
         curl_easy_setopt(ch, CURLOPT_POST, 1);
         curl_easy_setopt(ch, CURLOPT_POSTFIELDSIZE, payload.size());
         if (payload.size()) {
@@ -324,10 +324,10 @@ void ndNetifyApiThread::Perform(Method method, const string &url,
 
 void *ndNetifyApiBootstrap::Entry(void) {
 
-    static map<ndGlobalConfig::UUID, string> uuids = {
-        { ndGlobalConfig::UUID_AGENT, "X-UUID" },
-        { ndGlobalConfig::UUID_SERIAL, "X-UUID-Serial" },
-        { ndGlobalConfig::UUID_SITE, "X-UUID-Site" }
+    static map<ndUUID, string> uuids = {
+        { ndUUID::AGENT, "X-UUID" },
+        { ndUUID::SERIAL, "X-UUID-Serial" },
+        { ndUUID::SITE, "X-UUID-Site" }
     };
 
     Headers headers;
@@ -345,7 +345,7 @@ void *ndNetifyApiBootstrap::Entry(void) {
     string url = ndGC.url_napi_bootstrap;
 
     try {
-        Perform(ndNetifyApiThread::METHOD_POST, url, headers);
+        Perform(ndNetifyApiThread::Method::POST, url, headers);
     }
     catch (CURLcode &rc) {
         nd_dprintf("%s: bootstrap request error: %s\n",
@@ -391,7 +391,7 @@ void *ndNetifyApiDownload::Entry(void) {
     nd_tmpfile("/tmp/nd-napi", content_filename);
 
     try {
-        Perform(ndNetifyApiThread::METHOD_HEAD, url, headers);
+        Perform(ndNetifyApiThread::Method::HEAD, url, headers);
 
         if (digest != nullptr && http_rc == 200) {
             auto hdr_sha1 = headers_rx.find("x-sha1-hash");
@@ -401,7 +401,7 @@ void *ndNetifyApiDownload::Entry(void) {
                   "can't compare.\n",
                   tag.c_str());
 
-                Perform(ndNetifyApiThread::METHOD_GET, url, headers);
+                Perform(ndNetifyApiThread::Method::GET, url, headers);
             }
             else {
                 string old_hash;
@@ -421,7 +421,7 @@ void *ndNetifyApiDownload::Entry(void) {
                       "%s: file has changed, downloadig "
                       "update...\n",
                       tag.c_str());
-                    Perform(ndNetifyApiThread::METHOD_GET,
+                    Perform(ndNetifyApiThread::Method::GET,
                       url, headers);
                 }
             }
@@ -436,7 +436,7 @@ void *ndNetifyApiDownload::Entry(void) {
 }
 
 bool ndNetifyApiManager::Update(void) {
-    auto request = requests.find(REQUEST_BOOTSTRAP);
+    auto request = requests.find(Request::BOOTSTRAP);
 
     if (request != requests.end()) {
         ndNetifyApiBootstrap *bootstrap =
@@ -453,7 +453,7 @@ bool ndNetifyApiManager::Update(void) {
         ndNetifyApiBootstrap *bootstrap = new ndNetifyApiBootstrap();
 
         auto request = requests.insert(
-          make_pair(REQUEST_BOOTSTRAP, bootstrap));
+          make_pair(Request::BOOTSTRAP, bootstrap));
 
         if (request.second != true) delete bootstrap;
         else {
@@ -473,8 +473,8 @@ bool ndNetifyApiManager::Update(void) {
 
     size_t downloads = 0;
     static vector<Request> types = {
-        REQUEST_DOWNLOAD_CONFIG,
-        REQUEST_DOWNLOAD_CATEGORIES,
+        Request::DOWNLOAD_CONFIG,
+        Request::DOWNLOAD_CATEGORIES,
     };
 
     for (auto &type : types) {
@@ -526,9 +526,9 @@ bool ndNetifyApiManager::Update(void) {
             for (auto &url : urls) {
                 string filename;
 
-                if (url.first == REQUEST_DOWNLOAD_CONFIG)
+                if (url.first == Request::DOWNLOAD_CONFIG)
                     filename = ndGC.path_app_config;
-                else if (url.first == REQUEST_DOWNLOAD_CATEGORIES)
+                else if (url.first == Request::DOWNLOAD_CATEGORIES)
                     filename = ndGC.path_cat_config;
 
                 ndNetifyApiDownload *download = new ndNetifyApiDownload(
@@ -671,8 +671,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
           juuid_site->type() == json::value_t::string)
         {
             string new_uuid = juuid_site->get<string>();
-            if (ndGC.SaveUUID(ndGlobalConfig::UUID_SITE, new_uuid))
-            {
+            if (ndGC.SaveUUID(ndUUID::SITE, new_uuid)) {
                 jstatus["bootstrap"]["code"] = 0;
                 jstatus["bootstrap"]["message"] =
                   "Site provisioned";
@@ -746,8 +745,8 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
             nd_dprintf("netify-api: new API token set.\n");
         }
 
-        urls[REQUEST_DOWNLOAD_CONFIG] = japps->get<string>();
-        urls[REQUEST_DOWNLOAD_CATEGORIES] = jcats->get<string>();
+        urls[Request::DOWNLOAD_CONFIG] = japps->get<string>();
+        urls[Request::DOWNLOAD_CATEGORIES] = jcats->get<string>();
     }
     catch (json::exception &e) {
         jstatus["bootstrap"]["code"] = -1;
@@ -769,10 +768,10 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     string status_type;
 
     switch (type) {
-    case REQUEST_DOWNLOAD_CONFIG:
+    case Request::DOWNLOAD_CONFIG:
         status_type = "applications";
         break;
-    case REQUEST_DOWNLOAD_CATEGORIES:
+    case Request::DOWNLOAD_CATEGORIES:
         status_type = "categories";
         break;
     default:
@@ -828,12 +827,12 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         return false;
     }
 
-    if (type == REQUEST_DOWNLOAD_CONFIG) {
+    if (type == Request::DOWNLOAD_CONFIG) {
         return nd_copy_file(download->content_filename,
           ndGC.path_app_config,
           S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     }
-    else if (type == REQUEST_DOWNLOAD_CATEGORIES) {
+    else if (type == Request::DOWNLOAD_CATEGORIES) {
         return nd_copy_file(download->content_filename,
           ndGC.path_cat_config,
           S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);

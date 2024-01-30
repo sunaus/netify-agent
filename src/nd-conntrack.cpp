@@ -18,10 +18,12 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include <libmnl/libmnl.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
+#include <array>
 #include <sstream>
 #include <string>
 
@@ -134,7 +136,6 @@ void ndConntrackThread::DumpConntrackTable(void) {
     struct mnl_socket *nl;
     struct nlmsghdr *nlh;
     struct nfgenmsg *nfh;
-    char buffer[MNL_SOCKET_BUFFER_SIZE];
     unsigned int seq, portid;
 
     nl = mnl_socket_open(NETLINK_NETFILTER);
@@ -150,13 +151,15 @@ void ndConntrackThread::DumpConntrackTable(void) {
 
     portid = mnl_socket_get_portid(nl);
 
-    nlh = mnl_nlmsg_put_header(buffer);
+    vector<uint8_t> buffer(MNL_SOCKET_BUFFER_SIZE, '\0');
+    nlh = mnl_nlmsg_put_header(buffer.data());
+
     nlh->nlmsg_type = (NFNL_SUBSYS_CTNETLINK << 8) | IPCTNL_MSG_CT_GET;
     nlh->nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP;
     nlh->nlmsg_seq = seq = nd_time_monotonic();
 
-    nfh = (struct nfgenmsg *)mnl_nlmsg_put_extra_header(nlh,
-      sizeof(struct nfgenmsg));
+    nfh = reinterpret_cast<struct nfgenmsg *>(
+      mnl_nlmsg_put_extra_header(nlh, sizeof(struct nfgenmsg)));
     nfh->nfgen_family = AF_UNSPEC;
     nfh->version = NFNETLINK_V0;
     nfh->res_id = 0;
@@ -167,17 +170,17 @@ void ndConntrackThread::DumpConntrackTable(void) {
           "mnl_socket_sendto");
     }
 
-    rc = mnl_socket_recvfrom(nl, buffer, sizeof(buffer));
+    rc = mnl_socket_recvfrom(nl, buffer.data(), buffer.size());
     if (rc == -1) {
         throw ndExceptionSystemError(__PRETTY_FUNCTION__,
           "mnl_socket_recvfrom");
     }
 
     while (rc > 0) {
-        rc = mnl_cb_run(buffer, rc, seq, portid,
+        rc = mnl_cb_run(buffer.data(), rc, seq, portid,
           nd_ct_netlink_callback, this);
         if (rc <= MNL_CB_STOP) break;
-        rc = mnl_socket_recvfrom(nl, buffer, sizeof(buffer));
+        rc = mnl_socket_recvfrom(nl, buffer.data(), buffer.size());
     }
 
     if (rc == -1) {
@@ -203,7 +206,7 @@ void *ndConntrackThread::Entry(void) {
 
         struct timeval tv = { 1, 0 };
 
-        rc = select(ctfd + 1, &fds_read, nullptr, NULL, &tv);
+        rc = select(ctfd + 1, &fds_read, nullptr, nullptr, &tv);
 
         if (rc == -1) {
             throw ndExceptionSystemError(__PRETTY_FUNCTION__,
@@ -279,8 +282,7 @@ void ndConntrackThread::ProcessConntrackEvent(
         flow_iter = ct_flow_map.find(id_iter->second);
         if (flow_iter == ct_flow_map.end()) {
             nd_dprintf(
-              "%s: [U:%u] Digest not found in flow "
-              "map.\n",
+              "%s: [U:%u] Digest not found in flow map.\n",
               tag.c_str(), id);
             ct_id_map.erase(id_iter);
             Unlock();
@@ -319,17 +321,16 @@ void ndConntrackThread::ProcessConntrackEvent(
 
     default:
         nd_printf(
-          "%s: Unhandled connection tracking message "
-          "type: "
+          "%s: Unhandled connection tracking message type: "
           "0x%02x\n",
           tag.c_str(), type);
     }
 #ifdef _ND_DEBUG_CONNTRACK
     if (ndGC_DEBUG) {
 #if 0
-        char buffer[1024];
-        nfct_snprintf(buffer, sizeof(buffer), ct, type, NFCT_O_PLAIN, NFCT_OF_TIME);
-        nd_dprintf("%s: %02x [%u] %s\n", tag.c_str(), type, id, buffer);
+        array<char, 1024> buffer;
+        nfct_snprintf(buffer.data(), buffer.size(), ct, type, NFCT_O_PLAIN, NFCT_OF_TIME);
+        nd_dprintf("%s: %02x [%u] %s\n", tag.c_str(), type, id, buffer.data());
 #endif
     }
 #endif
@@ -341,18 +342,22 @@ void ndConntrackThread::PrintFlow(ndConntrackFlow *flow,
     int addr_cmp = 0;
     ostringstream os;
     char ip[INET6_ADDRSTRLEN];
-    struct sockaddr_in *sa_src = nullptr, *sa_dst = NULL;
-    struct sockaddr_in6 *sa6_src = nullptr, *sa6_dst = NULL;
-    char buffer[1024];
+    struct sockaddr_in *sa_src = nullptr, *sa_dst = nullptr;
+    struct sockaddr_in6 *sa6_src = nullptr, *sa6_dst = nullptr;
 
-    sprintf(buffer, "l3_proto: %hu, l4_proto: %hhu",
-      flow->l3_proto, flow->l4_proto);
-    os << buffer;
+    os << "l3_proto: " << static_cast<unsigned>(flow->l3_proto)
+       << ", l4_proto: " << static_cast<unsigned>(flow->l4_proto);
 
-    switch (flow->orig_addr[ndCT_DIR_SRC].ss_family) {
+    switch (
+      flow
+        ->orig_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]
+        .ss_family)
+    {
     case AF_INET:
-        sa_src = (struct sockaddr_in *)&flow->orig_addr[ndCT_DIR_SRC];
-        sa_dst = (struct sockaddr_in *)&flow->orig_addr[ndCT_DIR_DST];
+        sa_src = reinterpret_cast<struct sockaddr_in *>(
+          &flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
+        sa_dst = reinterpret_cast<struct sockaddr_in *>(
+          &flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
         if (reorder) {
             addr_cmp = memcmp(&sa_src->sin_addr,
               &sa_dst->sin_addr, sizeof(in_addr));
@@ -383,8 +388,10 @@ void ndConntrackThread::PrintFlow(ndConntrackFlow *flow,
         }
         break;
     case AF_INET6:
-        sa6_src = (struct sockaddr_in6 *)&flow->orig_addr[ndCT_DIR_SRC];
-        sa6_dst = (struct sockaddr_in6 *)&flow->orig_addr[ndCT_DIR_DST];
+        sa6_src = reinterpret_cast<struct sockaddr_in6 *>(
+          &flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
+        sa6_dst = reinterpret_cast<struct sockaddr_in6 *>(
+          &flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
         if (reorder) {
             addr_cmp = memcmp(&sa6_src->sin6_addr,
               &sa6_dst->sin6_addr, sizeof(struct in6_addr));
@@ -419,35 +426,46 @@ void ndConntrackThread::PrintFlow(ndConntrackFlow *flow,
     if (reorder) {
         if (addr_cmp < 0) {
             os << ", lower_port: "
-               << ntohs(flow->orig_port[ndCT_DIR_SRC]);
+               << ntohs(flow->orig_port[ndEnumCast(
+                    ndConntrackFlow::Direction, SRC)]);
             os << ", upper_port: "
-               << ntohs(flow->orig_port[ndCT_DIR_DST]);
+               << ntohs(flow->orig_port[ndEnumCast(
+                    ndConntrackFlow::Direction, DST)]);
         }
         else {
             os << ", lower_port: "
-               << ntohs(flow->orig_port[ndCT_DIR_DST]);
+               << ntohs(flow->orig_port[ndEnumCast(
+                    ndConntrackFlow::Direction, DST)]);
             os << ", upper_port: "
-               << ntohs(flow->orig_port[ndCT_DIR_SRC]);
+               << ntohs(flow->orig_port[ndEnumCast(
+                    ndConntrackFlow::Direction, SRC)]);
         }
     }
     else {
         os << ", src_port: "
-           << ntohs(flow->orig_port[ndCT_DIR_SRC]);
+           << ntohs(flow->orig_port[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
         os << ", dst_port: "
-           << ntohs(flow->orig_port[ndCT_DIR_DST]);
+           << ntohs(flow->orig_port[ndEnumCast(ndConntrackFlow::Direction, DST)]);
     }
 
-    if (! withreply || ! flow->repl_addr_valid[ndCT_DIR_SRC] ||
-      ! flow->repl_addr_valid[ndCT_DIR_DST])
+    if (! withreply ||
+      ! flow->repl_addr_valid[ndEnumCast(ndConntrackFlow::Direction, SRC)] ||
+      ! flow->repl_addr_valid[ndEnumCast(ndConntrackFlow::Direction, DST)])
     {
         text = os.str();
         return;
     }
 
-    switch (flow->repl_addr[ndCT_DIR_SRC].ss_family) {
+    switch (
+      flow
+        ->repl_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]
+        .ss_family)
+    {
     case AF_INET:
-        sa_src = (struct sockaddr_in *)&flow->repl_addr[ndCT_DIR_SRC];
-        sa_dst = (struct sockaddr_in *)&flow->repl_addr[ndCT_DIR_DST];
+        sa_src = reinterpret_cast<struct sockaddr_in *>(
+          &flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
+        sa_dst = reinterpret_cast<struct sockaddr_in *>(
+          &flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
         inet_ntop(AF_INET, &sa_src->sin_addr.s_addr, ip,
           INET_ADDRSTRLEN);
         os << ", repl_src_ip: " << ip;
@@ -456,8 +474,10 @@ void ndConntrackThread::PrintFlow(ndConntrackFlow *flow,
         os << ", repl_dst_ip: " << ip;
         break;
     case AF_INET6:
-        sa6_src = (struct sockaddr_in6 *)&flow->repl_addr[ndCT_DIR_SRC];
-        sa6_dst = (struct sockaddr_in6 *)&flow->repl_addr[ndCT_DIR_DST];
+        sa6_src = reinterpret_cast<struct sockaddr_in6 *>(
+          &flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
+        sa6_dst = reinterpret_cast<struct sockaddr_in6 *>(
+          &flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
         inet_ntop(AF_INET6, &sa6_src->sin6_addr.s6_addr, ip,
           INET6_ADDRSTRLEN);
         os << ", repl_src_ip: " << ip;
@@ -468,25 +488,20 @@ void ndConntrackThread::PrintFlow(ndConntrackFlow *flow,
     }
 
     os << ", repl_src_port: "
-       << ntohs(flow->repl_port[ndCT_DIR_SRC]);
+       << ntohs(flow->repl_port[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
     os << ", repl_dst_port: "
-       << ntohs(flow->repl_port[ndCT_DIR_DST]);
+       << ntohs(flow->repl_port[ndEnumCast(ndConntrackFlow::Direction, DST)]);
 
     text = os.str();
 }
 
 void ndConntrackThread::PrintFlow(nd_flow_ptr &flow, string &text) {
     ostringstream os;
-    char buffer[1024];
-    sa_family_t family;
+    sa_family_t family = (flow->ip_version == 4) ? AF_INET : AF_INET6;
 
-    if (flow->ip_version == 4) family = AF_INET;
-    else family = AF_INET6;
+    os << "l3_proto: " << static_cast<unsigned>(family)
+       << ", l4_proto: " << static_cast<unsigned>(flow->ip_protocol);
 
-    sprintf(buffer, "l3_proto: %hu, l4_proto: %hhu", family,
-      flow->ip_protocol);
-
-    os << buffer;
     os << ", lower_ip: " << flow->lower_addr.GetString();
     os << ", upper_ip: " << flow->upper_addr.GetString();
     os << ", lower_port: " << flow->lower_addr.GetPort();
@@ -498,12 +513,11 @@ void ndConntrackThread::PrintFlow(nd_flow_ptr &flow, string &text) {
 void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
     sha1 ctx;
     string digest;
-    uint8_t _digest[SHA1_DIGEST_LENGTH];
     sa_family_t family;
-    struct sockaddr_in *sa_orig_src = nullptr, *sa_orig_dst = NULL;
-    struct sockaddr_in *sa_repl_src = nullptr, *sa_repl_dst = NULL;
-    struct sockaddr_in6 *sa6_orig_src = nullptr, *sa6_orig_dst = NULL;
-    struct sockaddr_in6 *sa6_repl_src = nullptr, *sa6_repl_dst = NULL;
+    struct sockaddr_in *sa_orig_src = nullptr, *sa_orig_dst = nullptr;
+    struct sockaddr_in *sa_repl_src = nullptr, *sa_repl_dst = nullptr;
+    struct sockaddr_in6 *sa6_orig_src = nullptr, *sa6_orig_dst = nullptr;
+    struct sockaddr_in6 *sa6_repl_src = nullptr, *sa6_repl_dst = nullptr;
     FlowMap::iterator flow_iter;
 
     if (flow->ip_version == 4) family = AF_INET;
@@ -525,17 +539,21 @@ void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
     port = flow->upper_addr.GetPort(false);
     sha1_write(&ctx, (const char *)&port, sizeof(uint16_t));
 
-    digest.assign((const char *)sha1_result(&ctx, _digest),
+    array<uint8_t, SHA1_DIGEST_LENGTH> _digest;
+    digest.assign(reinterpret_cast<const char *>(
+                    sha1_result(&ctx, _digest.data())),
       SHA1_DIGEST_LENGTH);
 
     Lock();
 
     flow_iter = ct_flow_map.find(digest);
     if (flow_iter != ct_flow_map.end() &&
-      flow_iter->second->repl_addr_valid[ndCT_DIR_SRC] &&
-      flow_iter->second->repl_addr_valid[ndCT_DIR_DST])
+      flow_iter->second->repl_addr_valid[ndEnumCast(
+        ndConntrackFlow::Direction, SRC)] &&
+      flow_iter->second->repl_addr_valid[ndEnumCast(
+        ndConntrackFlow::Direction, DST)])
     {
-        ndConntrackFlow *ct_flow = flow_iter->second;
+        ndConntrackFlow * const ct_flow = flow_iter->second;
 
         ct_flow->updated_at = nd_time_monotonic();
 
@@ -547,13 +565,13 @@ void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
         switch (ct_flow->l3_proto) {
         case AF_INET:
             sa_orig_src = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow->orig_addr[ndCT_DIR_SRC]);
+              &ct_flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
             sa_orig_dst = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow->orig_addr[ndCT_DIR_DST]);
+              &ct_flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
             sa_repl_src = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow->repl_addr[ndCT_DIR_SRC]);
+              &ct_flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
             sa_repl_dst = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow->repl_addr[ndCT_DIR_DST]);
+              &ct_flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
 #if 0
             {
                 string flow_text;
@@ -571,13 +589,13 @@ void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
 
         case AF_INET6:
             sa6_orig_src = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow->orig_addr[ndCT_DIR_SRC]);
+              &ct_flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
             sa6_orig_dst = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow->orig_addr[ndCT_DIR_DST]);
+              &ct_flow->orig_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
             sa6_repl_src = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow->repl_addr[ndCT_DIR_SRC]);
+              &ct_flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)]);
             sa6_repl_dst = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow->repl_addr[ndCT_DIR_DST]);
+              &ct_flow->repl_addr[ndEnumCast(ndConntrackFlow::Direction, DST)]);
 #if 0
             {
                 string flow_text;
@@ -628,10 +646,10 @@ void ndConntrackThread::DumpStats(void) {
 
 ndConntrackFlow::ndConntrackFlow(uint32_t id, struct nf_conntrack *ct)
   : id(id), mark(0), updated_at(0), l3_proto(0), l4_proto(0) {
-    orig_port[ndCT_DIR_SRC] = 0;
-    orig_port[ndCT_DIR_DST] = 0;
-    repl_port[ndCT_DIR_SRC] = 0;
-    repl_port[ndCT_DIR_DST] = 0;
+    orig_port[ndEnumCast(Direction, SRC)] = 0;
+    orig_port[ndEnumCast(Direction, DST)] = 0;
+    repl_port[ndEnumCast(Direction, SRC)] = 0;
+    repl_port[ndEnumCast(Direction, DST)] = 0;
 
     Update(ct);
 }
@@ -641,10 +659,10 @@ void ndConntrackFlow::Update(struct nf_conntrack *ct) {
 
     mark = nfct_get_attr_u32(ct, ATTR_MARK);
 
-    orig_addr_valid[ndCT_DIR_SRC] = false;
-    orig_addr_valid[ndCT_DIR_DST] = false;
-    repl_addr_valid[ndCT_DIR_SRC] = false;
-    repl_addr_valid[ndCT_DIR_DST] = false;
+    orig_addr_valid[ndEnumCast(Direction, SRC)] = false;
+    orig_addr_valid[ndEnumCast(Direction, DST)] = false;
+    repl_addr_valid[ndEnumCast(Direction, SRC)] = false;
+    repl_addr_valid[ndEnumCast(Direction, DST)] = false;
 
     if (! nfct_attr_is_set(ct, ATTR_ORIG_L3PROTO)) {
         throw ndException("%s: ATTR_ORIG_L3PROTO not set",
@@ -676,70 +694,70 @@ void ndConntrackFlow::Update(struct nf_conntrack *ct) {
     switch (af) {
     case AF_INET:
         if (nfct_attr_is_set(ct, ATTR_ORIG_IPV4_SRC)) {
-            CopyAddress(af, &orig_addr[ndCT_DIR_SRC],
+            CopyAddress(af, &orig_addr[ndEnumCast(Direction, SRC)],
               nfct_get_attr(ct, ATTR_ORIG_IPV4_SRC));
-            orig_addr_valid[ndCT_DIR_SRC] = true;
+            orig_addr_valid[ndEnumCast(Direction, SRC)] = true;
         }
         if (nfct_attr_is_set(ct, ATTR_ORIG_IPV4_DST)) {
-            CopyAddress(af, &orig_addr[ndCT_DIR_DST],
+            CopyAddress(af, &orig_addr[ndEnumCast(Direction, DST)],
               nfct_get_attr(ct, ATTR_ORIG_IPV4_DST));
-            orig_addr_valid[ndCT_DIR_DST] = true;
+            orig_addr_valid[ndEnumCast(Direction, DST)] = true;
         }
         break;
     case AF_INET6:
         if (nfct_attr_is_set(ct, ATTR_ORIG_IPV6_SRC)) {
-            CopyAddress(af, &orig_addr[ndCT_DIR_SRC],
+            CopyAddress(af, &orig_addr[ndEnumCast(Direction, SRC)],
               nfct_get_attr(ct, ATTR_ORIG_IPV6_SRC));
-            orig_addr_valid[ndCT_DIR_SRC] = true;
+            orig_addr_valid[ndEnumCast(Direction, SRC)] = true;
         }
         if (nfct_attr_is_set(ct, ATTR_ORIG_IPV6_DST)) {
-            CopyAddress(af, &orig_addr[ndCT_DIR_DST],
+            CopyAddress(af, &orig_addr[ndEnumCast(Direction, DST)],
               nfct_get_attr(ct, ATTR_ORIG_IPV6_DST));
-            orig_addr_valid[ndCT_DIR_DST] = true;
+            orig_addr_valid[ndEnumCast(Direction, DST)] = true;
         }
         break;
     }
 
     if (nfct_attr_is_set(ct, ATTR_ORIG_PORT_SRC))
-        orig_port[ndCT_DIR_SRC] = nfct_get_attr_u16(ct,
-          ATTR_ORIG_PORT_SRC);
+        orig_port[ndEnumCast(Direction, SRC)] =
+          nfct_get_attr_u16(ct, ATTR_ORIG_PORT_SRC);
     if (nfct_attr_is_set(ct, ATTR_ORIG_PORT_DST))
-        orig_port[ndCT_DIR_DST] = nfct_get_attr_u16(ct,
-          ATTR_ORIG_PORT_DST);
+        orig_port[ndEnumCast(Direction, DST)] =
+          nfct_get_attr_u16(ct, ATTR_ORIG_PORT_DST);
 
     switch (af) {
     case AF_INET:
         if (nfct_attr_is_set(ct, ATTR_REPL_IPV4_SRC)) {
-            CopyAddress(af, &repl_addr[ndCT_DIR_SRC],
+            CopyAddress(af, &repl_addr[ndEnumCast(Direction, SRC)],
               nfct_get_attr(ct, ATTR_REPL_IPV4_SRC));
-            repl_addr_valid[ndCT_DIR_SRC] = true;
+            repl_addr_valid[ndEnumCast(Direction, SRC)] = true;
         }
         if (nfct_attr_is_set(ct, ATTR_REPL_IPV4_DST)) {
-            CopyAddress(af, &repl_addr[ndCT_DIR_DST],
+            CopyAddress(af, &repl_addr[ndEnumCast(Direction, DST)],
               nfct_get_attr(ct, ATTR_REPL_IPV4_DST));
-            repl_addr_valid[ndCT_DIR_DST] = true;
+            repl_addr_valid[ndEnumCast(Direction, DST)] = true;
         }
         break;
     case AF_INET6:
         if (nfct_attr_is_set(ct, ATTR_REPL_IPV6_SRC)) {
-            CopyAddress(af, &repl_addr[ndCT_DIR_SRC],
+            CopyAddress(af, &repl_addr[ndEnumCast(Direction, SRC)],
               nfct_get_attr(ct, ATTR_REPL_IPV6_SRC));
-            repl_addr_valid[ndCT_DIR_SRC] = true;
+            repl_addr_valid[ndEnumCast(Direction, SRC)] = true;
         }
         if (nfct_attr_is_set(ct, ATTR_REPL_IPV6_DST)) {
-            CopyAddress(af, &repl_addr[ndCT_DIR_DST],
+            CopyAddress(af, &repl_addr[ndEnumCast(Direction, DST)],
               nfct_get_attr(ct, ATTR_REPL_IPV6_DST));
-            repl_addr_valid[ndCT_DIR_DST] = true;
+            repl_addr_valid[ndEnumCast(Direction, DST)] = true;
         }
         break;
     }
 
     if (nfct_attr_is_set(ct, ATTR_REPL_PORT_SRC))
-        repl_port[ndCT_DIR_SRC] = nfct_get_attr_u16(ct,
-          ATTR_REPL_PORT_SRC);
+        repl_port[ndEnumCast(Direction, SRC)] =
+          nfct_get_attr_u16(ct, ATTR_REPL_PORT_SRC);
     if (nfct_attr_is_set(ct, ATTR_REPL_PORT_DST))
-        repl_port[ndCT_DIR_DST] = nfct_get_attr_u16(ct,
-          ATTR_REPL_PORT_DST);
+        repl_port[ndEnumCast(Direction, DST)] =
+          nfct_get_attr_u16(ct, ATTR_REPL_PORT_DST);
 
     Hash();
 }
@@ -767,55 +785,71 @@ void ndConntrackFlow::CopyAddress(sa_family_t af,
 void ndConntrackFlow::Hash(void) {
     sha1 ctx;
     int addr_cmp = 0;
-    uint8_t _digest[SHA1_DIGEST_LENGTH];
-    struct sockaddr_in *sa_src = nullptr, *sa_dst = NULL;
-    struct sockaddr_in6 *sa6_src = nullptr, *sa6_dst = NULL;
+    struct sockaddr_in *sa_src = nullptr, *sa_dst = nullptr;
+    struct sockaddr_in6 *sa6_src = nullptr, *sa6_dst = nullptr;
 
     sha1_init(&ctx);
 
-    sha1_write(&ctx, (const char *)&l3_proto, sizeof(sa_family_t));
-    sha1_write(&ctx, (const char *)&l4_proto, sizeof(uint8_t));
+    sha1_write(&ctx, reinterpret_cast<const char *>(&l3_proto),
+      sizeof(sa_family_t));
+    sha1_write(&ctx, reinterpret_cast<const char *>(&l4_proto),
+      sizeof(uint8_t));
 
-    switch (orig_addr[ndCT_DIR_SRC].ss_family) {
+    switch (orig_addr[ndEnumCast(Direction, SRC)].ss_family) {
     case AF_INET:
-        sa_src = repl_addr_valid[ndCT_DIR_SRC] ?
-          (struct sockaddr_in *)&repl_addr[ndCT_DIR_SRC] :
-          (struct sockaddr_in *)&orig_addr[ndCT_DIR_SRC];
-        sa_dst = repl_addr_valid[ndCT_DIR_DST] ?
-          (struct sockaddr_in *)&repl_addr[ndCT_DIR_DST] :
-          (struct sockaddr_in *)&orig_addr[ndCT_DIR_DST];
+        sa_src = repl_addr_valid[ndEnumCast(Direction, SRC)] ?
+          reinterpret_cast<struct sockaddr_in *>(
+            &repl_addr[ndEnumCast(Direction, SRC)]) :
+          reinterpret_cast<struct sockaddr_in *>(
+            &orig_addr[ndEnumCast(Direction, SRC)]);
+        sa_dst = repl_addr_valid[ndEnumCast(Direction, DST)] ?
+          reinterpret_cast<struct sockaddr_in *>(
+            &repl_addr[ndEnumCast(Direction, DST)]) :
+          reinterpret_cast<struct sockaddr_in *>(
+            &orig_addr[ndEnumCast(Direction, DST)]);
         addr_cmp = memcmp(&sa_src->sin_addr,
           &sa_dst->sin_addr, sizeof(in_addr));
         if (addr_cmp < 0) {
-            sha1_write(&ctx, (const char *)&sa_src->sin_addr,
+            sha1_write(&ctx,
+              reinterpret_cast<const char *>(&sa_src->sin_addr),
               sizeof(struct in_addr));
-            sha1_write(&ctx, (const char *)&sa_dst->sin_addr,
+            sha1_write(&ctx,
+              reinterpret_cast<const char *>(&sa_dst->sin_addr),
               sizeof(struct in_addr));
         }
         else {
-            sha1_write(&ctx, (const char *)&sa_dst->sin_addr,
+            sha1_write(&ctx,
+              reinterpret_cast<const char *>(&sa_dst->sin_addr),
               sizeof(struct in_addr));
-            sha1_write(&ctx, (const char *)&sa_src->sin_addr,
+            sha1_write(&ctx,
+              reinterpret_cast<const char *>(&sa_src->sin_addr),
               sizeof(struct in_addr));
         }
         break;
     case AF_INET6:
-        sa6_src = repl_addr_valid[ndCT_DIR_SRC] ?
-          (struct sockaddr_in6 *)&repl_addr[ndCT_DIR_SRC] :
-          (struct sockaddr_in6 *)&orig_addr[ndCT_DIR_SRC];
-        sa6_dst = repl_addr_valid[ndCT_DIR_DST] ?
-          (struct sockaddr_in6 *)&repl_addr[ndCT_DIR_DST] :
-          (struct sockaddr_in6 *)&orig_addr[ndCT_DIR_DST];
+        sa6_src = repl_addr_valid[ndEnumCast(Direction, SRC)] ?
+          reinterpret_cast<struct sockaddr_in6 *>(
+            &repl_addr[ndEnumCast(Direction, SRC)]) :
+          reinterpret_cast<struct sockaddr_in6 *>(
+            &orig_addr[ndEnumCast(Direction, SRC)]);
+        sa6_dst = repl_addr_valid[ndEnumCast(Direction, DST)] ?
+          reinterpret_cast<struct sockaddr_in6 *>(
+            &repl_addr[ndEnumCast(Direction, DST)]) :
+          reinterpret_cast<struct sockaddr_in6 *>(
+            &orig_addr[ndEnumCast(Direction, DST)]);
         addr_cmp = memcmp(&sa6_src->sin6_addr,
           &sa6_dst->sin6_addr, sizeof(struct in6_addr));
         if (addr_cmp < 0) {
-            sha1_write(&ctx, (const char *)&sa6_src->sin6_addr,
+            sha1_write(&ctx,
+              reinterpret_cast<const char *>(&sa6_src->sin6_addr),
               sizeof(struct in6_addr));
-            sha1_write(&ctx, (const char *)&sa6_dst->sin6_addr,
+            sha1_write(&ctx,
+              reinterpret_cast<const char *>(&sa6_dst->sin6_addr),
               sizeof(struct in6_addr));
         }
         else {
-            sha1_write(&ctx, (const char *)&sa6_dst->sin6_addr,
+            sha1_write(&ctx,
+              reinterpret_cast<const char *>(&sa6_dst->sin6_addr),
               sizeof(struct in6_addr));
             sha1_write(&ctx, (const char *)&sa6_src->sin6_addr,
               sizeof(struct in6_addr));
@@ -824,18 +858,28 @@ void ndConntrackFlow::Hash(void) {
     }
 
     if (addr_cmp < 0) {
-        sha1_write(&ctx, (const char *)&repl_port[ndCT_DIR_SRC],
+        sha1_write(&ctx,
+          reinterpret_cast<const char *>(
+            &repl_port[ndEnumCast(Direction, SRC)]),
           sizeof(uint16_t));
-        sha1_write(&ctx, (const char *)&repl_port[ndCT_DIR_DST],
+        sha1_write(&ctx,
+          reinterpret_cast<const char *>(
+            &repl_port[ndEnumCast(Direction, DST)]),
           sizeof(uint16_t));
     }
     else {
-        sha1_write(&ctx, (const char *)&repl_port[ndCT_DIR_DST],
+        sha1_write(&ctx,
+          reinterpret_cast<const char *>(
+            &repl_port[ndEnumCast(Direction, DST)]),
           sizeof(uint16_t));
-        sha1_write(&ctx, (const char *)&repl_port[ndCT_DIR_SRC],
+        sha1_write(&ctx,
+          reinterpret_cast<const char *>(
+            &repl_port[ndEnumCast(Direction, SRC)]),
           sizeof(uint16_t));
     }
 
-    digest.assign((const char *)sha1_result(&ctx, _digest),
+    array<uint8_t, SHA1_DIGEST_LENGTH> _digest;
+    digest.assign(reinterpret_cast<const char *>(
+                    sha1_result(&ctx, _digest.data())),
       SHA1_DIGEST_LENGTH);
 }

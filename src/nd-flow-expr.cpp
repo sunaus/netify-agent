@@ -114,7 +114,7 @@ static bool is_addr_equal(const ndAddr *flow_addr, const string &compr_addr) {
   if (! (flow_addr->IsIPv4() == addr.IsIPv4())) return false;
   if (! (flow_addr->IsIPv6() == addr.IsIPv6())) return false;
 
-  addr.SetComparisonFlags(ndAddr::cfADDR);
+  addr.SetCompareFlags(ndAddr::CompareFlags::ADDR);
 
   if (! addr.IsNetwork())
     return (addr == *flow_addr);
@@ -2126,7 +2126,7 @@ yyreduce:
 #line 310 "nd-flow-expr.ypp"
                       {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->other_type != ndFlow::OTHER_UNKNOWN
+            _NDFP_flow->other_type != ndFlow::OtherType::UNKNOWN
         ));
         _NDFP_debugf("Other type known? %s\n", (_NDFP_result) ? "yes" : "no");
     }
@@ -2137,7 +2137,7 @@ yyreduce:
 #line 316 "nd-flow-expr.ypp"
                           {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->other_type == ndFlow::OTHER_UNKNOWN
+            _NDFP_flow->other_type == ndFlow::OtherType::UNKNOWN
         ));
         _NDFP_debugf("Other type unknown? %s\n", (_NDFP_result) ? "yes" : "no");
     }
@@ -2150,37 +2150,37 @@ yyreduce:
         switch ((yyvsp[0].us_number)) {
         case _NDFP_OTHER_UNKNOWN:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::OTHER_UNKNOWN
+                _NDFP_flow->other_type == ndFlow::OtherType::UNKNOWN
             );
             break;
         case _NDFP_OTHER_UNSUPPORTED:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::OTHER_UNSUPPORTED
+                _NDFP_flow->other_type == ndFlow::OtherType::UNSUPPORTED
             );
             break;
         case _NDFP_OTHER_LOCAL:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::OTHER_LOCAL
+                _NDFP_flow->other_type == ndFlow::OtherType::LOCAL
             );
             break;
         case _NDFP_OTHER_MULTICAST:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::OTHER_MULTICAST
+                _NDFP_flow->other_type == ndFlow::OtherType::MULTICAST
             );
             break;
         case _NDFP_OTHER_BROADCAST:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::OTHER_BROADCAST
+                _NDFP_flow->other_type == ndFlow::OtherType::BROADCAST
             );
             break;
         case _NDFP_OTHER_REMOTE:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::OTHER_REMOTE
+                _NDFP_flow->other_type == ndFlow::OtherType::REMOTE
             );
             break;
         case _NDFP_OTHER_ERROR:
             _NDFP_result = (
-                _NDFP_flow->other_type == ndFlow::OTHER_ERROR
+                _NDFP_flow->other_type == ndFlow::OtherType::ERROR
             );
             break;
         default:
@@ -2199,37 +2199,37 @@ yyreduce:
         switch ((yyvsp[0].us_number)) {
         case _NDFP_OTHER_UNKNOWN:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::OTHER_UNKNOWN
+                _NDFP_flow->other_type != ndFlow::OtherType::UNKNOWN
             );
             break;
         case _NDFP_OTHER_UNSUPPORTED:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::OTHER_UNSUPPORTED
+                _NDFP_flow->other_type != ndFlow::OtherType::UNSUPPORTED
             );
             break;
         case _NDFP_OTHER_LOCAL:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::OTHER_LOCAL
+                _NDFP_flow->other_type != ndFlow::OtherType::LOCAL
             );
             break;
         case _NDFP_OTHER_MULTICAST:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::OTHER_MULTICAST
+                _NDFP_flow->other_type != ndFlow::OtherType::MULTICAST
             );
             break;
         case _NDFP_OTHER_BROADCAST:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::OTHER_BROADCAST
+                _NDFP_flow->other_type != ndFlow::OtherType::BROADCAST
             );
             break;
         case _NDFP_OTHER_REMOTE:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::OTHER_REMOTE
+                _NDFP_flow->other_type != ndFlow::OtherType::REMOTE
             );
             break;
         case _NDFP_OTHER_ERROR:
             _NDFP_result = (
-                _NDFP_flow->other_type != ndFlow::OTHER_ERROR
+                _NDFP_flow->other_type != ndFlow::OtherType::ERROR
             );
             break;
         default:
@@ -2544,7 +2544,7 @@ yyreduce:
 #line 560 "nd-flow-expr.ypp"
                        {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->tunnel_type != ndFlow::TUNNEL_NONE
+            _NDFP_flow->tunnel_type != ndFlow::TunnelType::NONE
         ));
         _NDFP_debugf("Tunnel type set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
@@ -2555,7 +2555,7 @@ yyreduce:
 #line 566 "nd-flow-expr.ypp"
                            {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->tunnel_type == ndFlow::TUNNEL_NONE
+            _NDFP_flow->tunnel_type == ndFlow::TunnelType::NONE
         ));
         _NDFP_debugf("Tunnel type is none? %s\n", (_NDFP_result) ? "yes" : "no");
     }
@@ -2568,12 +2568,12 @@ yyreduce:
         switch ((yyvsp[0].us_number)) {
         case _NDFP_TUNNEL_NONE:
             _NDFP_result = (
-                _NDFP_flow->tunnel_type == ndFlow::TUNNEL_NONE
+                _NDFP_flow->tunnel_type == ndFlow::TunnelType::NONE
             );
             break;
         case _NDFP_TUNNEL_GTP:
             _NDFP_result = (
-                _NDFP_flow->tunnel_type == ndFlow::TUNNEL_GTP
+                _NDFP_flow->tunnel_type == ndFlow::TunnelType::GTP
             );
             break;
         default:
@@ -2592,12 +2592,12 @@ yyreduce:
         switch ((yyvsp[0].us_number)) {
         case _NDFP_TUNNEL_NONE:
             _NDFP_result = (
-                _NDFP_flow->tunnel_type != ndFlow::TUNNEL_NONE
+                _NDFP_flow->tunnel_type != ndFlow::TunnelType::NONE
             );
             break;
         case _NDFP_TUNNEL_GTP:
             _NDFP_result = (
-                _NDFP_flow->tunnel_type != ndFlow::TUNNEL_GTP
+                _NDFP_flow->tunnel_type != ndFlow::TunnelType::GTP
             );
             break;
         default:
@@ -3394,7 +3394,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) == _NDFP_flow->category.application
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.application
             )
         );
 
@@ -3402,7 +3402,7 @@ yyreduce:
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::TYPE_APP, category) == _NDFP_flow->category.domain
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.domain
                 )
             );
         }
@@ -3411,7 +3411,7 @@ yyreduce:
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::TYPE_APP, category) == _NDFP_flow->category.network
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.network
                 )
             );
         }
@@ -3433,7 +3433,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) != _NDFP_flow->category.application
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.application
             )
         );
 
@@ -3441,7 +3441,7 @@ yyreduce:
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::TYPE_APP, category) != _NDFP_flow->category.domain
+                        ndCategories::Type::APP, category) != _NDFP_flow->category.domain
                 )
             );
         }
@@ -3450,7 +3450,7 @@ yyreduce:
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::TYPE_APP, category) != _NDFP_flow->category.network
+                        ndCategories::Type::APP, category) != _NDFP_flow->category.network
                 )
             );
         }
@@ -3487,7 +3487,7 @@ yyreduce:
         while ((p = risk.find_first_of("'")) != string::npos)
             risk.erase(p, 1);
 
-        nd_risk_id_t id = nd_risk_lookup(risk);
+        ndRisk::Id id = ndRisk::GetId(risk);
 
         _NDFP_result = false;
         for (auto &i : _NDFP_flow->risk.risks) {
@@ -3510,7 +3510,7 @@ yyreduce:
         while ((p = risk.find_first_of("'")) != string::npos)
             risk.erase(p, 1);
 
-        nd_risk_id_t id = nd_risk_lookup(risk);
+        ndRisk::Id id = ndRisk::GetId(risk);
 
         _NDFP_result = false;
         for (auto &i : _NDFP_flow->risk.risks) {
@@ -3753,7 +3753,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) == _NDFP_flow->category.application
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.application
             )
         );
 
@@ -3774,7 +3774,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) != _NDFP_flow->category.application
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.application
             )
         );
 
@@ -3795,7 +3795,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) == _NDFP_flow->category.domain
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.domain
             )
         );
 
@@ -3816,7 +3816,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) != _NDFP_flow->category.domain
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.domain
             )
         );
 
@@ -3837,7 +3837,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) == _NDFP_flow->category.network
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.network
             )
         );
 
@@ -3858,7 +3858,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_APP, category) != _NDFP_flow->category.network
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.network
             )
         );
 
@@ -3871,7 +3871,7 @@ yyreduce:
 #line 1416 "nd-flow-expr.ypp"
                     {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->detected_protocol != 0
+            _NDFP_flow->detected_protocol != ndProto::Id::UNKNOWN
         ));
         _NDFP_debugf("Protocol detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
@@ -3882,7 +3882,7 @@ yyreduce:
 #line 1422 "nd-flow-expr.ypp"
                         {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->detected_protocol == 0
+            _NDFP_flow->detected_protocol == ndProto::Id::UNKNOWN
         ));
         _NDFP_debugf("Protocol not detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
@@ -3893,7 +3893,7 @@ yyreduce:
 #line 1432 "nd-flow-expr.ypp"
                                            {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->detected_protocol == (yyvsp[0].ul_number)
+            static_cast<unsigned>(_NDFP_flow->detected_protocol) == (yyvsp[0].ul_number)
         ));
         _NDFP_debugf("Protocol ID == %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
@@ -3904,7 +3904,7 @@ yyreduce:
 #line 1438 "nd-flow-expr.ypp"
                                               {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->detected_protocol != (yyvsp[0].ul_number)
+            static_cast<unsigned>(_NDFP_flow->detected_protocol) != (yyvsp[0].ul_number)
         ));
         _NDFP_debugf("Protocol ID != %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
@@ -3970,7 +3970,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_PROTO, category) == _NDFP_flow->category.protocol
+                    ndCategories::Type::PROTO, category) == _NDFP_flow->category.protocol
             )
         );
 
@@ -3992,7 +3992,7 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::TYPE_PROTO, category) != _NDFP_flow->category.protocol
+                    ndCategories::Type::PROTO, category) != _NDFP_flow->category.protocol
             )
         );
 
@@ -4800,7 +4800,7 @@ bool ndFlowParser::Parse(nd_flow_ptr const& flow, const string &expr)
     lock_guard<recursive_mutex> lg(flow->lock);
 
     switch (flow->lower_map) {
-    case ndFlow::LOWER_LOCAL:
+    case ndFlow::LowerMap::LOCAL:
         local_mac = flow->lower_mac.GetString().c_str();
         other_mac = flow->upper_mac.GetString().c_str();
 
@@ -4811,17 +4811,17 @@ bool ndFlowParser::Parse(nd_flow_ptr const& flow, const string &expr)
         other_port = flow->upper_addr.GetPort();
 
         switch (flow->origin) {
-        case ndFlow::ORIGIN_LOWER:
+        case ndFlow::Origin::LOWER:
             origin = _NDFP_ORIGIN_LOCAL;
             break;
-        case ndFlow::ORIGIN_UPPER:
+        case ndFlow::Origin::UPPER:
             origin = _NDFP_ORIGIN_OTHER;
             break;
         default:
             origin = _NDFP_ORIGIN_UNKNOWN;
         }
         break;
-    case ndFlow::LOWER_OTHER:
+    case ndFlow::LowerMap::OTHER:
         local_mac = flow->upper_mac.GetString().c_str();
         other_mac = flow->lower_mac.GetString().c_str();
 
@@ -4832,10 +4832,10 @@ bool ndFlowParser::Parse(nd_flow_ptr const& flow, const string &expr)
         other_port = flow->lower_addr.GetPort();
 
         switch (flow->origin) {
-        case ndFlow::ORIGIN_LOWER:
+        case ndFlow::Origin::LOWER:
             origin = _NDFP_ORIGIN_OTHER;
             break;
-        case ndFlow::ORIGIN_UPPER:
+        case ndFlow::Origin::UPPER:
             origin = _NDFP_ORIGIN_LOCAL;
             break;
         default:

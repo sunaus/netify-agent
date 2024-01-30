@@ -36,8 +36,8 @@ using json = nlohmann::json;
 
 const map<ndPlugin::Type, string> ndPlugin::types = {
     // XXX: Keep in sync with Type enum
-    make_pair(ndPlugin::TYPE_PROC, "processor"),
-    make_pair(ndPlugin::TYPE_SINK, "sink"),
+    make_pair(ndPlugin::Type::PROC, "processor"),
+    make_pair(ndPlugin::Type::SINK, "sink"),
 };
 
 ndPlugin::ndPlugin(Type type, const string &tag, const Params &params)
@@ -59,8 +59,8 @@ ndPlugin::~ndPlugin() {
 
 ndPluginSink::ndPluginSink(const string &tag,
   const ndPlugin::Params &params)
-  : ndPlugin(ndPlugin::TYPE_SINK, tag, params), plq_size(0),
-    plq_size_max(_ND_PLQ_DEFAULT_MAX_SIZE) {
+  : ndPlugin(ndPlugin::Type::SINK, tag, params),
+    plq_size(0), plq_size_max(_ND_PLQ_DEFAULT_MAX_SIZE) {
     int rc;
 
     pthread_condattr_t cond_attr;
@@ -97,10 +97,10 @@ ndPluginSink::~ndPluginSink() {
 
 ndPluginSinkPayload *ndPluginSinkPayload::Create(size_t length,
   const uint8_t *data, const ndPlugin::Channels &channels,
-  uint8_t flags) {
+  ndFlags<ndPlugin::DispatchFlags> flags) {
     ndPluginSinkPayload *p = nullptr;
 
-    if (! (flags & ndPlugin::DF_GZ_DEFLATE))
+    if (! ndFlagBoolean(flags, ndPlugin::DispatchFlags::GZ_DEFLATE))
         p = new ndPluginSinkPayload(length, data, channels, flags);
     else {
         vector<uint8_t> buffer;
@@ -201,7 +201,7 @@ size_t ndPluginSink::WaitOnPayloadQueue(unsigned timeout) {
 
 ndPluginProcessor::ndPluginProcessor(const string &tag,
   const ndPlugin::Params &params)
-  : ndPlugin(ndPlugin::TYPE_PROC, tag, params) {
+  : ndPlugin(ndPlugin::Type::PROC, tag, params) {
 #if 0
     for (auto &param : params) {
         if (param.first == "sink_targets") {
@@ -261,7 +261,7 @@ ndPluginProcessor::~ndPluginProcessor() {
 
 void ndPluginProcessor::DispatchSinkPayload(const string &target,
   const ndPlugin::Channels &channels, size_t length,
-  const uint8_t *payload, uint8_t flags) {
+  const uint8_t *payload, ndFlags<ndPlugin::DispatchFlags> flags) {
     ndInstance &ndi = ndInstance::GetInstance();
 
     ndPluginSinkPayload *sp = ndPluginSinkPayload::Create(
@@ -273,12 +273,15 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
 }
 
 void ndPluginProcessor::DispatchSinkPayload(const string &target,
-  const ndPlugin::Channels &channels, const json &j, uint8_t flags) {
-    if ((flags & ndPlugin::DF_FORMAT_MSGPACK)) {
+  const ndPlugin::Channels &channels, const json &j,
+  ndFlags<ndPlugin::DispatchFlags> flags) {
+    if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::FORMAT_MSGPACK))
+    {
         vector<uint8_t> output;
         output = json::to_msgpack(j);
 
-        if ((flags & ndPlugin::DF_ADD_HEADER)) {
+        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_HEADER))
+        {
             json jheader;
             jheader["length"] = output.size();
 
@@ -295,9 +298,10 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
         string output;
         nd_json_to_string(j, output, ndGC_DEBUG);
 
-        flags |= ndPlugin::DF_FORMAT_JSON;
+        flags |= ndPlugin::DispatchFlags::FORMAT_JSON;
 
-        if ((flags & ndPlugin::DF_ADD_HEADER)) {
+        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_HEADER))
+        {
             json jheader;
             jheader["length"] = output.size() + 1;
 
@@ -362,16 +366,16 @@ void ndPluginManager::Load(ndPlugin::Type type, bool create) {
     lock_guard<mutex> ul(lock);
 
     for (auto &t : ndPlugin::types) {
-        if (type != ndPlugin::TYPE_BASE && type != t.first)
+        if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
         const ndGlobalConfig::Plugins *plugins = nullptr;
 
         switch (t.first) {
-        case ndPlugin::TYPE_PROC:
+        case ndPlugin::Type::PROC:
             plugins = &ndGC.plugin_processors;
             break;
-        case ndPlugin::TYPE_SINK:
+        case ndPlugin::Type::SINK:
             plugins = &ndGC.plugin_sinks;
             break;
         default: break;
@@ -395,10 +399,10 @@ void ndPluginManager::Load(ndPlugin::Type type, bool create) {
             map_plugin *mp = nullptr;
 
             switch (t.first) {
-            case ndPlugin::TYPE_PROC:
+            case ndPlugin::Type::PROC:
                 mp = &processors;
                 break;
-            case ndPlugin::TYPE_SINK: mp = &sinks; break;
+            case ndPlugin::Type::SINK: mp = &sinks; break;
             default:
                 throw ndException("%s: %s", i.first.c_str(),
                   "wrong type");
@@ -425,14 +429,14 @@ bool ndPluginManager::Create(ndPlugin::Type type) {
     lock_guard<mutex> ul(lock);
 
     for (auto &t : ndPlugin::types) {
-        if (type != ndPlugin::TYPE_BASE && type != t.first)
+        if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
         map_plugin *mp = nullptr;
 
         switch (t.first) {
-        case ndPlugin::TYPE_PROC: mp = &processors; break;
-        case ndPlugin::TYPE_SINK: mp = &sinks; break;
+        case ndPlugin::Type::PROC: mp = &processors; break;
+        case ndPlugin::Type::SINK: mp = &sinks; break;
         default:
             throw ndException("%s: %s", t.second.c_str(),
               "invalid type");
@@ -457,7 +461,7 @@ bool ndPluginManager::Create(ndPlugin::Type type) {
 size_t ndPluginManager::Terminate(ndPlugin::Type type) {
     size_t count = 0;
 
-    if (type == ndPlugin::TYPE_BASE || type == ndPlugin::TYPE_PROC)
+    if (type == ndPlugin::Type::BASE || type == ndPlugin::Type::PROC)
     {
         for (auto &p : processors) {
             count++;
@@ -465,7 +469,7 @@ size_t ndPluginManager::Terminate(ndPlugin::Type type) {
         }
     }
 
-    if (type == ndPlugin::TYPE_BASE || type == ndPlugin::TYPE_SINK)
+    if (type == ndPlugin::Type::BASE || type == ndPlugin::Type::SINK)
     {
         for (auto &p : sinks) {
             count++;
@@ -479,7 +483,7 @@ size_t ndPluginManager::Terminate(ndPlugin::Type type) {
 void ndPluginManager::Destroy(ndPlugin::Type type) {
     lock_guard<mutex> ul(lock);
 
-    if (type == ndPlugin::TYPE_BASE || type == ndPlugin::TYPE_PROC)
+    if (type == ndPlugin::Type::BASE || type == ndPlugin::Type::PROC)
     {
         for (auto &p : processors)
             p.second->GetPlugin()->Terminate();
@@ -492,7 +496,7 @@ void ndPluginManager::Destroy(ndPlugin::Type type) {
         processors.clear();
     }
 
-    if (type == ndPlugin::TYPE_BASE || type == ndPlugin::TYPE_SINK)
+    if (type == ndPlugin::Type::BASE || type == ndPlugin::Type::SINK)
     {
         for (auto &p : sinks)
             p.second->GetPlugin()->Terminate();
@@ -510,14 +514,14 @@ size_t ndPluginManager::Reap(ndPlugin::Type type) {
     size_t count = 0;
 
     for (auto &t : ndPlugin::types) {
-        if (type != ndPlugin::TYPE_BASE && type != t.first)
+        if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
         map_plugin *mp = nullptr;
 
         switch (t.first) {
-        case ndPlugin::TYPE_PROC: mp = &processors; break;
-        case ndPlugin::TYPE_SINK: mp = &sinks; break;
+        case ndPlugin::Type::PROC: mp = &processors; break;
+        case ndPlugin::Type::SINK: mp = &sinks; break;
         default:
             throw ndException("%s: %s", t.second.c_str(),
               "invalid type");
@@ -553,14 +557,14 @@ void ndPluginManager::BroadcastEvent(ndPlugin::Type type,
     lock_guard<mutex> ul(lock);
 
     for (auto &t : ndPlugin::types) {
-        if (type != ndPlugin::TYPE_BASE && type != t.first)
+        if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
         map_plugin *mp = nullptr;
 
         switch (t.first) {
-        case ndPlugin::TYPE_PROC: mp = &processors; break;
-        case ndPlugin::TYPE_SINK: mp = &sinks; break;
+        case ndPlugin::Type::PROC: mp = &processors; break;
+        case ndPlugin::Type::SINK: mp = &sinks; break;
         default:
             throw ndException("%s: %s", t.second.c_str(),
               "invalid type");
@@ -681,14 +685,14 @@ void ndPluginManager::BroadcastProcessorEvent(
 
 void ndPluginManager::DumpVersions(ndPlugin::Type type) {
     for (auto &t : ndPlugin::types) {
-        if (type != ndPlugin::TYPE_BASE && type != t.first)
+        if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
         map_plugin *mp = nullptr;
 
         switch (t.first) {
-        case ndPlugin::TYPE_PROC: mp = &processors; break;
-        case ndPlugin::TYPE_SINK: mp = &sinks; break;
+        case ndPlugin::Type::PROC: mp = &processors; break;
+        case ndPlugin::Type::SINK: mp = &sinks; break;
         default:
             throw ndException("%s: %s", t.second.c_str(),
               "invalid type");

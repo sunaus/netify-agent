@@ -24,7 +24,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "nd-flow-parser.hpp"
+#include "nd-flow-parser.h"
+
 #include "nd-flow-expr.hpp"
 %}
 

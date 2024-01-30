@@ -20,146 +20,194 @@
 
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <mutex>
 #include <regex>
 #include <set>
 #include <string>
+#include <type_traits>
 #include <vector>
 
+#include "nd-flags.hpp"
 #include "nd-sha1.h"
+#include "nd-util.hpp"
 #include "netifyd.hpp"
 
-enum nd_dhc_save {
-    ndDHC_DISABLED,
-    ndDHC_PERSISTENT,
-    ndDHC_VOLATILE,
+enum class ndUUID : uint8_t {
+    NONE,
+    AGENT,
+    SITE,
+    SERIAL,
 };
 
-enum nd_fhc_save {
-    ndFHC_DISABLED,
-    ndFHC_PERSISTENT,
-    ndFHC_VOLATILE,
+enum class ndVerbosityFlags : uint8_t {
+    NONE = 0,
+    EVENT_DPI_NEW = (1 << 0),
+    EVENT_DPI_UPDATE = (1 << 1),
+    EVENT_DPI_COMPLETE = (1 << 2),
 };
 
-enum nd_capture_type {
-    ndCT_NONE = 0,
-    ndCT_CMDLINE = (1 << 0),
-    ndCT_PCAP = (1 << 1),
-    ndCT_PCAP_OFFLINE = (1 << 2),
-    ndCT_TPV3 = (1 << 3),
-    ndCT_NFQ = (1 << 4),
-
-    ndCT_USER = (1 << 31),
+enum class ndDHCStorage : uint8_t {
+    DISABLED,
+    PERSISTENT,
+    VOLATILE,
 };
 
-#define ndCT_TYPE(t) (t & 0xfffffffe)
-
-enum nd_interface_role {
-    ndIR_NONE,
-    ndIR_LAN,
-    ndIR_WAN,
+enum class ndFHCStorage : uint8_t {
+    DISABLED,
+    PERSISTENT,
+    VOLATILE,
 };
 
-enum nd_tpv3_fanout_mode {
-    ndFOM_DISABLED,
-    ndFOM_HASH,
-    ndFOM_LOAD_BALANCED,
-    ndFOM_CPU,
-    ndFOM_ROLLOVER,
-    ndFOM_RANDOM,
-    ndFOM_QUEUE_MAP,
+enum class ndCaptureType : uint32_t {
+    NONE = 0,
+    CMDLINE = (1 << 0),
+    PCAP = (1 << 1),
+    PCAP_OFFLINE = (1 << 2),
+    TPV3 = (1 << 3),
+    NFQ = (1 << 4),
+
+    USER = (1 << 30),
 };
 
-enum nd_tpv3_fanout_flags {
-    ndFOF_NONE = 0,
-    ndFOF_DEFRAG = (1 << 0),
-    ndFOF_ROLLOVER = (1 << 1),
+#define ndCT_TYPE(t) \
+    static_cast<ndCaptureType>( \
+      static_cast<std::underlying_type<ndCaptureType>::type>(t) & \
+      static_cast<std::underlying_type<ndCaptureType>::type>( \
+        ~ndCaptureType::CMDLINE))
+
+enum class ndInterfaceRole : uint8_t {
+    NONE,
+    LAN,
+    WAN,
 };
 
-enum nd_global_flags {
-    ndGF_NONE = 0,
-    ndGF_DEBUG = (1 << 0),
-    ndGF_DEBUG_CURL = (1 << 1),
-    ndGF_FREE_BIT3 = (1 << 2),
-    ndGF_DEBUG_NDPI = (1 << 3),
-    ndGF_QUIET = (1 << 4),
-    ndGF_SYN_SCAN_PROTECTION = (1 << 5),
-    ndGF_PRIVATE_EXTADDR = (1 << 6),
-    ndGF_SSL_USE_TLSv1 = (1 << 7),
-    ndGF_SSL_VERIFY = (1 << 8),
-    ndGF_USE_CONNTRACK = (1 << 9),
-    ndGF_USE_NETLINK = (1 << 10),
-    ndGF_USE_NAPI = (1 << 11),
-    ndGF_USE_DHC = (1 << 12),
-    ndGF_USE_FHC = (1 << 13),
-    ndGF_EXPORT_JSON = (1 << 14),
-    ndGF_VERBOSE = (1 << 15),
-    ndGF_FREE_BIT17 = (1 << 16),
-    ndGF_REPLAY_DELAY = (1 << 17),
-    ndGF_REMAIN_IN_FOREGROUND = (1 << 18),
-    ndGF_ALLOW_UNPRIV = (1 << 19),
-    ndGF_IGNORE_IFACE_CONFIGS = (1 << 20),
-    ndGF_UPLOAD_ENABLED = (1 << 21),
-    ndGF_UPLOAD_NAT_FLOWS = (1 << 22),
-    ndGF_AUTO_FLOW_EXPIRY = (1 << 23),
-    ndGF_SOFT_DISSECTORS = (1 << 24),
-    ndGF_DOTD_CATEGORIES = (1 << 25),
-    ndGF_RUN_WITHOUT_SOURCES = (1 << 26),
+enum class ndTPv3FanoutMode : uint8_t {
+    DISABLED,
+    HASH,
+    LOAD_BALANCED,
+    CPU,
+    ROLLOVER,
+    RANDOM,
+    QUEUE_MAP,
+};
+
+enum class ndTPv3FanoutFlags : uint8_t {
+    NONE = 0,
+    DEFRAG = (1 << 0),
+    ROLLOVER = (1 << 1),
+};
+
+enum class ndGlobalFlags : uint32_t {
+    NONE = 0,
+    DEBUG = (1 << 0),
+    DEBUG_CURL = (1 << 1),
+    FREE_BIT3 = (1 << 2),
+    DEBUG_NDPI = (1 << 3),
+    QUIET = (1 << 4),
+    SYN_SCAN_PROTECTION = (1 << 5),
+    PRIVATE_EXTADDR = (1 << 6),
+    SSL_USE_TLSv1 = (1 << 7),
+    SSL_VERIFY = (1 << 8),
+    USE_CONNTRACK = (1 << 9),
+    USE_NETLINK = (1 << 10),
+    USE_NAPI = (1 << 11),
+    USE_DHC = (1 << 12),
+    USE_FHC = (1 << 13),
+    EXPORT_JSON = (1 << 14),
+    VERBOSE = (1 << 15),
+    FREE_BIT17 = (1 << 16),
+    REPLAY_DELAY = (1 << 17),
+    REMAIN_IN_FOREGROUND = (1 << 18),
+    ALLOW_UNPRIV = (1 << 19),
+    IGNORE_IFACE_CONFIGS = (1 << 20),
+    UPLOAD_ENABLED = (1 << 21),
+    UPLOAD_NAT_FLOWS = (1 << 22),
+    AUTO_FLOW_EXPIRY = (1 << 23),
+    SOFT_DISSECTORS = (1 << 24),
+    DOTD_CATEGORIES = (1 << 25),
+    RUN_WITHOUT_SOURCES = (1 << 26),
 };
 
 #define ndGC_DEBUG \
-    (ndGlobalConfig::GetInstance().flags & ndGF_DEBUG)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::DEBUG)
 #define ndGC_DEBUG_CURL \
-    (ndGlobalConfig::GetInstance().flags & ndGF_DEBUG_CURL)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::DEBUG_CURL)
 #define ndGC_DEBUG_NDPI \
-    (ndGlobalConfig::GetInstance().flags & ndGF_DEBUG_NDPI)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::DEBUG_NDPI)
 #define ndGC_QUIET \
-    (ndGlobalConfig::GetInstance().flags & ndGF_QUIET)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::QUIET)
 #define ndGC_OVERRIDE_LEGACY_CONFIG \
-    (ndGlobalConfig::GetInstance().flags & ndGF_OVERRIDE_LEGACY_CONFIG)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::OVERRIDE_LEGACY_CONFIG)
 #define ndGC_SYN_SCAN_PROTECTION \
-    (ndGlobalConfig::GetInstance().flags & ndGF_SYN_SCAN_PROTECTION)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::SYN_SCAN_PROTECTION)
 #define ndGC_PRIVATE_EXTADDR \
-    (ndGlobalConfig::GetInstance().flags & ndGF_PRIVATE_EXTADDR)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::PRIVATE_EXTADDR)
 #define ndGC_SSL_USE_TLSv1 \
-    (ndGlobalConfig::GetInstance().flags & ndGF_SSL_USE_TLSv1)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::SSL_USE_TLSv1)
 #define ndGC_SSL_VERIFY \
-    (ndGlobalConfig::GetInstance().flags & ndGF_SSL_VERIFY)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::SSL_VERIFY)
 #define ndGC_USE_CONNTRACK \
-    (ndGlobalConfig::GetInstance().flags & ndGF_USE_CONNTRACK)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::USE_CONNTRACK)
 #define ndGC_USE_NETLINK \
-    (ndGlobalConfig::GetInstance().flags & ndGF_USE_NETLINK)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::USE_NETLINK)
 #define ndGC_USE_NAPI \
-    (ndGlobalConfig::GetInstance().flags & ndGF_USE_NAPI)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::USE_NAPI)
 #define ndGC_USE_DHC \
-    (ndGlobalConfig::GetInstance().flags & ndGF_USE_DHC)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::USE_DHC)
 #define ndGC_USE_FHC \
-    (ndGlobalConfig::GetInstance().flags & ndGF_USE_FHC)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::USE_FHC)
 #define ndGC_EXPORT_JSON \
-    (ndGlobalConfig::GetInstance().flags & ndGF_EXPORT_JSON)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::EXPORT_JSON)
 #define ndGC_VERBOSE \
-    (ndGlobalConfig::GetInstance().flags & ndGF_VERBOSE)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::VERBOSE)
 #define ndGC_REPLAY_DELAY \
-    (ndGlobalConfig::GetInstance().flags & ndGF_REPLAY_DELAY)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::REPLAY_DELAY)
 #define ndGC_REMAIN_IN_FOREGROUND \
-    (ndGlobalConfig::GetInstance().flags & ndGF_REMAIN_IN_FOREGROUND)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::REMAIN_IN_FOREGROUND)
 #define ndGC_ALLOW_UNPRIV \
-    (ndGlobalConfig::GetInstance().flags & ndGF_ALLOW_UNPRIV)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::ALLOW_UNPRIV)
 #define ndGC_IGNORE_IFACE_CONFIGS \
-    (ndGlobalConfig::GetInstance().flags & ndGF_IGNORE_IFACE_CONFIGS)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::IGNORE_IFACE_CONFIGS)
 #define ndGC_UPLOAD_ENABLED \
-    (ndGlobalConfig::GetInstance().flags & ndGF_UPLOAD_ENABLED)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::UPLOAD_ENABLED)
 #define ndGC_UPLOAD_NAT_FLOWS \
-    (ndGlobalConfig::GetInstance().flags & ndGF_UPLOAD_NAT_FLOWS)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::UPLOAD_NAT_FLOWS)
 #define ndGC_AUTO_FLOW_EXPIRY \
-    (ndGlobalConfig::GetInstance().flags & ndGF_AUTO_FLOW_EXPIRY)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::AUTO_FLOW_EXPIRY)
 #define ndGC_SOFT_DISSECTORS \
-    (ndGlobalConfig::GetInstance().flags & ndGF_SOFT_DISSECTORS)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::SOFT_DISSECTORS)
 #define ndGC_DOTD_CATEGORIES \
-    (ndGlobalConfig::GetInstance().flags & ndGF_DOTD_CATEGORIES)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::DOTD_CATEGORIES)
 #define ndGC_RUN_WITHOUT_SOURCES \
-    (ndGlobalConfig::GetInstance().flags & ndGF_RUN_WITHOUT_SOURCES)
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::RUN_WITHOUT_SOURCES)
 
 #define ndGC ndGlobalConfig::GetInstance()
 
@@ -177,8 +225,8 @@ typedef struct nd_config_pcap_t {
 } nd_config_pcap;
 
 typedef struct nd_config_tpv3_t {
-    unsigned fanout_mode{ ndFOM_DISABLED };
-    unsigned fanout_flags{ ndFOF_NONE };
+    ndTPv3FanoutMode fanout_mode{ ndTPv3FanoutMode::DISABLED };
+    ndFlags<ndTPv3FanoutFlags> fanout_flags{ ndTPv3FanoutFlags::NONE };
     unsigned fanout_instances{ 0 };
     unsigned rb_block_size{ ND_TPV3_RB_BLOCK_SIZE };
     unsigned rb_frame_size{ ND_TPV3_RB_FRAME_SIZE };
@@ -228,9 +276,9 @@ public:
     std::string path_uuid_serial;
     std::string path_uuid_site;
     std::string url_napi_bootstrap;
-    enum nd_dhc_save dhc_save;
-    enum nd_fhc_save fhc_save;
-    enum nd_capture_type capture_type;
+    ndDHCStorage dhc_storage;
+    ndFHCStorage fhc_storage;
+    ndFlags<ndCaptureType> capture_type;
     unsigned capture_read_timeout;
     nd_config_tpv3 tpv3_defaults;
     FILE *h_flow;
@@ -240,11 +288,11 @@ public:
     int16_t ca_detection_cores;
     size_t max_packet_queue;
     uint16_t max_capture_length;
-    uint32_t flags;
+    ndFlags<ndGlobalFlags> flags;
     uint8_t digest_app_config[SHA1_DIGEST_LENGTH];
     uint8_t digest_legacy_config[SHA1_DIGEST_LENGTH];
     uint8_t verbosity;
-    uint8_t verbosity_flags;
+    ndFlags<ndVerbosityFlags> verbosity_flags;
     unsigned fhc_purge_divisor;
     unsigned fm_buckets;
     unsigned max_detection_pkts;
@@ -258,13 +306,6 @@ public:
     unsigned ttl_napi_update;
     unsigned update_imf;
     unsigned update_interval;
-
-    enum VerbosityFlags {
-        VFLAG_NONE = 0,
-        VFLAG_EVENT_DPI_NEW = (1 << 0),
-        VFLAG_EVENT_DPI_UPDATE = (1 << 1),
-        VFLAG_EVENT_DPI_COMPLETE = (1 << 2),
-    };
 
     typedef std::vector<std::pair<std::string, std::string>> SocketHosts;
     SocketHosts socket_host;
@@ -296,8 +337,8 @@ public:
     typedef std::map<std::string, std::string> Protocols;
     Protocols protocols;
 
-    typedef std::map<std::string, std::pair<unsigned, void *>> Interfaces;
-    typedef std::map<nd_interface_role, Interfaces> InterfacesByRole;
+    typedef std::map<std::string, std::pair<ndFlags<ndCaptureType>, void *>> Interfaces;
+    typedef std::map<ndInterfaceRole, Interfaces> InterfacesByRole;
     InterfacesByRole interfaces;
 
     typedef std::map<std::string, std::set<std::string>> InterfaceAddrs;
@@ -325,24 +366,17 @@ public:
 
     bool Load(const std::string &filename);
 
-    enum UUID {
-        UUID_NONE,
-        UUID_AGENT,
-        UUID_SITE,
-        UUID_SERIAL,
-    };
-
-    bool LoadUUID(UUID which, std::string &uuid);
-    bool SaveUUID(UUID which, const std::string &uuid);
-    void GetUUID(UUID which, std::string &uuid);
+    bool LoadUUID(ndUUID which, std::string &uuid);
+    bool SaveUUID(ndUUID which, const std::string &uuid);
+    void GetUUID(ndUUID which, std::string &uuid);
 
     bool ForceReset(void);
 
     bool LoadInterfaces(const std::string &filename);
 
     bool AddInterface(const std::string &iface,
-      nd_interface_role role,
-      unsigned type = ndCT_NONE,
+      ndInterfaceRole role,
+      ndFlags<ndCaptureType> type = ndCaptureType::NONE,
       void *config = nullptr);
 
     bool AddInterfaceAddress(const std::string &iface,
@@ -364,10 +398,11 @@ protected:
     bool LoadInterfaces(void *config_reader);
     void ClearInterfaces(bool cmdline_entries = false);
 
-    enum nd_capture_type LoadCaptureType(void *config_reader,
+    ndFlags<ndCaptureType> LoadCaptureType(void *config_reader,
       const std::string &section, const std::string &key) const;
     bool LoadCaptureSettings(void *config_reader,
-      const std::string &section, unsigned &type, void *config) const;
+      const std::string &section,
+      ndFlags<ndCaptureType> &type, void *config) const;
 
     bool AddPlugin(const std::string &filename);
 

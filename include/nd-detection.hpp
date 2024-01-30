@@ -22,8 +22,6 @@
 
 #include "nd-flow-parser.hpp"
 
-class ndSocketThread;
-
 class ndDetectionQueueEntry
 {
 public:
@@ -96,6 +94,11 @@ protected:
 
     ndFlowParser parser;
 
+    ndProto::Id
+    ProtocolLookup(uint16_t id, ndDetectionQueueEntry *entry);
+    void HashCacheLookup(ndDetectionQueueEntry *entry,
+      bool insert = false);
+
     void ProcessPacketQueue(void);
     void ProcessPacket(ndDetectionQueueEntry *entry);
     bool ProcessALPN(ndDetectionQueueEntry *entry,
@@ -109,7 +112,4 @@ protected:
     void SetDetectionComplete(ndDetectionQueueEntry *entry);
 
     void FlowUpdate(ndDetectionQueueEntry *entry);
-
-    void HashCacheLookup(ndDetectionQueueEntry *entry,
-      bool insert = false);
 };

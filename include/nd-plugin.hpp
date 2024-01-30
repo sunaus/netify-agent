@@ -25,22 +25,22 @@
 
 #include "nd-config.hpp"
 #include "nd-flow-map.hpp"
-#include "nd-json.hpp"
 #include "nd-packet.hpp"
 #include "nd-serializer.hpp"
 #include "nd-thread.hpp"
+#include "nd-util.hpp"
 
 class ndInstanceStatus;
 
-#define _ND_PLUGIN_VER 0x20230309
+constexpr unsigned _ND_PLUGIN_VER = 0x20230309;
 
 #define ndPluginInit(class_name) \
     extern "C" { \
     ndPlugin *ndPluginInit(const string &tag, \
       const ndPlugin::Params &params) { \
         class_name *p = new class_name(tag, params); \
-        if (p->GetType() != ndPlugin::TYPE_PROC && \
-          p->GetType() != ndPlugin::TYPE_SINK) \
+        if (p->GetType() != ndPlugin::Type::PROC && \
+          p->GetType() != ndPlugin::Type::SINK) \
         { \
             nd_printf("Invalid plugin type: %s [%u]\n", \
               tag.c_str(), p->GetType()); \
@@ -54,10 +54,10 @@ class ndInstanceStatus;
 class ndPlugin : public ndThread, public ndSerializer
 {
 public:
-    enum Type {
-        TYPE_BASE,
-        TYPE_PROC,
-        TYPE_SINK,
+    enum class Type : uint8_t {
+        BASE,
+        PROC,
+        SINK,
     };
 
     typedef std::map<std::string, std::string> Params;
@@ -77,10 +77,10 @@ public:
     template <class T>
     void GetStatus(T &output) const {
         switch (type) {
-        case TYPE_PROC:
+        case Type::PROC:
             serialize(output, { tag, "type" }, "processor");
             break;
-        case TYPE_SINK:
+        case Type::SINK:
             serialize(output, { tag, "type" }, "sink");
             break;
         default:
@@ -89,9 +89,9 @@ public:
         }
     }
 
-    enum Event {
-        EVENT_RELOAD,
-        EVENT_STATUS_UPDATE,
+    enum class Event : uint8_t {
+        RELOAD,
+        STATUS_UPDATE,
     };
 
     virtual void
@@ -101,12 +101,12 @@ public:
 
     Type GetType(void) { return type; };
 
-    enum DispatchFlags {
-        DF_NONE,
-        DF_FORMAT_JSON = 0x01,
-        DF_FORMAT_MSGPACK = 0x02,
-        DF_ADD_HEADER = 0x04,
-        DF_GZ_DEFLATE = 0x08,
+    enum class DispatchFlags : uint8_t {
+        NONE = 0,
+        FORMAT_JSON = (1 << 0),
+        FORMAT_MSGPACK = (1 << 1),
+        ADD_HEADER = (1 << 2),
+        GZ_DEFLATE = (1 << 3),
     };
 
 protected:
@@ -119,18 +119,18 @@ class ndPluginSinkPayload
 public:
     static ndPluginSinkPayload *Create(size_t length,
       const uint8_t *data, const ndPlugin::Channels &channels,
-      uint8_t flags = ndPlugin::DF_NONE);
+      ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE);
 
     inline static ndPluginSinkPayload *
     Create(const ndPluginSinkPayload &payload,
-      uint8_t flags = ndPlugin::DF_NONE) {
+      ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
         return Create(payload.length, payload.data,
           payload.channels, flags);
     }
 
     inline static ndPluginSinkPayload *
     Create(const ndPluginSinkPayload *payload,
-      uint8_t flags = ndPlugin::DF_NONE) {
+      ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
         return Create(payload->length, payload->data,
           payload->channels, flags);
     }
@@ -138,7 +138,7 @@ public:
     inline static ndPluginSinkPayload *
     Create(const nlohmann::json &j,
       const ndPlugin::Channels &channels,
-      uint8_t flags = ndPlugin::DF_NONE) {
+      ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
         std::string output;
         nd_json_to_string(j, output, ndGC_DEBUG);
         return Create(output.size(),
@@ -146,10 +146,12 @@ public:
     }
 
     ndPluginSinkPayload()
-      : length(0), data(nullptr), flags(ndPlugin::DF_NONE) { }
+      : length(0), data(nullptr),
+        flags(ndPlugin::DispatchFlags::NONE) { }
 
     ndPluginSinkPayload(size_t length, const uint8_t *data,
-      const ndPlugin::Channels &channels, uint8_t flags)
+      const ndPlugin::Channels &channels,
+      ndFlags<ndPlugin::DispatchFlags> flags)
       : length(length), data(nullptr), channels(channels),
         flags(flags) {
         this->data = new uint8_t[length];
@@ -167,7 +169,7 @@ public:
     size_t length;
     uint8_t *data;
     ndPlugin::Channels channels;
-    uint8_t flags;
+    ndFlags<ndPlugin::DispatchFlags> flags;
 };
 
 class ndPluginProcessor : public ndPlugin
@@ -177,23 +179,23 @@ public:
       const ndPlugin::Params &params);
     virtual ~ndPluginProcessor();
 
-    enum Event {
-        EVENT_NONE,
+    enum class Event : uint16_t {
+        NONE,
 
-        EVENT_FLOW_MAP,  // ndFlowMap *
-        EVENT_FLOW_NEW,  // nd_flow_ptr
-        EVENT_FLOW_EXPIRING,  // nd_flow_ptr
-        EVENT_FLOW_EXPIRE,  // nd_flow_ptr
-        EVENT_DPI_NEW,  // nd_flow_ptr
-        EVENT_DPI_UPDATE,  // nd_flow_ptr
-        EVENT_DPI_COMPLETE,  // nd_flow_ptr
-        EVENT_INTERFACES,  // ndInterfaces
-        EVENT_PKT_CAPTURE_STATS,  // string, ndPacketStats *
-        EVENT_PKT_GLOBAL_STATS,  // ndPacketStats *
-        EVENT_UPDATE_INIT,  // ndInstanceStatus *
-        EVENT_UPDATE_COMPLETE,
+        FLOW_MAP,  // ndFlowMap *
+        FLOW_NEW,  // nd_flow_ptr
+        FLOW_EXPIRING,  // nd_flow_ptr
+        FLOW_EXPIRE,  // nd_flow_ptr
+        DPI_NEW,  // nd_flow_ptr
+        DPI_UPDATE,  // nd_flow_ptr
+        DPI_COMPLETE,  // nd_flow_ptr
+        INTERFACES,  // ndInterfaces
+        PKT_CAPTURE_STATS,  // string, ndPacketStats *
+        PKT_GLOBAL_STATS,  // ndPacketStats *
+        UPDATE_INIT,  // ndInstanceStatus *
+        UPDATE_COMPLETE,
 
-        EVENT_MAX
+        MAX
     };
 
     template <class T>
@@ -218,19 +220,20 @@ public:
 protected:
     virtual void DispatchSinkPayload(const std::string &target,
       const ndPlugin::Channels &channels, size_t length,
-      const uint8_t *payload, uint8_t flags = DF_NONE);
+      const uint8_t *payload,
+      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE);
 
     inline void DispatchSinkPayload(const std::string &target,
       const ndPlugin::Channels &channels,
       const std::vector<uint8_t> &payload,
-      uint8_t flags = DF_NONE) {
+      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE) {
         DispatchSinkPayload(target, channels,
           payload.size(), &payload[0], flags);
     }
 
     virtual void DispatchSinkPayload(const std::string &target,
-      const ndPlugin::Channels &channels,
-      const nlohmann::json &j, uint8_t flags = DF_NONE);
+      const ndPlugin::Channels &channels, const nlohmann::json &j,
+      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE);
 };
 
 #define _ND_PLQ_DEFAULT_MAX_SIZE 2097152
@@ -294,16 +297,16 @@ class ndPluginManager : public ndSerializer
 public:
     virtual ~ndPluginManager() { Destroy(); }
 
-    void Load(ndPlugin::Type type = ndPlugin::TYPE_BASE,
+    void Load(ndPlugin::Type type = ndPlugin::Type::BASE,
       bool create = true);
 
-    bool Create(ndPlugin::Type type = ndPlugin::TYPE_BASE);
+    bool Create(ndPlugin::Type type = ndPlugin::Type::BASE);
 
-    size_t Terminate(ndPlugin::Type type = ndPlugin::TYPE_BASE);
+    size_t Terminate(ndPlugin::Type type = ndPlugin::Type::BASE);
 
-    void Destroy(ndPlugin::Type type = ndPlugin::TYPE_BASE);
+    void Destroy(ndPlugin::Type type = ndPlugin::Type::BASE);
 
-    size_t Reap(ndPlugin::Type type = ndPlugin::TYPE_BASE);
+    size_t Reap(ndPlugin::Type type = ndPlugin::Type::BASE);
 
     void BroadcastEvent(ndPlugin::Type type,
       ndPlugin::Event event,
@@ -339,7 +342,7 @@ public:
         serialize(output, { "plugins" }, plugins);
     }
 
-    void DumpVersions(ndPlugin::Type type = ndPlugin::TYPE_BASE);
+    void DumpVersions(ndPlugin::Type type = ndPlugin::Type::BASE);
 
 protected:
     std::mutex lock;

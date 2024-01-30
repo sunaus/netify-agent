@@ -32,6 +32,7 @@
 #include <list>
 
 #include "INIReader.h"
+
 #include "nd-config.hpp"
 #include "nd-except.hpp"
 #include "nd-plugin.hpp"
@@ -58,15 +59,17 @@ ndGlobalConfig::ndGlobalConfig()
     path_uuid_serial(ND_AGENT_SERIAL_PATH),
     path_uuid_site(ND_SITE_UUID_PATH),
     url_napi_bootstrap(ND_URL_API_BOOTSTRAP),
-    dhc_save(ndDHC_PERSISTENT), fhc_save(ndFHC_PERSISTENT),
-    capture_type(ndCT_NONE),
+    dhc_storage(ndDHCStorage::PERSISTENT),
+    fhc_storage(ndFHCStorage::PERSISTENT),
+    capture_type(ndCaptureType::NONE),
     capture_read_timeout(ND_CAPTURE_READ_TIMEOUT),
     h_flow(stderr), ca_capture_base(0), ca_conntrack(-1),
     ca_detection_base(0), ca_detection_cores(-1),
     max_packet_queue(ND_MAX_PKT_QUEUE_KB * 1024),
-    max_capture_length(ND_PCAP_SNAPLEN), flags(0),
-    digest_app_config{ 0 }, digest_legacy_config{ 0 },
-    verbosity(0), verbosity_flags(VFLAG_EVENT_DPI_NEW),
+    max_capture_length(ND_PCAP_SNAPLEN),
+    flags(ndGlobalFlags::NONE), digest_app_config{ 0 },
+    digest_legacy_config{ 0 }, verbosity(0),
+    verbosity_flags(ndVerbosityFlags::EVENT_DPI_NEW),
     fhc_purge_divisor(ND_FHC_PURGE_DIVISOR),
     fm_buckets(ND_FLOW_MAP_BUCKETS),
     max_detection_pkts(ND_MAX_DETECTION_PKTS),
@@ -77,15 +80,15 @@ ndGlobalConfig::ndGlobalConfig()
     ttl_napi_tick(ND_TTL_API_TICK),
     ttl_napi_update(ND_TTL_API_UPDATE), update_imf(1),
     update_interval(ND_STATS_INTERVAL), reader(nullptr) {
-    flags |= ndGF_SSL_VERIFY;
-    flags |= ndGF_AUTO_FLOW_EXPIRY;
+    flags |= ndGlobalFlags::SSL_VERIFY;
+    flags |= ndGlobalFlags::AUTO_FLOW_EXPIRY;
 #ifdef _ND_ENABLE_CONNTRACK
-    flags |= ndGF_USE_CONNTRACK;
+    flags |= ndGlobalFlags::USE_CONNTRACK;
 #endif
 #ifdef _ND_ENABLE_NETLINK
-    flags |= ndGF_USE_NETLINK;
+    flags |= ndGlobalFlags::USE_NETLINK;
 #endif
-    flags |= ndGF_SOFT_DISSECTORS;
+    flags |= ndGlobalFlags::SOFT_DISSECTORS;
 }
 
 ndGlobalConfig::~ndGlobalConfig() {
@@ -209,10 +212,10 @@ bool ndGlobalConfig::Load(const string &filename) {
         ND_MAX_PKT_QUEUE_KB) *
       1024;
 
-    ndGC_SetFlag(ndGF_SSL_VERIFY,
+    ndGC_SetFlag(ndGlobalFlags::SSL_VERIFY,
       r->GetBoolean("netifyd", "ssl_verify", true));
 
-    ndGC_SetFlag(ndGF_SSL_USE_TLSv1,
+    ndGC_SetFlag(ndGlobalFlags::SSL_USE_TLSv1,
       r->GetBoolean("netifyd", "ssl_use_tlsv1", false));
 
     max_capture_length = (uint16_t)r->GetInteger("netifyd",
@@ -221,9 +224,9 @@ bool ndGlobalConfig::Load(const string &filename) {
     max_detection_pkts = (unsigned)r->GetInteger("netifyd",
       "max_detection_pkts", ND_MAX_DETECTION_PKTS);
 
-    ndGC_SetFlag(ndGF_SYN_SCAN_PROTECTION,
+    ndGC_SetFlag(ndGlobalFlags::SYN_SCAN_PROTECTION,
       r->GetBoolean("netifyd", "syn_scan_protection", false));
-    ndGC_SetFlag(ndGF_AUTO_FLOW_EXPIRY,
+    ndGC_SetFlag(ndGlobalFlags::AUTO_FLOW_EXPIRY,
       r->GetBoolean("netifyd", "auto_flow_expiry", true));
 
     ttl_idle_flow = (unsigned)r->GetInteger("netifyd",
@@ -233,10 +236,10 @@ bool ndGlobalConfig::Load(const string &filename) {
 
     max_flows = (size_t)r->GetInteger("netifyd", "max_flows", 0);
 
-    ndGC_SetFlag(ndGF_SOFT_DISSECTORS,
+    ndGC_SetFlag(ndGlobalFlags::SOFT_DISSECTORS,
       r->GetBoolean("netifyd", "soft_dissectors", true));
 
-    ndGC_SetFlag(ndGF_DOTD_CATEGORIES,
+    ndGC_SetFlag(ndGlobalFlags::DOTD_CATEGORIES,
       r->GetBoolean("netifyd", "dotd_categories", true));
 
     fm_buckets = (unsigned)r->GetInteger("netifyd",
@@ -258,13 +261,13 @@ bool ndGlobalConfig::Load(const string &filename) {
     capture_type = LoadCaptureType(reader,
       "capture-defaults", "capture_type");
 
-    if (capture_type == ndCT_NONE) {
+    if (capture_type == ndCaptureType::NONE) {
 #if defined(_ND_ENABLE_LIBPCAP)
-        capture_type = ndCT_PCAP;
+        capture_type = ndCaptureType::PCAP;
 #elif defined(_ND_ENABLE_TPACKETV3)
-        capture_type = ndCT_TPV3;
+        capture_type = ndCaptureType::TPV3;
 #elif defined(_ND_ENABLE_NFQUEUE)
-        capture_type = ndCT_TPV3;
+        capture_type = ndCaptureType::TPV3;
 #else
         fprintf(stderr,
           "Not default capture type could be "
@@ -274,24 +277,24 @@ bool ndGlobalConfig::Load(const string &filename) {
     }
 
     // TPv3 capture defaults section
-    unsigned ct = ndCT_TPV3;
+    ndFlags<ndCaptureType> ct = ndCaptureType::TPV3;
     if (
       ! LoadCaptureSettings(reader, "capture-defaults-tpv3",
         ct, static_cast<void *>(&tpv3_defaults)))
         return false;
 
     // Flow Hash Cache section
-    ndGC_SetFlag(ndGF_USE_FHC,
+    ndGC_SetFlag(ndGlobalFlags::USE_FHC,
       r->GetBoolean("flow-hash-cache", "enable", true));
 
-    string fhc_save_mode = r->Get("flow-hash-cache", "save",
-      "persistent");
+    string fhc_storage_mode = r->Get("flow-hash-cache",
+      "save", "persistent");
 
-    if (fhc_save_mode == "persistent")
-        fhc_save = ndFHC_PERSISTENT;
-    else if (fhc_save_mode == "volatile")
-        fhc_save = ndFHC_VOLATILE;
-    else fhc_save = ndFHC_DISABLED;
+    if (fhc_storage_mode == "persistent")
+        fhc_storage = ndFHCStorage::PERSISTENT;
+    else if (fhc_storage_mode == "volatile")
+        fhc_storage = ndFHCStorage::VOLATILE;
+    else fhc_storage = ndFHCStorage::DISABLED;
 
     max_fhc = (size_t)r->GetInteger("flow-hash-cache",
       "cache_size", ND_MAX_FHC_ENTRIES);
@@ -299,19 +302,19 @@ bool ndGlobalConfig::Load(const string &filename) {
       "flow-hash-cache", "purge_divisor", ND_FHC_PURGE_DIVISOR);
 
     // DNS Cache section
-    ndGC_SetFlag(ndGF_USE_DHC,
+    ndGC_SetFlag(ndGlobalFlags::USE_DHC,
       r->GetBoolean("dns-hint-cache", "enable", true));
 
-    string dhc_save_mode = r->Get("dns-hint-cache", "save",
-      "persistent");
+    string dhc_storage_mode = r->Get("dns-hint-cache",
+      "save", "persistent");
 
-    if (dhc_save_mode == "persistent" ||
-      dhc_save_mode == "1" || dhc_save_mode == "yes" ||
-      dhc_save_mode == "true")
-        dhc_save = ndDHC_PERSISTENT;
-    else if (dhc_save_mode == "volatile")
-        dhc_save = ndDHC_VOLATILE;
-    else dhc_save = ndDHC_DISABLED;
+    if (dhc_storage_mode == "persistent" ||
+      dhc_storage_mode == "1" || dhc_storage_mode == "yes" ||
+      dhc_storage_mode == "true")
+        dhc_storage = ndDHCStorage::PERSISTENT;
+    else if (dhc_storage_mode == "volatile")
+        dhc_storage = ndDHCStorage::VOLATILE;
+    else dhc_storage = ndDHCStorage::DISABLED;
 
     max_dhc = (unsigned)r->GetInteger("dns-hint-cache",
       "cache-size", ND_MAX_DHC_ENTRIES);
@@ -405,12 +408,12 @@ bool ndGlobalConfig::Load(const string &filename) {
         }
     }
 
-    ndGC_SetFlag(ndGF_PRIVATE_EXTADDR,
+    ndGC_SetFlag(ndGlobalFlags::PRIVATE_EXTADDR,
       r->GetBoolean("privacy-filter",
         "private_external_addresses", false));
 
     // Netify API section
-    ndGC_SetFlag(ndGF_USE_NAPI,
+    ndGC_SetFlag(ndGlobalFlags::USE_NAPI,
       r->GetBoolean("netify-api", "enable", false));
     ttl_napi_tick = r->GetInteger("netify-api",
       "tick_interval", ND_TTL_API_TICK);
@@ -437,7 +440,7 @@ bool ndGlobalConfig::Load(const string &filename) {
     return true;
 }
 
-bool ndGlobalConfig::LoadUUID(UUID which, string &uuid) {
+bool ndGlobalConfig::LoadUUID(ndUUID which, string &uuid) {
     size_t length = 0;
     string *dest = nullptr, path;
     lock_guard<mutex> ul(lock_uuid);
@@ -445,8 +448,8 @@ bool ndGlobalConfig::LoadUUID(UUID which, string &uuid) {
     uuid.clear();
 
     switch (which) {
-    case UUID_NONE: return false;
-    case UUID_AGENT:
+    case ndUUID::NONE: return false;
+    case ndUUID::AGENT:
         if (ndGC.uuid != ND_AGENT_UUID_NULL) {
             uuid = ndGC.uuid;
             return true;
@@ -455,7 +458,7 @@ bool ndGlobalConfig::LoadUUID(UUID which, string &uuid) {
         path = ndGC.path_uuid;
         length = ND_AGENT_UUID_LEN;
         break;
-    case UUID_SITE:
+    case ndUUID::SITE:
         if (ndGC.uuid_site != ND_SITE_UUID_NULL) {
             uuid = ndGC.uuid_site;
             return true;
@@ -464,7 +467,7 @@ bool ndGlobalConfig::LoadUUID(UUID which, string &uuid) {
         path = ndGC.path_uuid_site;
         length = ND_SITE_UUID_LEN;
         break;
-    case UUID_SERIAL:
+    case ndUUID::SERIAL:
         if (ndGC.uuid_serial != ND_AGENT_SERIAL_NULL) {
             uuid = ndGC.uuid_serial;
             return true;
@@ -488,24 +491,24 @@ bool ndGlobalConfig::LoadUUID(UUID which, string &uuid) {
     return false;
 }
 
-bool ndGlobalConfig::SaveUUID(UUID which, const string &uuid) {
+bool ndGlobalConfig::SaveUUID(ndUUID which, const string &uuid) {
     size_t length = 0;
     string *dest = nullptr, path;
     lock_guard<mutex> ul(lock_uuid);
 
     switch (which) {
-    case UUID_NONE: return false;
-    case UUID_AGENT:
+    case ndUUID::NONE: return false;
+    case ndUUID::AGENT:
         dest = &ndGC.uuid;
         path = ndGC.path_uuid;
         length = ND_AGENT_UUID_LEN;
         break;
-    case UUID_SITE:
+    case ndUUID::SITE:
         dest = &ndGC.uuid_site;
         path = ndGC.path_uuid_site;
         length = ND_SITE_UUID_LEN;
         break;
-    case UUID_SERIAL:
+    case ndUUID::SERIAL:
         dest = &ndGC.uuid_serial;
         path = ndGC.path_uuid_serial;
         length = ND_AGENT_SERIAL_LEN;
@@ -524,13 +527,13 @@ bool ndGlobalConfig::SaveUUID(UUID which, const string &uuid) {
     return false;
 }
 
-void ndGlobalConfig::GetUUID(UUID which, string &uuid) {
+void ndGlobalConfig::GetUUID(ndUUID which, string &uuid) {
     lock_guard<mutex> ul(lock_uuid);
 
     switch (which) {
-    case UUID_AGENT: uuid = ndGC.uuid; break;
-    case UUID_SITE: uuid = ndGC.uuid_site; break;
-    case UUID_SERIAL: uuid = ndGC.uuid_serial; break;
+    case ndUUID::AGENT: uuid = ndGC.uuid; break;
+    case ndUUID::SITE: uuid = ndGC.uuid_site; break;
+    case ndUUID::SERIAL: uuid = ndGC.uuid_serial; break;
     default: uuid.clear(); break;
     }
 }
@@ -630,9 +633,7 @@ bool ndGlobalConfig::LoadInterfaces(const string &filename) {
 }
 
 bool ndGlobalConfig::AddInterface(const string &iface,
-  nd_interface_role role,
-  unsigned type,
-  void *config) {
+  ndInterfaceRole role, ndFlags<ndCaptureType> type, void *config) {
     for (auto &r : interfaces) {
         auto i = interfaces[r.first].find(iface);
         if (i != interfaces[r.first].end()) {
@@ -643,8 +644,9 @@ bool ndGlobalConfig::AddInterface(const string &iface,
         }
     }
 
-    if (ndCT_TYPE(type) == ndCT_NONE) {
-        if (ndCT_TYPE(capture_type) == ndCT_NONE) {
+    if (ndCT_TYPE(type.flags) == ndCaptureType::NONE) {
+        if (ndCT_TYPE(capture_type.flags) == ndCaptureType::NONE)
+        {
             fprintf(stderr,
               "WARNING: capture type not set for "
               "interface: %s\n",
@@ -656,16 +658,16 @@ bool ndGlobalConfig::AddInterface(const string &iface,
     }
 
     if (config == nullptr) {
-        switch (ndCT_TYPE(type)) {
-        case ndCT_PCAP:
-        case ndCT_PCAP_OFFLINE:
+        switch (ndCT_TYPE(type.flags)) {
+        case ndCaptureType::PCAP:
+        case ndCaptureType::PCAP_OFFLINE:
             config = static_cast<void *>(new nd_config_pcap);
             break;
-        case ndCT_TPV3:
+        case ndCaptureType::TPV3:
             config = static_cast<void *>(new nd_config_tpv3);
             memcpy(config, &tpv3_defaults, sizeof(nd_config_tpv3));
             break;
-        case ndCT_NFQ:
+        case ndCaptureType::NFQ:
             config = static_cast<void *>(new nd_config_nfq);
         default: break;
         }
@@ -675,15 +677,15 @@ bool ndGlobalConfig::AddInterface(const string &iface,
       make_pair(iface, make_pair(type, config)));
 
     if (! result.second) {
-        switch (ndCT_TYPE(type)) {
-        case ndCT_PCAP:
-        case ndCT_PCAP_OFFLINE:
+        switch (ndCT_TYPE(type.flags)) {
+        case ndCaptureType::PCAP:
+        case ndCaptureType::PCAP_OFFLINE:
             delete static_cast<nd_config_pcap *>(config);
             break;
-        case ndCT_TPV3:
+        case ndCaptureType::TPV3:
             delete static_cast<nd_config_tpv3 *>(config);
             break;
-        case ndCT_NFQ:
+        case ndCaptureType::NFQ:
             delete static_cast<nd_config_nfq *>(config);
             break;
         default: break;
@@ -764,16 +766,16 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
 
         string interface_role = r->Get(s, "role", "none");
 
-        nd_interface_role role = ndIR_NONE;
+        ndInterfaceRole role = ndInterfaceRole::NONE;
 
         if (! strcasecmp("LAN", interface_role.c_str()) ||
           ! strncasecmp("INT", interface_role.c_str(), 3))
-            role = ndIR_LAN;
+            role = ndInterfaceRole::LAN;
         else if (! strcasecmp("WAN", interface_role.c_str()) ||
           ! strncasecmp("EXT", interface_role.c_str(), 3))
-            role = ndIR_WAN;
+            role = ndInterfaceRole::WAN;
 
-        if (role == ndIR_NONE) {
+        if (role == ndInterfaceRole::NONE) {
             fprintf(stderr,
               "WARNING: interface role not set or invalid: "
               "%s\n",
@@ -793,20 +795,20 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
             }
         }
 
-        unsigned type = LoadCaptureType(r, s,
+        ndFlags<ndCaptureType> type = LoadCaptureType(r, s,
           "capture_type");
 
         void *config = nullptr;
 
-        switch (ndCT_TYPE(type)) {
-        case ndCT_PCAP:
+        switch (ndCT_TYPE(type.flags)) {
+        case ndCaptureType::PCAP:
             config = static_cast<void *>(new nd_config_pcap);
             if (! LoadCaptureSettings(r, s, type, config)) {
                 delete static_cast<nd_config_pcap *>(config);
                 return false;
             }
             break;
-        case ndCT_TPV3:
+        case ndCaptureType::TPV3:
             config = static_cast<void *>(new nd_config_tpv3);
             memcpy(config, &tpv3_defaults, sizeof(nd_config_tpv3));
             if (! LoadCaptureSettings(r, s, type, config)) {
@@ -814,7 +816,7 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
                 return false;
             }
             break;
-        case ndCT_NFQ:
+        case ndCaptureType::NFQ:
             p = iface.find_first_of("0123456789");
             if (p == string::npos ||
               strncasecmp(iface.c_str(), "nfq", 3))
@@ -866,7 +868,9 @@ void ndGlobalConfig::ClearInterfaces(bool cmdline_entries) {
     if (interfaces.size()) {
         for (auto &r : interfaces) {
             for (auto &i : r.second) {
-                if ((i.second.first & ndCT_CMDLINE) && ! cmdline_entries)
+                if (((i.second.first & ndCaptureType::CMDLINE) ==
+                      ndCaptureType::CMDLINE) &&
+                  ! cmdline_entries)
                     continue;
 
                 clear_list.push_back(i.first);
@@ -880,17 +884,17 @@ void ndGlobalConfig::ClearInterfaces(bool cmdline_entries) {
             if (it == r.second.end()) continue;
 
             if (it->second.second != nullptr) {
-                switch (ndCT_TYPE(it->second.first)) {
-                case ndCT_PCAP:
-                case ndCT_PCAP_OFFLINE:
+                switch (ndCT_TYPE(it->second.first.flags)) {
+                case ndCaptureType::PCAP:
+                case ndCaptureType::PCAP_OFFLINE:
                     delete static_cast<nd_config_pcap *>(
                       it->second.second);
                     break;
-                case ndCT_TPV3:
+                case ndCaptureType::TPV3:
                     delete static_cast<nd_config_tpv3 *>(
                       it->second.second);
                     break;
-                case ndCT_NFQ:
+                case ndCaptureType::NFQ:
                     delete static_cast<nd_config_nfq *>(
                       it->second.second);
                     break;
@@ -911,30 +915,34 @@ void ndGlobalConfig::ClearInterfaces(bool cmdline_entries) {
     }
 }
 
-enum nd_capture_type ndGlobalConfig::LoadCaptureType(void *config_reader,
+ndFlags<ndCaptureType>
+ndGlobalConfig::LoadCaptureType(void *config_reader,
   const string &section, const string &key) const {
     INIReader *r = static_cast<INIReader *>(config_reader);
 
-    enum nd_capture_type ct = ndCT_NONE;
+    ndFlags<ndCaptureType> ct = ndCaptureType::NONE;
     string capture_type = r->Get(section, key, "auto");
 
     if (capture_type == "auto") {
 #if defined(_ND_ENABLE_LIBPCAP)
-        ct = ndCT_PCAP;
+        ct = ndCaptureType::PCAP;
 #elif defined(_ND_ENABLE_TPACKETV3)
-        ct = ndCT_TPV3;
+        ct = ndCaptureType::TPV3;
 #else
 #error "No available capture types!"
 #endif
     }
 #if defined(_ND_ENABLE_LIBPCAP)
-    else if (capture_type == "pcap") ct = ndCT_PCAP;
+    else if (capture_type == "pcap")
+        ct = ndCaptureType::PCAP;
 #endif
 #if defined(_ND_ENABLE_TPACKETV3)
-    else if (capture_type == "tpv3") ct = ndCT_TPV3;
+    else if (capture_type == "tpv3")
+        ct = ndCaptureType::TPV3;
 #endif
 #if defined(_ND_ENABLE_NFQUEUE)
-    else if (capture_type == "nfqueue") ct = ndCT_NFQ;
+    else if (capture_type == "nfqueue")
+        ct = ndCaptureType::NFQ;
 #endif
     else {
         throw ndException("invalid capture type: %s",
@@ -945,10 +953,11 @@ enum nd_capture_type ndGlobalConfig::LoadCaptureType(void *config_reader,
 }
 
 bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
-  const string &section, unsigned &type, void *config) const {
+  const string &section, ndFlags<ndCaptureType> &type,
+  void *config) const {
     INIReader *r = static_cast<INIReader *>(config_reader);
 
-    if (ndCT_TYPE(type) == ndCT_PCAP) {
+    if (ndCT_TYPE(type.flags) == ndCaptureType::PCAP) {
         nd_config_pcap *pcap = static_cast<nd_config_pcap *>(config);
         string capture_filename = r->Get(section,
           "filename", "");
@@ -961,30 +970,33 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
                 return false;
             }
 
-            if (! (type & ndCT_CMDLINE))
-                type = ndCT_PCAP_OFFLINE;
-            else type = ndCT_PCAP_OFFLINE | ndCT_CMDLINE;
+            if (! ((type & ndCaptureType::CMDLINE) ==
+                  ndCaptureType::CMDLINE))
+                type = ndCaptureType::PCAP_OFFLINE;
+            else
+                type = ndCaptureType::PCAP_OFFLINE |
+                  ndCaptureType::CMDLINE;
             pcap->capture_filename = capture_filename;
         }
     }
-    else if (ndCT_TYPE(type) == ndCT_TPV3) {
+    else if (ndCT_TYPE(type.flags) == ndCaptureType::TPV3) {
         nd_config_tpv3 *tpv3 = static_cast<nd_config_tpv3 *>(config);
 
         string fanout_mode = r->Get(section, "fanout_mode",
           "none");
 
         if (fanout_mode == "hash")
-            tpv3->fanout_mode = ndFOM_HASH;
+            tpv3->fanout_mode = ndTPv3FanoutMode::HASH;
         else if (fanout_mode == "lb" ||
           fanout_mode == "load_balanced")
-            tpv3->fanout_mode = ndFOM_LOAD_BALANCED;
+            tpv3->fanout_mode = ndTPv3FanoutMode::LOAD_BALANCED;
         else if (fanout_mode == "cpu")
-            tpv3->fanout_mode = ndFOM_CPU;
+            tpv3->fanout_mode = ndTPv3FanoutMode::CPU;
         else if (fanout_mode == "rollover")
-            tpv3->fanout_mode = ndFOM_ROLLOVER;
+            tpv3->fanout_mode = ndTPv3FanoutMode::ROLLOVER;
         else if (fanout_mode == "random")
-            tpv3->fanout_mode = ndFOM_RANDOM;
-        else tpv3->fanout_mode = ndFOM_DISABLED;
+            tpv3->fanout_mode = ndTPv3FanoutMode::RANDOM;
+        else tpv3->fanout_mode = ndTPv3FanoutMode::DISABLED;
 
         string fanout_flags = r->Get(section,
           "fanout_flags", "none");
@@ -999,9 +1011,9 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
                 nd_trim(flag, ' ');
 
                 if (flag == "defrag")
-                    tpv3->fanout_flags |= ndFOF_DEFRAG;
+                    tpv3->fanout_flags |= ndTPv3FanoutFlags::DEFRAG;
                 else if (flag == "rollover")
-                    tpv3->fanout_flags |= ndFOF_ROLLOVER;
+                    tpv3->fanout_flags |= ndTPv3FanoutFlags::ROLLOVER;
                 else {
                     fprintf(stderr,
                       "Invalid fanout flag: %s\n", flag.c_str());
@@ -1013,10 +1025,10 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
         tpv3->fanout_instances = (unsigned)r->GetInteger(
           section, "fanout_instances", 0);
 
-        if (tpv3->fanout_mode != ndFOM_DISABLED &&
+        if (tpv3->fanout_mode != ndTPv3FanoutMode::DISABLED &&
           tpv3->fanout_instances < 2)
         {
-            tpv3->fanout_mode = ndFOM_DISABLED;
+            tpv3->fanout_mode = ndTPv3FanoutMode::DISABLED;
             tpv3->fanout_instances = 0;
         }
 
@@ -1029,7 +1041,7 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
         tpv3->rb_blocks = (unsigned)r->GetInteger(section,
           "rb_blocks", tpv3_defaults.rb_blocks);
     }
-    else if (ndCT_TYPE(type) == ndCT_NFQ) {
+    else if (ndCT_TYPE(type.flags) == ndCaptureType::NFQ) {
         nd_config_nfq *nfq = static_cast<nd_config_nfq *>(config);
         nfq->instances = (unsigned)r->GetInteger(section,
           "queue_instances", 1);
@@ -1065,15 +1077,15 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
     for (auto &tag : sections) {
         size_t p = string::npos;
         Plugins *mpi = nullptr;
-        ndPlugin::Type type = ndPlugin::TYPE_BASE;
+        ndPlugin::Type type = ndPlugin::Type::BASE;
 
         if ((p = tag.find("proc-")) != string::npos) {
             mpi = &plugin_processors;
-            type = ndPlugin::TYPE_PROC;
+            type = ndPlugin::Type::PROC;
         }
         else if ((p = tag.find("sink-")) != string::npos) {
             mpi = &plugin_sinks;
-            type = ndPlugin::TYPE_SINK;
+            type = ndPlugin::Type::SINK;
         }
 
         if (mpi == nullptr || p != 0) continue;
@@ -1098,7 +1110,7 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
             if (value.empty()) continue;
             switch (type) {
 #if 0
-            case ndPlugin::TYPE_SINK:
+            case ndPlugin::Type::SINK:
                 if (key == "sink_targets") {
                     fprintf(stderr, "Invalid plugin option: %s: %s\n",
                         tag.c_str(), key.c_str()
@@ -1122,7 +1134,9 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
                 fprintf(stderr,
                   "Invalid plugin type: %s: %d (expected: "
                   "%d)\n",
-                  tag.c_str(), loader.GetPlugin()->GetType(), type);
+                  tag.c_str(),
+                  static_cast<unsigned>(loader.GetPlugin()->GetType()),
+                  static_cast<unsigned>(type));
                 return false;
             }
         }

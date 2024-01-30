@@ -33,8 +33,7 @@
 #include "nd-instance.hpp"
 #include "nd-netlink.hpp"
 
-ndNetlink::ndNetlink(void)
-  : nd(-1), seq(0), sa{ 0 }, buffer{ 0 } {
+ndNetlink::ndNetlink(void) : nd(-1), seq(0), sa{ 0 } {
 
     sa.nl_family = AF_NETLINK;
     sa.nl_pid = getpid();
@@ -79,7 +78,8 @@ ndNetlink::~ndNetlink() {
 void ndNetlink::Refresh(void) {
     struct nlmsghdr *nlh;
 
-    nlh = (struct nlmsghdr *)buffer;
+    buffer.fill('\0');
+    nlh = (struct nlmsghdr *)buffer.data();
 
     nlh->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
     nlh->nlmsg_type = RTM_GETROUTE;
@@ -94,7 +94,8 @@ void ndNetlink::Refresh(void) {
 
     ProcessEvent();
 
-    nlh = (struct nlmsghdr *)buffer;
+    buffer.fill('\0');
+    nlh = (struct nlmsghdr *)buffer.data();
 
     nlh->nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
     nlh->nlmsg_type = RTM_GETADDR;
@@ -117,9 +118,10 @@ bool ndNetlink::ProcessEvent(void) {
     unsigned added_net = 0, removed_net = 0, added_addr = 0,
              removed_addr = 0;
 
-    while ((bytes = recv(nd, buffer, ND_NETLINK_BUFSIZ, 0)) > 0)
+    while ((bytes = recv(nd, buffer.data(), buffer.size(), 0)) > 0)
     {
-        for (nlh = (struct nlmsghdr *)buffer; NLMSG_OK(nlh, bytes);
+        for (nlh = (struct nlmsghdr *)buffer.data();
+             NLMSG_OK(nlh, bytes);
              nlh = NLMSG_NEXT(nlh, bytes))
         {
 #if 0
@@ -218,11 +220,11 @@ bool ndNetlink::AddRemoveNetwork(struct nlmsghdr *nlh, bool add) {
     if (addr.IsValid() && ifname[0] != '\0') {
         ndInstance &ndi = ndInstance::GetInstance();
         if (add) {
-            return ndi.addr_types.AddAddress(ndAddr::atLOCAL,
-              addr, ifname);
+            return ndi.addr_lookup.AddAddress(
+              ndAddr::Type::LOCAL, addr, ifname);
         }
         else {
-            return ndi.addr_types.RemoveAddress(addr, ifname);
+            return ndi.addr_lookup.RemoveAddress(addr, ifname);
         }
     }
 
@@ -231,7 +233,7 @@ bool ndNetlink::AddRemoveNetwork(struct nlmsghdr *nlh, bool add) {
 
 bool ndNetlink::AddRemoveAddress(struct nlmsghdr *nlh, bool add) {
     ndAddr addr;
-    ndAddr::Type type = ndAddr::atLOCAL;
+    ndAddr::Type type = ndAddr::Type::LOCAL;
 
     struct ifaddrmsg *addrm;
     addrm = static_cast<struct ifaddrmsg *>(NLMSG_DATA(nlh));
@@ -252,7 +254,7 @@ bool ndNetlink::AddRemoveAddress(struct nlmsghdr *nlh, bool add) {
             CopyAddress(addrm->ifa_family, addr, RTA_DATA(rta));
             break;
         case IFA_BROADCAST:
-            type = ndAddr::atBROADCAST;
+            type = ndAddr::Type::BROADCAST;
             CopyAddress(addrm->ifa_family, addr, RTA_DATA(rta));
             break;
         }
@@ -261,9 +263,9 @@ bool ndNetlink::AddRemoveAddress(struct nlmsghdr *nlh, bool add) {
     if (addr.IsValid() && ifname[0] != '\0') {
         ndInstance &ndi = ndInstance::GetInstance();
         if (add)
-            return ndi.addr_types.AddAddress(type, addr, ifname);
+            return ndi.addr_lookup.AddAddress(type, addr, ifname);
         else
-            return ndi.addr_types.RemoveAddress(addr, ifname);
+            return ndi.addr_lookup.RemoveAddress(addr, ifname);
     }
 
     return false;

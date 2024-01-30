@@ -45,10 +45,10 @@ public:
 
     void ParseHeader(const std::string &header_raw);
 
-    enum Method {
-        METHOD_GET,
-        METHOD_HEAD,
-        METHOD_POST,
+    enum class Method : uint8_t {
+        GET,
+        HEAD,
+        POST,
     };
 
     typedef std::map<std::string, std::string> Headers;
@@ -130,11 +130,11 @@ protected:
         }
     };
 
-    enum Request {
-        REQUEST_NONE,
-        REQUEST_BOOTSTRAP,
-        REQUEST_DOWNLOAD_CONFIG,
-        REQUEST_DOWNLOAD_CATEGORIES,
+    enum class Request : uint8_t {
+        NONE,
+        BOOTSTRAP,
+        DOWNLOAD_CONFIG,
+        DOWNLOAD_CATEGORIES,
     };
 
     typedef std::unordered_map<Request, ndNetifyApiThread *, RequestHash> Requests;

@@ -20,9 +20,10 @@
 
 #pragma once
 
-#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
+
+#include <nlohmann/json.hpp>
 
 #include "nd-risks.hpp"
 
@@ -103,7 +104,7 @@ public:
 
     inline void serialize(nlohmann::json &j,
       const std::vector<std::string> &keys,
-      const std::vector<nd_risk_id_t> &values) const {
+      const std::vector<ndRisk::Id> &values) const {
         if (keys.empty() || values.empty()) return;
         if (keys.size() == 2) j[keys[0]][keys[1]] = values;
         if (keys.size() == 1) j[keys[0]] = values;
@@ -229,7 +230,7 @@ public:
 
     inline void serialize(std::vector<std::string> &v,
       const std::vector<std::string> &keys,
-      const std::vector<nd_risk_id_t> &values) const {
+      const std::vector<ndRisk::Id> &values) const {
         if (keys.empty() || values.empty()) return;
         std::string key;
         for (auto &k : keys)
@@ -238,8 +239,9 @@ public:
         std::string _values;
         for (auto &value : values)
             _values.append(_values.empty() ?
-                std::to_string(value) :
-                std::string(",") + std::to_string(value));
+                std::to_string(static_cast<unsigned>(value)) :
+                std::string(",") +
+                  std::to_string(static_cast<unsigned>(value)));
         v.push_back(_values);
     }
 

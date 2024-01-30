@@ -22,11 +22,12 @@
 
 #include <linux/netlink.h>
 
+#include <array>
 #include <string>
 
 #include "nd-addr.hpp"
 
-#define ND_NETLINK_BUFSIZ 4096
+constexpr size_t _ND_NETLINK_BUFSIZ = 4096;
 
 class ndNetlink
 {
@@ -49,5 +50,5 @@ protected:
     int nd;
     unsigned seq;
     struct sockaddr_nl sa;
-    uint8_t buffer[ND_NETLINK_BUFSIZ];
+    std::array<uint8_t, _ND_NETLINK_BUFSIZ> buffer;
 };

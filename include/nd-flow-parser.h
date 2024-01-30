@@ -18,30 +18,30 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#pragma once
+
+#define _NDFP_MAX_BUFLEN        256
+
+#define _NDFP_OTHER_UNKNOWN     0
+#define _NDFP_OTHER_UNSUPPORTED 1
+#define _NDFP_OTHER_LOCAL       2
+#define _NDFP_OTHER_MULTICAST   3
+#define _NDFP_OTHER_BROADCAST   4
+#define _NDFP_OTHER_REMOTE      5
+#define _NDFP_OTHER_ERROR       6
+
+#define _NDFP_TUNNEL_NONE       0
+#define _NDFP_TUNNEL_GTP        1
+
+#define _NDFP_ORIGIN_UNKNOWN    0
+#define _NDFP_ORIGIN_LOCAL      1
+#define _NDFP_ORIGIN_OTHER      2
+
+#if 0
+#define _NDFP_debugf(f, ...) nd_dprintf(f, __VA_ARGS__)
+#else
+#define _NDFP_debugf(f, ...) \
+    do { \
+    } \
+    while (0)
 #endif
-
-#include <regex>
-
-#include "nd-config.hpp"
-#include "nd-json.hpp"
-#include "netifyd.hpp"
-
-using namespace std;
-using json = nlohmann::json;
-
-void nd_json_to_string(const json &j, string &output, bool pretty) {
-    output = j.dump(pretty ? ND_JSON_INDENT : -1, ' ', true,
-      json::error_handler_t::replace);
-
-    vector<pair<regex *, string> >::const_iterator i;
-    for (i = ndGC.privacy_regex.begin();
-         i != ndGC.privacy_regex.end();
-         i++)
-    {
-        string result = regex_replace(output, *((*i).first),
-          (*i).second);
-        if (result.size()) output = result;
-    }
-}

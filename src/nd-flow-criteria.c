@@ -1,5 +1,5 @@
 
-#line 3 "nd-flow-criteria.c"
+#line 2 "nd-flow-criteria.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -54,7 +54,8 @@
 
 /* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
 
-#if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#if defined(__FreeBSD__) || \
+    (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 
 /* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
  * if you want the limit (max/min) macros for int types. 
@@ -310,6 +311,7 @@ struct yy_buffer_state
 #define YY_CURRENT_BUFFER ( yyg->yy_buffer_stack \
                           ? yyg->yy_buffer_stack[yyg->yy_buffer_stack_top] \
                           : NULL)
+#define yy_current_buffer YY_CURRENT_BUFFER
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
  */
@@ -841,10 +843,11 @@ static const flex_int32_t yy_rule_can_match_eol[86] =
 #include <stdbool.h>
 #include <string.h>
 
-#include "nd-flow-parser.hpp"
+#include "nd-flow-parser.h"
+
 #include "nd-flow-expr.hpp"
-#line 847 "nd-flow-criteria.c"
-#line 848 "nd-flow-criteria.c"
+#line 849 "nd-flow-criteria.c"
+#line 850 "nd-flow-criteria.c"
 
 #define INITIAL 0
 
@@ -1126,9 +1129,9 @@ YY_DECL
 		}
 
 	{
-#line 31 "nd-flow-criteria.l"
+#line 32 "nd-flow-criteria.l"
 
-#line 1132 "nd-flow-criteria.c"
+#line 1134 "nd-flow-criteria.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1199,431 +1202,431 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 32 "nd-flow-criteria.l"
+#line 33 "nd-flow-criteria.l"
 return FLOW_IP_PROTO;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "nd-flow-criteria.l"
+#line 34 "nd-flow-criteria.l"
 return FLOW_IP_VERSION;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "nd-flow-criteria.l"
+#line 35 "nd-flow-criteria.l"
 return FLOW_VLAN_ID;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 35 "nd-flow-criteria.l"
+#line 36 "nd-flow-criteria.l"
 return FLOW_OTHER_TYPE;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 36 "nd-flow-criteria.l"
+#line 37 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_OTHER_UNKNOWN; return FLOW_OTHER_UNKNOWN;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 37 "nd-flow-criteria.l"
+#line 38 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_OTHER_UNSUPPORTED; return FLOW_OTHER_UNSUPPORTED;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 38 "nd-flow-criteria.l"
+#line 39 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_OTHER_LOCAL; return FLOW_OTHER_LOCAL;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 39 "nd-flow-criteria.l"
+#line 40 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_OTHER_MULTICAST; return FLOW_OTHER_MULTICAST;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 40 "nd-flow-criteria.l"
+#line 41 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_OTHER_BROADCAST; return FLOW_OTHER_BROADCAST;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 41 "nd-flow-criteria.l"
+#line 42 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_OTHER_REMOTE; return FLOW_OTHER_REMOTE;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 42 "nd-flow-criteria.l"
+#line 43 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_OTHER_ERROR; return FLOW_OTHER_ERROR;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 43 "nd-flow-criteria.l"
+#line 44 "nd-flow-criteria.l"
 return FLOW_LOCAL_MAC;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 44 "nd-flow-criteria.l"
+#line 45 "nd-flow-criteria.l"
 return FLOW_OTHER_MAC;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 45 "nd-flow-criteria.l"
+#line 46 "nd-flow-criteria.l"
 return FLOW_LOCAL_IP;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 46 "nd-flow-criteria.l"
+#line 47 "nd-flow-criteria.l"
 return FLOW_OTHER_IP;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 47 "nd-flow-criteria.l"
+#line 48 "nd-flow-criteria.l"
 return FLOW_LOCAL_PORT;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 48 "nd-flow-criteria.l"
+#line 49 "nd-flow-criteria.l"
 return FLOW_OTHER_PORT;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 49 "nd-flow-criteria.l"
+#line 50 "nd-flow-criteria.l"
 return FLOW_TUNNEL_TYPE;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 50 "nd-flow-criteria.l"
+#line 51 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_TUNNEL_NONE; return FLOW_TUNNEL_NONE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 51 "nd-flow-criteria.l"
+#line 52 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_TUNNEL_GTP; return FLOW_TUNNEL_GTP;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 52 "nd-flow-criteria.l"
+#line 53 "nd-flow-criteria.l"
 return FLOW_DETECTION_COMPLETE;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 53 "nd-flow-criteria.l"
+#line 54 "nd-flow-criteria.l"
 return FLOW_DETECTION_GUESSED;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 54 "nd-flow-criteria.l"
+#line 55 "nd-flow-criteria.l"
 return FLOW_DETECTION_INIT;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 55 "nd-flow-criteria.l"
+#line 56 "nd-flow-criteria.l"
 return FLOW_DETECTION_UPDATED;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 56 "nd-flow-criteria.l"
+#line 57 "nd-flow-criteria.l"
 return FLOW_DHC_HIT;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 57 "nd-flow-criteria.l"
+#line 58 "nd-flow-criteria.l"
 return FLOW_FHC_HIT;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 58 "nd-flow-criteria.l"
+#line 59 "nd-flow-criteria.l"
 return FLOW_IP_NAT;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 59 "nd-flow-criteria.l"
+#line 60 "nd-flow-criteria.l"
 return FLOW_EXPIRING;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 60 "nd-flow-criteria.l"
+#line 61 "nd-flow-criteria.l"
 return FLOW_EXPIRED;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 61 "nd-flow-criteria.l"
+#line 62 "nd-flow-criteria.l"
 return FLOW_SOFT_DISSECTOR;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 62 "nd-flow-criteria.l"
+#line 63 "nd-flow-criteria.l"
 return FLOW_APPLICATION;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 63 "nd-flow-criteria.l"
+#line 64 "nd-flow-criteria.l"
 return FLOW_APPLICATION;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 64 "nd-flow-criteria.l"
+#line 65 "nd-flow-criteria.l"
 return FLOW_APPLICATION;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 65 "nd-flow-criteria.l"
+#line 66 "nd-flow-criteria.l"
 return FLOW_APPLICATION;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 66 "nd-flow-criteria.l"
+#line 67 "nd-flow-criteria.l"
 return FLOW_CATEGORY;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 67 "nd-flow-criteria.l"
+#line 68 "nd-flow-criteria.l"
 return FLOW_CATEGORY;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 68 "nd-flow-criteria.l"
+#line 69 "nd-flow-criteria.l"
 return FLOW_RISKS;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 69 "nd-flow-criteria.l"
+#line 70 "nd-flow-criteria.l"
 return FLOW_NDPI_RISK_SCORE;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 70 "nd-flow-criteria.l"
+#line 71 "nd-flow-criteria.l"
 return FLOW_NDPI_RISK_SCORE_CLIENT;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 71 "nd-flow-criteria.l"
+#line 72 "nd-flow-criteria.l"
 return FLOW_NDPI_RISK_SCORE_SERVER;
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 72 "nd-flow-criteria.l"
+#line 73 "nd-flow-criteria.l"
 return FLOW_APPLICATION_CATEGORY;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 73 "nd-flow-criteria.l"
+#line 74 "nd-flow-criteria.l"
 return FLOW_APPLICATION_CATEGORY;
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 74 "nd-flow-criteria.l"
+#line 75 "nd-flow-criteria.l"
 return FLOW_DOMAIN_CATEGORY;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 75 "nd-flow-criteria.l"
+#line 76 "nd-flow-criteria.l"
 return FLOW_DOMAIN_CATEGORY;
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 76 "nd-flow-criteria.l"
+#line 77 "nd-flow-criteria.l"
 return FLOW_PROTOCOL;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 77 "nd-flow-criteria.l"
+#line 78 "nd-flow-criteria.l"
 return FLOW_PROTOCOL;
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 78 "nd-flow-criteria.l"
+#line 79 "nd-flow-criteria.l"
 return FLOW_PROTOCOL;
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 79 "nd-flow-criteria.l"
+#line 80 "nd-flow-criteria.l"
 return FLOW_PROTOCOL;
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 80 "nd-flow-criteria.l"
+#line 81 "nd-flow-criteria.l"
 return FLOW_PROTOCOL_CATEGORY;
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 81 "nd-flow-criteria.l"
+#line 82 "nd-flow-criteria.l"
 return FLOW_PROTOCOL_CATEGORY;
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 82 "nd-flow-criteria.l"
+#line 83 "nd-flow-criteria.l"
 return FLOW_DETECTED_HOSTNAME;
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 83 "nd-flow-criteria.l"
+#line 84 "nd-flow-criteria.l"
 return FLOW_TLS_VERSION;
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 84 "nd-flow-criteria.l"
+#line 85 "nd-flow-criteria.l"
 return FLOW_TLS_CIPHER;
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 85 "nd-flow-criteria.l"
+#line 86 "nd-flow-criteria.l"
 return FLOW_TLS_VERSION;
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 86 "nd-flow-criteria.l"
+#line 87 "nd-flow-criteria.l"
 return FLOW_TLS_CIPHER;
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 87 "nd-flow-criteria.l"
+#line 88 "nd-flow-criteria.l"
 return FLOW_TLS_ECH;
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 88 "nd-flow-criteria.l"
+#line 89 "nd-flow-criteria.l"
 return FLOW_TLS_ESNI;
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 89 "nd-flow-criteria.l"
+#line 90 "nd-flow-criteria.l"
 return FLOW_ORIGIN;
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 90 "nd-flow-criteria.l"
+#line 91 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_ORIGIN_LOCAL; return FLOW_ORIGIN_LOCAL;
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 91 "nd-flow-criteria.l"
+#line 92 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_ORIGIN_OTHER; return FLOW_ORIGIN_OTHER;
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 92 "nd-flow-criteria.l"
+#line 93 "nd-flow-criteria.l"
 yylval->us_number = _NDFP_ORIGIN_UNKNOWN; return FLOW_ORIGIN_UNKNOWN;
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 93 "nd-flow-criteria.l"
+#line 94 "nd-flow-criteria.l"
 return FLOW_CT_MARK;
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 94 "nd-flow-criteria.l"
+#line 95 "nd-flow-criteria.l"
 yylval->bool_number=true; return VALUE_TRUE;
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 95 "nd-flow-criteria.l"
+#line 96 "nd-flow-criteria.l"
 yylval->bool_number=false; return VALUE_FALSE;
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 96 "nd-flow-criteria.l"
+#line 97 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_MAC;
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 97 "nd-flow-criteria.l"
+#line 98 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_IPV4_CIDR;
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 98 "nd-flow-criteria.l"
+#line 99 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_IPV4;
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 99 "nd-flow-criteria.l"
+#line 100 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_IPV6;
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 100 "nd-flow-criteria.l"
+#line 101 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_IPV6_CIDR;
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 101 "nd-flow-criteria.l"
+#line 102 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_IPV6;
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 102 "nd-flow-criteria.l"
+#line 103 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_NAME;
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 103 "nd-flow-criteria.l"
+#line 104 "nd-flow-criteria.l"
 strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_REGEX;
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 104 "nd-flow-criteria.l"
+#line 105 "nd-flow-criteria.l"
 yylval->ul_number=(unsigned long)strtold(yytext, NULL); return VALUE_NUMBER;
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 105 "nd-flow-criteria.l"
+#line 106 "nd-flow-criteria.l"
 yylval->ul_number=(unsigned long)strtold(yytext, NULL); return VALUE_NUMBER;
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 106 "nd-flow-criteria.l"
+#line 107 "nd-flow-criteria.l"
 return CMP_EQUAL;
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 107 "nd-flow-criteria.l"
+#line 108 "nd-flow-criteria.l"
 return CMP_NOTEQUAL;
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 108 "nd-flow-criteria.l"
+#line 109 "nd-flow-criteria.l"
 return CMP_GTHANEQUAL;
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 109 "nd-flow-criteria.l"
+#line 110 "nd-flow-criteria.l"
 return CMP_LTHANEQUAL;
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 110 "nd-flow-criteria.l"
+#line 111 "nd-flow-criteria.l"
 return BOOL_AND;
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 111 "nd-flow-criteria.l"
+#line 112 "nd-flow-criteria.l"
 return BOOL_AND;
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 112 "nd-flow-criteria.l"
+#line 113 "nd-flow-criteria.l"
 return BOOL_OR;
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 113 "nd-flow-criteria.l"
+#line 114 "nd-flow-criteria.l"
 return BOOL_OR;
 	YY_BREAK
 case 83:
 /* rule 83 can match eol */
 YY_RULE_SETUP
-#line 114 "nd-flow-criteria.l"
+#line 115 "nd-flow-criteria.l"
 /* Skip whitespace */
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 115 "nd-flow-criteria.l"
+#line 116 "nd-flow-criteria.l"
 return (int)yytext[0];
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 116 "nd-flow-criteria.l"
+#line 117 "nd-flow-criteria.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1627 "nd-flow-criteria.c"
+#line 1629 "nd-flow-criteria.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2014,7 +2017,11 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 				case EOB_ACT_END_OF_FILE:
 					{
 					if ( yywrap( yyscanner ) )
+#ifdef YY_FLEX_LEX_COMPAT
 						return 0;
+#else
+						return EOF;
+#endif
 
 					if ( ! yyg->yy_did_buffer_switch_on_eof )
 						YY_NEW_FILE;
@@ -2785,6 +2792,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 116 "nd-flow-criteria.l"
+#line 117 "nd-flow-criteria.l"
 
 

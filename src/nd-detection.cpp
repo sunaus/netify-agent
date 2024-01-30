@@ -34,6 +34,7 @@
 #include "nd-risks.hpp"
 #include "nd-sha1.h"
 #include "nd-tls-alpn.hpp"
+#include "nd-util.hpp"
 
 #include "ndpi_protocol_ids.h"
 
@@ -194,6 +195,110 @@ void *ndDetectionThread::Entry(void) {
     return nullptr;
 }
 
+ndProto::Id ndDetectionThread::ProtocolLookup(uint16_t id,
+  ndDetectionQueueEntry *entry) {
+    if (id == NDPI_PROTOCOL_UNKNOWN)
+        return ndProto::Id::UNKNOWN;
+
+    auto it = ndProto::nDPI::Protos.find(id);
+    if (it == ndProto::nDPI::Protos.end())
+        return ndProto::Id::TODO;
+
+    auto it_pm = ndProto::PortMap.find(it->second);
+    if (it_pm != ndProto::PortMap.end()) {
+        for (auto &it_entry : it_pm->second) {
+            if (ndEF->lower_addr.GetPort() != it_entry.first &&
+              ndEF->upper_addr.GetPort() != it_entry.first)
+                continue;
+            return it_entry.second;
+        }
+    }
+
+    return it->second;
+}
+
+void ndDetectionThread::HashCacheLookup(
+  ndDetectionQueueEntry *entry, bool insert) {
+
+    if (fhc != nullptr && ! ndEF->flags.fhc_hit &&
+      ndEF->ip_protocol != IPPROTO_ICMP &&
+      ndEF->ip_protocol != IPPROTO_ICMPV6 &&
+      ndEF->ip_protocol != IPPROTO_IGMP &&
+      ndEF->GetMasterProtocol() != ndProto::Id::DNS)
+    {
+        if (insert) {
+            if (! ndEF->flags.fhc_hit &&
+              ! ndEF->flags.detection_guessed &&
+              (ndEF->detected_protocol != ndProto::Id::UNKNOWN ||
+                ndEF->detected_application != ND_APP_UNKNOWN))
+            {
+                fhc->Insert(ndEF);
+            }
+            return;
+        }
+
+        if (ndEF->detected_protocol == ndProto::Id::UNKNOWN ||
+          ndEF->detected_application == ND_APP_UNKNOWN)
+        {
+            ndFlowHashCacheEntry result;
+            if (fhc->Lookup(ndEF->digest_lower, result)) {
+                if (! equal(result.digest.begin(),
+                      result.digest.end(),
+                      ndEF->digest_mdata.begin()))
+                {
+                    ndEF->flags.fhc_hit = true;
+
+                    if (result.proto_id != ndProto::Id::UNKNOWN &&
+                      result.proto_id != ndEF->detected_protocol)
+                    {
+#ifdef _ND_LOG_FHC
+                        string proto_from = nd_proto_get_name(
+                          ndEF->detected_protocol);
+                        string proto_to = nd_proto_get_name(
+                          result.proto_id);
+                        nd_dprintf(
+                          "%s: updated proto from flow "
+                          "hash cache: %s -> %s\n",
+                          tag.c_str(), proto_from.c_str(),
+                          proto_to.c_str());
+#endif
+                        ndEF->detected_protocol = result.proto_id;
+                    }
+
+                    if (result.app_id != ND_APP_UNKNOWN &&
+                      result.app_id != ndEF->detected_application)
+                    {
+#ifdef _ND_LOG_FHC
+                        string app_from;
+                        ndi.apps.Lookup(
+                          ndEF->detected_application, app_from);
+                        string app_to;
+                        ndi.apps.Lookup(result.app_id, app_to);
+                        nd_dprintf(
+                          "%s: updated app from flow hash "
+                          "cache: %s -> %s\n",
+                          tag.c_str(), app_from.c_str(),
+                          app_to.c_str());
+#endif
+                        ndEF->detected_application = result.app_id;
+                        ndi.apps.Lookup(result.app_id,
+                          ndEF->detected_application_name);
+                    }
+
+                    ndEF->digest_mdata.assign(
+                      result.digest.begin(), result.digest.end());
+#ifdef _ND_LOG_FHC
+                    nd_dprintf(
+                      "%s: resurrected flow metadata "
+                      "hash.\n",
+                      tag.c_str());
+#endif
+                }
+            }
+        }
+    }
+}
+
 void ndDetectionThread::ProcessPacketQueue(void) {
     ndDetectionQueueEntry *entry;
 
@@ -230,7 +335,7 @@ void ndDetectionThread::ProcessPacketQueue(void) {
 
                 ProcessFlow(entry);
 
-                if (ndEF->detected_protocol == ND_PROTO_UNKNOWN)
+                if (ndEF->detected_protocol == ndProto::Id::UNKNOWN)
                     SetGuessedProtocol(entry);
 
                 SetDetectionComplete(entry);
@@ -286,10 +391,9 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
           ndEFNF->detected_protocol_stack[1],
           ndEF->detected_protocol);
 #endif
-        nd_proto_id_t id = nd_ndpi_proto_find(
-          ndpi_rc.app_protocol, ndEF);
+        ndProto::Id id = ProtocolLookup(ndpi_rc.app_protocol, entry);
 
-        if (id != ND_PROTO_TODO) {
+        if (id != ndProto::Id::TODO) {
             ndEF->detected_protocol = id;
 #ifdef _ND_LOG_STUN
             nd_dprintf(
@@ -301,21 +405,21 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         }
     }
 
-    if (ndEF->detected_protocol == ND_PROTO_UNKNOWN &&
+    if (ndEF->detected_protocol == ndProto::Id::UNKNOWN &&
       ndpi_rc.master_protocol != NDPI_PROTOCOL_UNKNOWN)
     {
-        ndEF->detected_protocol = nd_ndpi_proto_find(
-          ndpi_rc.master_protocol, ndEF);
+        ndEF->detected_protocol = ProtocolLookup(
+          ndpi_rc.master_protocol, entry);
     }
 
-    if (ndEF->detected_protocol == ND_PROTO_UNKNOWN &&
+    if (ndEF->detected_protocol == ndProto::Id::UNKNOWN &&
       ndpi_rc.app_protocol != NDPI_PROTOCOL_UNKNOWN)
     {
-        ndEF->detected_protocol = nd_ndpi_proto_find(
-          ndpi_rc.app_protocol, ndEF);
+        ndEF->detected_protocol = ProtocolLookup(
+          ndpi_rc.app_protocol, entry);
 
 #if _ND_LOG_PROTO_UNKNOWN
-        if (ndEF->detected_protocol != ND_PROTO_UNKNOWN) {
+        if (ndEF->detected_protocol != ndProto::Id::UNKNOWN) {
             char proto_name[64];
             ndpi_protocol2name(ndpi, ndpi_rc, proto_name,
               sizeof(proto_name));
@@ -327,7 +431,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
 #endif
     }
 
-    if (ndEF->detected_protocol == ND_PROTO_TODO) {
+    if (ndEF->detected_protocol == ndProto::Id::TODO) {
         char proto_name[64];
         ndpi_protocol2name(ndpi, ndpi_rc, proto_name,
           sizeof(proto_name));
@@ -341,7 +445,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
     bool check_extra_packets = (ndEFNF->extra_packets_func != nullptr);
 
     if (ndEF->flags.detection_init.load() == false &&
-      ndEF->detected_protocol != ND_PROTO_UNKNOWN)
+      ndEF->detected_protocol != ndProto::Id::UNKNOWN)
     {
         ProcessFlow(entry);
         flow_update = true;
@@ -351,8 +455,8 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         ndEF->flags.detection_updated = false;
 
         switch (ndEF->GetMasterProtocol()) {
-        case ND_PROTO_TLS:
-        case ND_PROTO_QUIC:
+        case ndProto::Id::TLS:
+        case ndProto::Id::QUIC:
             if (ndEF->tls.client_sni.empty() &&
               ! ndEF->host_server_name.empty())
             {
@@ -473,10 +577,10 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             }
 
             break;
-        case ND_PROTO_DNS:
+        case ndProto::Id::DNS:
             // nd_dprintf("DNS flow updated.\n");
             break;
-        case ND_PROTO_MDNS:
+        case ndProto::Id::MDNS:
             if (ndEF->HasMDNSDomainName()) {
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
@@ -486,10 +590,10 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             //     ndEFNF->host_server_name,
             //     ndEF->mdns.domain_name);
             break;
-        case ND_PROTO_LLMNR:
+        case ndProto::Id::LLMNR:
             // nd_dprintf("LLMNR flow updated.\n");
             break;
-        case ND_PROTO_SSH:
+        case ndProto::Id::SSH:
             if (ndEF->ssh.server_agent.empty() &&
               ndEFNFP.ssh.server_signature[0] != '\0')
             {
@@ -500,7 +604,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                 ndEF->flags.detection_updated = true;
             }
             break;
-        case ND_PROTO_BITTORRENT:
+        case ndProto::Id::BITTORRENT:
             if (ndEF->bt.info_hash.empty() &&
               ndEFNFP.bittorrent.hash[0] != '\0')
             {
@@ -514,13 +618,13 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         }
     }
 #if 0
-    if (ndEF->detected_protocol == ND_PROTO_MDNS) {
+    if (ndEF->detected_protocol == ndProto::Id::MDNS) {
         nd_dprintf("mDNS flow updated: packets: %lu, check extra packets: %s.\n",
             ndEF->stats.detection_packets.load(), (check_extra_packets) ? "yes" : "no");
     }
 #endif
-    if (ndEF->GetMasterProtocol() == ND_PROTO_TLS ||
-      ndEF->GetMasterProtocol() == ND_PROTO_QUIC)
+    if (ndEF->GetMasterProtocol() == ndProto::Id::TLS ||
+      ndEF->GetMasterProtocol() == ndProto::Id::QUIC)
     {
         if (ndEFNF->tls_quic.certificate_processed)
             check_extra_packets = false;
@@ -586,11 +690,11 @@ bool ndDetectionThread::ProcessALPN(
                   "%s\n",
                   tag.c_str(), detected_alpn,
                   ndEF->detected_protocol_name.c_str(),
-                  nd_proto_get_name(alpn->second));
+                  ndProto::GetName(alpn->second));
             }
 
             ndEF->detected_protocol = alpn->second;
-            ndEF->detected_protocol_name = nd_proto_get_name(
+            ndEF->detected_protocol_name = ndProto::GetName(
               alpn->second);
 
             flow_update = true;
@@ -605,19 +709,20 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
 
     lock_guard<recursive_mutex> lg(ndEF->lock);
 
-    ndi.addr_types.Classify(ndEF->lower_type, ndEF->lower_addr);
-    ndi.addr_types.Classify(ndEF->upper_type, ndEF->upper_addr);
+    ndi.addr_lookup.Classify(ndEF->lower_type, ndEF->lower_addr);
+    ndi.addr_lookup.Classify(ndEF->upper_type, ndEF->upper_addr);
 
-    if (dhc != nullptr && ndEF->GetMasterProtocol() != ND_PROTO_DNS)
+    if (dhc != nullptr &&
+      ndEF->GetMasterProtocol() != ndProto::Id::DNS)
     {
         string hostname;
 
-        if (ndEF->lower_type == ndAddr::atOTHER)
+        if (ndEF->lower_type == ndAddr::Type::OTHER)
             ndEF->flags.dhc_hit = dhc->Lookup(
               ndEF->lower_addr, hostname);
 
         if (! ndEF->flags.dhc_hit.load() &&
-          ndEF->upper_type == ndAddr::atOTHER)
+          ndEF->upper_type == ndAddr::Type::OTHER)
         {
             ndEF->flags.dhc_hit = dhc->Lookup(
               ndEF->upper_addr, hostname);
@@ -635,94 +740,94 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     // Determine application based on master protocol metadata
     // for Protocol / Application "Twins"
     switch (ndEF->detected_protocol) {
-    case ND_PROTO_APPLE_PUSH:
+    case ndProto::Id::APPLE_PUSH:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.apple-push"));
         break;
 
-    case ND_PROTO_AVAST:
+    case ndProto::Id::AVAST:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.avast"));
         break;
 
-    case ND_PROTO_FACEBOOK_VOIP:
+    case ndProto::Id::FACEBOOK_VOIP:
         // TODO: netify.meta-messaging or netify.facebook-messager?
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.meta-messaging"));
         break;
 
-    case ND_PROTO_LINE_CALL:
+    case ndProto::Id::LINE_CALL:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.line"));
         break;
 
-    case ND_PROTO_NEST_LOG_SINK:
+    case ndProto::Id::NEST_LOG_SINK:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.nest"));
         break;
 
-    case ND_PROTO_SPOTIFY:
+    case ndProto::Id::SPOTIFY:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.spotify"));
         break;
 
-    case ND_PROTO_SIGNAL_CALL:
+    case ndProto::Id::SIGNAL_CALL:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.signal"));
         break;
 
-    case ND_PROTO_SKYPE_TEAMS_CALL:
+    case ndProto::Id::SKYPE_TEAMS_CALL:
         // TODO: netify.skype or netify.teams?
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.teams"));
         break;
 
-    case ND_PROTO_STEAM:
+    case ndProto::Id::STEAM:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.steam"));
         break;
 
-    case ND_PROTO_SYNCTHING:
+    case ndProto::Id::SYNCTHING:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.syncthing"));
         break;
 
-    case ND_PROTO_TEAMVIEWER:
+    case ndProto::Id::TEAMVIEWER:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.teamviewer"));
         break;
 
-    case ND_PROTO_TELEGRAM_VOIP:
+    case ndProto::Id::TELEGRAM_VOIP:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.telegram"));
         break;
 
-    case ND_PROTO_TIVOCONNECT:
+    case ndProto::Id::TIVOCONNECT:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.tivo"));
         break;
 
-    case ND_PROTO_TPLINK_SHP:
+    case ndProto::Id::TPLINK_SHP:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.tp-link"));
         break;
 
-    case ND_PROTO_TUYA_LP:
+    case ndProto::Id::TUYA_LP:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.tuya-smart"));
         break;
 
-    case ND_PROTO_UBNTAC2:
+    case ndProto::Id::UBNTAC2:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.ubiquiti"));
         break;
 
-    case ND_PROTO_WHATSAPP_CALL:
+    case ndProto::Id::WHATSAPP_CALL:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.whatsapp"));
         break;
 
-    case ND_PROTO_ZOOM:
+    case ndProto::Id::ZOOM:
         SetDetectedApplication(entry,
           ndi.apps.Lookup("netify.zoom"));
         break;
@@ -748,10 +853,10 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
 
     // Determine application by network CIDR if still unknown.
     // DNS flows excluded...
-    if (ndEF->GetMasterProtocol() != ND_PROTO_DNS &&
+    if (ndEF->GetMasterProtocol() != ndProto::Id::DNS &&
       ndEF->detected_application == ND_APP_UNKNOWN)
     {
-        if (ndEF->lower_type == ndAddr::atOTHER) {
+        if (ndEF->lower_type == ndAddr::Type::OTHER) {
             SetDetectedApplication(entry,
               ndi.apps.Find(ndEF->lower_addr));
 
@@ -771,8 +876,8 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
 
     // Additional protocol-specific processing...
     switch (ndEF->GetMasterProtocol()) {
-    case ND_PROTO_TLS:
-    case ND_PROTO_QUIC:
+    case ndProto::Id::TLS:
+    case ndProto::Id::QUIC:
         ndEF->tls.version = ndEFNFP.tls_quic.ssl_version;
         ndEF->tls.cipher_suite = ndEFNFP.tls_quic.server_cipher;
 
@@ -830,8 +935,8 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
               ndEFNFP.tls_quic.encrypted_sni.esni);
         }
         break;
-    case ND_PROTO_HTTP:
-    case ND_PROTO_SSDP:
+    case ndProto::Id::HTTP:
+    case ndProto::Id::SSDP:
         if (ndEFNF->http.user_agent != nullptr) {
             ndEF->http.user_agent.assign(ndEFNF->http.user_agent);
 
@@ -851,19 +956,19 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         }
 
         break;
-    case ND_PROTO_DHCP:
+    case ndProto::Id::DHCP:
         if (ndEFNFP.dhcp.fingerprint[0] != '\0')
             ndEF->dhcp.fingerprint.assign(ndEFNFP.dhcp.fingerprint);
         if (ndEFNFP.dhcp.class_ident[0] != '\0')
             ndEF->dhcp.class_ident.assign(ndEFNFP.dhcp.class_ident);
         break;
-    case ND_PROTO_SSH:
+    case ndProto::Id::SSH:
         if (ndEFNFP.ssh.client_signature[0] != '\0')
             ndEF->ssh.client_agent.assign(ndEFNFP.ssh.client_signature);
         if (ndEFNFP.ssh.server_signature[0] != '\0')
             ndEF->ssh.server_agent.assign(ndEFNFP.ssh.server_signature);
         break;
-    case ND_PROTO_BITTORRENT:
+    case ndProto::Id::BITTORRENT:
         if (ndEFNFP.bittorrent.hash[0] != '\0') {
             ndEF->bt.info_hash.assign(SHA1_DIGEST_LENGTH, 0);
             memcpy(&ndEF->bt.info_hash[0],
@@ -877,57 +982,58 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
 
     HashCacheLookup(entry);
 
-    for (int t = ndFlow::TYPE_LOWER; t < ndFlow::TYPE_MAX; t++)
-    {
+    for (int t = 0; t < 2; t++) {
         const ndAddr *mac, *ip;
-        ndAddr::Type type = ndAddr::atNONE;
+        ndAddr::Type type = ndAddr::Type::NONE;
 
-        if (t == ndFlow::TYPE_LOWER &&
-          (ndEF->lower_type == ndAddr::atLOCAL ||
-            ndEF->lower_type == ndAddr::atLOCALNET ||
-            ndEF->lower_type == ndAddr::atRESERVED))
+        if (t == 0 &&
+          (ndEF->lower_type == ndAddr::Type::LOCAL ||
+            ndEF->lower_type == ndAddr::Type::LOCALNET ||
+            ndEF->lower_type == ndAddr::Type::RESERVED))
         {
-            ndi.addr_types.Classify(type, ndEF->lower_mac);
+            ndi.addr_lookup.Classify(type, ndEF->lower_mac);
 
             mac = &ndEF->lower_mac;
             ip = &ndEF->lower_addr;
         }
-        else if (t == ndFlow::TYPE_UPPER &&
-          (ndEF->upper_type == ndAddr::atLOCAL ||
-            ndEF->upper_type == ndAddr::atLOCALNET ||
-            ndEF->upper_type == ndAddr::atRESERVED))
+        else if (
+          (ndEF->upper_type == ndAddr::Type::LOCAL ||
+            ndEF->upper_type == ndAddr::Type::LOCALNET ||
+            ndEF->upper_type == ndAddr::Type::RESERVED))
         {
-            ndi.addr_types.Classify(type, ndEF->upper_mac);
+            ndi.addr_lookup.Classify(type, ndEF->upper_mac);
 
             mac = &ndEF->upper_mac;
             ip = &ndEF->upper_addr;
         }
-        else continue;
 
-        if (type != ndAddr::atOTHER || mac == nullptr || ip == nullptr)
+        if (type != ndAddr::Type::OTHER || mac == nullptr ||
+          ip == nullptr)
             continue;
 
         ndEF->iface->PushEndpoint(*mac, *ip);
     }
 
 #ifdef _ND_ENABLE_CONNTRACK
-    if (thread_conntrack != nullptr && ndEF->iface->role == ndIR_WAN &&
-      ((ndEF->lower_type == ndAddr::atLOCAL &&
-         ndEF->upper_type == ndAddr::atOTHER) ||
-        (ndEF->lower_type == ndAddr::atOTHER &&
-          ndEF->upper_type == ndAddr::atLOCAL)))
+    if (thread_conntrack != nullptr &&
+      ndEF->iface->role == ndInterfaceRole::WAN &&
+      ((ndEF->lower_type == ndAddr::Type::LOCAL &&
+         ndEF->upper_type == ndAddr::Type::OTHER) ||
+        (ndEF->lower_type == ndAddr::Type::OTHER &&
+          ndEF->upper_type == ndAddr::Type::LOCAL)))
     {
         // Update flow with any collected information from the
         // connection tracker (CT ID, mark, NAT'd).
         thread_conntrack->UpdateFlow(ndEF);
     }
 #endif
-    ndEF->detected_protocol_name = nd_proto_get_name(
+    ndEF->detected_protocol_name = ndProto::GetName(
       ndEF->detected_protocol);
 
-    if (ndEF->detected_protocol != ND_PROTO_UNKNOWN) {
+    if (ndEF->detected_protocol != ndProto::Id::UNKNOWN) {
         ndEF->category.protocol = ndi.categories.Lookup(
-          ndCategories::TYPE_PROTO, (unsigned)ndEF->detected_protocol);
+          ndCategories::Type::PROTO,
+          (unsigned)ndEF->detected_protocol);
     }
 
     if (ndEFNF->host_server_name[0] != '\0') {
@@ -941,32 +1047,34 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
 
     ndEF->UpdateLowerMaps();
 
-    for (vector<uint8_t *>::const_iterator i =
-           ndGC.privacy_filter_mac.begin();
-         i != ndGC.privacy_filter_mac.end() &&
-         ndEF->privacy_mask !=
-           (ndFlow::PRIVATE_LOWER | ndFlow::PRIVATE_UPPER);
-         i++)
+    for (
+      vector<uint8_t *>::const_iterator i =
+        ndGC.privacy_filter_mac.begin();
+      i != ndGC.privacy_filter_mac.end() &&
+      ndEF->privacy_mask !=
+        (ndFlow::PrivacyMask::LOWER | ndFlow::PrivacyMask::UPPER);
+      i++)
     {
 #if defined(__linux__)
         if (! memcmp((*i), ndEF->lower_mac.addr.ll.sll_addr, ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PRIVATE_LOWER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
         if (! memcmp((*i), ndEF->upper_mac.addr.ll.sll_addr, ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PRIVATE_UPPER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
 #elif defined(__FreeBSD__)
         if (! memcmp((*i), LLADDR(&ndEF->lower_mac.addr.dl), ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PRIVATE_LOWER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
         if (! memcmp((*i), LLADDR(&ndEF->upper_mac.addr.dl), ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PRIVATE_UPPER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
 #endif
     }
 
-    for (vector<struct sockaddr *>::const_iterator i =
-           ndGC.privacy_filter_host.begin();
-         i != ndGC.privacy_filter_host.end() &&
-         ndEF->privacy_mask !=
-           (ndFlow::PRIVATE_LOWER | ndFlow::PRIVATE_UPPER);
-         i++)
+    for (
+      vector<struct sockaddr *>::const_iterator i =
+        ndGC.privacy_filter_host.begin();
+      i != ndGC.privacy_filter_host.end() &&
+      ndEF->privacy_mask !=
+        (ndFlow::PrivacyMask::LOWER | ndFlow::PrivacyMask::UPPER);
+      i++)
     {
         struct sockaddr_in *sa_in;
         struct sockaddr_in6 *sa_in6;
@@ -977,22 +1085,22 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
             if (! memcmp(&ndEF->lower_addr.addr.in.sin_addr,
                   &sa_in->sin_addr,
                   sizeof(struct in_addr)))
-                ndEF->privacy_mask |= ndFlow::PRIVATE_LOWER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
             if (! memcmp(&ndEF->upper_addr.addr.in.sin_addr,
                   &sa_in->sin_addr,
                   sizeof(struct in_addr)))
-                ndEF->privacy_mask |= ndFlow::PRIVATE_UPPER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
             break;
         case AF_INET6:
             sa_in6 = reinterpret_cast<struct sockaddr_in6 *>((*i));
             if (! memcmp(&ndEF->lower_addr.addr.in6.sin6_addr,
                   &sa_in6->sin6_addr,
                   sizeof(struct in6_addr)))
-                ndEF->privacy_mask |= ndFlow::PRIVATE_LOWER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
             if (! memcmp(&ndEF->upper_addr.addr.in6.sin6_addr,
                   &sa_in6->sin6_addr,
                   sizeof(struct in6_addr)))
-                ndEF->privacy_mask |= ndFlow::PRIVATE_UPPER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
             break;
         }
 
@@ -1007,7 +1115,7 @@ void ndDetectionThread::ProcessRisks(ndDetectionQueueEntry *entry) {
     if (ndEFNF->risk != NDPI_NO_RISK) {
         for (unsigned i = 0; i < NDPI_MAX_RISK; i++) {
             if (NDPI_ISSET_BIT(ndEFNF->risk, i) != 0) {
-                ndEF->risk.risks.insert(nd_ndpi_risk_find(i));
+                ndEF->risk.risks.insert(ndRisk::nDPI::Find(i));
             }
         }
 
@@ -1025,7 +1133,7 @@ void ndDetectionThread::SetDetectedApplication(
     ndi.apps.Lookup(app_id, ndEF->detected_application_name);
 
     ndEF->category.application = ndi.categories.Lookup(
-      ndCategories::TYPE_APP, app_id);
+      ndCategories::Type::APP, app_id);
 }
 
 void ndDetectionThread::SetGuessedProtocol(
@@ -1035,12 +1143,12 @@ void ndDetectionThread::SetGuessedProtocol(
       ndEFNF, 1, &guessed);
 
     if (guessed) {
-        ndEF->detected_protocol = nd_ndpi_proto_find(
-          ndpi_rc.master_protocol, ndEF);
+        ndEF->detected_protocol = ProtocolLookup(
+          ndpi_rc.master_protocol, entry);
 
-        if (ndEF->detected_protocol == ND_PROTO_UNKNOWN) {
-            ndEF->detected_protocol = nd_ndpi_proto_find(
-              ndpi_rc.app_protocol, ndEF);
+        if (ndEF->detected_protocol == ndProto::Id::UNKNOWN) {
+            ndEF->detected_protocol = ProtocolLookup(
+              ndpi_rc.app_protocol, entry);
         }
     }
 
@@ -1068,15 +1176,16 @@ void ndDetectionThread::FlowUpdate(ndDetectionQueueEntry *entry) {
       ndEF->detected_application != ND_APP_UNKNOWN)
     {
         ndEF->category.application = ndi.categories.Lookup(
-          ndCategories::TYPE_APP,
+          ndCategories::Type::APP,
           (unsigned)ndEF->detected_application);
     }
 
     if (ndEF->category.protocol == ND_CAT_UNKNOWN &&
-      ndEF->detected_protocol != ND_PROTO_UNKNOWN)
+      ndEF->detected_protocol != ndProto::Id::UNKNOWN)
     {
         ndEF->category.protocol = ndi.categories.Lookup(
-          ndCategories::TYPE_PROTO, (unsigned)ndEF->detected_protocol);
+          ndCategories::Type::PROTO,
+          (unsigned)ndEF->detected_protocol);
     }
 
     if (ndEF->category.domain == ND_CAT_UNKNOWN &&
@@ -1104,43 +1213,44 @@ void ndDetectionThread::FlowUpdate(ndDetectionQueueEntry *entry) {
             }
 
             if (nsd.pid > -1) {
-                ndEF->detected_protocol = (nd_proto_id_t)nsd.pid;
+                ndEF->detected_protocol = (ndProto::Id)nsd.pid;
 
                 ndEF->category.protocol = ndi.categories.Lookup(
-                  ndCategories::TYPE_PROTO,
+                  ndCategories::Type::PROTO,
                   (unsigned)ndEF->detected_protocol);
                 ndEF->detected_protocol_name =
-                  nd_proto_get_name(ndEF->detected_protocol);
+                  ndProto::GetName(ndEF->detected_protocol);
             }
 
             SetDetectionComplete(entry);
         }
     }
 
-    ndPluginProcessor::Event event = ndPluginProcessor::EVENT_DPI_NEW;
+    ndPluginProcessor::Event event = ndPluginProcessor::Event::DPI_NEW;
 
     if (ndEF->flags.detection_complete.load())
-        event = ndPluginProcessor::EVENT_DPI_COMPLETE;
+        event = ndPluginProcessor::Event::DPI_COMPLETE;
     else if (ndEF->flags.detection_updated.load())
-        event = ndPluginProcessor::EVENT_DPI_UPDATE;
+        event = ndPluginProcessor::Event::DPI_UPDATE;
 
     ndi.plugins.BroadcastProcessorEvent(event, ndEF);
 
     if (ndGC_DEBUG || ndGC.h_flow != stderr) {
         bool output = false;
-        uint8_t flags = ndFlow::PRINTF_METADATA;
+        ndFlags<ndFlow::PrintFlags> flags = ndFlow::PrintFlags::METADATA;
 
         if (ndGC.verbosity > 1)  // -vv
-            flags |= ndFlow::PRINTF_RISKS;
+            flags |= ndFlow::PrintFlags::RISKS;
         if (ndGC.verbosity > 2)  // -vvv
-            flags |= ndFlow::PRINTF_STATS;
+            flags |= ndFlow::PrintFlags::STATS;
         if (ndGC.verbosity > 3)  // -vvvv
-            flags |= ndFlow::PRINTF_STATS_FULL;
+            flags |= ndFlow::PrintFlags::STATS_FULL;
         if (ndGC.verbosity > 4)  // -vvvvv
-            flags |= ndFlow::PRINTF_MACS;
+            flags |= ndFlow::PrintFlags::MACS;
         if (ndGC.verbosity > 5)  // -vvvvvv
-            flags |= ndFlow::PRINTF_HASHES;
-        if (ndGC.verbosity > 6) flags = ndFlow::PRINTF_ALL;
+            flags |= ndFlow::PrintFlags::HASHES;
+        if (ndGC.verbosity > 6)
+            flags = ndFlow::PrintFlags::ALL;
 
         if (ndGC.debug_flow_print_exprs.size()) {
             for (auto &it : ndGC.debug_flow_print_exprs) {
@@ -1159,106 +1269,24 @@ void ndDetectionThread::FlowUpdate(ndDetectionQueueEntry *entry) {
             output = true;
 
         switch (event) {
-        case ndPluginProcessor::EVENT_DPI_NEW:
-            if (! (ndGC.verbosity_flags &
-                  ndGlobalConfig::VFLAG_EVENT_DPI_NEW))
+        case ndPluginProcessor::Event::DPI_NEW:
+            if (! ndFlagBoolean(ndGC.verbosity_flags,
+                  ndVerbosityFlags::EVENT_DPI_NEW))
                 output = false;
             break;
-        case ndPluginProcessor::EVENT_DPI_UPDATE:
-            if (! (ndGC.verbosity_flags &
-                  ndGlobalConfig::VFLAG_EVENT_DPI_UPDATE))
+        case ndPluginProcessor::Event::DPI_UPDATE:
+            if (! ndFlagBoolean(ndGC.verbosity_flags,
+                  ndVerbosityFlags::EVENT_DPI_UPDATE))
                 output = false;
             break;
-        case ndPluginProcessor::EVENT_DPI_COMPLETE:
-            if (! (ndGC.verbosity_flags &
-                  ndGlobalConfig::VFLAG_EVENT_DPI_COMPLETE))
+        case ndPluginProcessor::Event::DPI_COMPLETE:
+            if (! ndFlagBoolean(ndGC.verbosity_flags,
+                  ndVerbosityFlags::EVENT_DPI_COMPLETE))
                 output = false;
             break;
         default: break;
         }
 
         if (output) ndEF->Print(flags);
-    }
-}
-
-void ndDetectionThread::HashCacheLookup(
-  ndDetectionQueueEntry *entry, bool insert) {
-
-    if (fhc != nullptr && ! ndEF->flags.fhc_hit &&
-      ndEF->ip_protocol != IPPROTO_ICMP &&
-      ndEF->ip_protocol != IPPROTO_ICMPV6 &&
-      ndEF->ip_protocol != IPPROTO_IGMP &&
-      ndEF->GetMasterProtocol() != ND_PROTO_DNS)
-    {
-        if (insert) {
-            if (! ndEF->flags.fhc_hit &&
-              ! ndEF->flags.detection_guessed &&
-              (ndEF->detected_protocol != ND_PROTO_UNKNOWN ||
-                ndEF->detected_application != ND_APP_UNKNOWN))
-            {
-                fhc->Insert(ndEF);
-            }
-            return;
-        }
-
-        if (ndEF->detected_protocol == ND_PROTO_UNKNOWN ||
-          ndEF->detected_application == ND_APP_UNKNOWN)
-        {
-            ndFlowHashCacheEntry result;
-            if (fhc->Lookup(ndEF->digest_lower, result)) {
-                if (! equal(result.digest.begin(),
-                      result.digest.end(),
-                      ndEF->digest_mdata.begin()))
-                {
-                    ndEF->flags.fhc_hit = true;
-
-                    if (result.proto_id != ND_PROTO_UNKNOWN &&
-                      result.proto_id != ndEF->detected_protocol)
-                    {
-#ifdef _ND_LOG_FHC
-                        string proto_from = nd_proto_get_name(
-                          ndEF->detected_protocol);
-                        string proto_to = nd_proto_get_name(
-                          result.proto_id);
-                        nd_dprintf(
-                          "%s: updated proto from flow "
-                          "hash cache: %s -> %s\n",
-                          tag.c_str(), proto_from.c_str(),
-                          proto_to.c_str());
-#endif
-                        ndEF->detected_protocol = result.proto_id;
-                    }
-
-                    if (result.app_id != ND_APP_UNKNOWN &&
-                      result.app_id != ndEF->detected_application)
-                    {
-#ifdef _ND_LOG_FHC
-                        string app_from;
-                        ndi.apps.Lookup(
-                          ndEF->detected_application, app_from);
-                        string app_to;
-                        ndi.apps.Lookup(result.app_id, app_to);
-                        nd_dprintf(
-                          "%s: updated app from flow hash "
-                          "cache: %s -> %s\n",
-                          tag.c_str(), app_from.c_str(),
-                          app_to.c_str());
-#endif
-                        ndEF->detected_application = result.app_id;
-                        ndi.apps.Lookup(result.app_id,
-                          ndEF->detected_application_name);
-                    }
-
-                    ndEF->digest_mdata.assign(
-                      result.digest.begin(), result.digest.end());
-#ifdef _ND_LOG_FHC
-                    nd_dprintf(
-                      "%s: resurrected flow metadata "
-                      "hash.\n",
-                      tag.c_str());
-#endif
-                }
-            }
-        }
     }
 }

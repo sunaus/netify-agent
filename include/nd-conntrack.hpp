@@ -30,18 +30,13 @@
 #include "nd-flow.hpp"
 #include "nd-thread.hpp"
 
-#ifndef _ND_CT_FLOW_TTL
-#define _ND_CT_FLOW_TTL 900
-#endif
-
-enum ndConntrackFlowDirection {
-    ndCT_DIR_SRC = 0,
-    ndCT_DIR_DST = 1
-};
+constexpr time_t _ND_CT_FLOW_TTL = 900;
 
 class ndConntrackFlow
 {
 public:
+    enum class Direction : uint8_t { SRC, DST };
+
     ndConntrackFlow(uint32_t id, struct nf_conntrack *ct);
 
     void Update(struct nf_conntrack *ct);
@@ -84,7 +79,7 @@ public:
 
     virtual void *Entry(void);
 
-    void ProcessConntrackEvent(enum nf_conntrack_msg_type type,
+    void ProcessConntrackEvent(nf_conntrack_msg_type type,
       struct nf_conntrack *ct);
 
     void UpdateFlow(nd_flow_ptr &flow);

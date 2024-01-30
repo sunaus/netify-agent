@@ -27,11 +27,11 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-dhc.hpp
 %%DEVEL%%include/netifyd/nd-except.hpp
 %%DEVEL%%include/netifyd/nd-fhc.hpp
+%%DEVEL%%include/netifyd/nd-flags.hpp
 %%DEVEL%%include/netifyd/nd-flow-map.hpp
 %%DEVEL%%include/netifyd/nd-flow-parser.hpp
 %%DEVEL%%include/netifyd/nd-flow.hpp
 %%DEVEL%%include/netifyd/nd-instance.hpp
-%%DEVEL%%include/netifyd/nd-json.hpp
 %%DEVEL%%include/netifyd/nd-napi.hpp
 %%DEVEL%%include/netifyd/nd-ndpi.hpp
 %%DEVEL%%include/netifyd/nd-netlink.hpp

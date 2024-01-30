@@ -38,14 +38,7 @@ class ndCategory;
 class ndCategories
 {
 public:
-    enum Type {
-        TYPE_NONE,
-
-        TYPE_APP,
-        TYPE_PROTO,
-
-        TYPE_MAX
-    };
+    enum class Type : uint8_t { NONE, APP, PROTO, MAX };
 
     ndCategories();
     virtual ~ndCategories();
@@ -53,7 +46,7 @@ public:
     bool Load(const std::string &filename);
     bool Load(Type type, nlohmann::json &jdata);
     bool Save(const std::string &filename);
-    void Dump(Type type = TYPE_MAX);
+    void Dump(Type type = Type::MAX);
 
     bool LoadDotDirectory(const std::string &path);
 

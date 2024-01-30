@@ -27,22 +27,22 @@ int main(int argc, char *argv[]) {
          << "nDPI protocol count: " << NDPI_LAST_IMPLEMENTED_PROTOCOL
          << endl;
     cout << "Netify Agent protocol count: "
-         << nd_ndpi_protos.size() << endl
+         << ndProto::nDPI::Protos.size() << endl
          << endl;
 
     for (uint16_t id = 0; id < NDPI_LAST_IMPLEMENTED_PROTOCOL; id++)
     {
-        auto it = nd_ndpi_protos.find(id);
-        if (find(nd_ndpi_disabled_protos.begin(),
-              nd_ndpi_disabled_protos.end(),
-              id) != nd_ndpi_disabled_protos.end())
+        auto it = ndProto::nDPI::Protos.find(id);
+        if (find(ndProto::nDPI::Disabled.begin(),
+              ndProto::nDPI::Disabled.end(),
+              id) != ndProto::nDPI::Disabled.end())
             continue;
-        if (find(nd_ndpi_free_protos.begin(),
-              nd_ndpi_free_protos.end(),
-              id) != nd_ndpi_free_protos.end())
+        if (find(ndProto::nDPI::Free.begin(),
+              ndProto::nDPI::Free.end(),
+              id) != ndProto::nDPI::Free.end())
             continue;
 
-        if (it != nd_ndpi_protos.end()) continue;
+        if (it != ndProto::nDPI::Protos.end()) continue;
 
         ndpi_protocol proto = { id, 0 };
         ndpi_protocol2name(ndpi, proto, proto_name,
