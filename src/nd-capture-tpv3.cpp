@@ -18,6 +18,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "nd-flags.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -43,8 +44,10 @@
 #endif
 
 #include "nd-capture-tpv3.hpp"
+#include "nd-config.hpp"
 #include "nd-detection.hpp"
 #include "nd-except.hpp"
+#include "nd-util.hpp"
 
 using namespace std;
 
@@ -101,7 +104,7 @@ public:
     ndPacketRingBlock *Next(void);
 
     ndPacket *CopyPacket(const void *entry,
-      ndPacket::status_flags &status);
+      ndFlags<ndPacket::StatusFlags> &status);
 
     bool GetStats(void);
 
@@ -141,13 +144,14 @@ size_t ndPacketRingBlock::ProcessPackets(ndPacketRing *ring,
     size_t packets = (size_t)hdr.bdh->hdr.bh1.num_pkts;
 
     for (size_t i = 0; i < packets; i++) {
-        ndPacket::status_flags status;
+        ndFlags<ndPacket::StatusFlags> status;
         ndPacket *pkt = ring->CopyPacket(entry, status);
 
-        if (status & ndPacket::STATUS_FILTERED)
+        if (ndFlagBoolean(status, ndPacket::StatusFlags::FILTERED))
             ring->stats->pkt.capture_filtered++;
 
-        if (! (status & ndPacket::STATUS_OK)) {
+        if (! ndFlagBoolean(status, ndPacket::StatusFlags::OK))
+        {
             ring->stats->pkt.discard++;
             ring->stats->pkt.discard_bytes += entry->tp_snaplen;
         }
@@ -240,9 +244,9 @@ ndPacketRing::ndPacketRing(const string &ifname,
         }
     }
 #ifdef PACKET_FANOUT
-    if (config.fanout_mode != ndFOM_DISABLED) {
+    if (config.fanout_mode != ndTPv3FanoutMode::DISABLED) {
         switch (config.fanout_mode) {
-        case ndFOM_HASH:
+        case ndTPv3FanoutMode::HASH:
 #ifdef PACKET_FANOUT_HASH
             so_uintval = PACKET_FANOUT_HASH;
 #else
@@ -251,7 +255,7 @@ ndPacketRing::ndPacketRing(const string &ifname,
               ifname.c_str());
 #endif
             break;
-        case ndFOM_LOAD_BALANCED:
+        case ndTPv3FanoutMode::LOAD_BALANCED:
 #ifdef PACKET_FANOUT_LB
             so_uintval = PACKET_FANOUT_LB;
 #else
@@ -260,7 +264,7 @@ ndPacketRing::ndPacketRing(const string &ifname,
               ifname.c_str());
 #endif
             break;
-        case ndFOM_CPU:
+        case ndTPv3FanoutMode::CPU:
 #ifdef PACKET_FANOUT_CPU
             so_uintval = PACKET_FANOUT_CPU;
 #else
@@ -269,7 +273,7 @@ ndPacketRing::ndPacketRing(const string &ifname,
               ifname.c_str());
 #endif
             break;
-        case ndFOM_ROLLOVER:
+        case ndTPv3FanoutMode::ROLLOVER:
 #ifdef PACKET_FANOUT_ROLLOVER
             so_uintval = PACKET_FANOUT_ROLLOVER;
 #else
@@ -278,7 +282,7 @@ ndPacketRing::ndPacketRing(const string &ifname,
               ifname.c_str());
 #endif
             break;
-        case ndFOM_QUEUE_MAP:
+        case ndTPv3FanoutMode::QUEUE_MAP:
 #ifdef PACKET_FANOUT_QM
             so_uintval = PACKET_FANOUT_QM;
 #else
@@ -292,7 +296,7 @@ ndPacketRing::ndPacketRing(const string &ifname,
               ifname.c_str(), config.fanout_mode);
         }
 #ifdef PACKET_FANOUT_FLAG_DEFRAG
-        if (config.fanout_flags & ndFOF_DEFRAG)
+        if (ndFlagBoolean(config.fanout_flags, ndTPv3FanoutFlags::DEFRAG))
             so_uintval |= PACKET_FANOUT_FLAG_DEFRAG;
 #else
         nd_dprintf(
@@ -300,7 +304,8 @@ ndPacketRing::ndPacketRing(const string &ifname,
           ifname.c_str());
 #endif
 #ifdef PACKET_FANOUT_FLAG_ROLLOVER
-        if (config.fanout_flags & ndFOF_ROLLOVER)
+        if (ndFlagBoolean(config.fanout_flags,
+              ndTPv3FanoutFlags::ROLLOVER))
             so_uintval |= PACKET_FANOUT_FLAG_ROLLOVER;
 #else
         nd_dprintf(
@@ -468,7 +473,7 @@ ndPacketRingBlock *ndPacketRing::Next(void) {
 }
 
 ndPacket *ndPacketRing::CopyPacket(const void *entry,
-  ndPacket::status_flags &status) {
+  ndFlags<ndPacket::StatusFlags> &status) {
     const struct tpacket3_hdr *hdr = (const struct tpacket3_hdr *)entry;
 
     unsigned int tp_len, tp_mac, tp_snaplen;
@@ -478,7 +483,7 @@ ndPacket *ndPacketRing::CopyPacket(const void *entry,
 
     struct timeval tv = { hdr->tp_sec, hdr->tp_nsec / 1000 };
 
-    status = ndPacket::STATUS_INIT;
+    status = ndPacket::StatusFlags::INIT;
 
     if (tp_len != tp_snaplen)
         nd_dprintf("tp_len: %u, tp_snaplen: %u\n", tp_len, tp_snaplen);
@@ -490,7 +495,7 @@ ndPacket *ndPacketRing::CopyPacket(const void *entry,
             tp_req.tp_frame_size
         );
 
-        status = ndPacket::STATUS_CORRUPTED;
+        status = ndPacket::StatusFlags::CORRUPTED;
         return nullptr;
     }
 #endif
@@ -523,11 +528,11 @@ ndPacket *ndPacketRing::CopyPacket(const void *entry,
         tp_snaplen += sizeof(struct vlan_tag);
         tp_len += sizeof(struct vlan_tag);
 
-        status |= ndPacket::STATUS_VLAN_TAG_RESTORED;
+        status |= ndPacket::StatusFlags::VLAN_TAG_RESTORED;
     }
 
     if (ApplyFilter(data, tp_len, tp_snaplen)) {
-        status = ndPacket::STATUS_FILTERED;
+        status = ndPacket::StatusFlags::FILTERED;
         return nullptr;
     }
 
@@ -540,17 +545,17 @@ ndPacket *ndPacketRing::CopyPacket(const void *entry,
         pkt = new ndPacket(status, tp_len, tp_snaplen, pkt_data, tv);
     }
 
-    if (pkt) status |= ndPacket::STATUS_OK;
-    else status = ndPacket::STATUS_ENOMEM;
+    if (pkt) status |= ndPacket::StatusFlags::OK;
+    else status = ndPacket::StatusFlags::ALLOC_ERROR;
 
     return pkt;
 }
 
-ndCaptureTPv3::ndCaptureTPv3(int16_t cpu, nd_iface_ptr &iface,
-  const nd_detection_threads &threads_dpi,
+ndCaptureTPv3::ndCaptureTPv3(int16_t cpu,
+  nd_iface_ptr &iface, const ndDetectionThreads &threads_dpi,
   ndDNSHintCache *dhc, uint8_t private_addr)
-  : ndCaptureThread(ndCT_TPV3, cpu, iface, threads_dpi, dhc,
-      private_addr),
+  : ndCaptureThread(ndCaptureType::TPV3, cpu, iface,
+      threads_dpi, dhc, private_addr),
     ring(nullptr) {
     dl_type = DLT_EN10MB;
 
@@ -589,7 +594,7 @@ void *ndCaptureTPv3::Entry(void) {
     vector<ndPacket *> pkt_queue;
     pkt_queue.reserve(iface->config_tpv3.rb_blocks);
 
-    capture_state = STATE_ONLINE;
+    capture_state = State::ONLINE;
 
     bool warnings = true;
 
@@ -602,7 +607,7 @@ void *ndCaptureTPv3::Entry(void) {
                 if (nd_ifreq(tag, SIOCGIFFLAGS, &ifr) == -1 ||
                   ! (ifr.ifr_flags & IFF_UP))
                 {
-                    capture_state = STATE_OFFLINE;
+                    capture_state = State::OFFLINE;
 
                     if (warnings) {
                         nd_printf(
@@ -636,7 +641,7 @@ void *ndCaptureTPv3::Entry(void) {
         else if (warnings == false && rc == 1) {
             rc = 0;
             warnings = true;
-            capture_state = STATE_ONLINE;
+            capture_state = State::ONLINE;
         }
 
         entry->ProcessPackets(_ring, pkt_queue);
@@ -653,7 +658,7 @@ void *ndCaptureTPv3::Entry(void) {
             }
             catch (...) {
                 Unlock();
-                capture_state = STATE_OFFLINE;
+                capture_state = State::OFFLINE;
                 throw;
             }
 
@@ -663,7 +668,7 @@ void *ndCaptureTPv3::Entry(void) {
         }
     }
 
-    capture_state = STATE_OFFLINE;
+    capture_state = State::OFFLINE;
 
     nd_dprintf("%s: TPv3 capture ended on CPU: %lu\n",
       tag.c_str(), cpu >= 0 ? cpu : 0);

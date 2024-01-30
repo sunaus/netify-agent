@@ -27,14 +27,15 @@
 
 #include "nd-capture-pcap.hpp"
 
-ndCapturePcap::ndCapturePcap(int16_t cpu, nd_iface_ptr &iface,
-  const nd_detection_threads &threads_dpi,
+ndCapturePcap::ndCapturePcap(int16_t cpu,
+  nd_iface_ptr &iface, const ndDetectionThreads &threads_dpi,
   ndDNSHintCache *dhc, uint8_t private_addr)
   : ndCaptureThread(iface->capture_type, cpu, iface,
       threads_dpi, dhc, private_addr),
     pcap(nullptr), pcap_fd(-1), pkt_header(nullptr),
     pkt_data(nullptr), pcs_last{ 0 } {
-    if (ndCT_TYPE(iface->capture_type) == ndCT_PCAP_OFFLINE) {
+    if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::PCAP_OFFLINE)
+    {
         nd_dprintf("%s: capture file: %s\n", tag.c_str(),
           iface->config_pcap.capture_filename.c_str());
     }
@@ -61,7 +62,8 @@ void *ndCapturePcap::Entry(void) {
     fd_set fds_read;
     bool warnings = true;
     ndPacket *pkt;
-    ndPacket::status_flags pkt_status = ndPacket::STATUS_OK;
+    ndFlags<ndPacket::StatusFlags> pkt_status =
+      ndPacket::StatusFlags::OK;
 
     while (! ShouldTerminate()) {
         if (pcap != nullptr) {
@@ -113,12 +115,13 @@ void *ndCapturePcap::Entry(void) {
             }
 
             if (rc < 0) {
-                capture_state = STATE_OFFLINE;
+                capture_state = State::OFFLINE;
 
                 if (rc == -1) {
                     nd_printf("%s: %s.\n", tag.c_str(),
                       pcap_geterr(pcap));
-                    if (ndCT_TYPE(iface->capture_type) == ndCT_PCAP_OFFLINE)
+                    if (ndCT_TYPE(iface->capture_type.flags) ==
+                      ndCaptureType::PCAP_OFFLINE)
                         Terminate();
                     else {
                         pcap_close(pcap);
@@ -135,11 +138,12 @@ void *ndCapturePcap::Entry(void) {
             }
         }
         else if (! ShouldTerminate()) {
-            if (ndCT_TYPE(iface->capture_type) != ndCT_PCAP_OFFLINE &&
+            if (ndCT_TYPE(iface->capture_type.flags) !=
+                ndCaptureType::PCAP_OFFLINE &&
               (nd_ifreq(tag, SIOCGIFFLAGS, &ifr) == -1 ||
                 ! (ifr.ifr_flags & IFF_UP)))
             {
-                capture_state = STATE_OFFLINE;
+                capture_state = State::OFFLINE;
 
                 if (warnings) {
                     nd_printf(
@@ -155,7 +159,7 @@ void *ndCapturePcap::Entry(void) {
             warnings = true;
 
             if ((pcap = OpenCapture()) == nullptr) {
-                capture_state = STATE_OFFLINE;
+                capture_state = State::OFFLINE;
                 sleep(1);
                 continue;
             }
@@ -170,7 +174,7 @@ void *ndCapturePcap::Entry(void) {
         }
     }
 
-    capture_state = STATE_OFFLINE;
+    capture_state = State::OFFLINE;
 
     nd_dprintf("%s: PCAP capture ended on CPU: %lu\n",
       tag.c_str(), cpu >= 0 ? cpu : 0);
@@ -183,7 +187,8 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
 
     memset(pcap_errbuf, 0, PCAP_ERRBUF_SIZE);
 
-    if (ndCT_TYPE(iface->capture_type) == ndCT_PCAP_OFFLINE) {
+    if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::PCAP_OFFLINE)
+    {
         if ((pcap_new = pcap_open_offline(
                iface->config_pcap.capture_filename.c_str(),
                pcap_errbuf)) != nullptr)
@@ -229,9 +234,10 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
     if (pcap_new == nullptr)
         nd_printf("%s: pcap_open: %s\n", tag.c_str(), pcap_errbuf);
     else {
-        capture_state = STATE_ONLINE;
+        capture_state = State::ONLINE;
 
-        if (ndCT_TYPE(iface->capture_type) != ndCT_PCAP_OFFLINE)
+        if (ndCT_TYPE(iface->capture_type.flags) !=
+          ndCaptureType::PCAP_OFFLINE)
         {
             if (pcap_setnonblock(pcap_new, 1, pcap_errbuf) == PCAP_ERROR)
                 nd_printf("%s: pcap_setnonblock: %s\n",
@@ -268,7 +274,7 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
 
 void ndCapturePcap::GetCaptureStats(ndPacketStats &stats) {
     if (pcap != nullptr &&
-      ndCT_TYPE(iface->capture_type) != ndCT_PCAP_OFFLINE)
+      ndCT_TYPE(iface->capture_type.flags) != ndCaptureType::PCAP_OFFLINE)
     {
         struct pcap_stat pcs;
         memset(&pcs, 0, sizeof(struct pcap_stat));

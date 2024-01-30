@@ -28,7 +28,7 @@ class ndCapturePcap : public ndCaptureThread
 {
 public:
     ndCapturePcap(int16_t cpu, nd_iface_ptr &iface,
-      const nd_detection_threads &threads_dpi,
+      const ndDetectionThreads &threads_dpi,
       ndDNSHintCache *dhc = NULL, uint8_t private_addr = 0);
     virtual ~ndCapturePcap();
 

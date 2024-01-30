@@ -18,6 +18,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "nd-risks.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -27,6 +28,7 @@
 #include <mutex>
 
 #include "nd-category.hpp"
+#include "nd-flags.hpp"
 #include "nd-flow.hpp"
 #include "nd-sha1.h"
 
@@ -186,31 +188,31 @@ void ndFlow::Release(void) {
     }
 }
 
-nd_proto_id_t ndFlow::GetMasterProtocol(void) const {
+ndProto::Id ndFlow::GetMasterProtocol(void) const {
     switch (detected_protocol) {
-    case ND_PROTO_HTTPS:
-    case ND_PROTO_TLS:
-    case ND_PROTO_FTPS:
-    case ND_PROTO_FTPS_DATA:
-    case ND_PROTO_MAIL_IMAPS:
-    case ND_PROTO_MAIL_POPS:
-    case ND_PROTO_MAIL_SMTPS:
-    case ND_PROTO_MQTTS:
-    case ND_PROTO_NNTPS:
-    case ND_PROTO_SIPS: return ND_PROTO_TLS;
-    case ND_PROTO_HTTP:
-    case ND_PROTO_HTTP_CONNECT:
-    case ND_PROTO_HTTP_PROXY:
-    case ND_PROTO_OOKLA:
-    case ND_PROTO_PPSTREAM:
-    case ND_PROTO_QQ:
-    case ND_PROTO_RTSP:
-    case ND_PROTO_STEAM:
-    case ND_PROTO_TEAMVIEWER:
-    case ND_PROTO_XBOX: return ND_PROTO_HTTP;
-    case ND_PROTO_DNS:
-    case ND_PROTO_MDNS:
-    case ND_PROTO_LLMNR: return ND_PROTO_DNS;
+    case ndProto::Id::HTTPS:
+    case ndProto::Id::TLS:
+    case ndProto::Id::FTPS:
+    case ndProto::Id::FTPS_DATA:
+    case ndProto::Id::MAIL_IMAPS:
+    case ndProto::Id::MAIL_POPS:
+    case ndProto::Id::MAIL_SMTPS:
+    case ndProto::Id::MQTTS:
+    case ndProto::Id::NNTPS:
+    case ndProto::Id::SIPS: return ndProto::Id::TLS;
+    case ndProto::Id::HTTP:
+    case ndProto::Id::HTTP_CONNECT:
+    case ndProto::Id::HTTP_PROXY:
+    case ndProto::Id::OOKLA:
+    case ndProto::Id::PPSTREAM:
+    case ndProto::Id::QQ:
+    case ndProto::Id::RTSP:
+    case ndProto::Id::STEAM:
+    case ndProto::Id::TEAMVIEWER:
+    case ndProto::Id::XBOX: return ndProto::Id::HTTP;
+    case ndProto::Id::DNS:
+    case ndProto::Id::MDNS:
+    case ndProto::Id::LLMNR: return ndProto::Id::DNS;
     default: break;
     }
 
@@ -218,99 +220,100 @@ nd_proto_id_t ndFlow::GetMasterProtocol(void) const {
 }
 
 bool ndFlow::HasDhcpFingerprint(void) const {
-    return (detected_protocol == ND_PROTO_DHCP &&
+    return (detected_protocol == ndProto::Id::DHCP &&
       ! dhcp.fingerprint.empty());
 }
 
 bool ndFlow::HasDhcpClassIdent(void) const {
-    return (detected_protocol == ND_PROTO_DHCP &&
+    return (detected_protocol == ndProto::Id::DHCP &&
       ! dhcp.class_ident.empty());
 }
 
 bool ndFlow::HasHttpUserAgent(void) const {
-    return (GetMasterProtocol() == ND_PROTO_HTTP &&
+    return (GetMasterProtocol() == ndProto::Id::HTTP &&
       ! http.user_agent.empty());
 }
 
 bool ndFlow::HasHttpURL(void) const {
-    return (GetMasterProtocol() == ND_PROTO_HTTP &&
+    return (GetMasterProtocol() == ndProto::Id::HTTP &&
       ! http.url.empty());
 }
 
 bool ndFlow::HasSSHClientAgent(void) const {
-    return (detected_protocol == ND_PROTO_SSH &&
+    return (detected_protocol == ndProto::Id::SSH &&
       ! ssh.client_agent.empty());
 }
 
 bool ndFlow::HasSSHServerAgent(void) const {
-    return (detected_protocol == ND_PROTO_SSH &&
+    return (detected_protocol == ndProto::Id::SSH &&
       ! ssh.server_agent.empty());
 }
 
 bool ndFlow::HasTLSClientSNI(void) const {
-    return ((GetMasterProtocol() == ND_PROTO_TLS ||
-              detected_protocol == ND_PROTO_QUIC) &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::QUIC) &&
       tls.client_sni.empty() == false);
 }
 
 bool ndFlow::HasTLSEncryptedCH(void) const {
-    return ((GetMasterProtocol() == ND_PROTO_TLS ||
-              detected_protocol == ND_PROTO_QUIC) &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::QUIC) &&
       tls.ech.version != 0);
 }
 
 bool ndFlow::HasTLSEncryptedSNI(void) const {
-    return ((GetMasterProtocol() == ND_PROTO_TLS ||
-              detected_protocol == ND_PROTO_QUIC) &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::QUIC) &&
       tls.esni.esni.empty() == false);
 }
 
 bool ndFlow::HasTLSServerCN(void) const {
-    return ((GetMasterProtocol() == ND_PROTO_TLS ||
-              detected_protocol == ND_PROTO_QUIC) &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::QUIC) &&
       ! tls.server_cn.empty());
 }
 
 bool ndFlow::HasTLSIssuerDN(void) const {
-    return ((GetMasterProtocol() == ND_PROTO_TLS ||
-              detected_protocol == ND_PROTO_QUIC) &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::QUIC) &&
       ! tls.issuer_dn.empty());
 }
 
 bool ndFlow::HasTLSSubjectDN(void) const {
-    return ((GetMasterProtocol() == ND_PROTO_TLS ||
-              detected_protocol == ND_PROTO_QUIC) &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::QUIC) &&
       ! tls.subject_dn.empty());
 }
 
 bool ndFlow::HasTLSClientJA3(void) const {
-    return (GetMasterProtocol() == ND_PROTO_TLS &&
+    return (GetMasterProtocol() == ndProto::Id::TLS &&
       ! tls.client_ja3.empty());
 }
 
 bool ndFlow::HasTLSServerJA3(void) const {
-    return (GetMasterProtocol() == ND_PROTO_TLS &&
+    return (GetMasterProtocol() == ndProto::Id::TLS &&
       ! tls.server_ja3.empty());
 }
 
 bool ndFlow::HasBTInfoHash(void) const {
-    return (detected_protocol == ND_PROTO_BITTORRENT &&
+    return (detected_protocol == ndProto::Id::BITTORRENT &&
       ! bt.info_hash.empty());
 }
 
 bool ndFlow::HasSSDPUserAgent(void) const {
-    return (GetMasterProtocol() == ND_PROTO_SSDP &&
+    return (GetMasterProtocol() == ndProto::Id::SSDP &&
       ! http.user_agent.empty());
 }
 
 bool ndFlow::HasMDNSDomainName(void) const {
-    return (detected_protocol == ND_PROTO_MDNS &&
+    return (detected_protocol == ndProto::Id::MDNS &&
       ! mdns.domain_name.empty());
 }
 
-void ndFlow::Print(uint8_t pflags, const string &prefix) const {
+void ndFlow::Print(ndFlags<PrintFlags> pflags,
+  const string &prefix) const {
     bool multiline = false;
-    ndDebugLogStream dls(ndDebugLogStream::DLT_FLOW);
+    ndDebugLogStream dls(ndDebugLogStream::Type::FLOW);
 
     lock_guard<recursive_mutex> lg(lock);
 
@@ -322,7 +325,7 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
     try {
         dls << p << ": ";
 
-        if ((pflags & PRINTF_HASHES)) {
+        if (ndFlagBoolean(pflags, PrintFlags::HASHES)) {
             for (unsigned i = 0; i < 5; i++) {
                 dls << setw(2) << setfill('0') << hex
                     << (int)digest_lower[i];
@@ -337,7 +340,7 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
 
         dls
           << setfill(' ') << dec
-          << ((iface->role == ndIR_LAN) ? 'i' : 'e')
+          << ((iface->role == ndInterfaceRole::LAN) ? 'i' : 'e')
           << ((ip_version == 4)    ? '4' :
                  (ip_version == 6) ? '6' :
                                      '-')
@@ -353,11 +356,12 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
           << (risk.risks.empty() ? '-' : 'r')
           << (flags.soft_dissector.load() ? 's' : '-')
           << (tcp.fin_ack.load() ? 'F' : '-')
-          << ((privacy_mask & PRIVATE_LOWER) ?
+          << (ndFlagBoolean(privacy_mask, PrivacyMask::LOWER) ?
                  'v' :
-                 (privacy_mask & PRIVATE_UPPER) ?
+                 ndFlagBoolean(privacy_mask, PrivacyMask::UPPER) ?
                  'V' :
-                 (privacy_mask & (PRIVATE_LOWER | PRIVATE_UPPER)) ?
+                 ndFlagBoolean(privacy_mask,
+                   (PrivacyMask::LOWER | PrivacyMask::UPPER)) ?
                  '?' :
                  '-')
           << " ";
@@ -367,54 +371,54 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
         dls << proto << " ";
 
         switch (lower_map) {
-        case LOWER_UNKNOWN: dls << "[U"; break;
-        case LOWER_LOCAL: dls << "[L"; break;
-        case LOWER_OTHER: dls << "[O"; break;
+        case LowerMap::UNKNOWN: dls << "[U"; break;
+        case LowerMap::LOCAL: dls << "[L"; break;
+        case LowerMap::OTHER: dls << "[O"; break;
         }
 
         char ot = '?';
         switch (other_type) {
-        case OTHER_UNKNOWN: ot = 'U'; break;
-        case OTHER_UNSUPPORTED: ot = 'X'; break;
-        case OTHER_LOCAL: ot = 'L'; break;
-        case OTHER_MULTICAST: ot = 'M'; break;
-        case OTHER_BROADCAST: ot = 'B'; break;
-        case OTHER_REMOTE: ot = 'R'; break;
-        case OTHER_ERROR: ot = 'E'; break;
+        case OtherType::UNKNOWN: ot = 'U'; break;
+        case OtherType::UNSUPPORTED: ot = 'X'; break;
+        case OtherType::LOCAL: ot = 'L'; break;
+        case OtherType::MULTICAST: ot = 'M'; break;
+        case OtherType::BROADCAST: ot = 'B'; break;
+        case OtherType::REMOTE: ot = 'R'; break;
+        case OtherType::ERROR: ot = 'E'; break;
         }
 
-        if (lower_map == LOWER_OTHER) dls << ot;
+        if (lower_map == LowerMap::OTHER) dls << ot;
 
         dls << "] ";
 
-        if ((pflags & PRINTF_MACS))
+        if (ndFlagBoolean(pflags, PrintFlags::MACS))
             dls << lower_mac.GetString() << " ";
 
         dls
           << lower_addr.GetString() << ":"
           << lower_addr.GetPort() << " "
-          << ((origin == ORIGIN_LOWER || origin == ORIGIN_UNKNOWN) ? '-' : '<')
-          << ((origin == ORIGIN_UNKNOWN) ? '?' : '-')
-          << ((origin == ORIGIN_UPPER || origin == ORIGIN_UNKNOWN) ? '-' : '>')
+          << ((origin == Origin::LOWER || origin == Origin::UNKNOWN) ? '-' : '<')
+          << ((origin == Origin::UNKNOWN) ? '?' : '-')
+          << ((origin == Origin::UPPER || origin == Origin::UNKNOWN) ? '-' : '>')
           << " ";
 
         switch (lower_map) {
-        case LOWER_UNKNOWN: dls << "[U"; break;
-        case LOWER_LOCAL: dls << "[O"; break;
-        case LOWER_OTHER: dls << "[L"; break;
+        case LowerMap::UNKNOWN: dls << "[U"; break;
+        case LowerMap::LOCAL: dls << "[O"; break;
+        case LowerMap::OTHER: dls << "[L"; break;
         }
 
-        if (lower_map == LOWER_LOCAL) dls << ot;
+        if (lower_map == LowerMap::LOCAL) dls << ot;
 
         dls << "] ";
 
-        if ((pflags & PRINTF_MACS))
+        if (ndFlagBoolean(pflags, PrintFlags::MACS))
             dls << upper_mac.GetString() << " ";
 
         dls << upper_addr.GetString() << ":"
             << upper_addr.GetPort();
 
-        if ((pflags & PRINTF_METADATA) &&
+        if (ndFlagBoolean(pflags, PrintFlags::METADATA) &&
           flags.detection_init.load())
         {
             multiline = true;
@@ -492,8 +496,8 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
                     dls << " SSH/SA: " << ssh.server_agent;
             }
 
-            if ((GetMasterProtocol() == ND_PROTO_TLS ||
-                  detected_protocol == ND_PROTO_QUIC) &&
+            if ((GetMasterProtocol() == ndProto::Id::TLS ||
+                  detected_protocol == ndProto::Id::QUIC) &&
               (tls.version || tls.cipher_suite))
             {
                 dls << endl
@@ -545,14 +549,15 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
             }
         }
 
-        if ((pflags & PRINTF_RISKS)) {
+        if (ndFlagBoolean(pflags, PrintFlags::RISKS)) {
             if (! risk.risks.empty()) {
                 auto r = risk.risks.begin();
                 if (r != risk.risks.end()) {
-                    dls << endl
-                        << setw(plen) << " " << setw(0)
-                        << ": RID" << setw(3) << (*r) << ": "
-                        << setw(0) << nd_risk_get_name(*r);
+                    dls
+                      << endl
+                      << setw(plen) << " " << setw(0) << ": RID"
+                      << setw(3) << static_cast<unsigned>(*r)
+                      << ": " << setw(0) << ndRisk::GetName(*r);
                 }
                 if (risk.risks.size() > 1) {
                     for (r = next(risk.risks.begin());
@@ -562,32 +567,34 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
                         dls
                           << endl
                           << setw(plen) << " " << setw(0)
-                          << ": RID" << setw(3) << (*r) << ": "
-                          << setw(0) << nd_risk_get_name(*r);
+                          << ": RID" << setw(3)
+                          << static_cast<unsigned>(*r) << ": "
+                          << setw(0) << ndRisk::GetName(*r);
                     }
                 }
             }
         }
 
-        if ((pflags & PRINTF_STATS)) {
+        if (ndFlagBoolean(pflags, PrintFlags::STATS)) {
             multiline = true;
 
             dls << endl
                 << setw(plen) << " "
                 << ": "
                 << "DP: "
-                << ndLogFormat(ndLogFormat::FORMAT_BYTES,
+                << ndLogFormat(ndLogFormat::Format::BYTES,
                      stats.detection_packets.load());
 
-            if ((pflags & PRINTF_STATS_FULL)) {
+            if (ndFlagBoolean(pflags, PrintFlags::STATS_FULL))
+            {
                 dls
                   << " "
                   << "TP: "
-                  << ndLogFormat(ndLogFormat::FORMAT_PACKETS,
+                  << ndLogFormat(ndLogFormat::Format::PACKETS,
                        stats.total_packets.load())
                   << " "
                   << "TB: "
-                  << ndLogFormat(ndLogFormat::FORMAT_BYTES,
+                  << ndLogFormat(ndLogFormat::Format::BYTES,
                        stats.total_bytes.load());
             }
         }
@@ -607,12 +614,12 @@ void ndFlow::Print(uint8_t pflags, const string &prefix) const {
 }
 
 void ndFlow::UpdateLowerMaps(void) {
-    if (lower_map == LOWER_UNKNOWN)
+    if (lower_map == LowerMap::UNKNOWN)
         GetLowerMap(lower_type, upper_type, lower_map, other_type);
 
     switch (tunnel_type) {
-    case TUNNEL_GTP:
-        if (gtp.lower_map == LOWER_UNKNOWN) {
+    case TunnelType::GTP:
+        if (gtp.lower_map == LowerMap::UNKNOWN) {
             GetLowerMap(gtp.lower_type, gtp.upper_type,
               gtp.lower_map, gtp.other_type);
         }
@@ -623,106 +630,108 @@ void ndFlow::UpdateLowerMaps(void) {
 
 void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
   LowerMap &lm, OtherType &ot) {
-    if (lt == ndAddr::atERROR || ut == ndAddr::atERROR) {
-        ot = OTHER_ERROR;
-    }
-    else if (lt == ndAddr::atLOCAL && ut == ndAddr::atLOCAL) {
-        lm = LOWER_LOCAL;
-        ot = OTHER_LOCAL;
-    }
-    else if (lt == ndAddr::atLOCAL && ut == ndAddr::atLOCALNET)
+    if (lt == ndAddr::Type::ERROR || ut == ndAddr::Type::ERROR)
     {
-        lm = LOWER_LOCAL;
-        ot = OTHER_LOCAL;
+        ot = OtherType::ERROR;
     }
-    else if (lt == ndAddr::atLOCALNET && ut == ndAddr::atLOCAL)
+    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::LOCAL)
     {
-        lm = LOWER_LOCAL;
-        ot = OTHER_LOCAL;
+        lm = LowerMap::LOCAL;
+        ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::atMULTICAST) {
-        lm = LOWER_OTHER;
-        ot = OTHER_MULTICAST;
-    }
-    else if (ut == ndAddr::atMULTICAST) {
-        lm = LOWER_LOCAL;
-        ot = OTHER_MULTICAST;
-    }
-    else if (lt == ndAddr::atBROADCAST) {
-        lm = LOWER_OTHER;
-        ot = OTHER_BROADCAST;
-    }
-    else if (ut == ndAddr::atBROADCAST) {
-        lm = LOWER_LOCAL;
-        ot = OTHER_BROADCAST;
-    }
-    else if (lt == ndAddr::atRESERVED && ut == ndAddr::atLOCALNET)
+    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::LOCALNET)
     {
-        lm = LOWER_OTHER;
-        ot = OTHER_LOCAL;
+        lm = LowerMap::LOCAL;
+        ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::atLOCALNET && ut == ndAddr::atRESERVED)
+    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::LOCAL)
     {
-        lm = LOWER_LOCAL;
-        ot = OTHER_LOCAL;
+        lm = LowerMap::LOCAL;
+        ot = OtherType::LOCAL;
+    }
+    else if (lt == ndAddr::Type::MULTICAST) {
+        lm = LowerMap::OTHER;
+        ot = OtherType::MULTICAST;
+    }
+    else if (ut == ndAddr::Type::MULTICAST) {
+        lm = LowerMap::LOCAL;
+        ot = OtherType::MULTICAST;
+    }
+    else if (lt == ndAddr::Type::BROADCAST) {
+        lm = LowerMap::OTHER;
+        ot = OtherType::BROADCAST;
+    }
+    else if (ut == ndAddr::Type::BROADCAST) {
+        lm = LowerMap::LOCAL;
+        ot = OtherType::BROADCAST;
+    }
+    else if (lt == ndAddr::Type::RESERVED &&
+      ut == ndAddr::Type::LOCALNET)
+    {
+        lm = LowerMap::OTHER;
+        ot = OtherType::LOCAL;
+    }
+    else if (lt == ndAddr::Type::LOCALNET &&
+      ut == ndAddr::Type::RESERVED)
+    {
+        lm = LowerMap::LOCAL;
+        ot = OtherType::LOCAL;
     }
     // TODO: Further investigation required!
     // This appears to catch corrupted IPv6 headers.
     // Spend some time to figure out if there are any
     // possible over-matches for different methods of
     // deployment (gateway/port mirror modes).
-    else if (ip_version != 6 && lt == ndAddr::atRESERVED &&
-      ut == ndAddr::atRESERVED)
+    else if (ip_version != 6 && lt == ndAddr::Type::RESERVED &&
+      ut == ndAddr::Type::RESERVED)
     {
-        lm = LOWER_LOCAL;
-        ot = OTHER_LOCAL;
+        lm = LowerMap::LOCAL;
+        ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::atRESERVED && ut == ndAddr::atLOCAL)
+    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCAL)
     {
-        lm = LOWER_OTHER;
-        ot = OTHER_REMOTE;
+        lm = LowerMap::OTHER;
+        ot = OtherType::REMOTE;
     }
-    else if (lt == ndAddr::atLOCAL && ut == ndAddr::atRESERVED)
+    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::RESERVED)
     {
-        lm = LOWER_LOCAL;
-        ot = OTHER_REMOTE;
+        lm = LowerMap::LOCAL;
+        ot = OtherType::REMOTE;
     }
-    else if (lt == ndAddr::atLOCALNET && ut == ndAddr::atLOCALNET)
+    else if (lt == ndAddr::Type::LOCALNET &&
+      ut == ndAddr::Type::LOCALNET)
     {
-        lm = LOWER_LOCAL;
-        ot = OTHER_LOCAL;
+        lm = LowerMap::LOCAL;
+        ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::atOTHER) {
-        lm = LOWER_OTHER;
-        ot = OTHER_REMOTE;
+    else if (lt == ndAddr::Type::OTHER) {
+        lm = LowerMap::OTHER;
+        ot = OtherType::REMOTE;
     }
-    else if (ut == ndAddr::atOTHER) {
-        lm = LOWER_LOCAL;
-        ot = OTHER_REMOTE;
+    else if (ut == ndAddr::Type::OTHER) {
+        lm = LowerMap::LOCAL;
+        ot = OtherType::REMOTE;
     }
 #if _ND_DEBUG_LOWER_MAP
-    const static vector<string> lower_maps = {
-        "LOWER_UNKNOWN", "LOWER_LOCAL", "LOWER_OTHER"
-    };
-    const static vector<string> other_types = {
-        "OTHER_UNKNOWN", "OTHER_UNSUPPORTED", "OTHER_LOCAL",
-        "OTHER_MULTICAST", "OTHER_BROADCAST",
-        "OTHER_REMOTE", "OTHER_ERROR"
-    };
+    const static vector<string> lower_maps = { "lmUNKNOWN",
+        "lmLOCAL", "lmOTHER" };
+    const static vector<string> other_types = { "otUNKNOWN",
+        "otUNSUPPORTED", "otLOCAL", "otMULTICAST",
+        "otBROADCAST", "otREMOTE", "otERROR" };
     const static vector<string> at = { "atNONE", "atLOCAL",
         "atLOCALNET", "atRESERVED", "atMULTICAST",
         "atBROADCAST", "atOTHER" };
 
-    if (lm == LOWER_UNKNOWN) {
+    if (lm == lmUNKNOWN) {
         nd_dprintf("lower map: %s, other type: %s\n",
           lower_maps[lm].c_str(),
           other_types[ot].c_str());
         nd_dprintf(
           "lower type: %s: %s, upper_type: %s: %s\n",
           lower_addr.GetString().c_str(),
-          (lt == ndAddr::atERROR) ? "atERROR" : at[lt].c_str(),
+          (lt == ndAddr::Type::ERROR) ? "atERROR" : at[lt].c_str(),
           upper_addr.GetString().c_str(),
-          (ut == ndAddr::atERROR) ? "atERROR" : at[ut].c_str());
+          (ut == ndAddr::Type::ERROR) ? "atERROR" : at[ut].c_str());
     }
 #endif
 }

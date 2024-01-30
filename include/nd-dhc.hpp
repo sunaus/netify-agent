@@ -25,8 +25,6 @@
 #include "nd-addr.hpp"
 #include "nd-util.hpp"
 
-#define ND_DHC_FILE_NAME "/dns-cache.csv"
-
 class ndDNSHintCache : public ndLRUCache<std::string, std::string>
 {
 public:

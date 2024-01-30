@@ -162,7 +162,7 @@ void ndInstance::Destroy(void) {
 uint32_t
 ndInstance::InitializeConfig(int argc, char * const argv[]) {
     string last_iface;
-    uint8_t dump_flags = ndDUMP_NONE;
+    ndFlags<DumpFlags> dump_flags = DumpFlags::NONE;
 
     nd_basename(argv[0], self);
 
@@ -250,13 +250,15 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 
         switch (rc) {
         case _ND_LO_IGNORE_IFACE_CONFIGS:
-            ndGC_SetFlag(ndGF_IGNORE_IFACE_CONFIGS, true);
+            ndGC_SetFlag(ndGlobalFlags::IGNORE_IFACE_CONFIGS, true);
             break;
         case '?':
             cerr << "Try `--help' for more information.\n";
-            return ndCR_INVALID_OPTION;
+            return ndEnumCast(ConfigResult, INVALID_OPTION);
         case 'c': conf_filename = optarg; break;
-        case 'd': ndGC_SetFlag(ndGF_DEBUG, true); break;
+        case 'd':
+            ndGC_SetFlag(ndGlobalFlags::DEBUG, true);
+            break;
         default: break;
         }
     }
@@ -265,7 +267,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         if (ndGC.Load(conf_filename) == false) {
             cerr << "Error while loading configuration: "
                  << conf_filename << endl;
-            return ndCR_Pack(ndCR_LOAD_FAILURE, 1);
+            return ndCR_Pack(LOAD_FAILURE, 1);
         }
 
         ndGC.Close();
@@ -280,30 +282,30 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case 'c':
         case 'd': break;
         case _ND_LO_DUMP_SORT_BY_TAG:
-            dump_flags |= ndDUMP_SORT_BY_TAG;
+            dump_flags |= DumpFlags::SORT_BY_TAG;
             break;
         case _ND_LO_DUMP_WITH_CATS:
-            dump_flags |= ndDUMP_WITH_CATS;
+            dump_flags |= DumpFlags::WITH_CATS;
             break;
         case _ND_LO_IGNORE_IFACE_CONFIGS:
-            ndGC_SetFlag(ndGF_IGNORE_IFACE_CONFIGS, true);
+            ndGC_SetFlag(ndGlobalFlags::IGNORE_IFACE_CONFIGS, true);
             break;
         case _ND_LO_ENABLE_PLUGIN:
         case _ND_LO_DISABLE_PLUGIN:
         case _ND_LO_ENABLE_SINK:
         case _ND_LO_DISABLE_SINK:
-            return ndCR_Pack(ndCR_DUMP_LIST,
+            return ndCR_Pack(DUMP_LIST,
               (SetConfigOption(rc, (optarg) ? optarg : string())) ? 0 : 1);
             break;
         case _ND_LO_FORCE_RESET:
             rc = ndGC.ForceReset();
-            return ndCR_Pack(ndCR_FORCE_RESULT, (rc) ? 0 : 1);
+            return ndCR_Pack(FORCE_RESULT, (rc) ? 0 : 1);
         case _ND_LO_CA_CAPTURE_BASE:
             ndGC.ca_capture_base = (int16_t)atoi(optarg);
             if (ndGC.ca_capture_base > status.cpus) {
                 cerr << "Capture thread base greater than "
                         "online cores.\n";
-                return ndCR_INVALID_VALUE;
+                return ndEnumCast(ConfigResult, INVALID_VALUE);
             }
             break;
         case _ND_LO_CA_CONNTRACK:
@@ -311,7 +313,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             if (ndGC.ca_conntrack > status.cpus) {
                 cerr << "Conntrack thread ID greater than "
                         "online cores.\n";
-                return ndCR_INVALID_VALUE;
+                return ndEnumCast(ConfigResult, INVALID_VALUE);
             }
             break;
         case _ND_LO_CA_DETECTION_BASE:
@@ -319,7 +321,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             if (ndGC.ca_detection_base > status.cpus) {
                 cerr << "Detection thread base greater "
                         "than online cores.\n";
-                return ndCR_INVALID_VALUE;
+                return ndEnumCast(ConfigResult, INVALID_VALUE);
             }
             break;
         case _ND_LO_CA_DETECTION_CORES:
@@ -327,42 +329,39 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             if (ndGC.ca_detection_cores > status.cpus) {
                 cerr << "Detection cores greater than "
                         "online cores.\n";
-                return ndCR_INVALID_VALUE;
+                return ndEnumCast(ConfigResult, INVALID_VALUE);
             }
             break;
         case _ND_LO_CAPTURE_DELAY:
             ndGC.ttl_capture_delay = atoi(optarg);
             break;
         case _ND_LO_ALLOW_UNPRIV:
-            ndGC_SetFlag(ndGF_ALLOW_UNPRIV, true);
+            ndGC_SetFlag(ndGlobalFlags::ALLOW_UNPRIV, true);
             break;
         case _ND_LO_DISABLE_AUTO_FLOW_EXPIRY:
-            ndGC_SetFlag(ndGF_AUTO_FLOW_EXPIRY, false);
+            ndGC_SetFlag(ndGlobalFlags::AUTO_FLOW_EXPIRY, false);
             break;
         case _ND_LO_RUN_WITHOUT_SOURCES:
-            ndGC_SetFlag(ndGF_RUN_WITHOUT_SOURCES, true);
+            ndGC_SetFlag(ndGlobalFlags::RUN_WITHOUT_SOURCES, true);
             break;
         case _ND_LO_VERBOSE_FLAG:
             if (! strcasecmp(optarg, "event-dpi-new"))
-                ndGC.verbosity_flags |= ndGlobalConfig::VFLAG_EVENT_DPI_NEW;
+                ndGC.verbosity_flags |= ndVerbosityFlags::EVENT_DPI_NEW;
             else if (
               ! strcasecmp(optarg, "no-event-dpi-new"))
-                ndGC.verbosity_flags &= ~ndGlobalConfig::VFLAG_EVENT_DPI_NEW;
+                ndGC.verbosity_flags &= ~ndVerbosityFlags::EVENT_DPI_NEW;
             else if (
               ! strcasecmp(optarg, "event-dpi-update"))
-                ndGC.verbosity_flags |= ndGlobalConfig::VFLAG_EVENT_DPI_UPDATE;
+                ndGC.verbosity_flags |= ndVerbosityFlags::EVENT_DPI_UPDATE;
             else if (
               ! strcasecmp(optarg, "no-event-dpi-update"))
-                ndGC.verbosity_flags &=
-                  ~ndGlobalConfig::VFLAG_EVENT_DPI_UPDATE;
+                ndGC.verbosity_flags &= ~ndVerbosityFlags::EVENT_DPI_UPDATE;
             else if (
               ! strcasecmp(optarg, "event-dpi-complete"))
-                ndGC.verbosity_flags |=
-                  ndGlobalConfig::VFLAG_EVENT_DPI_COMPLETE;
+                ndGC.verbosity_flags |= ndVerbosityFlags::EVENT_DPI_COMPLETE;
             else if (
               ! strcasecmp(optarg, "no-event-dpi-complete"))
-                ndGC.verbosity_flags &=
-                  ~ndGlobalConfig::VFLAG_EVENT_DPI_COMPLETE;
+                ndGC.verbosity_flags &= ~ndVerbosityFlags::EVENT_DPI_COMPLETE;
             else {
                 nd_printf(
                   "WARNING: Invalid verbose-flag: %s\n", optarg);
@@ -378,36 +377,38 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case _ND_LO_DUMP_RISKS:
         case 'P':
         case 's':
-            ndGC_SetFlag(ndGF_DOTD_CATEGORIES, false);
+            ndGC_SetFlag(ndGlobalFlags::DOTD_CATEGORIES, false);
             break;
         case 'D':
-            ndGC_SetFlag(ndGF_DEBUG_CURL, true);
+            ndGC_SetFlag(ndGlobalFlags::DEBUG_CURL, true);
             break;
         case 'f': ndGC.path_legacy_config = optarg; break;
         case 'A':
             if (last_iface.size() == 0) {
                 cerr << "You must specify an interface "
                         "first (-I/E).\n";
-                return ndCR_INVALID_OPTION;
+                return ndEnumCast(ConfigResult, INVALID_OPTION);
             }
             ndGC.AddInterfaceAddress(last_iface, optarg);
             break;
         case 'E':
-            if (! AddInterface(optarg, ndIR_WAN, ndCT_PCAP | ndCT_CMDLINE))
-                return ndCR_INVALID_INTERFACE;
+            if (! AddInterface(optarg, ndInterfaceRole::WAN,
+                  ndCaptureType::PCAP | ndCaptureType::CMDLINE))
+                return ndEnumCast(ConfigResult, INVALID_INTERFACE);
             last_iface = optarg;
             break;
         case 'F':
             if (last_iface.size() == 0) {
                 cerr << "You must specify an interface "
                         "first (-I/E).\n";
-                return ndCR_INVALID_OPTION;
+                return ndEnumCast(ConfigResult, INVALID_OPTION);
             }
             ndGC.AddInterfaceFilter(last_iface, optarg);
             break;
         case 'I':
-            if (! AddInterface(optarg, ndIR_LAN, ndCT_PCAP | ndCT_CMDLINE))
-                return ndCR_INVALID_INTERFACE;
+            if (! AddInterface(optarg, ndInterfaceRole::LAN,
+                  ndCaptureType::PCAP | ndCaptureType::CMDLINE))
+                return ndEnumCast(ConfigResult, INVALID_INTERFACE);
             last_iface = optarg;
             break;
         case 'i':
@@ -415,31 +416,31 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             break;
         case 'j': ndGC.path_export_json = optarg; break;
         case 'l':
-            ndGC_SetFlag(ndGF_USE_NETLINK, false);
+            ndGC_SetFlag(ndGlobalFlags::USE_NETLINK, false);
             break;
         case 'n':
-            ndGC_SetFlag(ndGF_DEBUG_NDPI, true);
+            ndGC_SetFlag(ndGlobalFlags::DEBUG_NDPI, true);
             break;
         case 'N':
             if (last_iface.size() == 0) {
                 cerr << "You must specify an interface "
                         "first (-I/E).\n";
-                return ndCR_INVALID_OPTION;
+                return ndEnumCast(ConfigResult, INVALID_OPTION);
             }
             ndGC.AddInterfacePeer(last_iface, optarg);
             break;
         case 'p':
             if ((rc = CheckAgentUUID())) {
                 string uuid;
-                ndGC.GetUUID(ndGlobalConfig::UUID_AGENT, uuid);
+                ndGC.GetUUID(ndUUID::AGENT, uuid);
                 cout << "Agent UUID: " << uuid << endl;
             }
-            return ndCR_Pack(ndCR_PROVISION_UUID, (rc) ? 0 : 1);
+            return ndCR_Pack(PROVISION_UUID, (rc) ? 0 : 1);
         case 'R':
-            ndGC_SetFlag(ndGF_REMAIN_IN_FOREGROUND, true);
+            ndGC_SetFlag(ndGlobalFlags::REMAIN_IN_FOREGROUND, true);
             break;
         case 'r':
-            ndGC_SetFlag(ndGF_REPLAY_DELAY, true);
+            ndGC_SetFlag(ndGlobalFlags::REPLAY_DELAY, true);
             break;
         case 'S':
 #ifndef _ND_LEAN_AND_MEAN
@@ -451,22 +452,22 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
                 nd_sha1_to_string(digest, sha1);
                 cout << sha1 << " " << optarg << endl;
             }
-            return ndCR_Pack(ndCR_HASH_TEST, rc);
+            return ndCR_Pack(HASH_TEST, rc);
         }
 #else
             cerr << "Sorry, this feature was disabled "
                     "(embedded).\n";
-            return ndCR_DISABLED_OPTION;
+            return ConfigResult::DISABLED_OPTION;
 #endif
         case 't':
-            ndGC_SetFlag(ndGF_USE_CONNTRACK, false);
+            ndGC_SetFlag(ndGlobalFlags::USE_CONNTRACK, false);
             break;
         case 'T':
             if ((ndGC.h_flow = fopen(optarg, "w")) == NULL) {
                 cerr
                   << "Error while opening test output log: " << optarg
                   << ": " << strerror(errno) << endl;
-                return ndCR_INVALID_VALUE;
+                return ndEnumCast(ConfigResult, INVALID_VALUE);
             }
             break;
         case 'U':
@@ -474,25 +475,25 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             string uuid;
             nd_generate_uuid(uuid);
             cout << uuid << endl;
-            return ndCR_GENERATE_UUID;
+            return ndEnumCast(ConfigResult, GENERATE_UUID);
         }
         case 'u':
-            rc = ndGC.SaveUUID(ndGlobalConfig::UUID_AGENT, optarg);
-            return ndCR_Pack(ndCR_SAVE_UUID_FAILURE, (rc) ? 0 : 1);
+            rc = ndGC.SaveUUID(ndUUID::AGENT, optarg);
+            return ndCR_Pack(SAVE_UUID_FAILURE, (rc) ? 0 : 1);
         case 'V':
             CommandLineHelp(true);
-            return ndCR_USAGE_OR_VERSION;
+            return ndEnumCast(ConfigResult, USAGE_OR_VERSION);
         case 'v':
-            ndGC_SetFlag(ndGF_VERBOSE, true);
+            ndGC_SetFlag(ndGlobalFlags::VERBOSE, true);
             ndGC.verbosity++;
             break;
         case 'x':
-            ndGC_SetFlag(ndGF_VERBOSE, false);
+            ndGC_SetFlag(ndGlobalFlags::VERBOSE, false);
             ndGC.debug_flow_print_exprs.push_back(optarg);
             break;
         default:
             CommandLineHelp();
-            return ndCR_INVALID_OPTION;
+            return ndEnumCast(ConfigResult, INVALID_OPTION);
         }
     }
 
@@ -506,56 +507,56 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         switch (rc) {
         case _ND_LO_LOOKUP_IP:
             rc = LookupAddress(optarg);
-            return ndCR_Pack(ndCR_LOOKUP_ADDR, (rc) ? 0 : 1);
+            return ndCR_Pack(LOOKUP_ADDR, (rc) ? 0 : 1);
             break;
         case _ND_LO_EXPORT_APPS:
 #ifndef _ND_LEAN_AND_MEAN
             rc = apps.Save("/dev/stdout");
-            return ndCR_Pack(ndCR_EXPORT_APPS, (rc) ? 0 : 1);
+            return ndCR_Pack(EXPORT_APPS, (rc) ? 0 : 1);
 #else
             cerr << "Sorry, this feature was disabled "
                     "(embedded).\n";
-            return ndCR_DISABLED_OPTION;
+            return ConfigResult::DISABLED_OPTION;
 #endif
         case _ND_LO_EXPORT_APPS_LEGACY:
 #ifndef _ND_LEAN_AND_MEAN
             rc = apps.SaveLegacy("/dev/stdout");
-            return ndCR_Pack(ndCR_EXPORT_APPS, (rc) ? 0 : 1);
+            return ndCR_Pack(EXPORT_APPS, (rc) ? 0 : 1);
 #else
             cerr << "Sorry, this feature was disabled "
                     "(embedded).\n";
-            return ndCR_DISABLED_OPTION;
+            return ndEnumCast(ConfigResult, DISABLED_OPTION);
 #endif
         case _ND_LO_DUMP_PROTOS:
-            rc = DumpList(ndDUMP_TYPE_PROTOS | dump_flags);
-            return ndCR_Pack(ndCR_DUMP_LIST, (rc) ? 0 : 1);
+            rc = DumpList(dump_flags | DumpFlags::TYPE_PROTOS);
+            return ndCR_Pack(DUMP_LIST, (rc) ? 0 : 1);
         case _ND_LO_DUMP_APPS:
-            rc = DumpList(ndDUMP_TYPE_APPS | dump_flags);
-            return ndCR_Pack(ndCR_DUMP_LIST, (rc) ? 0 : 1);
+            rc = DumpList(dump_flags | DumpFlags::TYPE_APPS);
+            return ndCR_Pack(DUMP_LIST, (rc) ? 0 : 1);
         case _ND_LO_DUMP_CAT:
             if (strncasecmp("application", optarg, 11) == 0)
-                rc = DumpList(ndDUMP_TYPE_CAT_APP | dump_flags);
+                rc = DumpList(dump_flags | DumpFlags::TYPE_CAT_APP);
             else if (strncasecmp("protocol", optarg, 8) == 0)
-                rc = DumpList(ndDUMP_TYPE_CAT_PROTO | dump_flags);
+                rc = DumpList(dump_flags | DumpFlags::TYPE_CAT_PROTO);
             else {
                 cerr << "Invalid catetory type \"" << optarg
                      << "\", valid types: applications, "
                         "protocols\n";
                 rc = 0;
             }
-            return ndCR_Pack(ndCR_DUMP_LIST, (rc) ? 0 : 1);
+            return ndCR_Pack(DUMP_LIST, (rc) ? 0 : 1);
         case _ND_LO_DUMP_CATS:
-            rc = DumpList(ndDUMP_TYPE_CATS | dump_flags);
-            return ndCR_Pack(ndCR_DUMP_LIST, (rc) ? 0 : 1);
+            rc = DumpList(dump_flags | DumpFlags::TYPE_CATS);
+            return ndCR_Pack(DUMP_LIST, (rc) ? 0 : 1);
         case _ND_LO_DUMP_RISKS:
-            rc = DumpList(ndDUMP_TYPE_RISKS | dump_flags);
-            return ndCR_Pack(ndCR_DUMP_LIST, (rc) ? 0 : 1);
+            rc = DumpList(dump_flags | DumpFlags::TYPE_RISKS);
+            return ndCR_Pack(DUMP_LIST, (rc) ? 0 : 1);
         case 'P':
-            rc = DumpList(ndDUMP_TYPE_ALL | dump_flags);
-            return ndCR_Pack(ndCR_DUMP_LIST, (rc) ? 0 : 1);
+            rc = DumpList(dump_flags | DumpFlags::TYPE_ALL);
+            return ndCR_Pack(DUMP_LIST, (rc) ? 0 : 1);
         case 's':
             rc = DisplayAgentStatus();
-            return ndCR_Pack(ndCR_AGENT_STATUS, (rc) ? 0 : 1);
+            return ndCR_Pack(AGENT_STATUS, (rc) ? 0 : 1);
         default: break;
         }
     }
@@ -565,23 +566,23 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         if (geteuid() != 0) {
             cerr << "Error starting Agent: " << strerror(EPERM)
                  << " (not root)\n";
-            return ndCR_INVALID_PERMS;
+            return ndEnumCast(ConfigResult, INVALID_PERMS);
         }
     }
 
     // Test mode enabled?  Disable/set certain config
     // parameters
     if (ndGC.h_flow != stderr) {
-        ndGC_SetFlag(ndGF_USE_FHC, true);
-        ndGC_SetFlag(ndGF_REMAIN_IN_FOREGROUND, true);
+        ndGC_SetFlag(ndGlobalFlags::USE_FHC, true);
+        ndGC_SetFlag(ndGlobalFlags::REMAIN_IN_FOREGROUND, true);
 
         ndGC.update_interval = 1;
 
         ndGC.plugin_processors.clear();
         ndGC.plugin_sinks.clear();
 
-        ndGC.dhc_save = ndDHC_DISABLED;
-        ndGC.fhc_save = ndFHC_DISABLED;
+        ndGC.dhc_storage = ndDHCStorage::DISABLED;
+        ndGC.fhc_storage = ndFHCStorage::DISABLED;
     }
 
     // Global libCURL initialization
@@ -609,7 +610,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
     if ((cc = curl_global_init(CURL_GLOBAL_DEFAULT)) != 0) {
         cerr << tag << ": Unable to initialize libCURL: " << cc
              << endl;
-        return ndCR_LIBCURL_FAILURE;
+        return ndEnumCast(ConfigResult, LIBCURL_FAILURE);
     }
 
     // Hash config file
@@ -624,7 +625,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
     // Configuration is valid when version is set
     version = nd_get_version_and_features();
 
-    return ndCR_OK;
+    return ndEnumCast(ConfigResult, OK);
 }
 
 bool ndInstance::InitializeTimers(int sig_update, int sig_update_napi) {
@@ -762,70 +763,79 @@ bool ndInstance::SetConfigOption(int option, const string &arg) const {
     return true;
 }
 
-bool ndInstance::DumpList(uint8_t type) {
-    if (! (type & ndDUMP_TYPE_PROTOS) &&
-      ! (type & ndDUMP_TYPE_APPS) && ! (type & ndDUMP_TYPE_CATS) &&
-      ! (type & ndDUMP_TYPE_RISKS))
+bool ndInstance::DumpList(ndFlags<DumpFlags> flags) {
+    if (! ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) &&
+      ! ndFlagBoolean(flags, DumpFlags::TYPE_APPS) &&
+      ! ndFlagBoolean(flags, DumpFlags::TYPE_CATS) &&
+      ! ndFlagBoolean(flags, DumpFlags::TYPE_RISKS))
     {
-        cerr << "No filter type specified (application, "
+        cerr << "No filter flags specified (application, "
                 "protocol).\n";
         return false;
     }
 
-    if (type & ndDUMP_TYPE_CATS && ! (type & ndDUMP_TYPE_PROTOS) &&
-      ! (type & ndDUMP_TYPE_APPS))
+    if (ndFlagBoolean(flags, DumpFlags::TYPE_CATS) &&
+      ! ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) &&
+      ! ndFlagBoolean(flags, DumpFlags::TYPE_APPS))
     {
-        if (type & ndDUMP_TYPE_CAT_APP &&
-          ! (type & ndDUMP_TYPE_CAT_PROTO))
-            categories.Dump(ndCategories::TYPE_APP);
-        else if (! (type & ndDUMP_TYPE_CAT_APP) &&
-          type & ndDUMP_TYPE_CAT_PROTO)
-            categories.Dump(ndCategories::TYPE_PROTO);
+        if (ndFlagBoolean(flags, DumpFlags::TYPE_CAT_APP) &&
+          ! ndFlagBoolean(flags, DumpFlags::TYPE_CAT_PROTO))
+            categories.Dump(ndCategories::Type::APP);
+        else if (! ndFlagBoolean(flags, DumpFlags::TYPE_CAT_APP) &&
+          ndFlagBoolean(flags, DumpFlags::TYPE_CAT_PROTO))
+            categories.Dump(ndCategories::Type::PROTO);
         else categories.Dump();
     }
 
     map<unsigned, string> entries_by_id;
     map<string, unsigned> entries_by_tag;
 
-    if (type & ndDUMP_TYPE_PROTOS) {
-        for (auto &proto : nd_protos) {
-            if (proto.first == ND_PROTO_TODO) continue;
+    if (ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS)) {
+        for (auto &proto : ndProto::Tags) {
+            if (proto.first == ndProto::Id::TODO) continue;
 
-            if (! (type & ndDUMP_SORT_BY_TAG))
-                entries_by_id[proto.first] = proto.second;
-            else entries_by_tag[proto.second] = proto.first;
+            if (! ndFlagBoolean(flags, DumpFlags::SORT_BY_TAG))
+                entries_by_id[static_cast<unsigned>(proto.first)] =
+                  proto.second;
+            else
+                entries_by_tag[proto.second] =
+                  static_cast<unsigned>(proto.first);
         }
     }
 
-    if (type & ndDUMP_TYPE_APPS) {
+    if (ndFlagBoolean(flags, DumpFlags::TYPE_APPS)) {
         nd_apps_t applist;
         apps.Get(applist);
         for (auto &app : applist) {
-            if (! (type & ndDUMP_SORT_BY_TAG))
+            if (! ndFlagBoolean(flags, DumpFlags::SORT_BY_TAG))
                 entries_by_id[app.second] = app.first;
             else entries_by_tag[app.first] = app.second;
         }
     }
 
-    if (type & ndDUMP_TYPE_RISKS) {
-        for (auto &risk : nd_risks) {
-            if (risk.first == ND_RISK_TODO) continue;
+    if (ndFlagBoolean(flags, DumpFlags::TYPE_RISKS)) {
+        for (auto &risk : ndRisk::Tags) {
+            if (risk.first == ndRisk::Id::TODO) continue;
 
-            if (! (type & ndDUMP_SORT_BY_TAG))
-                entries_by_id[risk.first] = risk.second;
-            else entries_by_tag[risk.second] = risk.first;
+            if (! ndFlagBoolean(flags, DumpFlags::SORT_BY_TAG))
+                entries_by_id[static_cast<unsigned>(risk.first)] =
+                  risk.second;
+            else
+                entries_by_tag[risk.second] =
+                  static_cast<unsigned>(risk.first);
         }
     }
 
     for (auto &entry : entries_by_id) {
-        if (type & ndDUMP_WITH_CATS &&
-          (type & ndDUMP_TYPE_PROTOS || type & ndDUMP_TYPE_APPS))
+        if (ndFlagBoolean(flags, DumpFlags::WITH_CATS) &&
+          (ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) ||
+            ndFlagBoolean(flags, DumpFlags::TYPE_APPS)))
         {
             string tag;
             nd_cat_id_t cat_id = categories.ResolveTag(
-              (type & ndDUMP_TYPE_PROTOS) ?
-                ndCategories::TYPE_PROTO :
-                ndCategories::TYPE_APP,
+              ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) ?
+                ndCategories::Type::PROTO :
+                ndCategories::Type::APP,
               entry.first, tag);
 
             if (cat_id == ND_CAT_UNKNOWN || tag.empty())
@@ -842,14 +852,15 @@ bool ndInstance::DumpList(uint8_t type) {
     }
 
     for (auto &entry : entries_by_tag) {
-        if (type & ndDUMP_WITH_CATS &&
-          (type & ndDUMP_TYPE_PROTOS || type & ndDUMP_TYPE_APPS))
+        if (ndFlagBoolean(flags, DumpFlags::WITH_CATS) &&
+          (ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) ||
+            ndFlagBoolean(flags, DumpFlags::TYPE_APPS)))
         {
             string tag;
             nd_cat_id_t cat_id = categories.ResolveTag(
-              (type & ndDUMP_TYPE_PROTOS) ?
-                ndCategories::TYPE_PROTO :
-                ndCategories::TYPE_APP,
+              ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) ?
+                ndCategories::Type::PROTO :
+                ndCategories::Type::APP,
               entry.second, tag);
 
             if (cat_id == ND_CAT_UNKNOWN || tag.empty())
@@ -886,7 +897,7 @@ bool ndInstance::LookupAddress(const string &ip) {
 
 void ndInstance::CommandLineHelp(bool version_only) {
     if (! ndGC_DEBUG) {
-        ndGC_SetFlag(ndGF_QUIET, true);
+        ndGC_SetFlag(ndGlobalFlags::QUIET, true);
     }
 
     fprintf(stderr, "%s\n%s\n",
@@ -919,16 +930,16 @@ void ndInstance::CommandLineHelp(bool version_only) {
         fprintf(stderr, "\nReport bugs to: %s\n", PACKAGE_BUGREPORT);
 #endif
         try {
-            plugins.Load(ndPlugin::TYPE_BASE, false);
+            plugins.Load(ndPlugin::Type::BASE, false);
 
             if (! ndGC.plugin_processors.empty()) {
                 fprintf(stderr, "\nProcessor plugins:\n\n");
-                plugins.DumpVersions(ndPlugin::TYPE_PROC);
+                plugins.DumpVersions(ndPlugin::Type::PROC);
             }
 
             if (! ndGC.plugin_sinks.empty()) {
                 fprintf(stderr, "\nSink plugins:\n\n");
-                plugins.DumpVersions(ndPlugin::TYPE_SINK);
+                plugins.DumpVersions(ndPlugin::Type::SINK);
             }
         }
         catch (exception &e) {
@@ -1068,10 +1079,11 @@ void ndInstance::CommandLineHelp(bool version_only) {
 }
 
 bool ndInstance::AddInterface(const string &ifname,
-  nd_interface_role role, unsigned type) const {
+  ndInterfaceRole role, ndFlags<ndCaptureType> type) const {
     static unsigned pcap_id = 0;
 
-    if ((ndCT_TYPE(type) == ndCT_PCAP || ndCT_TYPE(type) == ndCT_NONE) &&
+    if ((ndCT_TYPE(type.flags) == ndCaptureType::PCAP ||
+          ndCT_TYPE(type.flags) == ndCaptureType::NONE) &&
       nd_file_exists(ifname))
     {
         nd_config_pcap *pcap = new nd_config_pcap;
@@ -1081,7 +1093,7 @@ bool ndInstance::AddInterface(const string &ifname,
         iface.append(to_string(pcap_id++));
 
         return ndGC.AddInterface(iface, role,
-          ndCT_PCAP_OFFLINE | ndCT_CMDLINE,
+          ndCaptureType::PCAP_OFFLINE | ndCaptureType::CMDLINE,
           static_cast<void *>(pcap));
     }
 
@@ -1090,16 +1102,15 @@ bool ndInstance::AddInterface(const string &ifname,
 
 bool ndInstance::CheckAgentUUID(void) const {
     string uuid;
-    ndGC.GetUUID(ndGlobalConfig::UUID_AGENT, uuid);
+    ndGC.GetUUID(ndUUID::AGENT, uuid);
 
     if (uuid.empty() || uuid == ND_AGENT_UUID_NULL) {
         string uuid;
-        if (! ndGC.LoadUUID(ndGlobalConfig::UUID_AGENT, uuid))
-        {
+        if (! ndGC.LoadUUID(ndUUID::AGENT, uuid)) {
             nd_generate_uuid(uuid);
 
             cout << "Generated a new Agent UUID: " << uuid << endl;
-            if (! ndGC.SaveUUID(ndGlobalConfig::UUID_AGENT, uuid))
+            if (! ndGC.SaveUUID(ndUUID::AGENT, uuid))
                 return false;
         }
     }
@@ -1107,7 +1118,8 @@ bool ndInstance::CheckAgentUUID(void) const {
     return (! uuid.empty());
 }
 
-bool ndInstance::SaveAgentStatus(const nd_interface_stats &stats) {
+bool ndInstance::SaveAgentStatus(const ndCaptureThreads &threads,
+  const ndInterfaceStats &stats) {
     json jstatus;
 
     try {
@@ -1137,7 +1149,7 @@ bool ndInstance::SaveAgentStatus(const nd_interface_stats &stats) {
 
         for (auto &i : stats) {
             json jstats;
-            i.second.second.Encode(jstats);
+            i.second.Encode(jstats);
             jstatus["stats"][i.first] = jstats;
 
             auto ifa = interfaces.find(i.first);
@@ -1146,8 +1158,13 @@ bool ndInstance::SaveAgentStatus(const nd_interface_stats &stats) {
                 ifa->second->Encode(jiface);
                 jstatus["interfaces"][i.first] = jiface;
             }
-            jstatus["interfaces"][i.first]["state"] =
-              i.second.first;
+
+            auto ct = threads.find(i.first);
+            if (ct != threads.end() && ct->second.size() > 0)
+            {
+                jstatus["interfaces"][i.first]["state"] =
+                  ct->second[0]->GetState();
+            }
         }
 
         string json_string;
@@ -1309,7 +1326,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
           uptime.c_str());
 
         string uuid;
-        ndGC.LoadUUID(ndGlobalConfig::UUID_AGENT, uuid);
+        ndGC.LoadUUID(ndUUID::AGENT, uuid);
 
         if (uuid.size() != ND_AGENT_UUID_LEN || uuid == ND_AGENT_UUID_NULL)
         {
@@ -1327,14 +1344,14 @@ bool ndInstance::DisplayAgentStatus(void) const {
               ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
         }
 
-        ndGC.LoadUUID(ndGlobalConfig::UUID_SERIAL, uuid);
+        ndGC.LoadUUID(ndUUID::SERIAL, uuid);
 
         if (! uuid.empty() && uuid != ND_AGENT_SERIAL_NULL) {
             fprintf(stderr, "%s%s%s serial UUID: %s\n",
               ND_C_GREEN, ND_I_INFO, ND_C_RESET, uuid.c_str());
         }
 
-        ndGC.LoadUUID(ndGlobalConfig::UUID_SITE, uuid);
+        ndGC.LoadUUID(ndUUID::SITE, uuid);
 
         if (uuid.empty() || uuid == ND_SITE_UUID_NULL) {
             fprintf(stderr, "%s%s%s site UUID is not set.\n",
@@ -1497,18 +1514,20 @@ bool ndInstance::DisplayAgentStatus(void) const {
                     auto jstate = j.find("state");
 
                     if (jstate != j.end()) {
-                        switch (jstate->get<unsigned>()) {
-                        case ndCaptureThread::STATE_INIT:
+                        switch (static_cast<ndCaptureThread::State>(
+                          jstate->get<unsigned>()))
+                        {
+                        case ndCaptureThread::State::INIT:
                             icon = ND_I_WARN;
                             colors[0] = color = ND_C_YELLOW;
                             state = "initializing";
                             break;
-                        case ndCaptureThread::STATE_ONLINE:
+                        case ndCaptureThread::State::ONLINE:
                             icon = ND_I_OK;
                             colors[0] = color = ND_C_GREEN;
                             state = "online";
                             break;
-                        case ndCaptureThread::STATE_OFFLINE:
+                        case ndCaptureThread::State::OFFLINE:
                             state = "offline";
                             break;
                         default: state = "invalid"; break;
@@ -1545,13 +1564,15 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 }
                 catch (json::exception &e) {
                     fprintf(stderr,
-                      "%s%s%s: error decoding interface "
+                      "%s%s%s: error decoding "
+                      "interface "
                       "stats.\n",
                       ND_C_RED, ND_I_FAIL, ND_C_RESET);
                 }
 
                 fprintf(stderr,
-                  "%s%s%s %s [%s %s %s]: %s%s%s: packets "
+                  "%s%s%s %s [%s %s %s]: %s%s%s: "
+                  "packets "
                   "dropped: %s%.03lf%%%s\n",
                   color, icon, ND_C_RESET, iface.c_str(),
                   j["role"].get<string>().c_str(), ND_I_RARROW,
@@ -1610,7 +1631,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 lookup_total = lookup_hit + lookup_miss;
 
                 fprintf(stderr,
-                  "%s %s entries: %lu, inserts: %lu "
+                  "%s %s entries: %lu, inserts: "
+                  "%lu "
                   "(%.01f%%), "
                   "lookups: %lu (%.01f%%)\n",
                   ND_I_INFO, "DHC", cache_size, insert_total,
@@ -1618,7 +1640,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
             }
             catch (json::exception &e) {
                 fprintf(stderr,
-                  "%s%s%s error decoding %s status.\n",
+                  "%s%s%s error decoding %s "
+                  "status.\n",
                   ND_C_RED, ND_I_FAIL, ND_C_RESET, "DHC");
             }
         }
@@ -1657,7 +1680,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 lookup_total = lookup_hit + lookup_miss;
 
                 fprintf(stderr,
-                  "%s %s entries: %lu, inserts: %lu "
+                  "%s %s entries: %lu, inserts: "
+                  "%lu "
                   "(%.01f%%), "
                   "lookups: %lu (%.01f%%)\n",
                   ND_I_INFO, "FHC", cache_size, insert_total,
@@ -1665,7 +1689,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
             }
             catch (json::exception &e) {
                 fprintf(stderr,
-                  "%s%s%s error decoding %s status.\n",
+                  "%s%s%s error decoding %s "
+                  "status.\n",
                   ND_C_RED, ND_I_FAIL, ND_C_RESET, "FHC");
             }
         }
@@ -1778,9 +1803,60 @@ ndInstance_RunReturn:
     return exit_code;
 }
 
+bool ndInstance::SendSignal(const siginfo_t &si) {
+    switch (si.si_signo) {
+#ifdef _ND_ENABLE_NETLINK
+    case SIGIO:
+        if (ndGC_USE_NETLINK && netlink != nullptr &&
+          netlink->GetDescriptor() == si.si_fd)
+        {
+            ndThread::SendIPC(
+              static_cast<uint32_t>(InstanceEvent::NETLINK_IO));
+            return true;
+        }
+        break;
+#endif
+    case SIGHUP:
+        ndThread::SendIPC(
+          static_cast<uint32_t>(InstanceEvent::RELOAD));
+        return true;
+    case SIGINT:
+    case SIGTERM:
+#ifdef SIGPWR
+    case SIGPWR:
+#endif
+        ndThread::SendIPC(
+          static_cast<uint32_t>(InstanceEvent::TERMINATE));
+        return true;
+    case SIGUSR1:
+        if (dns_hint_cache != nullptr)
+            dns_hint_cache->Save();
+        if (flow_hash_cache != nullptr)
+            flow_hash_cache->Save();
+        break;
+    case SIGUSR2: break;
+    default:
+        if (timer_update.GetSignal() >= 0 &&
+          si.si_signo == timer_update.GetSignal())
+        {
+            ndThread::SendIPC(
+              static_cast<uint32_t>(InstanceEvent::UPDATE));
+            return true;
+        }
+        else if (timer_update_napi.GetSignal() >= 0 &&
+          si.si_signo == timer_update_napi.GetSignal())
+        {
+            ndThread::SendIPC(static_cast<uint32_t>(
+              InstanceEvent::UPDATE_NAPI));
+            return true;
+        }
+        break;
+    }
+    return false;
+}
 void *ndInstance::ndInstance::Entry(void) {
     size_t proc_plugins = 0;
-    nd_capture_threads thread_capture;
+    ndCaptureThreads thread_capture;
 
     // Process an initial update on start-up
     ProcessUpdate(thread_capture);
@@ -1824,11 +1900,12 @@ void *ndInstance::ndInstance::Entry(void) {
     }
 
     for (;;) {
-        int ipc = ndIPC_NONE;
+        int ipc = static_cast<int>(InstanceEvent::NONE);
 
-        switch ((ipc = WaitForIPC(1))) {
-        case ndIPC_NONE: break;
-        case ndIPC_NETLINK_IO:
+        switch (static_cast<InstanceEvent>(ipc = WaitForIPC(1)))
+        {
+        case InstanceEvent::NONE: break;
+        case InstanceEvent::NETLINK_IO:
             nd_dprintf("%s: received IPC: [%d] %s\n",
               tag.c_str(), ipc, "Netlink data available");
 #ifdef _ND_ENABLE_NETLINK
@@ -1836,7 +1913,7 @@ void *ndInstance::ndInstance::Entry(void) {
                 netlink->ProcessEvent();
 #endif
             break;
-        case ndIPC_RELOAD:
+        case InstanceEvent::RELOAD:
             nd_dprintf("%s: received IPC: [%d] %s\n", tag.c_str(),
               ipc, "Reload run-time configuration");
             Reload();
@@ -1846,19 +1923,19 @@ void *ndInstance::ndInstance::Entry(void) {
             }
             ndGC.Close();
             break;
-        case ndIPC_TERMINATE:
+        case InstanceEvent::TERMINATE:
             Terminate();
             if (! terminate_force.load())
                 DestroyCaptureThreads(thread_capture, true);
             exit_code = EXIT_SUCCESS;
             break;
-        case ndIPC_UPDATE:
+        case InstanceEvent::UPDATE:
             nd_dprintf("%s: received IPC: [%d] %s\n",
               tag.c_str(), ipc, "Update");
             ReapCaptureThreads(thread_capture);
             ProcessUpdate(thread_capture);
             break;
-        case ndIPC_UPDATE_NAPI:
+        case InstanceEvent::UPDATE_NAPI:
             nd_dprintf("%s: received IPC: [%d] %s\n",
               tag.c_str(), ipc, "Netify API update");
             if (ndGC_USE_NAPI) {
@@ -1882,7 +1959,7 @@ void *ndInstance::ndInstance::Entry(void) {
         if (ShouldTerminate() && status.flows == 0) break;
     };
 
-    proc_plugins = plugins.Terminate(ndPlugin::TYPE_PROC);
+    proc_plugins = plugins.Terminate(ndPlugin::Type::PROC);
 
     do {
         nd_dprintf(
@@ -1890,7 +1967,7 @@ void *ndInstance::ndInstance::Entry(void) {
           "exit.\n",
           tag.c_str(), proc_plugins);
 
-        proc_plugins -= plugins.Reap(ndPlugin::TYPE_PROC);
+        proc_plugins -= plugins.Reap(ndPlugin::Type::PROC);
 
         if (proc_plugins > 0) sleep(1);
     }
@@ -1930,8 +2007,8 @@ bool ndInstance::Reload(bool broadcast) {
     }
 
     if (broadcast) {
-        plugins.BroadcastEvent(ndPlugin::TYPE_BASE,
-          ndPlugin::EVENT_RELOAD);
+        plugins.BroadcastEvent(ndPlugin::Type::BASE,
+          ndPlugin::Event::RELOAD);
     }
 
     nd_dprintf("%s: configuration reloaded %s.\n",
@@ -1948,20 +2025,20 @@ void ndInstance::CreateCaptureInterfaces(ndInterfaces &ifaces) const {
                 i.second.first, r.first)));
 
             if (result.second) {
-                switch (ndCT_TYPE(i.second.first)) {
-                case ndCT_PCAP:
-                case ndCT_PCAP_OFFLINE:
+                switch (ndCT_TYPE(i.second.first.flags)) {
+                case ndCaptureType::PCAP:
+                case ndCaptureType::PCAP_OFFLINE:
                     result.first->second->SetConfig(
                       static_cast<nd_config_pcap *>(i.second.second));
                     break;
 #if defined(_ND_ENABLE_TPACKETV3)
-                case ndCT_TPV3:
+                case ndCaptureType::TPV3:
                     result.first->second->SetConfig(
                       static_cast<nd_config_tpv3 *>(i.second.second));
                     break;
 #endif
 #if defined(_ND_ENABLE_NFQUEUE)
-                case ndCT_NFQ:
+                case ndCaptureType::NFQ:
                     result.first->second->SetConfig(
                       static_cast<nd_config_nfq *>(i.second.second));
                     break;
@@ -1978,7 +2055,7 @@ void ndInstance::CreateCaptureInterfaces(ndInterfaces &ifaces) const {
 }
 
 bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
-  nd_capture_threads &threads) {
+  ndCaptureThreads &threads) {
     if (threads.size() != 0) {
         nd_printf("%s: Capture threads already created.\n",
           tag.c_str());
@@ -1995,23 +2072,24 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
       0;
 
     for (auto &it : ifaces) {
-        switch (ndCT_TYPE(it.second->capture_type)) {
-        case ndCT_PCAP:
-        case ndCT_PCAP_OFFLINE:
+        switch (ndCT_TYPE(it.second->capture_type.flags)) {
+        case ndCaptureType::PCAP:
+        case ndCaptureType::PCAP_OFFLINE:
         {
             auto thread = new ndCapturePcap(
               (interfaces.size() > 1) ? cpu++ : -1,
               it.second, thread_detection, dns_hint_cache,
-              (it.second->role == ndIR_LAN) ? 0 : ++private_addr);
+              (it.second->role == ndInterfaceRole::LAN) ? 0 : ++private_addr);
 
             thread_group.push_back(thread);
             break;
         }
 #if defined(_ND_ENABLE_TPACKETV3)
-        case ndCT_TPV3:
+        case ndCaptureType::TPV3:
         {
             unsigned instances = it.second->config_tpv3.fanout_instances;
-            if (it.second->config_tpv3.fanout_mode == ndFOM_DISABLED ||
+            if (it.second->config_tpv3.fanout_mode ==
+                ndTPv3FanoutMode::DISABLED ||
               it.second->config_tpv3.fanout_instances < 2)
                 instances = 1;
 
@@ -2019,7 +2097,9 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
                 auto thread = new ndCaptureTPv3(
                   (instances > 1) ? cpu++ : -1, it.second,
                   thread_detection, dns_hint_cache,
-                  (it.second->role == ndIR_LAN) ? 0 : ++private_addr);
+                  (it.second->role == ndInterfaceRole::LAN) ?
+                    0 :
+                    ++private_addr);
 
                 thread_group.push_back(thread);
 
@@ -2030,7 +2110,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
         }
 #endif
 #if defined(_ND_ENABLE_NFQUEUE)
-        case ndCT_NFQ:
+        case ndCaptureType::NFQ:
         {
             unsigned instances = it.second->config_nfq.instances;
             if (it.second->config_nfq.instances == 0)
@@ -2042,7 +2122,9 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
                   thread_detection,
                   i,  // instance_id
                   dns_hint_cache,
-                  (it.second->role == ndIR_LAN) ? 0 : ++private_addr);
+                  (it.second->role == ndInterfaceRole::LAN) ?
+                    0 :
+                    ++private_addr);
 
                 thread_group.push_back(thread);
 
@@ -2079,7 +2161,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 }
 
 void ndInstance::DestroyCaptureThreads(
-  nd_capture_threads &threads, bool expire_flows) {
+  ndCaptureThreads &threads, bool expire_flows) {
     for (auto &it : threads) {
         for (auto &it_instance : it.second)
             it_instance->Terminate();
@@ -2115,7 +2197,7 @@ void ndInstance::DestroyCaptureThreads(
       tag.c_str(), count, total);
 }
 
-size_t ndInstance::ReapCaptureThreads(nd_capture_threads &threads) {
+size_t ndInstance::ReapCaptureThreads(ndCaptureThreads &threads) {
     size_t count = threads.size();
 
     for (auto &it : threads) {
@@ -2139,7 +2221,7 @@ size_t ndInstance::ReapCaptureThreads(nd_capture_threads &threads) {
     return count;
 }
 
-bool ndInstance::ReloadCaptureThreads(nd_capture_threads &threads) {
+bool ndInstance::ReloadCaptureThreads(ndCaptureThreads &threads) {
     ndInterfaces ifaces, ifaces_new, ifaces_common, ifaces_delete;
 
     ndGlobalConfig::InterfaceAddrs old_addrs;
@@ -2199,11 +2281,11 @@ bool ndInstance::ReloadCaptureThreads(nd_capture_threads &threads) {
               inserter(ifaddrs_delete, ifaddrs_delete.begin()));
 
             for (auto &a : ifaddrs_new) {
-                addr_types.AddAddress(ndAddr::atLOCAL, a,
-                  iface.first);
+                addr_lookup.AddAddress(ndAddr::Type::LOCAL,
+                  a, iface.first);
             }
             for (auto &a : ifaddrs_delete)
-                addr_types.RemoveAddress(a, iface.first);
+                addr_lookup.RemoveAddress(a, iface.first);
 
             continue;
         }
@@ -2220,7 +2302,7 @@ bool ndInstance::ReloadCaptureThreads(nd_capture_threads &threads) {
 
         if (ifa != ndGC.interface_addrs.end()) {
             for (auto &a : ifa->second)
-                addr_types.RemoveAddress(a, iface.first);
+                addr_lookup.RemoveAddress(a, iface.first);
 
             ndGC.interface_addrs.erase(ifa);
         }
@@ -2244,7 +2326,7 @@ bool ndInstance::ReloadCaptureThreads(nd_capture_threads &threads) {
         }
     }
 
-    nd_capture_threads threads_new;
+    ndCaptureThreads threads_new;
 
     if (! CreateCaptureThreads(ifaces_new, threads_new))
         return false;
@@ -2255,8 +2337,8 @@ bool ndInstance::ReloadCaptureThreads(nd_capture_threads &threads) {
         auto ifa = ndGC.interface_addrs.find(iface.first);
         if (ifa != ndGC.interface_addrs.end()) {
             for (auto &a : ifa->second) {
-                addr_types.AddAddress(ndAddr::atLOCAL, a,
-                  iface.first);
+                addr_lookup.AddAddress(ndAddr::Type::LOCAL,
+                  a, iface.first);
             }
         }
     }
@@ -2266,19 +2348,19 @@ bool ndInstance::ReloadCaptureThreads(nd_capture_threads &threads) {
     return true;
 }
 
-int ndInstance::WaitForIPC(int timeout) {
+uint32_t ndInstance::WaitForIPC(int timeout) {
     int rc;
-    int ipc = 0;
+    uint32_t event = 0;
     fd_set fds_read;
 
     do {
         FD_ZERO(&fds_read);
-        FD_SET(fd_ipc[IPC_PE_READ], &fds_read);
+        FD_SET(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)], &fds_read);
 
         struct timeval tv = { 1, 0 };
 
-        rc = select(fd_ipc[IPC_PE_READ] + 1, &fds_read,
-          NULL, NULL, &tv);
+        rc = select(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)] + 1,
+          &fds_read, NULL, NULL, &tv);
 
         if (rc == -1) {
             throw ndExceptionSystemError(__PRETTY_FUNCTION__,
@@ -2286,19 +2368,21 @@ int ndInstance::WaitForIPC(int timeout) {
         }
 
         if (rc > 0) {
-            if (! FD_ISSET(fd_ipc[IPC_PE_READ], &fds_read)) {
+            if (! FD_ISSET(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)],
+                  &fds_read))
+            {
                 throw ndException(
                   "%s: %s: invalid descriptor",
                   __PRETTY_FUNCTION__, "select");
             }
 
-            ipc = (int)RecvIPC();
+            event = RecvIPC();
             break;
         }
     }
     while (! ShouldTerminate() && timeout < 0 && --timeout != 0);
 
-    return ipc;
+    return event;
 }
 
 void ndInstance::UpdateStatus(void) {
@@ -2349,7 +2433,7 @@ bool ndInstance::ExpireFlow(nd_flow_ptr &flow) {
             it->second->QueuePacket(flow);
 
             plugins.BroadcastProcessorEvent(
-              ndPluginProcessor::EVENT_FLOW_EXPIRING, flow);
+              ndPluginProcessor::Event::FLOW_EXPIRING, flow);
 
             return true;
         }
@@ -2359,7 +2443,7 @@ bool ndInstance::ExpireFlow(nd_flow_ptr &flow) {
     return false;
 }
 
-void ndInstance::ProcessUpdate(nd_capture_threads &threads) {
+void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
     UpdateStatus();
 #if ! defined(_ND_ENABLE_LIBTCMALLOC) && defined(HAVE_MALLOC_TRIM)
     // Attempt to release heap back to OS when supported
@@ -2370,11 +2454,11 @@ void ndInstance::ProcessUpdate(nd_capture_threads &threads) {
     if (flow_hash_cache != nullptr)
         flow_hash_cache->Scoreboard(tag + ": FHC");
 
-    plugins.BroadcastEvent(ndPlugin::TYPE_BASE,
-      ndPlugin::EVENT_STATUS_UPDATE);
+    plugins.BroadcastEvent(ndPlugin::Type::BASE,
+      ndPlugin::Event::STATUS_UPDATE);
 
     plugins.BroadcastProcessorEvent(
-      ndPluginProcessor::EVENT_UPDATE_INIT, &status);
+      ndPluginProcessor::Event::UPDATE_INIT, &status);
 
     ndInterface::UpdateAddrs(interfaces);
 
@@ -2382,13 +2466,12 @@ void ndInstance::ProcessUpdate(nd_capture_threads &threads) {
         it.second->NextEndpointSnapshot();
 
     plugins.BroadcastProcessorEvent(
-      ndPluginProcessor::EVENT_INTERFACES, &interfaces);
+      ndPluginProcessor::Event::INTERFACES, &interfaces);
 
-    nd_interface_stats pkt_stats_ifaces;
+    ndInterfaceStats pkt_stats_ifaces;
 
     for (auto &it : threads) {
         ndPacketStats pkt_stats;
-        uint8_t state = it.second[0]->capture_state.load();
 
         for (auto &it_instance : it.second) {
             it_instance->Lock();
@@ -2399,24 +2482,23 @@ void ndInstance::ProcessUpdate(nd_capture_threads &threads) {
         }
 
         pkt_stats_global += pkt_stats;
-        pkt_stats_ifaces.insert(
-          make_pair(it.first, make_pair(state, pkt_stats)));
+        pkt_stats_ifaces.insert(make_pair(it.first, pkt_stats));
 
         plugins.BroadcastProcessorEvent(
-          ndPluginProcessor::EVENT_PKT_CAPTURE_STATS,
+          ndPluginProcessor::Event::PKT_CAPTURE_STATS,
           it.first, &pkt_stats);
     }
 
-    SaveAgentStatus(pkt_stats_ifaces);
+    SaveAgentStatus(threads, pkt_stats_ifaces);
 
     plugins.BroadcastProcessorEvent(
-      ndPluginProcessor::EVENT_PKT_GLOBAL_STATS, &pkt_stats_global);
+      ndPluginProcessor::Event::PKT_GLOBAL_STATS, &pkt_stats_global);
 
     plugins.BroadcastProcessorEvent(
-      ndPluginProcessor::EVENT_FLOW_MAP, flow_buckets);
+      ndPluginProcessor::Event::FLOW_MAP, flow_buckets);
 
     plugins.BroadcastProcessorEvent(
-      ndPluginProcessor::EVENT_UPDATE_COMPLETE);
+      ndPluginProcessor::Event::UPDATE_COMPLETE);
 
     ProcessFlows();
 }
@@ -2480,12 +2562,17 @@ void ndInstance::ProcessFlows(void) {
                 status.flows_expired++;
 
                 if (i->second.use_count() == 1) {
-                    plugins.BroadcastProcessorEvent(
-                      ndPluginProcessor::EVENT_FLOW_EXPIRE,
-                      i->second);
-
-                    i = fm.erase(i);
-                    status.flows_purged++;
+                    if (i->second->flags.expiry_broadcast.load() == false)
+                    {
+                        i->second->flags.expiry_broadcast = true;
+                        plugins.BroadcastProcessorEvent(
+                          ndPluginProcessor::Event::FLOW_EXPIRE,
+                          i->second);
+                    }
+                    else {
+                        i = fm.erase(i);
+                        status.flows_purged++;
+                    }
 
                     continue;
                 }

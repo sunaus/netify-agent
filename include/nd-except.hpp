@@ -20,9 +20,8 @@
 
 #pragma once
 
+#include <array>
 #include <stdexcept>
-
-#define _ND_EXCEPT_MAX_MESSAGE 128
 
 class ndException : public std::exception
 {
@@ -30,11 +29,12 @@ public:
     explicit ndException(const char *format, ...) throw();
 
     virtual const char *what() const throw() {
-        return message;
+        return message.data();
     }
 
 protected:
-    char message[_ND_EXCEPT_MAX_MESSAGE];
+    static constexpr size_t _ND_EXCEPT_MAX_MESSAGE = { 128 };
+    std::array<char, _ND_EXCEPT_MAX_MESSAGE> message;
 };
 
 #define ndExceptionSystemError(ctag, what) \

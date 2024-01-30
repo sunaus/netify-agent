@@ -20,22 +20,13 @@
 
 #pragma once
 
-#define _NDFP_MAX_BUFLEN        256
+#include <cstdint>
+#include <string>
 
-#define _NDFP_OTHER_UNKNOWN     0
-#define _NDFP_OTHER_UNSUPPORTED 1
-#define _NDFP_OTHER_LOCAL       2
-#define _NDFP_OTHER_MULTICAST   3
-#define _NDFP_OTHER_BROADCAST   4
-#define _NDFP_OTHER_REMOTE      5
-#define _NDFP_OTHER_ERROR       6
+#include "nd-flow-parser.h"
 
-#define _NDFP_TUNNEL_NONE       0
-#define _NDFP_TUNNEL_GTP        1
-
-#define _NDFP_ORIGIN_UNKNOWN    0
-#define _NDFP_ORIGIN_LOCAL      1
-#define _NDFP_ORIGIN_OTHER      2
+#include "nd-flow.hpp"
+#include "nd-instance.hpp"
 
 #define _NDFP_flow \
     ((ndFlowParser *)yyget_extra(scanner))->flow
@@ -57,23 +48,6 @@
     ((ndFlowParser *)yyget_extra(scanner))->expr_result
 #define _NDFP_categories \
     ((ndFlowParser *)yyget_extra(scanner))->ndi.categories
-
-#if 0
-#define _NDFP_debugf(f, ...) nd_dprintf(f, __VA_ARGS__)
-#else
-#define _NDFP_debugf(f, ...) \
-    do { \
-    } \
-    while (0)
-#endif
-
-#if defined __cplusplus
-
-#include <cstdint>
-#include <string>
-
-#include "nd-flow.hpp"
-#include "nd-instance.hpp"
 
 class ndFlowParser : public ndInstanceClient
 {
@@ -97,5 +71,3 @@ public:
 protected:
     void *scanner;
 };
-
-#endif

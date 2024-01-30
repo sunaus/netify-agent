@@ -21,14 +21,15 @@
 #pragma once
 
 #include "nd-except.hpp"
+#include "nd-flags.hpp"
 #include "nd-instance.hpp"
 #include "nd-thread.hpp"
 
 class ndCaptureThread : public ndThread, public ndInstanceClient
 {
 public:
-    ndCaptureThread(unsigned cs_type, int16_t cpu,
-      nd_iface_ptr &iface, const nd_detection_threads &threads_dpi,
+    ndCaptureThread(ndFlags<ndCaptureType> cs_type, int16_t cpu,
+      nd_iface_ptr &iface, const ndDetectionThreads &threads_dpi,
       ndDNSHintCache *dhc = NULL, uint8_t private_addr = 0);
 
     virtual ~ndCaptureThread() { }
@@ -40,24 +41,26 @@ public:
         this->stats.AddAndReset(stats);
     }
 
-    enum nd_capture_states {
-        STATE_INIT,
-        STATE_ONLINE,
-        STATE_OFFLINE,
+    enum class State : uint8_t {
+        INIT,
+        ONLINE,
+        OFFLINE,
     };
 
-    std::atomic<uint8_t> capture_state;
+    inline State GetState(void) const {
+        return capture_state.load();
+    }
 
 protected:
-    int dl_type;
-    unsigned cs_type;
+    int dl_type = { 0 };
+    ndFlags<ndCaptureType> cs_type;
 
     nd_iface_ptr iface;
     ndFlow flow;
 
-    time_t tv_epoch;
-    uint64_t ts_pkt_first;
-    uint64_t ts_pkt_last;
+    time_t tv_epoch = { 0 };
+    uint64_t ts_pkt_first = { 0 };
+    uint64_t ts_pkt_last = { 0 };
 
     ndAddr::PrivatePair private_addrs;
 
@@ -67,11 +70,13 @@ protected:
 
     ndDNSHintCache *dhc;
 
-    const nd_detection_threads &threads_dpi;
+    const ndDetectionThreads &threads_dpi;
     int16_t dpi_thread_id;
 
     const ndPacket *ProcessPacket(const ndPacket *packet);
 
     bool ProcessDNSPacket(nd_flow_ptr &flow,
-      const uint8_t *pkt, uint16_t pkt_len, uint16_t proto);
+      const uint8_t *pkt, uint16_t pkt_len, ndProto::Id proto);
+
+    std::atomic<State> capture_state = { State::INIT };
 };

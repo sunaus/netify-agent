@@ -34,6 +34,9 @@
 
 using namespace std;
 
+constexpr const char *_ND_FHC_FILE_NAME =
+  "/flow-hash-cache.csv";
+
 ndFlowHashCache::ndFlowHashCache(size_t cache_size)
   : ndLRUCache<string, ndFlowHashCacheEntry>(cache_size, true) {
 }
@@ -42,12 +45,12 @@ void ndFlowHashCache::Load(void) {
     string filename;
     size_t loaded = 0, ln = 0;
 
-    switch (ndGC.fhc_save) {
-    case ndFHC_PERSISTENT:
-        filename = ndGC.path_state_persistent + ND_FHC_FILE_NAME;
+    switch (ndGC.fhc_storage) {
+    case ndFHCStorage::PERSISTENT:
+        filename = ndGC.path_state_persistent + _ND_FHC_FILE_NAME;
         break;
-    case ndFHC_VOLATILE:
-        filename = ndGC.path_state_volatile + ND_FHC_FILE_NAME;
+    case ndFHCStorage::VOLATILE:
+        filename = ndGC.path_state_volatile + _ND_FHC_FILE_NAME;
         break;
     default: return;
     }
@@ -123,7 +126,7 @@ void ndFlowHashCache::Load(void) {
         nd_trim(value);
 
         try {
-            entry.proto_id = (nd_proto_id_t)stoul(value);
+            entry.proto_id = static_cast<ndProto::Id>(stoul(value));
         }
         catch (invalid_argument &e) {
             nd_dprintf(
@@ -159,12 +162,12 @@ void ndFlowHashCache::Save(void) const {
     string filename;
     size_t saved = 0;
 
-    switch (ndGC.fhc_save) {
-    case ndFHC_PERSISTENT:
-        filename = ndGC.path_state_persistent + ND_FHC_FILE_NAME;
+    switch (ndGC.fhc_storage) {
+    case ndFHCStorage::PERSISTENT:
+        filename = ndGC.path_state_persistent + _ND_FHC_FILE_NAME;
         break;
-    case ndFHC_VOLATILE:
-        filename = ndGC.path_state_volatile + ND_FHC_FILE_NAME;
+    case ndFHCStorage::VOLATILE:
+        filename = ndGC.path_state_volatile + _ND_FHC_FILE_NAME;
         break;
     default: return;
     }

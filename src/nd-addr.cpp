@@ -18,6 +18,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "nd-flags.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -294,7 +295,7 @@ bool ndAddr::SetPort(uint16_t port) {
 }
 
 bool ndAddr::MakeString(const ndAddr &a, string &result,
-  uint8_t flags) {
+  ndFlags<MakeFlags> flags) {
     if (! a.IsValid()) return false;
 
     char sa[INET6_ADDRSTRLEN] = { 0 };
@@ -369,11 +370,13 @@ bool ndAddr::MakeString(const ndAddr &a, string &result,
 
         result = sa;
 
-        if ((flags & mfPREFIX) &&
+        if (ndFlagBoolean(flags, MakeFlags::PREFIX) &&
           (a.prefix > 0 && a.prefix != _ND_ADDR_BITSv4))
             result.append("/" + to_string((size_t)a.prefix));
 
-        if ((flags & mfPORT) && a.addr.in.sin_port != 0) {
+        if (ndFlagBoolean(flags, MakeFlags::PORT) &&
+          a.addr.in.sin_port != 0)
+        {
             result.append(
               ":" + to_string(ntohs(a.addr.in.sin_port)));
         }
@@ -391,15 +394,19 @@ bool ndAddr::MakeString(const ndAddr &a, string &result,
             return false;
         }
 
-        if ((flags & mfIPV6_ESC)) result = "[";
+        if (ndFlagBoolean(flags, MakeFlags::IPV6_URI))
+            result = "[";
         result.append(sa);
-        if ((flags & mfIPV6_ESC)) result.append("]");
+        if (ndFlagBoolean(flags, MakeFlags::IPV6_URI))
+            result.append("]");
 
-        if ((flags & mfPREFIX) && a.prefix > 0 &&
-          a.prefix != _ND_ADDR_BITSv6)
+        if (ndFlagBoolean(flags, MakeFlags::PREFIX) &&
+          a.prefix > 0 && a.prefix != _ND_ADDR_BITSv6)
             result.append("/" + to_string((size_t)a.prefix));
 
-        if ((flags & mfPORT) && a.addr.in6.sin6_port != 0) {
+        if (ndFlagBoolean(flags, MakeFlags::PORT) &&
+          a.addr.in6.sin6_port != 0)
+        {
             result.append(
               ":" + to_string(ntohs(a.addr.in6.sin6_port)));
         }
@@ -410,29 +417,29 @@ bool ndAddr::MakeString(const ndAddr &a, string &result,
     return false;
 }
 
-ndAddrType::ndAddrType() {
+ndAddrLookup::ndAddrLookup() {
     // Add private networks
-    AddAddress(ndAddr::atRESERVED, "127.0.0.0/8");
-    AddAddress(ndAddr::atRESERVED, "10.0.0.0/8");
-    AddAddress(ndAddr::atRESERVED, "100.64.0.0/10");
-    AddAddress(ndAddr::atRESERVED, "172.16.0.0/12");
-    AddAddress(ndAddr::atRESERVED, "192.168.0.0/16");
+    AddAddress(ndAddr::Type::RESERVED, "127.0.0.0/8");
+    AddAddress(ndAddr::Type::RESERVED, "10.0.0.0/8");
+    AddAddress(ndAddr::Type::RESERVED, "100.64.0.0/10");
+    AddAddress(ndAddr::Type::RESERVED, "172.16.0.0/12");
+    AddAddress(ndAddr::Type::RESERVED, "192.168.0.0/16");
 
-    AddAddress(ndAddr::atRESERVED, "::1/128");
-    AddAddress(ndAddr::atRESERVED, "fc00::/7");
-    AddAddress(ndAddr::atRESERVED, "fd00::/8");
-    AddAddress(ndAddr::atRESERVED, "fe80::/10");
+    AddAddress(ndAddr::Type::RESERVED, "::1/128");
+    AddAddress(ndAddr::Type::RESERVED, "fc00::/7");
+    AddAddress(ndAddr::Type::RESERVED, "fd00::/8");
+    AddAddress(ndAddr::Type::RESERVED, "fe80::/10");
 
     // Add multicast networks
-    AddAddress(ndAddr::atMULTICAST, "224.0.0.0/4");
+    AddAddress(ndAddr::Type::MULTICAST, "224.0.0.0/4");
 
-    AddAddress(ndAddr::atMULTICAST, "ff00::/8");
+    AddAddress(ndAddr::Type::MULTICAST, "ff00::/8");
 
     // Add broadcast addresses
-    AddAddress(ndAddr::atBROADCAST, "169.254.255.255");
+    AddAddress(ndAddr::Type::BROADCAST, "169.254.255.255");
 }
 
-bool ndAddrType::AddAddress(ndAddr::Type type,
+bool ndAddrLookup::AddAddress(ndAddr::Type type,
   const ndAddr &addr, const string &ifname) {
     if (! addr.IsValid()) {
         nd_printf("Invalid address: %s\n",
@@ -460,8 +467,8 @@ bool ndAddrType::AddAddress(ndAddr::Type type,
             return true;
         }
 
-        if (type == ndAddr::atLOCAL && addr.IsNetwork())
-            type = ndAddr::atLOCALNET;
+        if (type == ndAddr::Type::LOCAL && addr.IsNetwork())
+            type = ndAddr::Type::LOCALNET;
 
         if (addr.IsIPv4() && ifname.empty()) {
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
@@ -507,7 +514,7 @@ bool ndAddrType::AddAddress(ndAddr::Type type,
     return false;
 }
 
-bool ndAddrType::RemoveAddress(const ndAddr &addr,
+bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
   const string &ifname) {
     if (! addr.IsValid()) {
         nd_printf("Invalid address: %s\n",
@@ -579,10 +586,10 @@ bool ndAddrType::RemoveAddress(const ndAddr &addr,
     return false;
 }
 
-void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
-    if (addr.IsValid()) type = ndAddr::atOTHER;
+void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
+    if (addr.IsValid()) type = ndAddr::Type::OTHER;
     else {
-        type = ndAddr::atERROR;
+        type = ndAddr::Type::ERROR;
         return;
     }
 
@@ -595,7 +602,7 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
             if ((i & addr.addr.dl.sdl_data[addr.addr.dl.sdl_nlen]) != i)
                 continue;
 #endif
-            type = ndAddr::atMULTICAST;
+            type = ndAddr::Type::MULTICAST;
             return;
         }
 
@@ -606,7 +613,7 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (memcmp(addr.addr.ll.sll_addr, sll_addr,
               addr.addr.ll.sll_halen) == 0)
         {
-            type = ndAddr::atBROADCAST;
+            type = ndAddr::Type::BROADCAST;
             return;
         }
 
@@ -614,7 +621,7 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (memcmp(addr.addr.ll.sll_addr, sll_addr,
               addr.addr.ll.sll_halen) == 0)
         {
-            type = ndAddr::atNONE;
+            type = ndAddr::Type::NONE;
             return;
         }
 #elif defined(__FreeBSD__)
@@ -624,7 +631,7 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (memcmp(&addr.addr.dl.sdl_data[addr.addr.dl.sdl_nlen],
               sll_addr, addr.addr.dl.sdl_alen) == 0)
         {
-            type = ndAddr::atBROADCAST;
+            type = ndAddr::Type::BROADCAST;
             return;
         }
 
@@ -632,7 +639,7 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (memcmp(&addr.addr.dl.sdl_data[addr.addr.dl.sdl_nlen],
               sll_addr, addr.addr.dl.sdl_alen) == 0)
         {
-            type = ndAddr::atNONE;
+            type = ndAddr::Type::NONE;
             return;
         }
 #endif
@@ -648,12 +655,12 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
     }
     else if (addr.IsIPv4()) {
         if (addr.addr.in.sin_addr.s_addr == 0) {
-            type = ndAddr::atLOCAL;
+            type = ndAddr::Type::LOCAL;
             return;
         }
 
         if (addr.addr.in.sin_addr.s_addr == 0xffffffff) {
-            type = ndAddr::atBROADCAST;
+            type = ndAddr::Type::BROADCAST;
             return;
         }
 
@@ -669,9 +676,9 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
                   iface.second.end())
                 {
                     type = it->second;
-                    if (type == ndAddr::atLOCALNET &&
+                    if (type == ndAddr::Type::LOCALNET &&
                       ! addr.IsNetwork())
-                        type = ndAddr::atLOCAL;
+                        type = ndAddr::Type::LOCAL;
                     return;
                 }
             }
@@ -688,8 +695,9 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
               ipv4_reserved.end())
             {
                 type = it->second;
-                if (type == ndAddr::atLOCALNET && ! addr.IsNetwork())
-                    type = ndAddr::atLOCAL;
+                if (type == ndAddr::Type::LOCALNET &&
+                  ! addr.IsNetwork())
+                    type = ndAddr::Type::LOCAL;
                 return;
             }
         }
@@ -707,9 +715,9 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
                   iface.second.end())
                 {
                     type = it->second;
-                    if (type == ndAddr::atLOCALNET &&
+                    if (type == ndAddr::Type::LOCALNET &&
                       ! addr.IsNetwork())
-                        type = ndAddr::atLOCAL;
+                        type = ndAddr::Type::LOCAL;
                     return;
                 }
             }
@@ -726,15 +734,16 @@ void ndAddrType::Classify(ndAddr::Type &type, const ndAddr &addr) {
               ipv6_reserved.end())
             {
                 type = it->second;
-                if (type == ndAddr::atLOCALNET && ! addr.IsNetwork())
-                    type = ndAddr::atLOCAL;
+                if (type == ndAddr::Type::LOCALNET &&
+                  ! addr.IsNetwork())
+                    type = ndAddr::Type::LOCAL;
                 return;
             }
         }
     }
 }
 
-size_t ndAddrType::GetInterfaceAddresses(const string &iface,
+size_t ndAddrLookup::GetInterfaceAddresses(const string &iface,
   set<string> &result, sa_family_t family) {
     lock_guard<mutex> ul(lock);
 

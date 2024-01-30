@@ -32,6 +32,7 @@
 #include <mutex>
 #include <regex>
 #include <sstream>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -39,19 +40,26 @@
 
 #include "nd-except.hpp"
 
-#define ND_SHA1_BUFFER 4096
+constexpr unsigned ND_SHA1_BUFFER = 4096;
 
-#define ND_C_RESET     "\033[0m"
-#define ND_C_RED       "\033[0;31m"
-#define ND_C_GREEN     "\033[0;32m"
-#define ND_C_YELLOW    "\033[0;33m"
+constexpr const char *ND_C_RESET = "\033[0m";
+constexpr const char *ND_C_RED = "\033[0;31m";
+constexpr const char *ND_C_GREEN = "\033[0;32m";
+constexpr const char *ND_C_YELLOW = "\033[0;33m";
 
-#define ND_I_INFO      "•"
-#define ND_I_OK        "✓"
-#define ND_I_WARN      "!"
-#define ND_I_FAIL      "✗"
-#define ND_I_NOTE      "↪"
-#define ND_I_RARROW    "→"
+constexpr const char *ND_I_INFO = "•";
+constexpr const char *ND_I_OK = "✓";
+constexpr const char *ND_I_WARN = "!";
+constexpr const char *ND_I_FAIL = "✗";
+constexpr const char *ND_I_NOTE = "↪";
+constexpr const char *ND_I_RARROW = "→";
+
+constexpr const char *_ND_LOG_FILE_STAMP = "%Y%m%d-%H%M%S";
+constexpr size_t _ND_LOG_FILE_STAMP_SIZE = sizeof(
+  "YYYYMMDD-HHMMSS");
+
+#define ndEnumCast(T, n) \
+    static_cast<typename std::underlying_type<T>::type>(T::n)
 
 void *nd_mem_alloc(size_t size);
 
@@ -96,16 +104,16 @@ public:
 class ndDebugLogStream : public std::ostream
 {
 public:
-    enum Type {
-        DLT_NONE,
-        DLT_UNLOCKED,
-        DLT_FLOW,
+    enum class Type : uint8_t {
+        NONE,
+        UNLOCKED,
+        FLOW,
     };
 
-    ndDebugLogStream(Type type = DLT_NONE)
-      : std::ostream((type == DLT_NONE) ?
+    ndDebugLogStream(Type type = Type::NONE)
+      : std::ostream((type == Type::NONE) ?
             (std::streambuf *)new ndDebugLogBuffer :
-            ((type == DLT_UNLOCKED) ?
+            ((type == Type::UNLOCKED) ?
                 (std::streambuf *)new ndDebugLogBufferUnlocked :
                 (std::streambuf *)new ndDebugLogBufferFlow)) {
         imbue(std::locale());
@@ -117,11 +125,11 @@ public:
 class ndLogFormat
 {
 public:
-    enum Format {
-        FORMAT_NONE,
-        FORMAT_BYTES,
-        FORMAT_PACKETS,
-        FORMAT_PERCENT,
+    enum class Format : uint8_t {
+        NONE,
+        BYTES,
+        PACKETS,
+        PERCENT,
     };
 
     ndLogFormat(Format format, float value, int width = 0,
@@ -137,7 +145,7 @@ public:
         os << setw(f.width) << setprecision(f.precision);
 
         switch (f.format) {
-        case FORMAT_BYTES:
+        case Format::BYTES:
             if (f.value >= 1099511627776.0f) {
                 os << (f.value / 1099511627776.0f)
                    << setw(0) << " TiB";
@@ -156,7 +164,7 @@ public:
             }
             break;
 
-        case FORMAT_PACKETS:
+        case Format::PACKETS:
             if (f.value >= 1000000000000.0f) {
                 os << (f.value / 1000000000000.0f)
                    << setw(0) << " TP";
@@ -175,7 +183,7 @@ public:
             }
             break;
 
-        case FORMAT_PERCENT:
+        case Format::PERCENT:
             os << f.value << " "
                << "%";
             break;
@@ -229,6 +237,9 @@ bool nd_ip_to_string(sa_family_t af, const void *addr,
   std::string &dst);
 bool nd_ip_to_string(const sockaddr_storage &ip, std::string &dst);
 
+void nd_json_to_string(const nlohmann::json &j,
+  std::string &output, bool pretty = false);
+
 bool nd_is_ipaddr(const char *ip);
 
 void nd_private_ipaddr(uint8_t index, struct sockaddr_storage &addr);
@@ -275,9 +286,6 @@ int nd_functions_exec(const std::string &func,
   const std::string &arg, std::string &output);
 
 void nd_os_detect(std::string &os);
-
-#define _ND_LOG_FILE_STAMP      "%Y%m%d-%H%M%S"
-#define _ND_LOG_FILE_STAMP_SIZE sizeof("YYYYMMDD-HHMMSS")
 
 class ndLogDirectory
 {
@@ -510,4 +518,23 @@ protected:
 
     std::list<K> entries;
     std::unordered_map<K, std::pair<V, typename std::list<K>::iterator>> kvmap;
+};
+
+struct ndEnumHasher {
+	template <class T>
+	inline void hash_combine(size_t &seed, const T &v) const {
+	    std::hash<T> hasher;
+	    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) +
+	      (seed >> 2);
+	}
+
+	template <class T>
+	size_t operator()(const T &v) const {
+	    size_t ss_hash = 0;
+
+	    hash_combine<unsigned>(ss_hash,
+	      static_cast<unsigned>(v));
+
+	    return ss_hash;
+	}
 };

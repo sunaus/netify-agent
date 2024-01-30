@@ -18,6 +18,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "nd-config.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -222,18 +223,17 @@ struct __attribute__((packed)) nd_dns_header_t {
     uint16_t additional_rrs;
 };
 
-ndCaptureThread::ndCaptureThread(unsigned cs_type, int16_t cpu,
-  nd_iface_ptr &iface, const nd_detection_threads &threads_dpi,
+ndCaptureThread::ndCaptureThread(ndFlags<ndCaptureType> cs_type,
+  int16_t cpu, nd_iface_ptr &iface,
+  const ndDetectionThreads &threads_dpi,
   ndDNSHintCache *dhc, uint8_t private_addr)
   : ndThread(iface->ifname, (long)cpu, /* IPC? */ false),
-    ndInstanceClient(), dl_type(0), cs_type(cs_type),
-    iface(iface), flow(iface), tv_epoch(0), ts_pkt_first(0),
-    ts_pkt_last(0), dhc(dhc), threads_dpi(threads_dpi),
+    cs_type(cs_type), iface(iface), flow(iface), dhc(dhc),
+    threads_dpi(threads_dpi),
     dpi_thread_id(rand() % threads_dpi.size()) {
-    capture_state = STATE_INIT;
 
     if (ndGC_REPLAY_DELAY &&
-      ndCT_TYPE(iface->capture_type) != ndCT_PCAP_OFFLINE)
+      ndCT_TYPE(iface->capture_type.flags) != ndCaptureType::PCAP_OFFLINE)
     {
         nd_printf(
           "%s: WARNING: replay delay enabled for online "
@@ -241,7 +241,7 @@ ndCaptureThread::ndCaptureThread(unsigned cs_type, int16_t cpu,
           tag.c_str());
         nd_dprintf("%s: disabling replay delay.\n", tag.c_str());
 
-        ndGC_SetFlag(ndGF_REPLAY_DELAY, false);
+        ndGC_SetFlag(ndGlobalFlags::REPLAY_DELAY, false);
     }
 
     private_addrs.first.ss_family = AF_INET;
@@ -276,7 +276,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
     uint64_t ts_pkt = ((uint64_t)packet->tv_sec) * ND_DETECTION_TICKS +
       packet->tv_usec / (1000000 / ND_DETECTION_TICKS);
 
-    if (ndCT_TYPE(iface->capture_type) == ndCT_PCAP_OFFLINE) {
+    if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::PCAP_OFFLINE)
+    {
         if (ts_pkt_first == 0) ts_pkt_first = ts_pkt;
 
         ts_pkt = (ts_pkt - ts_pkt_first) + (tv_epoch * 1000);
@@ -545,7 +546,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 
     stats.pkt.vlan += vlan_packet;
 
-    flow.tunnel_type = ndFlow::TUNNEL_NONE;
+    flow.tunnel_type = ndFlow::TunnelType::NONE;
 
 nd_process_ip:
     if (l2_len + sizeof(struct ip) > packet->caplen) {
@@ -769,8 +770,9 @@ nd_process_ip:
               l4 + sizeof(struct udphdr));
 
             if (hdr_gtpv1->flags.version == 1) {
-                if (flow.tunnel_type == ndFlow::TUNNEL_NONE) {
-                    flow.tunnel_type = ndFlow::TUNNEL_GTP;
+                if (flow.tunnel_type == ndFlow::TunnelType::NONE)
+                {
+                    flow.tunnel_type = ndFlow::TunnelType::GTP;
 
                     flow.gtp.version = hdr_gtpv1->flags.version;
                     flow.gtp.ip_version = flow.ip_version;
@@ -954,15 +956,16 @@ nd_process_ip:
 #if _ND_DISSECT_GTP
             if (hdr_gtpv1 != nullptr && hdr_gtpv1->flags.version == 1)
             {
-                if (nf->tunnel_type == ndFlow::TUNNEL_GTP) {
+                if (nf->tunnel_type == ndFlow::TunnelType::GTP)
+                {
                     switch (nf->origin) {
-                    case ndFlow::ORIGIN_LOWER:
+                    case ndFlow::Origin::LOWER:
                         if (nf->gtp.upper_teid == 0)
                             nf->gtp.upper_teid = hdr_gtpv1->teid;
                         else if (hdr_gtpv1->teid != nf->gtp.upper_teid)
                             nf->gtp.upper_teid = hdr_gtpv1->teid;
                         break;
-                    case ndFlow::ORIGIN_UPPER:
+                    case ndFlow::Origin::UPPER:
                         if (nf->gtp.lower_teid == 0)
                             nf->gtp.lower_teid = hdr_gtpv1->teid;
                         else if (hdr_gtpv1->teid != nf->gtp.lower_teid)
@@ -1036,8 +1039,9 @@ nd_process_ip:
 
         // Set initial flow origin:
         // XXX: A 50-50 guess based on which side we saw first.
-        if (addr_cmp < 0) nf->origin = ndFlow::ORIGIN_LOWER;
-        else nf->origin = ndFlow::ORIGIN_UPPER;
+        if (addr_cmp < 0)
+            nf->origin = ndFlow::Origin::LOWER;
+        else nf->origin = ndFlow::Origin::UPPER;
 
         // Refine according to the lowest port address
         // XXX: The lowest port is likely the destination.
@@ -1047,10 +1051,10 @@ nd_process_ip:
         case IPPROTO_UDP:
         case IPPROTO_UDPLITE:
             if (nf->lower_addr.GetPort() < nf->upper_addr.GetPort())
-                nf->origin = ndFlow::ORIGIN_UPPER;
+                nf->origin = ndFlow::Origin::UPPER;
             else if (nf->lower_addr.GetPort() >
               nf->upper_addr.GetPort())
-                nf->origin = ndFlow::ORIGIN_LOWER;
+                nf->origin = ndFlow::Origin::LOWER;
             break;
         }
 
@@ -1060,23 +1064,23 @@ nd_process_ip:
             if ((hdr_tcp->th_flags & TH_SYN)) {
                 if (! (hdr_tcp->th_flags & TH_ACK)) {
                     if (addr_cmp < 0)
-                        nf->origin = ndFlow::ORIGIN_LOWER;
-                    else nf->origin = ndFlow::ORIGIN_UPPER;
+                        nf->origin = ndFlow::Origin::LOWER;
+                    else nf->origin = ndFlow::Origin::UPPER;
                 }
                 else {
                     if (addr_cmp < 0)
-                        nf->origin = ndFlow::ORIGIN_UPPER;
-                    else nf->origin = ndFlow::ORIGIN_LOWER;
+                        nf->origin = ndFlow::Origin::UPPER;
+                    else nf->origin = ndFlow::Origin::LOWER;
                 }
             }
         }
 
-        if (nf->tunnel_type == ndFlow::TUNNEL_GTP) {
+        if (nf->tunnel_type == ndFlow::TunnelType::GTP) {
             switch (nf->origin) {
-            case ndFlow::ORIGIN_LOWER:
+            case ndFlow::Origin::LOWER:
                 nf->gtp.lower_teid = hdr_gtpv1->teid;
                 break;
-            case ndFlow::ORIGIN_UPPER:
+            case ndFlow::Origin::UPPER:
                 nf->gtp.upper_teid = hdr_gtpv1->teid;
                 break;
             default: break;
@@ -1086,7 +1090,7 @@ nd_process_ip:
         ndi.flow_buckets->Release(flow_digest);
 
         ndi.plugins.BroadcastProcessorEvent(
-          ndPluginProcessor::EVENT_FLOW_NEW, nf);
+          ndPluginProcessor::Event::FLOW_NEW, nf);
     }
 
     stats.pkt.wire_bytes += packet->length + 24;
@@ -1150,17 +1154,17 @@ nd_process_ip:
     {
         uint16_t lport = nf->lower_addr.GetPort(),
                  uport = nf->upper_addr.GetPort();
-        uint16_t proto = ND_PROTO_UNKNOWN;
+        ndProto::Id proto = ndProto::Id::UNKNOWN;
 
         // DNS, MDNS, or LLMNR?
         if (lport == 53 || uport == 53)
-            proto = ND_PROTO_DNS;
+            proto = ndProto::Id::DNS;
         else if (lport == 5353 || uport == 5353)
-            proto = ND_PROTO_MDNS;
+            proto = ndProto::Id::MDNS;
         else if (lport == 5355 || uport == 5355)
-            proto = ND_PROTO_LLMNR;
+            proto = ndProto::Id::LLMNR;
 
-        if (proto != ND_PROTO_UNKNOWN) {
+        if (proto != ndProto::Id::UNKNOWN) {
             bool is_query = ProcessDNSPacket(nf, pkt,
               pkt_len - (packet->length - packet->caplen), proto);
 
@@ -1213,7 +1217,7 @@ nd_process_ip:
 bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
   const uint8_t *pkt,
   uint16_t pkt_len,
-  uint16_t proto) {
+  ndProto::Id proto) {
     ns_rr rr;
     ns_msg ns_h;
     const char *host = nullptr;
@@ -1305,7 +1309,7 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
           ns_rr_type(rr));
 #endif
         if (ns_rr_type(rr) == ns_t_ptr) {
-            if (proto != ND_PROTO_MDNS) {
+            if (proto != ndProto::Id::MDNS) {
 #ifdef _ND_LOG_DHC
                 nd_dprintf(
                   "%s: Ignoring PTR, not mDNS...\n", tag.c_str());
@@ -1369,7 +1373,7 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
         if (ns_rr_type(rr) != ns_t_a && ns_rr_type(rr) != ns_t_aaaa)
             continue;
 
-        if (proto != ND_PROTO_DNS || host == nullptr)
+        if (proto != ndProto::Id::DNS || host == nullptr)
             continue;
 
         // Add responses to DHC...

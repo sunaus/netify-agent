@@ -25,26 +25,23 @@
 #include <ctime>
 #include <string>
 
+#include "nd-flags.hpp"
 #include "nd-serializer.hpp"
 
 class ndPacket
 {
 public:
-    enum {
-        STATUS_INIT = 0,
-
-        STATUS_OK = 0x01,
-        STATUS_CORRUPTED = 0x02,
-        STATUS_FILTERED = 0x04,
-        STATUS_VLAN_TAG_RESTORED = 0x08,
-
-        STATUS_ENOMEM = 0x40,
-        STATUS_LOCKED = 0x80
+    enum class StatusFlags : uint8_t {
+        INIT = 0,
+        OK = (1 << 0),
+        CORRUPTED = (1 << 1),
+        FILTERED = (1 << 2),
+        VLAN_TAG_RESTORED = (1 << 3),
+        ALLOC_ERROR = (1 << 4),
+        LOCKED = (1 << 5),
     };
 
-    typedef uint8_t status_flags;
-
-    ndPacket(const status_flags &status,
+    ndPacket(const ndFlags<StatusFlags> &status,
       const uint16_t &length, const uint16_t &caplen,
       uint8_t *data, const struct timeval &tv)
       : status(status), length(length), caplen(caplen),
@@ -52,10 +49,12 @@ public:
 
     virtual ~ndPacket() {
         if (data != nullptr) delete[] data;
-        status = STATUS_INIT;
+        status = StatusFlags::INIT;
     }
 
-    inline status_flags GetStatus(void) { return status; }
+    inline ndFlags<StatusFlags> GetStatus(void) {
+        return status;
+    }
     inline uint16_t GetWireLength(void) { return length; }
     inline uint16_t GetCaptureLength(void) {
         return caplen;
@@ -69,7 +68,7 @@ public:
 protected:
     friend class ndCaptureThread;
 
-    status_flags status;
+    ndFlags<StatusFlags> status;
     uint16_t length;
     uint16_t caplen;
     const uint8_t *data;

@@ -30,6 +30,6 @@
 ndException::ndException(const char *format, ...) throw() {
     va_list ap;
     va_start(ap, format);
-    vsnprintf(message, _ND_EXCEPT_MAX_MESSAGE, format, ap);
+    vsnprintf(message.data(), message.size(), format, ap);
     va_end(ap);
 }

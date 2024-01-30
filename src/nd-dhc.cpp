@@ -33,6 +33,8 @@
 
 using namespace std;
 
+constexpr const char *_ND_DHC_FILE_NAME = "/dns-cache.csv";
+
 ndDNSHintCache::ndDNSHintCache(size_t cache_size)
   : ndLRUCache<string, string>(cache_size, true) {
     kvmap.reserve(ND_HASH_BUCKETS_DNSARS);
@@ -48,9 +50,9 @@ void ndDNSHintCache::Insert(const ndAddr &addr,
     }
 
     ndAddr::Type type;
-    ndInstance::GetInstance().addr_types.Classify(type, addr);
+    ndInstance::GetInstance().addr_lookup.Classify(type, addr);
 
-    if (type != ndAddr::atOTHER) {
+    if (type != ndAddr::Type::OTHER) {
         nd_dprintf("Invalid DHC address type: %d: %s\n",
           type, addr.GetString().c_str());
         return;
@@ -119,12 +121,12 @@ void ndDNSHintCache::Load(void) {
     string filename;
     size_t loaded = 0, ln = 0;
 
-    switch (ndGC.dhc_save) {
-    case ndDHC_PERSISTENT:
-        filename = ndGC.path_state_persistent + ND_DHC_FILE_NAME;
+    switch (ndGC.dhc_storage) {
+    case ndDHCStorage::PERSISTENT:
+        filename = ndGC.path_state_persistent + _ND_DHC_FILE_NAME;
         break;
-    case ndDHC_VOLATILE:
-        filename = ndGC.path_state_volatile + ND_DHC_FILE_NAME;
+    case ndDHCStorage::VOLATILE:
+        filename = ndGC.path_state_volatile + _ND_DHC_FILE_NAME;
         break;
     default: return;
     }
@@ -192,12 +194,12 @@ void ndDNSHintCache::Save(void) const {
     string filename;
     size_t saved = 0;
 
-    switch (ndGC.dhc_save) {
-    case ndDHC_PERSISTENT:
-        filename = ndGC.path_state_persistent + ND_DHC_FILE_NAME;
+    switch (ndGC.dhc_storage) {
+    case ndDHCStorage::PERSISTENT:
+        filename = ndGC.path_state_persistent + _ND_DHC_FILE_NAME;
         break;
-    case ndDHC_VOLATILE:
-        filename = ndGC.path_state_volatile + ND_DHC_FILE_NAME;
+    case ndDHCStorage::VOLATILE:
+        filename = ndGC.path_state_volatile + _ND_DHC_FILE_NAME;
         break;
     default: return;
     }

@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
 
     result = instance.InitializeConfig(argc, argv);
 
-    if (ndCR_Result(result) != ndInstance::ndCR_OK)
+    if (ndCR_Result(result) != ndInstance::ConfigResult::OK)
         return ndCR_Code(result);
 
     if (instance.Daemonize() == false) return 1;

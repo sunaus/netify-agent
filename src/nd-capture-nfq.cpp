@@ -149,7 +149,7 @@ static int ndCaptureNFQueue_Callback(
     uint8_t *pkt_offset = pkt_data + sizeof(struct ether_header);
     memcpy(pkt_offset, payload, pkt_len);
 
-    pkt = new ndPacket(ndPacket::STATUS_OK, pkt_caplen,
+    pkt = new ndPacket(ndPacket::StatusFlags::OK, pkt_caplen,
       sizeof(struct ether_header) + pkt_len, pkt_data, tv);
 
     nfq->PushPacket(pkt);
@@ -179,9 +179,10 @@ static int ndCaptureNFQueue_Callback(
 }
 
 ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
-  nd_iface_ptr &iface, const nd_detection_threads &threads_dpi,
+  nd_iface_ptr &iface, const ndDetectionThreads &threads_dpi,
   unsigned instance_id, ndDNSHintCache *dhc, uint8_t private_addr)
-  : ndCaptureThread(ndCT_NFQ, cpu, iface, threads_dpi, dhc, private_addr),
+  : ndCaptureThread(ndCaptureType::NFQ, cpu, iface,
+      threads_dpi, dhc, private_addr),
     nl(nullptr), port_id(0),
     buffer_size(0xffff + (MNL_SOCKET_BUFFER_SIZE / 2)),
     buffer(nullptr), dropped(0) {
@@ -254,7 +255,7 @@ void *ndCaptureNFQueue::Entry(void) {
     int fd = mnl_socket_get_fd(nl);
     fd_set fds_read;
 
-    capture_state = STATE_ONLINE;
+    capture_state = State::ONLINE;
 
     nd_dprintf("%s: NFQ capture started on CPU: %lu\n",
       tag.c_str(), cpu >= 0 ? cpu : 0);
@@ -311,7 +312,7 @@ void *ndCaptureNFQueue::Entry(void) {
             }
             catch (...) {
                 Unlock();
-                capture_state = STATE_OFFLINE;
+                capture_state = State::OFFLINE;
                 throw;
             }
 
@@ -321,7 +322,7 @@ void *ndCaptureNFQueue::Entry(void) {
         }
     }
 
-    capture_state = STATE_OFFLINE;
+    capture_state = State::OFFLINE;
 
     nd_dprintf("%s: NFQ capture ended on CPU: %lu\n",
       tag.c_str(), cpu >= 0 ? cpu : 0);

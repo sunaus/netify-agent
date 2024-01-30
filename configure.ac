@@ -255,7 +255,8 @@ AS_IF([test "x$with_volatilestatedir" = "xyes" -o "x$with_volatilestatedir" = "x
 AM_CONDITIONAL(USE_LIBGCRYPT_SYSTEM, false)
 
 AC_ARG_WITH([local-libgcrypt],
-    [AS_HELP_STRING([--with-local-libgcrypt], [Link nDPI against the local system libgcrypt instead of the bundled libgcrypt light])],,
+    [AS_HELP_STRING([--with-local-libgcrypt],
+      [Link nDPI against the local system libgcrypt instead of the bundled libgcrypt light])],,
     [with_local_libgcrypt=no])
 
 AS_IF([test "x$with_local_libgcrypt" = "xyes"], [

@@ -21,8 +21,8 @@ int main(int argc, char* argv[]) {
          << endl;
 
     for (uint16_t id = 1; id < NDPI_MAX_RISK; id++) {
-        auto it = nd_ndpi_risks.find(id);
-        if (it == nd_ndpi_risks.end()) continue;
+        auto it = ndRisk::nDPI::Risks.find(id);
+        if (it == ndRisk::nDPI::Risks.end()) continue;
 
         ndpi_risk_enum rid = (ndpi_risk_enum)id;
         ndpi_risk risk = (uint64_t)2 << (rid - 1);

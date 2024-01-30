@@ -22,7 +22,10 @@
 #include "config.h"
 #endif
 
+#include <ndpi_protocol_ids.h>
+
 #include "nd-config.hpp"
+#include "nd-flow.hpp"
 #include "nd-ndpi.hpp"
 #include "nd-protos.hpp"
 #include "nd-thread.hpp"
@@ -98,13 +101,14 @@ void ndpi_global_init(void) {
             action = 1;
         else continue;
 
-        unsigned id = nd_proto_get_id(it.first);
+        uint16_t id = NDPI_PROTOCOL_UNKNOWN;
+        ndProto::Id proto = ndProto::GetId(it.first);
 
-        if (id == ND_PROTO_UNKNOWN) {
-            id = nd_ndpi_proto_find(
-              (unsigned)strtoul(it.first.c_str(), nullptr, 0));
+        if (proto == ndProto::Id::UNKNOWN) {
+            id = ndProto::nDPI::Find(static_cast<ndProto::Id>(
+              strtoul(it.first.c_str(), nullptr, 0)));
 
-            if (id == ND_PROTO_UNKNOWN) continue;
+            if (id == NDPI_PROTOCOL_UNKNOWN) continue;
         }
 
         switch (action) {
@@ -125,7 +129,7 @@ void ndpi_global_init(void) {
         nd_dprintf("Enabled all protocols.\n");
     }
 
-    for (auto &it : nd_ndpi_disabled_protos) {
+    for (auto &it : ndProto::nDPI::Disabled) {
         NDPI_DEL_PROTOCOL_FROM_BITMASK(ndpi_protos, it);
         if (ndGC.verbosity > 4)
             nd_dprintf("Banned protocol by ID: %hu\n", it);

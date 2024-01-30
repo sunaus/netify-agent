@@ -44,49 +44,50 @@
 #include <utility>
 
 #include "nd-config.hpp"
+#include "nd-flags.hpp"
 #include "nd-serializer.hpp"
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
-#define _ND_ADDR_BITSv4 32
-#define _ND_ADDR_BITSv6 128
+constexpr size_t _ND_ADDR_BITSv4 = 32;
+constexpr size_t _ND_ADDR_BITSv6 = 128;
 
 class ndAddr
 {
 public:
-    enum Type {
-        atNONE,
-        atLOCAL,
-        atLOCALNET,
-        atRESERVED,
-        atMULTICAST,
-        atBROADCAST,
-        atOTHER,
-
-        atERROR = 0x7f,
+    enum class Type : uint8_t {
+        NONE = 1,
+        LOCAL = 2,
+        LOCALNET = 3,
+        RESERVED = 4,
+        MULTICAST = 5,
+        BROADCAST = 6,
+        OTHER = 7,
+        ERROR = 0x7f,
     };
 
     typedef std::pair<struct sockaddr_storage, struct sockaddr_storage> PrivatePair;
 
     ndAddr(uint8_t prefix = 0)
-      : addr{ { 0 } }, prefix(prefix), cached_flags(mfNONE),
-        comparison_flags(cfALL) { }
+      : addr{ { 0 } }, prefix(prefix),
+        cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) { }
 
     ndAddr(const std::string &addr)
-      : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
-        comparison_flags(cfALL) {
+      : addr{ { 0 } }, prefix(0), cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) {
         Create(*this, addr);
     }
 
     ndAddr(const uint8_t *hw_addr, size_t length = ETH_ALEN)
-      : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
-        comparison_flags(cfALL) {
+      : addr{ { 0 } }, prefix(0), cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) {
         Create(*this, hw_addr, length);
     }
 
     ndAddr(const struct sockaddr_storage *ss_addr, uint8_t prefix = 0)
-      : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
-        comparison_flags(cfALL) {
+      : addr{ { 0 } }, prefix(0), cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) {
         Create(*this, ss_addr, prefix);
     }
     ndAddr(const struct sockaddr_storage &ss_addr, uint8_t prefix = 0)
@@ -94,8 +95,8 @@ public:
 
     ndAddr(const struct sockaddr_in *ss_in,
       uint8_t prefix = _ND_ADDR_BITSv4)
-      : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
-        comparison_flags(cfALL) {
+      : addr{ { 0 } }, prefix(0), cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) {
         Create(*this, ss_in, prefix);
     }
     ndAddr(const struct sockaddr_in &ss_in,
@@ -104,8 +105,8 @@ public:
 
     ndAddr(const struct sockaddr_in6 *ss_in6,
       uint8_t prefix = _ND_ADDR_BITSv6)
-      : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
-        comparison_flags(cfALL) {
+      : addr{ { 0 } }, prefix(0), cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) {
         Create(*this, ss_in6, prefix);
     }
     ndAddr(const struct sockaddr_in6 &ss_in6,
@@ -113,8 +114,8 @@ public:
       : ndAddr(&ss_in6, prefix) { }
 
     ndAddr(const struct in_addr *in_addr, uint8_t prefix = _ND_ADDR_BITSv4)
-      : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
-        comparison_flags(cfALL) {
+      : addr{ { 0 } }, prefix(0), cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) {
         Create(*this, in_addr, prefix);
     }
     ndAddr(const struct in_addr &in_addr, uint8_t prefix = _ND_ADDR_BITSv4)
@@ -122,8 +123,8 @@ public:
 
     ndAddr(const struct in6_addr *in6_addr,
       uint8_t prefix = _ND_ADDR_BITSv6)
-      : addr{ { 0 } }, prefix(0), cached_flags(mfNONE),
-        comparison_flags(cfALL) {
+      : addr{ { 0 } }, prefix(0), cached_flags(MakeFlags::NONE),
+        compare_flags(CompareFlags::ALL) {
         Create(*this, in6_addr, prefix);
     }
     ndAddr(const struct in6_addr &in6_addr,
@@ -200,19 +201,20 @@ public:
         return (addr.ss.ss_family == AF_INET6);
     }
 
-    enum MakeFlags {
-        mfNONE = 0x0,
-        mfPREFIX = 0x1,
-        mfPORT = 0x2,
-        mfIPV6_ESC = 0x4,
+    enum class MakeFlags : uint8_t {
+        NONE = 0x0,
+        PREFIX = 0x1,
+        PORT = 0x2,
+        IPV6_URI = 0x4,
 
-        mfALL = (mfPREFIX | mfPORT)
+        ALL = (PREFIX | PORT)
     };
 
-    static bool MakeString(const ndAddr &a,
-      std::string &result, uint8_t flags = mfALL);
+    static bool MakeString(const ndAddr &a, std::string &result,
+      ndFlags<MakeFlags> flags = MakeFlags::ALL);
 
-    inline const std::string &GetString(uint8_t flags = mfNONE) const {
+    inline const std::string &
+    GetString(ndFlags<MakeFlags> flags = MakeFlags::NONE) const {
         if (flags != cached_flags || cached_addr.empty()) {
             cached_flags = flags;
             ndAddr::MakeString(*this, cached_addr, cached_flags);
@@ -226,64 +228,69 @@ public:
         return stream;
     }
 
-    enum ComparisonFlags {
-        cfADDR = 0x1,
-        cfPORT = 0x2,
-        cfPREFIX = 0x4,
+    enum class CompareFlags : uint8_t {
+        ADDR = 0x1,
+        PORT = 0x2,
+        PREFIX = 0x4,
 
-        cfALL = (cfADDR | cfPORT | cfPREFIX)
+        ALL = (ADDR | PORT | PREFIX)
     };
 
-    inline void SetComparisonFlags(uint8_t flags = cfALL) {
-        comparison_flags = flags;
+    inline void SetCompareFlags(
+      ndFlags<CompareFlags> flags = CompareFlags::ALL) {
+        compare_flags = flags;
     }
 
     inline bool operator==(const ndAddr &a) const {
         if (a.addr.ss.ss_family != addr.ss.ss_family)
             return false;
-        if ((comparison_flags & cfPREFIX) && a.prefix != prefix)
+        if (ndFlagBoolean(compare_flags, CompareFlags::PREFIX) &&
+          a.prefix != prefix)
             return false;
 
         switch (addr.ss.ss_family) {
 #if defined(__linux__)
         case AF_PACKET:
-            if (! (comparison_flags & cfADDR)) return true;
+            if (! ndFlagBoolean(compare_flags, CompareFlags::ADDR))
+                return true;
             return (memcmp(&addr.ll, &a.addr.ll,
                       sizeof(struct sockaddr_ll)) == 0);
 #elif defined(__FreeBSD__)
         case AF_LINK:
-            if (! (comparison_flags & cfADDR)) return true;
+            if (! ndFlagBoolean(compare_flags,
+                  CompareFlags::ADDR))
+                return true;
             return (memcmp(&addr.dl, &a.addr.dl,
                       sizeof(struct sockaddr_dl)) == 0);
 #endif
         case AF_INET:
-            if ((comparison_flags & cfADDR) &&
-              (comparison_flags & cfPORT))
+            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
+              (ndFlagBoolean(compare_flags, CompareFlags::PORT)))
             {
                 return (memcmp(&addr.in, &a.addr.in,
                           sizeof(struct sockaddr_in)) == 0);
             }
-            if ((comparison_flags & cfADDR) &&
+            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
               memcmp(&addr.in.sin_addr, &a.addr.in.sin_addr,
                 sizeof(struct in_addr)) == 0)
                 return true;
-            if ((comparison_flags & cfPORT) &&
+            if (ndFlagBoolean(compare_flags, CompareFlags::PORT) &&
               addr.in.sin_port == a.addr.in.sin_port)
                 return true;
             break;
         case AF_INET6:
-            if ((comparison_flags & cfADDR) &&
-              (comparison_flags & cfPORT))
+            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
+              (ndFlagBoolean(compare_flags, CompareFlags::PORT)))
             {
                 return (memcmp(&addr.in6, &a.addr.in6,
                           sizeof(struct sockaddr_in6)) == 0);
             }
-            if ((comparison_flags & cfADDR) &&
+            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
               memcmp(&addr.in6.sin6_addr,
                 &a.addr.in6.sin6_addr,
                 sizeof(struct in6_addr)) == 0)
                 return true;
-            if ((comparison_flags & cfPORT) &&
+            if (ndFlagBoolean(compare_flags, CompareFlags::PORT) &&
               addr.in6.sin6_port == a.addr.in6.sin6_port)
                 return true;
             break;
@@ -446,10 +453,10 @@ public:
 
     uint8_t prefix;
 
-    mutable uint8_t cached_flags;
+    mutable ndFlags<MakeFlags> cached_flags;
     mutable std::string cached_addr;
 
-    uint8_t comparison_flags;
+    ndFlags<CompareFlags> compare_flags;
 };
 
 template <size_t N>
@@ -573,7 +580,7 @@ public:
     }
 
     bool GetString(std::string &ip,
-      uint8_t flags = ndAddr::mfNONE) const {
+      ndFlags<ndAddr::MakeFlags> flags = ndAddr::MakeFlags::NONE) const {
         ndAddr a((uint8_t)prefix_len);
         switch (N) {
         case _ND_ADDR_BITSv4:
@@ -672,10 +679,10 @@ ndRadixNetworkEntry<N> radix_join(const ndRadixNetworkEntry<N> &x,
 typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndAddr::Type> nd_rn4_atype;
 typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndAddr::Type> nd_rn6_atype;
 
-class ndAddrType
+class ndAddrLookup
 {
 public:
-    ndAddrType();
+    ndAddrLookup();
 
     bool AddAddress(ndAddr::Type type, const ndAddr &addr,
       const std::string &ifname = "");
@@ -791,7 +798,9 @@ class ndInterface : public ndSerializer
 {
 public:
     ndInterface(const std::string &ifname,
-      uint32_t capture_type, nd_interface_role role = ndIR_LAN)
+      ndFlags<ndCaptureType>
+        capture_type,
+      ndInterfaceRole role = ndInterfaceRole::LAN)
       : ifname(ifname), ifname_peer(ifname),
         capture_type(capture_type), role(role) {
         endpoint_snapshot = false;
@@ -802,17 +811,19 @@ public:
         capture_type(iface.capture_type), role(iface.role) {
         endpoint_snapshot = false;
 
-        switch (ndCT_TYPE(capture_type)) {
-        case ndCT_PCAP:
+        switch (ndCT_TYPE(capture_type.flags)) {
+        case ndCaptureType::PCAP:
             config_pcap = iface.config_pcap;
             break;
 #if defined(_ND_ENABLE_TPACKETV3)
-        case ndCT_TPV3:
+        case ndCaptureType::TPV3:
             config_tpv3 = iface.config_tpv3;
             break;
 #endif
 #if defined(_ND_ENABLE_NFQUEUE)
-        case ndCT_NFQ: config_nfq = iface.config_nfq; break;
+        case ndCaptureType::NFQ:
+            config_nfq = iface.config_nfq;
+            break;
 #endif
         default: break;
         }
@@ -825,10 +836,10 @@ public:
     template <class T>
     void Encode(T &output) const {
         switch (role) {
-        case ndIR_LAN:
+        case ndInterfaceRole::LAN:
             serialize(output, { "role" }, "LAN");
             break;
-        case ndIR_WAN:
+        case ndInterfaceRole::WAN:
             serialize(output, { "role" }, "WAN");
             break;
         default:
@@ -836,19 +847,19 @@ public:
             break;
         }
 
-        switch (ndCT_TYPE(capture_type)) {
-        case ndCT_PCAP:
+        switch (ndCT_TYPE(capture_type.flags)) {
+        case ndCaptureType::PCAP:
             serialize(output, { "capture_type" }, "PCAP");
             break;
-        case ndCT_PCAP_OFFLINE:
+        case ndCaptureType::PCAP_OFFLINE:
             serialize(output, { "capture_type" }, "PCAP");
             serialize(output, { "capture_file" },
               config_pcap.capture_filename);
             break;
-        case ndCT_TPV3:
+        case ndCaptureType::TPV3:
             serialize(output, { "capture_type" }, "TPv3");
             break;
-        case ndCT_NFQ:
+        case ndCaptureType::NFQ:
             serialize(output, { "capture_type" }, "NFQ");
             break;
         default:
@@ -944,25 +955,28 @@ public:
             return false;
         if (capture_type != i.capture_type) return false;
         if (role != i.role) return false;
-        switch (ndCT_TYPE(capture_type)) {
-        case ndCT_PCAP:
-        case ndCT_PCAP_OFFLINE:
+
+        switch (ndCT_TYPE(capture_type.flags)) {
+        case ndCaptureType::PCAP:
+        case ndCaptureType::PCAP_OFFLINE:
             return (config_pcap == i.config_pcap);
 #if defined(_ND_ENABLE_TPACKETV3)
-        case ndCT_TPV3:
+        case ndCaptureType::TPV3:
             return (config_tpv3 == i.config_tpv3);
 #endif
 #if defined(_ND_ENABLE_NFQUEUE)
-        case ndCT_NFQ: return (config_nfq == i.config_nfq);
+        case ndCaptureType::NFQ:
+            return (config_nfq == i.config_nfq);
 #endif
+        default: return false;
         }
         return true;
     }
 
     std::string ifname;
     std::string ifname_peer;
-    uint32_t capture_type;
-    nd_interface_role role;
+    ndFlags<ndCaptureType> capture_type;
+    ndInterfaceRole role;
 
     nd_config_pcap config_pcap;
 #if defined(_ND_ENABLE_TPACKETV3)

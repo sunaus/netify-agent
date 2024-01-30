@@ -29,13 +29,11 @@
 #include "nd-protos.hpp"
 #include "nd-util.hpp"
 
-#define ND_FHC_FILE_NAME "/flow-hash-cache.csv"
-
 class ndFlowHashCacheEntry
 {
 public:
     ndFlowHashCacheEntry()
-      : app_id(ND_APP_UNKNOWN), proto_id(ND_PROTO_UNKNOWN) { }
+      : app_id(ND_APP_UNKNOWN), proto_id(ndProto::Id::UNKNOWN) { }
     ndFlowHashCacheEntry(const nd_flow_ptr &flow)
       : digest(flow->digest_mdata.begin(),
           flow->digest_mdata.end()),
@@ -47,13 +45,13 @@ public:
         std::string _digest;
         nd_sha1_to_string(entry.digest, _digest);
         stream << _digest << "," << entry.app_id << ","
-               << entry.proto_id;
+               << static_cast<unsigned>(entry.proto_id);
         return stream;
     }
 
     std::vector<uint8_t> digest;
     nd_app_id_t app_id;
-    nd_proto_id_t proto_id;
+    ndProto::Id proto_id;
 };
 
 class ndFlowHashCache :

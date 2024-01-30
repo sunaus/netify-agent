@@ -22,12 +22,13 @@ int main(int argc, char *argv[]) {
 
     cout << endl
          << "nDPI risks count: " << NDPI_MAX_RISK << endl;
-    cout << "Netify Agent risks count: " << ND_RISK_MAX << endl
+    cout << "Netify Agent risks count: "
+         << static_cast<unsigned>(ndRisk::Id::MAX) << endl
          << endl;
 
     for (uint16_t id = 0; id < NDPI_MAX_RISK; id++) {
-        auto it = nd_ndpi_risks.find(id);
-        if (it != nd_ndpi_risks.end()) continue;
+        auto it = ndRisk::nDPI::Risks.find(id);
+        if (it != ndRisk::nDPI::Risks.end()) continue;
 
         ndpi_risk_enum rid = (ndpi_risk_enum)id;
 

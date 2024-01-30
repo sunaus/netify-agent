@@ -40,8 +40,8 @@ typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, nd_cat_id_t> nd_rn6_cat
 
 ndCategories::ndCategories()
   : networks4(nullptr), networks6(nullptr) {
-    categories.emplace(TYPE_APP, ndCategory());
-    categories.emplace(TYPE_PROTO, ndCategory());
+    categories.emplace(Type::APP, ndCategory());
+    categories.emplace(Type::PROTO, ndCategory());
 }
 
 ndCategories::~ndCategories() {
@@ -120,8 +120,8 @@ bool ndCategories::Load(const string &filename) {
         string key;
 
         switch (ci.first) {
-        case TYPE_APP: key = "application"; break;
-        case TYPE_PROTO: key = "protocol"; break;
+        case Type::APP: key = "application"; break;
+        case Type::PROTO: key = "protocol"; break;
         default: break;
         }
 
@@ -145,8 +145,8 @@ bool ndCategories::LoadLegacy(const json &jdata) {
         nd_cat_id_t id = 1;
 
         switch (ci.first) {
-        case TYPE_APP: key = "application"; break;
-        case TYPE_PROTO: key = "protocol"; break;
+        case Type::APP: key = "application"; break;
+        case Type::PROTO: key = "protocol"; break;
         default: break;
         }
 
@@ -180,8 +180,8 @@ bool ndCategories::Load(Type type, json &jdata) {
     string key;
 
     switch (type) {
-    case TYPE_APP: key = "application_category"; break;
-    case TYPE_PROTO: key = "protocol_category"; break;
+    case Type::APP: key = "application_category"; break;
+    case Type::PROTO: key = "protocol_category"; break;
     default: break;
     }
 
@@ -219,11 +219,11 @@ bool ndCategories::Save(const string &filename) {
 
         for (auto &ci : categories) {
             switch (ci.first) {
-            case TYPE_APP:
+            case Type::APP:
                 j["application_tag_index"] = ci.second.tag;
                 j["application_index"] = ci.second.index;
                 break;
-            case TYPE_PROTO:
+            case Type::PROTO:
                 j["protocol_tag_index"] = ci.second.tag;
                 j["protocol_index"] = ci.second.index;
                 break;
@@ -266,17 +266,17 @@ void ndCategories::Dump(Type type) {
     lock_guard<mutex> ul(lock);
 
     for (auto &ci : categories) {
-        if (type != TYPE_MAX && ci.first != type) continue;
+        if (type != Type::MAX && ci.first != type) continue;
 
         for (auto &li : ci.second.tag) {
-            if (type != TYPE_MAX)
+            if (type != Type::MAX)
                 printf("%6u: %s\n", li.second, li.first.c_str());
             else {
                 string tag("unknown");
 
                 switch (ci.first) {
-                case TYPE_APP: tag = "application"; break;
-                case TYPE_PROTO: tag = "protocol"; break;
+                case Type::APP: tag = "application"; break;
+                case Type::PROTO: tag = "protocol"; break;
                 default: break;
                 }
 
@@ -383,7 +383,7 @@ nd_cat_id_t ndCategories::ResolveTag(Type type, unsigned id,
 bool ndCategories::LoadDotDirectory(const string &path) {
     lock_guard<mutex> ul(lock);
 
-    auto it_apps = categories.find(TYPE_APP);
+    auto it_apps = categories.find(Type::APP);
     if (it_apps == categories.end()) return false;
 
     vector<string> files;

@@ -66,8 +66,8 @@ protected:
     pthread_attr_t attr;
     pthread_mutex_t lock;
 
-    enum { IPC_PE_READ, IPC_PE_WRITE, IPC_PE_MAX };
-    int fd_ipc[IPC_PE_MAX];
+    enum class PipeEnd : uint8_t { READ, WRITE, MAX };
+    int fd_ipc[static_cast<unsigned>(PipeEnd::MAX)];
 
     int Join(void);
 

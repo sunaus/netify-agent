@@ -29,11 +29,12 @@
 #include "nd-apps.hpp"
 #include "nd-category.hpp"
 #include "nd-config.hpp"
+#include "nd-flags.hpp"
 #include "nd-protos.hpp"
 #include "nd-serializer.hpp"
 
 // TLS SNI hostname/common-name length. Reference: RFC 4366
-#define ND_FLOW_TLS_CNLEN 256
+constexpr size_t ND_FLOW_TLS_CNLEN = 256;
 
 class ndFlowStats
 {
@@ -144,8 +145,8 @@ public:
     ndAddr lower_addr;
     ndAddr upper_addr;
 
-    ndAddr::Type lower_type = { ndAddr::atNONE };
-    ndAddr::Type upper_type = { ndAddr::atNONE };
+    ndAddr::Type lower_type = { ndAddr::Type::NONE };
+    ndAddr::Type upper_type = { ndAddr::Type::NONE };
 
     int direction = { 0 };
 
@@ -157,51 +158,41 @@ public:
     uint64_t ts_first_seen = { 0 };
     std::atomic<uint64_t> ts_last_seen = { 0 };
 
-    enum LowerMap {
-        LOWER_UNKNOWN = 0,
-        LOWER_LOCAL = 1,
-        LOWER_OTHER = 2
+    enum class LowerMap : uint8_t { UNKNOWN, LOCAL, OTHER };
+
+    LowerMap lower_map = { LowerMap::UNKNOWN };
+
+    enum class OtherType : uint8_t {
+        UNKNOWN,
+        UNSUPPORTED,
+        LOCAL,
+        MULTICAST,
+        BROADCAST,
+        REMOTE,
+        ERROR
     };
 
-    LowerMap lower_map = { LOWER_UNKNOWN };
+    OtherType other_type = { OtherType::UNKNOWN };
 
-    enum OtherType {
-        OTHER_UNKNOWN = 0,
-        OTHER_UNSUPPORTED = 1,
-        OTHER_LOCAL = 2,
-        OTHER_MULTICAST = 3,
-        OTHER_BROADCAST = 4,
-        OTHER_REMOTE = 5,
-        OTHER_ERROR = 6
+    enum class TunnelType : uint8_t { NONE, GTP };
+
+    TunnelType tunnel_type = { TunnelType::NONE };
+
+    enum class Origin : uint8_t {
+        UNKNOWN,
+        LOWER,
+        UPPER,
     };
 
-    OtherType other_type = { OTHER_UNKNOWN };
+    Origin origin = { Origin::UNKNOWN };
 
-    enum TunnelType { TUNNEL_NONE = 0, TUNNEL_GTP = 1 };
-
-    TunnelType tunnel_type = { TUNNEL_NONE };
-
-    enum Origin {
-        ORIGIN_UNKNOWN,
-        ORIGIN_LOWER,
-        ORIGIN_UPPER,
+    enum class PrivacyMask : uint8_t {
+        NONE = 0,
+        LOWER = (1 << 0),
+        UPPER = (1 << 1)
     };
 
-    Origin origin = { ORIGIN_UNKNOWN };
-
-    enum PrivacyMask {
-        PRIVATE_LOWER = 0x01,
-        PRIVATE_UPPER = 0x02
-    };
-
-    uint8_t privacy_mask = { 0 };
-
-    enum AddrType {
-        TYPE_LOWER,
-        TYPE_UPPER,
-
-        TYPE_MAX
-    };
+    ndFlags<PrivacyMask> privacy_mask = { PrivacyMask::NONE };
 
     std::vector<uint8_t> digest_lower;
     std::vector<uint8_t> digest_mdata;
@@ -213,8 +204,9 @@ public:
         std::atomic<bool> detection_updated;
         std::atomic<bool> dhc_hit;
         std::atomic<bool> fhc_hit;
-        std::atomic<bool> expired;
         std::atomic<bool> expiring;
+        std::atomic<bool> expiry_broadcast;
+        std::atomic<bool> expired;
         std::atomic<bool> ip_nat;
         std::atomic<bool> soft_dissector;
     } flags;
@@ -240,14 +232,14 @@ public:
         ndAddr::Type upper_type;
         ndAddr lower_addr;
         ndAddr upper_addr;
-        LowerMap lower_map = { LOWER_UNKNOWN };
-        OtherType other_type = { OTHER_UNKNOWN };
+        LowerMap lower_map = { LowerMap::UNKNOWN };
+        OtherType other_type = { OtherType::UNKNOWN };
     } gtp;
 
     std::string dns_host_name;
     std::string host_server_name;
 
-    nd_proto_id_t detected_protocol = { ND_PROTO_UNKNOWN };
+    ndProto::Id detected_protocol = { ndProto::Id::UNKNOWN };
     std::string detected_protocol_name;
 
     nd_app_id_t detected_application = { ND_APP_UNKNOWN };
@@ -315,7 +307,7 @@ public:
         uint16_t ndpi_score_client = { 0 };
         uint16_t ndpi_score_server = { 0 };
 
-        typedef std::set<nd_risk_id_t> Risks;
+        typedef std::set<ndRisk::Id> Risks;
         Risks risks;
     } risk;
 
@@ -338,7 +330,7 @@ public:
 
     void Release(void);
 
-    nd_proto_id_t GetMasterProtocol(void) const;
+    ndProto::Id GetMasterProtocol(void) const;
 
     bool HasDhcpFingerprint(void) const;
     bool HasDhcpClassIdent(void) const;
@@ -358,36 +350,35 @@ public:
     bool HasSSDPUserAgent(void) const;
     bool HasMDNSDomainName(void) const;
 
-    enum PrintFlags {
-        PRINTF_NONE = 0x00,
-        PRINTF_HASHES = 0x01,
-        PRINTF_MACS = 0x02,
-        PRINTF_METADATA = 0x04,
-        PRINTF_STATS = 0x08,
-        PRINTF_STATS_FULL = 0x10,
-        PRINTF_RISKS = 0x20,
-        PRINTF_ALL = (PRINTF_HASHES | PRINTF_MACS | PRINTF_METADATA |
-          PRINTF_STATS | PRINTF_STATS_FULL | PRINTF_RISKS)
+    enum class PrintFlags : uint8_t {
+        NONE = 0,
+        HASHES = (1 << 0),
+        MACS = (1 << 1),
+        METADATA = (1 << 2),
+        STATS = (1 << 3),
+        STATS_FULL = (1 << 4),
+        RISKS = (1 << 5),
+        ALL = (HASHES | MACS | METADATA | STATS | STATS_FULL | RISKS)
     };
 
-    void Print(uint8_t pflags = PRINTF_METADATA,
+    void Print(ndFlags<PrintFlags> pflags = PrintFlags::METADATA,
       const std::string &prefix = "") const;
 
     void UpdateLowerMaps(void);
     void GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
       LowerMap &lm, OtherType &ot);
 
-    enum EncodeFlags {
-        ENCODE_NONE = 0x00,
-        ENCODE_METADATA = 0x01,
-        ENCODE_TUNNELS = 0x02,
-        ENCODE_STATS = 0x04,
-        ENCODE_ALL = (ENCODE_METADATA | ENCODE_TUNNELS | ENCODE_STATS)
+    enum class EncodeFlags : uint8_t {
+        NONE = 0,
+        METADATA = (1 << 0),
+        TUNNELS = (1 << 1),
+        STATS = (1 << 2),
+        ALL = (METADATA | TUNNELS | STATS)
     };
 
     template <class T>
     void Encode(T &output, const ndFlowStats &stats,
-      uint8_t encode_includes = ENCODE_ALL) const {
+      ndFlags<EncodeFlags> encode_flags = EncodeFlags::ALL) const {
         std::lock_guard<std::recursive_mutex> lg(lock);
 
         std::string _other_type = "unknown";
@@ -422,7 +413,7 @@ public:
         serialize(output, { "last_seen_at" }, ts_last_seen.load());
 
         switch (lower_map) {
-        case LOWER_LOCAL:
+        case LowerMap::LOCAL:
             _lower_mac = "local_mac";
             _lower_ip = "local_ip";
             _lower_port = "local_port";
@@ -438,7 +429,7 @@ public:
             _upper_rate = "other_rate";
 #endif
             break;
-        case LOWER_OTHER:
+        case LowerMap::OTHER:
             _lower_mac = "other_mac";
             _lower_ip = "other_ip";
             _lower_port = "other_port";
@@ -458,22 +449,25 @@ public:
         }
 
         switch (other_type) {
-        case OTHER_LOCAL: _other_type = "local"; break;
-        case OTHER_MULTICAST:
+        case OtherType::LOCAL: _other_type = "local"; break;
+        case OtherType::MULTICAST:
             _other_type = "multicast";
             break;
-        case OTHER_BROADCAST:
+        case OtherType::BROADCAST:
             _other_type = "broadcast";
             break;
-        case OTHER_REMOTE: _other_type = "remote"; break;
-        case OTHER_UNSUPPORTED:
+        case OtherType::REMOTE:
+            _other_type = "remote";
+            break;
+        case OtherType::UNSUPPORTED:
             _other_type = "unsupported";
             break;
-        case OTHER_ERROR: _other_type = "error"; break;
+        case OtherType::ERROR: _other_type = "error"; break;
         default: break;
         }
 
-        if (encode_includes & ENCODE_METADATA) {
+        if (ndFlagBoolean(encode_flags, EncodeFlags::METADATA))
+        {
             serialize(output, { "ip_nat" },
               (bool)flags.ip_nat.load());
             if (ndGC_USE_DHC) {
@@ -497,11 +491,11 @@ public:
             serialize(output, { "other_type" }, _other_type);
 
             switch (origin) {
-            case ORIGIN_UPPER:
+            case Origin::UPPER:
                 serialize(output, { "local_origin" },
                   (_lower_ip == "local_ip") ? false : true);
                 break;
-            case ORIGIN_LOWER:
+            case Origin::LOWER:
             default:
                 serialize(output, { "local_origin" },
                   (_lower_ip == "local_ip") ? true : false);
@@ -511,19 +505,20 @@ public:
             // 00-52-14 to 00-52-FF: Unserialized (small
             // allocations)
             serialize(output, { _lower_mac },
-              (privacy_mask & PRIVATE_LOWER) ?
+              ndFlagBoolean(privacy_mask, PrivacyMask::LOWER) ?
                 "00:52:14:00:00:00" :
                 (lower_mac.IsValid()) ?
                 lower_mac.GetString() :
                 "00:00:00:00:00:00");
             serialize(output, { _upper_mac },
-              (privacy_mask & PRIVATE_UPPER) ?
+              ndFlagBoolean(privacy_mask, PrivacyMask::UPPER) ?
                 "00:52:ff:00:00:00" :
                 (upper_mac.IsValid()) ?
                 upper_mac.GetString() :
                 "00:00:00:00:00:00");
 
-            if (privacy_mask & PRIVATE_LOWER) {
+            if (ndFlagBoolean(privacy_mask, PrivacyMask::LOWER))
+            {
                 if (ip_version == 4)
                     serialize(output, { _lower_ip },
                       ND_PRIVATE_IPV4 "253");
@@ -535,7 +530,8 @@ public:
                 serialize(output, { _lower_ip },
                   lower_addr.GetString());
 
-            if (privacy_mask & PRIVATE_UPPER) {
+            if (ndFlagBoolean(privacy_mask, PrivacyMask::UPPER))
+            {
                 if (ip_version == 4)
                     serialize(output, { _upper_ip },
                       ND_PRIVATE_IPV4 "254");
@@ -616,8 +612,8 @@ public:
                       ssh.server_agent);
             }
 
-            if (GetMasterProtocol() == ND_PROTO_TLS ||
-              detected_protocol == ND_PROTO_QUIC)
+            if (GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::QUIC)
             {
                 char tohex[7];
 
@@ -708,14 +704,15 @@ public:
               risk.ndpi_score_server);
         }
 
-        if (encode_includes & ENCODE_TUNNELS) {
+        if (ndFlagBoolean(encode_flags, EncodeFlags::TUNNELS))
+        {
             std::string _lower_teid = "local_teid",
                         _upper_teid = "other_teid";
 
             switch (tunnel_type) {
-            case TUNNEL_GTP:
+            case TunnelType::GTP:
                 switch (gtp.lower_map) {
-                case LOWER_LOCAL:
+                case LowerMap::LOCAL:
                     _lower_ip = "local_ip";
                     _lower_port = "local_port";
                     _lower_teid = "local_teid";
@@ -723,7 +720,7 @@ public:
                     _upper_port = "other_port";
                     _upper_teid = "other_teid";
                     break;
-                case LOWER_OTHER:
+                case LowerMap::OTHER:
                     _lower_ip = "other_ip";
                     _lower_port = "other_port";
                     _lower_teid = "other_teid";
@@ -735,16 +732,16 @@ public:
                 }
 
                 switch (gtp.other_type) {
-                case OTHER_LOCAL:
+                case OtherType::LOCAL:
                     _other_type = "local";
                     break;
-                case OTHER_REMOTE:
+                case OtherType::REMOTE:
                     _other_type = "remote";
                     break;
-                case OTHER_ERROR:
+                case OtherType::ERROR:
                     _other_type = "error";
                     break;
-                case OTHER_UNSUPPORTED:
+                case OtherType::UNSUPPORTED:
                 default: _other_type = "unsupported"; break;
                 }
 
@@ -771,7 +768,7 @@ public:
             }
         }
 
-        if (encode_includes & ENCODE_STATS) {
+        if (ndFlagBoolean(encode_flags, EncodeFlags::STATS)) {
             serialize(output, { _lower_bytes },
               stats.lower_bytes.load());
             serialize(output, { _upper_bytes },

@@ -22,6 +22,7 @@
 
 #include <atomic>
 #include <csignal>
+#include <type_traits>
 
 #include "nd-apps.hpp"
 #include "nd-category.hpp"
@@ -113,9 +114,9 @@ class ndNetifyApiManager;
 class ndConntrackThread;
 #endif
 
-typedef std::map<int16_t, ndDetectionThread *> nd_detection_threads;
-typedef std::map<std::string, std::vector<ndCaptureThread *>> nd_capture_threads;
-typedef std::map<std::string, std::pair<uint8_t, ndPacketStats>> nd_interface_stats;
+typedef std::map<int16_t, ndDetectionThread *> ndDetectionThreads;
+typedef std::map<std::string, std::vector<ndCaptureThread *>> ndCaptureThreads;
+typedef std::map<std::string, ndPacketStats> ndInterfaceStats;
 
 class ndInstance : public ndThread, public ndSerializer
 {
@@ -140,32 +141,34 @@ public:
     static void
     InitializeSignals(sigset_t &sigset, bool minimal = false);
 
-    enum ndConfigResult {
-        ndCR_OK,
-        ndCR_AGENT_STATUS,
-        ndCR_DISABLED_OPTION,
-        ndCR_DUMP_LIST,
-        ndCR_EXPORT_APPS,
-        ndCR_FORCE_RESULT,
-        ndCR_GENERATE_UUID,
-        ndCR_HASH_TEST,
-        ndCR_INVALID_INTERFACE,
-        ndCR_INVALID_INTERFACES,
-        ndCR_INVALID_OPTION,
-        ndCR_INVALID_PERMS,
-        ndCR_INVALID_VALUE,
-        ndCR_LIBCURL_FAILURE,
-        ndCR_LOAD_FAILURE,
-        ndCR_LOOKUP_ADDR,
-        ndCR_PROVISION_UUID,
-        ndCR_SAVE_UUID_FAILURE,
-        ndCR_SET_CONFIG,
-        ndCR_USAGE_OR_VERSION,
+    enum class ConfigResult : uint32_t {
+        OK,
+        AGENT_STATUS,
+        DISABLED_OPTION,
+        DUMP_LIST,
+        EXPORT_APPS,
+        FORCE_RESULT,
+        GENERATE_UUID,
+        HASH_TEST,
+        INVALID_INTERFACE,
+        INVALID_INTERFACES,
+        INVALID_OPTION,
+        INVALID_PERMS,
+        INVALID_VALUE,
+        LIBCURL_FAILURE,
+        LOAD_FAILURE,
+        LOOKUP_ADDR,
+        PROVISION_UUID,
+        SAVE_UUID_FAILURE,
+        SET_CONFIG,
+        USAGE_OR_VERSION,
     };
 
-#define ndCR_Pack(r, c) ((c << 16) + (r & 0x0000ffff))
-#define ndCR_Code(c)    ((c & 0xffff0000) >> 16)
-#define ndCR_Result(r)  (r & 0x0000ffff)
+#define ndCR_Pack(r, c) \
+    ((c << 16) + (ndEnumCast(ndInstance::ConfigResult, r) & 0x0000ffff))
+#define ndCR_Code(c) ((c & 0xffff0000) >> 16)
+#define ndCR_Result(r) \
+    static_cast<ndInstance::ConfigResult>(r & 0x0000ffff)
 
     uint32_t InitializeConfig(int argc, char * const argv[]);
 
@@ -174,18 +177,18 @@ public:
 
     bool Daemonize(void);
 
-    enum ndDumpFlags {
-        ndDUMP_NONE = 0x00,
-        ndDUMP_TYPE_PROTOS = 0x01,
-        ndDUMP_TYPE_APPS = 0x02,
-        ndDUMP_TYPE_CAT_APP = 0x04,
-        ndDUMP_TYPE_CAT_PROTO = 0x08,
-        ndDUMP_TYPE_RISKS = 0x10,
-        ndDUMP_TYPE_VALID = 0x20,
-        ndDUMP_SORT_BY_TAG = 0x40,
-        ndDUMP_WITH_CATS = 0x80,
-        ndDUMP_TYPE_CATS = (ndDUMP_TYPE_CAT_APP | ndDUMP_TYPE_CAT_PROTO),
-        ndDUMP_TYPE_ALL = (ndDUMP_TYPE_PROTOS | ndDUMP_TYPE_APPS)
+    enum class DumpFlags : uint16_t {
+        NONE = 0,
+        TYPE_PROTOS = (1 << 0),
+        TYPE_APPS = (1 << 1),
+        TYPE_CAT_APP = (1 << 2),
+        TYPE_CAT_PROTO = (1 << 3),
+        TYPE_RISKS = (1 << 4),
+        TYPE_VALID = (1 << 5),
+        SORT_BY_TAG = (1 << 6),
+        WITH_CATS = (1 << 7),
+        TYPE_CATS = (TYPE_CAT_APP | TYPE_CAT_PROTO),
+        TYPE_ALL = (TYPE_PROTOS | TYPE_APPS)
     };
 
     template <class T>
@@ -200,18 +203,19 @@ public:
 
     bool SetConfigOption(int option, const std::string &arg) const;
 
-    bool DumpList(uint8_t type = ndDUMP_TYPE_ALL);
+    bool DumpList(ndFlags<DumpFlags> type = DumpFlags::TYPE_ALL);
 
     bool LookupAddress(const std::string &ip);
 
     void CommandLineHelp(bool version_only = false);
 
     bool AddInterface(const std::string &ifname,
-      nd_interface_role role, unsigned type) const;
+      ndInterfaceRole role, ndFlags<ndCaptureType> type) const;
 
     bool CheckAgentUUID(void) const;
 
-    bool SaveAgentStatus(const nd_interface_stats &stats);
+    bool SaveAgentStatus(const ndCaptureThreads &threads,
+      const ndInterfaceStats &stats);
     bool DisplayAgentStatus(void) const;
 
     int Run(void);
@@ -246,7 +250,7 @@ public:
     };
     template <class T>
     void EncodeProtocols(T &output) const {
-        for (auto &proto : nd_protos) {
+        for (auto &proto : ndProto::Tags) {
             T jo;
 
             jo["id"] = proto.first;
@@ -256,65 +260,20 @@ public:
         }
     };
 
-    enum ndIPCMessage {
-        ndIPC_NONE,
-        ndIPC_NETLINK_IO,
-        ndIPC_RELOAD,
-        ndIPC_TERMINATE,
-        ndIPC_UPDATE,
-        ndIPC_UPDATE_NAPI,
+    enum class InstanceEvent : uint32_t {
+        NONE,
+        NETLINK_IO,
+        RELOAD,
+        TERMINATE,
+        UPDATE,
+        UPDATE_NAPI,
     };
 
-    inline void SendIPC(enum ndIPCMessage id) {
-        ndThread::SendIPC((uint32_t)id);
+    inline void SendIPC(InstanceEvent event) {
+        ndThread::SendIPC(static_cast<uint32_t>(event));
     }
 
-    inline bool SendSignal(const siginfo_t &si) {
-        switch (si.si_signo) {
-#ifdef _ND_ENABLE_NETLINK
-        case SIGIO:
-            if (ndGC_USE_NETLINK && netlink != nullptr &&
-              netlink->GetDescriptor() == si.si_fd)
-            {
-                ndThread::SendIPC((uint32_t)ndIPC_NETLINK_IO);
-                return true;
-            }
-            break;
-#endif
-        case SIGHUP:
-            ndThread::SendIPC((uint32_t)ndIPC_RELOAD);
-            return true;
-        case SIGINT:
-        case SIGTERM:
-#ifdef SIGPWR
-        case SIGPWR:
-#endif
-            ndThread::SendIPC((uint32_t)ndIPC_TERMINATE);
-            return true;
-        case SIGUSR1:
-            if (dns_hint_cache != nullptr)
-                dns_hint_cache->Save();
-            if (flow_hash_cache != nullptr)
-                flow_hash_cache->Save();
-            break;
-        case SIGUSR2: break;
-        default:
-            if (timer_update.GetSignal() >= 0 &&
-              si.si_signo == timer_update.GetSignal())
-            {
-                ndThread::SendIPC((uint32_t)ndIPC_UPDATE);
-                return true;
-            }
-            else if (timer_update_napi.GetSignal() >= 0 &&
-              si.si_signo == timer_update_napi.GetSignal())
-            {
-                ndThread::SendIPC((uint32_t)ndIPC_UPDATE_NAPI);
-                return true;
-            }
-            break;
-        }
-        return false;
-    }
+    bool SendSignal(const siginfo_t &si);
 
     int exit_code = { EXIT_FAILURE };
 
@@ -323,7 +282,7 @@ public:
     ndApplications apps;
     ndCategories categories;
     ndInterfaces interfaces;
-    ndAddrType addr_types;
+    ndAddrLookup addr_lookup;
     ndDNSHintCache *dns_hint_cache = { nullptr };
     ndFlowHashCache *flow_hash_cache = { nullptr };
     ndFlowMap *flow_buckets = { nullptr };
@@ -334,7 +293,7 @@ public:
 #ifdef _ND_ENABLE_CONNTRACK
     ndConntrackThread *thread_conntrack = { nullptr };
 #endif
-    nd_detection_threads thread_detection;
+    ndDetectionThreads thread_detection;
     ndPluginManager plugins;
 
 protected:
@@ -349,13 +308,13 @@ protected:
     void CreateCaptureInterfaces(ndInterfaces &ifaces) const;
 
     bool CreateCaptureThreads(ndInterfaces &ifaces,
-      nd_capture_threads &threads);
-    void DestroyCaptureThreads(nd_capture_threads &threads,
+      ndCaptureThreads &threads);
+    void DestroyCaptureThreads(ndCaptureThreads &threads,
       bool expire_flows = false);
-    size_t ReapCaptureThreads(nd_capture_threads &threads);
-    bool ReloadCaptureThreads(nd_capture_threads &threads);
+    size_t ReapCaptureThreads(ndCaptureThreads &threads);
+    bool ReloadCaptureThreads(ndCaptureThreads &threads);
 
-    int WaitForIPC(int timeout = -1);
+    uint32_t WaitForIPC(int timeout = -1);
 
     void UpdateStatus(void);
 
@@ -363,7 +322,7 @@ protected:
 
     bool ExpireFlow(nd_flow_ptr &flow);
 
-    void ProcessUpdate(nd_capture_threads &threads);
+    void ProcessUpdate(const ndCaptureThreads &threads);
 
     void ProcessFlows(void);
 

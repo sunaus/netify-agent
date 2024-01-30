@@ -225,7 +225,8 @@ bool ndApplications::Save(const string &filename) {
     nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
     for (auto &it : (*rn4)) {
         string ip;
-        if (it.first.GetString(ip, ndAddr::mfPREFIX)) {
+        if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX))
+        {
             ofs << "net:" << it.second << ":" << ip << endl;
             nc++;
         }
@@ -234,7 +235,8 @@ bool ndApplications::Save(const string &filename) {
     nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
     for (auto &it : (*rn6)) {
         string ip;
-        if (it.first.GetString(ip, ndAddr::mfPREFIX)) {
+        if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX))
+        {
             ofs << "net:" << it.second << ":" << ip << endl;
             nc++;
         }
@@ -274,7 +276,8 @@ bool ndApplications::SaveLegacy(const string &filename) {
     nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
     for (auto &it : (*rn4)) {
         string ip;
-        if (it.first.GetString(ip, ndAddr::mfPREFIX)) {
+        if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX))
+        {
             ofs << "ip:" << ip << "@" << Lookup(it.second) << endl;
             nc++;
         }
@@ -283,7 +286,8 @@ bool ndApplications::SaveLegacy(const string &filename) {
     nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
     for (auto &it : (*rn6)) {
         string ip;
-        if (it.first.GetString(ip, ndAddr::mfPREFIX | ndAddr::mfIPV6_ESC))
+        if (it.first.GetString(ip,
+              ndAddr::MakeFlags::PREFIX | ndAddr::MakeFlags::IPV6_URI))
         {
             ofs << "ipv6:" << ip << "@" << Lookup(it.second) << endl;
             nc++;
