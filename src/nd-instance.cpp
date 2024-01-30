@@ -2136,11 +2136,10 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 #endif
         default:
             nd_printf(
-              "%s: WARNING: Unsupported capture type: "
-              "%s: "
-              "%hu\n",
+              "%s: WARNING: Unsupported capture type: %s: "
+              "%u\n",
               tag.c_str(), it.second->ifname.c_str(),
-              it.second->capture_type);
+              static_cast<unsigned>(it.second->capture_type.flags));
         }
 
         if (! thread_group.size()) continue;
