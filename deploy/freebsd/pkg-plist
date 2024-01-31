@@ -16,10 +16,10 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-addr.hpp
 %%DEVEL%%include/netifyd/nd-apps.hpp
 %%DEVEL%%include/netifyd/nd-base64.hpp
+%%DEVEL%%include/netifyd/nd-capture.hpp
 %%DEVEL%%include/netifyd/nd-capture-nfq.hpp
 %%DEVEL%%include/netifyd/nd-capture-pcap.hpp
 %%DEVEL%%include/netifyd/nd-capture-tpv3.hpp
-%%DEVEL%%include/netifyd/nd-capture.hpp
 %%DEVEL%%include/netifyd/nd-category.hpp
 %%DEVEL%%include/netifyd/nd-config.hpp
 %%DEVEL%%include/netifyd/nd-conntrack.hpp
@@ -28,9 +28,10 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-except.hpp
 %%DEVEL%%include/netifyd/nd-fhc.hpp
 %%DEVEL%%include/netifyd/nd-flags.hpp
-%%DEVEL%%include/netifyd/nd-flow-map.hpp
-%%DEVEL%%include/netifyd/nd-flow-parser.hpp
 %%DEVEL%%include/netifyd/nd-flow.hpp
+%%DEVEL%%include/netifyd/nd-flow-map.hpp
+%%DEVEL%%include/netifyd/nd-flow-parser.h
+%%DEVEL%%include/netifyd/nd-flow-parser.hpp
 %%DEVEL%%include/netifyd/nd-instance.hpp
 %%DEVEL%%include/netifyd/nd-napi.hpp
 %%DEVEL%%include/netifyd/nd-ndpi.hpp
@@ -45,6 +46,7 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-thread.hpp
 %%DEVEL%%include/netifyd/nd-tls-alpn.hpp
 %%DEVEL%%include/netifyd/nd-util.hpp
+%%DEVEL%%include/netifyd/netifyd.hpp
 %%DEVEL%%include/netifyd/ndpi/ndpi_api.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_classify.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_config.h
@@ -60,7 +62,6 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/ndpi/ndpi_unix.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_utils.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_win32.h
-%%DEVEL%%include/netifyd/netifyd.hpp
 %%DEVEL%%include/netifyd/nlohmann/json.hpp
 %%DEVEL%%include/netifyd/pcap-compat/sll.h
 %%DEVEL%%include/netifyd/pcap-compat/vlan.h
