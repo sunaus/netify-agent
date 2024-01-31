@@ -17,7 +17,7 @@ offline0: i4pcu---d--r--- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53105
         : RID 30: TLS Certificate Expired
         : DP: 7
 
-offline0: i4pcu---d--r--- TCP [OR] 54.191.17.51:443 <-- [L] 192.168.1.7:53114
+offline0: i4pcu---d--r-F- TCP [OR] 54.191.17.51:443 <-- [L] 192.168.1.7:53114
         : HTTP/S.netify.netflix
         : D: ios.nccp.us-west-2.prodaa.netflix.com H: ios.nccp.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -27,7 +27,7 @@ offline0: i4pcu---d--r--- TCP [OR] 54.191.17.51:443 <-- [L] 192.168.1.7:53114
         : RID 47: TLS ALPN Not Found
         : DP: 7
 
-offline0: i4pcu------r--- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53115
+offline0: i4pcu------r-F- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53115
         : HTTP/S.netify.netflix
         : H: api-global.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -45,7 +45,7 @@ offline0: i4pcu------r--- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53116
         : RID 30: TLS Certificate Expired
         : DP: 7
 
-offline0: i4pcu------r--- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53117
+offline0: i4pcu------r-F- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53117
         : HTTP/S.netify.netflix
         : H: api-global.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -53,7 +53,7 @@ offline0: i4pcu------r--- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53117
         : RID 47: TLS ALPN Not Found
         : DP: 6
 
-offline0: i4pcu---d--r--- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53118
+offline0: i4pcu---d--r-F- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53118
         : HTTP/S.netify.netflix
         : D: ichnaea.us-west-2.prodaa.netflix.com H: ichnaea.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -67,7 +67,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.7:53776 --> [OM] 239.255.255.250:190
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pcu---d--r--- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53119
+offline0: i4pcu---d--r-F- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53119
         : HTTP/S.netify.netflix
         : D: ichnaea.us-west-2.prodaa.netflix.com H: ichnaea.netflix.com
         : V: 0x0303 CS: 0xc02f

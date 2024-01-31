@@ -1,4 +1,4 @@
-offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36196 --> [OL] 192.168.10.50:80
+offline0: i4pc-------r--- TCP [L] 172.16.0.1:36196 --> [OL] 192.168.10.50:80
         : HTTP
         : H: 205.174.165.68
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0
@@ -8,7 +8,7 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36196 --> [OL] 192.168.10.50:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36198 --> [OL] 192.168.10.50:80
+offline0: i4pc-------r--- TCP [L] 172.16.0.1:36198 --> [OL] 192.168.10.50:80
         : HTTP
         : H: 205.174.165.68
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0
@@ -18,7 +18,7 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36198 --> [OL] 192.168.10.50:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36200 --> [OL] 192.168.10.50:80
+offline0: i4pc-------r--- TCP [L] 172.16.0.1:36200 --> [OL] 192.168.10.50:80
         : HTTP
         : H: 205.174.165.68
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0
@@ -28,7 +28,7 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36200 --> [OL] 192.168.10.50:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36202 --> [OL] 192.168.10.50:80
+offline0: i4pc-------r--- TCP [L] 172.16.0.1:36202 --> [OL] 192.168.10.50:80
         : HTTP
         : H: 205.174.165.68
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0
@@ -38,7 +38,7 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36202 --> [OL] 192.168.10.50:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36204 --> [OL] 192.168.10.50:80
+offline0: i4pc-------r--- TCP [L] 172.16.0.1:36204 --> [OL] 192.168.10.50:80
         : HTTP
         : H: 205.174.165.68
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0
@@ -48,7 +48,7 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36204 --> [OL] 192.168.10.50:80
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36206 --> [OL] 192.168.10.50:80
+offline0: i4pc-------r--- TCP [L] 172.16.0.1:36206 --> [OL] 192.168.10.50:80
         : HTTP
         : H: 205.174.165.68
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0

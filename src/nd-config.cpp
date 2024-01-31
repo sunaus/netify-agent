@@ -69,7 +69,7 @@ ndGlobalConfig::ndGlobalConfig()
     max_capture_length(ND_PCAP_SNAPLEN),
     flags(ndGlobalFlags::NONE), digest_app_config{ 0 },
     digest_legacy_config{ 0 }, verbosity(0),
-    verbosity_flags(ndVerbosityFlags::EVENT_DPI_NEW),
+    verbosity_flags(ndVerbosityFlags::EVENT_DPI_COMPLETE),
     fhc_purge_divisor(ND_FHC_PURGE_DIVISOR),
     fm_buckets(ND_FLOW_MAP_BUCKETS),
     max_detection_pkts(ND_MAX_DETECTION_PKTS),

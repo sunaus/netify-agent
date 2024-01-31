@@ -116,6 +116,26 @@ offline0: i4pc----------- UDP [L] 10.0.2.15:50435 --> [OM] 224.0.0.252:5355
         : H: puppet
         : DP: 1
 
+offline0: i6pc----------- UDP [L] fe80::c50d:519f:96a4:e108:50435 --> [OM] ff02::1:3:5355
+        : LLMNR
+        : H: puppet
+        : DP: 1
+
+offline0: i6pc----------- UDP [L] fe80::c50d:519f:96a4:e108:62539 --> [OM] ff02::1:3:5355
+        : LLMNR
+        : H: puppet
+        : DP: 1
+
+offline0: i4pc----------- UDP [L] 10.0.2.15:50435 --> [OM] 224.0.0.252:5355
+        : LLMNR
+        : H: puppet
+        : DP: 1
+
+offline0: i4pc----------- UDP [L] 10.0.2.15:62539 --> [OM] 224.0.0.252:5355
+        : LLMNR
+        : H: puppet
+        : DP: 1
+
 offline0: i4pc----------- UDP [L] 10.0.2.15:5353 --> [OM] 224.0.0.251:5353
         : MDNS.netify.internal-network
         : H: puppet.local
@@ -126,27 +146,27 @@ offline0: i6pc----------- UDP [L] fe80::c50d:519f:96a4:e108:5353 --> [OM] ff02::
         : H: puppet.local
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50199 --> [OR] 47.147.52.21:36728
+offline0: i4pc-------r--- TCP [L] 10.0.2.15:50199 --> [OR] 47.147.52.21:36728
         : Gnutella
         : RID 42: Unsafe Protocol
         : DP: 4
 
-offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50196 --> [OR] 218.250.6.59:12556
+offline0: i4pc-------r--- TCP [L] 10.0.2.15:50196 --> [OR] 218.250.6.59:12556
         : Gnutella
         : RID 42: Unsafe Protocol
         : DP: 4
 
-offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50197 --> [OR] 118.168.15.71:3931
+offline0: i4pc-------r--- TCP [L] 10.0.2.15:50197 --> [OR] 118.168.15.71:3931
         : Gnutella
         : RID 42: Unsafe Protocol
         : DP: 4
 
-offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50203 --> [OR] 61.222.160.99:18994
+offline0: i4pc-------r--- TCP [L] 10.0.2.15:50203 --> [OR] 61.222.160.99:18994
         : Gnutella
         : RID 42: Unsafe Protocol
         : DP: 4
 
-offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50206 --> [OR] 175.181.156.244:8255
+offline0: i4pc-------r--- TCP [L] 10.0.2.15:50206 --> [OR] 175.181.156.244:8255
         : Gnutella
         : RID 42: Unsafe Protocol
         : DP: 4
@@ -211,7 +231,7 @@ offline0: i4pc-------r--- ICMP [L] 10.0.2.2:0 --> [OL] 10.0.2.15:0
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- TCP [L] 10.0.2.15:50249 --> [OR] 86.208.180.181:45883
+offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50249 --> [OR] 86.208.180.181:45883
         : Gnutella
         : RID 42: Unsafe Protocol
         : DP: 4

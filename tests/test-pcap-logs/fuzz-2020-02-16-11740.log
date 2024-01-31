@@ -182,7 +182,7 @@ offline0: i4pc-------r--- UDP [L] 10.12.64.30:29204 --> [OR] 198.226.25.53:1812
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 65.12.64.30:29200 --> [L] 198.226.25.53:1812
-        : RADIUS
+        : RADIUS.netify.audible
         : RID 46: Unidirectional Traffic
         : DP: 1
 

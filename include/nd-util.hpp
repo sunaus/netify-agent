@@ -99,7 +99,9 @@ class ndLogStream : public std::ostream
 public:
     ndLogStream() : std::ostream(new ndLogBuffer) { }
 
-    virtual ~ndLogStream() { delete rdbuf(); }
+    virtual ~ndLogStream() {
+        delete reinterpret_cast<ndLogBuffer *>(rdbuf());
+    }
 };
 
 class ndDebugLogStream : public std::ostream
@@ -113,7 +115,7 @@ public:
 
     ndDebugLogStream(Type type = Type::NONE)
       : std::ostream((type == Type::NONE) ?
-            reinterpret_cast<std::streambuf *>(new ndDebugLogBuffer) :
+            new ndDebugLogBuffer :
             ((type == Type::UNLOCKED) ?
                 reinterpret_cast<std::streambuf *>(new ndDebugLogBufferUnlocked) :
                 reinterpret_cast<std::streambuf *>(
@@ -135,7 +137,6 @@ public:
             delete reinterpret_cast<ndDebugLogBufferFlow *>(rdbuf());
             break;
         }
-        delete rdbuf();
     }
 
 private:

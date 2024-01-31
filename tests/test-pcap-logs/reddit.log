@@ -235,7 +235,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::6853:b3d1:443 <-- [L] 2a01:cb01:2049
         : DP: 6
 
 offline0: i6pcu---------- TCP [OR] 64:ff9b::2278:cf94:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39626
-        : HTTP/S.netify.towerdata
+        : HTTP/S.netify.atdata
         : H: id.rlcdn.com
         : V: 0x0303 CS: 0x1301
         : TLS/SNI: id.rlcdn.com

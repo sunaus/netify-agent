@@ -86,7 +86,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:48155
         : H: www.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.85.209.197:443 <-- [L] 172.16.42.216:55242
+offline0: i4pcu---d--r--- TCP [OR] 52.85.209.197:443 <-- [L] 172.16.42.216:55242
         : HTTP/S.netify.amazon
         : D: d3ag4hukkh62yn.cloudfront.net H: www.amazon.com
         : V: 0x0303 CS: 0xc02f

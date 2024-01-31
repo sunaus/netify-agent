@@ -6,7 +6,7 @@ offline0: i4pc--------s-- TCP [OR] 185.157.229.246:8080 <-- [L] 192.168.1.192:37
         : OOKLA.netify.speedtest
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 46.44.253.187:80 <-- [L] 192.168.1.7:51207
+offline0: i4pc-------r--- TCP [OR] 46.44.253.187:80 <-- [L] 192.168.1.7:51207
         : HTTP
         : H: massarosa-1.speedtest.welcomeitalia.it
         : HTTP/UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8

@@ -3,7 +3,7 @@ offline0: i4pc----------- IGMP [L] 192.168.1.219:0 --> [OM] 224.0.0.22:0
         : DP: 1
 
 offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.34:57694
-        : DNS.netify.microsoft
+        : DNS.netify.msn
         : H: db3msgr5011709.gateway.messenger.live.com
         : DP: 2
 
@@ -32,7 +32,7 @@ offline0: i4pc-------rs-- TCP [OR] 17.143.160.149:5223 <-- [L] 192.168.1.34:5040
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc---------F- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:51227
+offline0: i4pc----------- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:51227
         : HTTP/S.netify.apple
         : DP: 5
 

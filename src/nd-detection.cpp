@@ -330,13 +330,15 @@ void ndDetectionThread::ProcessPacketQueue(void) {
               (ndEF->flags.expiring.load() &&
                 ndEF->flags.expired.load() == false))
             {
-                if (entry->packet != nullptr)
-                    ProcessPacket(entry);
+                if (ndEFNF != nullptr) {
+                    if (entry->packet != nullptr)
+                        ProcessPacket(entry);
 
-                ProcessFlow(entry);
+                    ProcessFlow(entry);
 
-                if (ndEF->detected_protocol == ndProto::Id::UNKNOWN)
-                    SetGuessedProtocol(entry);
+                    if (ndEF->detected_protocol == ndProto::Id::UNKNOWN)
+                        SetGuessedProtocol(entry);
+                }
 
                 SetDetectionComplete(entry);
 
@@ -346,7 +348,8 @@ void ndDetectionThread::ProcessPacketQueue(void) {
                 }
             }
 
-            if (ndEF->flags.detection_complete.load())
+            if (ndEF->flags.detection_complete.load() &&
+              ndEFNF != nullptr)
                 ndEF->Release();
 
             delete entry;
@@ -1189,10 +1192,10 @@ void ndDetectionThread::FlowUpdate(ndDetectionQueueEntry *entry) {
     }
 
     if (ndEF->category.domain == ND_CAT_UNKNOWN &&
-      ndEFNF->host_server_name[0] != '\0')
+      ! ndEF->host_server_name.empty())
     {
         ndEF->category.domain = ndi.categories.LookupDotDirectory(
-          ndEFNF->host_server_name);
+          ndEF->host_server_name);
     }
 
     if (ndGC_SOFT_DISSECTORS) {

@@ -38,7 +38,7 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:17500 --> [OL] 192.168.2.255:17500
         : Dropbox
         : DP: 1
 
-offline0: i4pc-------r--- TCP [OR] 17.171.47.85:443 <-- [L] 192.168.2.12:50502
+offline0: i4pc-------r-F- TCP [OR] 17.171.47.85:443 <-- [L] 192.168.2.12:50502
         : HTTP/S.netify.apple
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -88,7 +88,7 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.12:60549
         : H: pps.whatsapp.net
         : DP: 2
 
-offline0: i4pcu---d------ TCP [OR] 157.240.20.52:443 <-- [L] 192.168.2.12:50504
+offline0: i4pcu---d----F- TCP [OR] 157.240.20.52:443 <-- [L] 192.168.2.12:50504
         : HTTP/S.netify.whatsapp
         : D: mmx-ds.cdn.whatsapp.net H: pps.whatsapp.net
         : V: 0x0303 CS: 0x1303
@@ -108,10 +108,10 @@ offline0: i4pc-------r--- UDP [OR] 91.252.56.51:32704 <-- [L] 192.168.2.12:56328
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 1.60.78.64:64282 --> [L] 192.168.2.12:56328
-        : WhatsApp/Call.netify.whatsapp
+        : STUN
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 5
 
 offline0: i4pc----------- UDP [L] 192.168.2.12:50191 --> [OM] 239.255.255.250:1900
         : SSDP
