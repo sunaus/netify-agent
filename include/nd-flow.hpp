@@ -99,6 +99,7 @@ public:
         upper_packets = 0;
 #ifdef _ND_ENABLE_EXTENDED_STATS
         lower_rate_samples.assign(ndGC.update_interval, 0);
+        upper_rate_samples.assign(ndGC.update_interval, 0);
         tcp_seq_errors = 0;
         tcp_resets = 0;
         tcp_retrans = 0;
