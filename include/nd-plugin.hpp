@@ -105,8 +105,9 @@ public:
         NONE = 0,
         FORMAT_JSON = (1 << 0),
         FORMAT_MSGPACK = (1 << 1),
-        ADD_HEADER = (1 << 2),
-        GZ_DEFLATE = (1 << 3),
+        ADD_CR = (1 << 2),
+        ADD_HEADER = (1 << 3),
+        GZ_DEFLATE = (1 << 4),
     };
 
 protected:
