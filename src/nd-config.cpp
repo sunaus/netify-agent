@@ -430,8 +430,7 @@ bool ndGlobalConfig::Load(const string &filename) {
 
     // Add plugins
     vector<string> files;
-    if (nd_scan_dotd(path_plugins, files) && ! files.empty())
-    {
+    if (nd_scan_dotd(path_plugins, files)) {
         for (auto &f : files) {
             if (! AddPlugin(path_plugins + "/" + f))
                 return false;
@@ -603,8 +602,7 @@ bool ndGlobalConfig::LoadInterfaces(const string &filename) {
         return false;
 
     vector<string> files;
-    if (nd_scan_dotd(path_interfaces, files) && ! files.empty())
-    {
+    if (nd_scan_dotd(path_interfaces, files)) {
         for (auto &file : files) {
             INIReader r = INIReader(path_interfaces + "/" + file);
 
