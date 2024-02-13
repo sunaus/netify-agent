@@ -195,5 +195,5 @@
 #define ND_TTL_API_TICK   30
 #define ND_TTL_API_UPDATE (3600 * 24)
 #define ND_URL_API_BOOTSTRAP \
-    "https://manager.netify.ai/api/v2/netifyd/bootstrap"
+    "https://agents.netify.ai/api/v2/bootstrap"
 #define ND_API_VENDOR "EG"
