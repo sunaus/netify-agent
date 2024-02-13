@@ -27,6 +27,8 @@
 
 #define ndFlagBoolean(flags, bits) \
     ((flags & (bits)) == (bits))
+#define ndFlagBooleanAny(flags, bits) \
+    (static_cast<unsigned>(flags & (bits)) != 0)
 
 template <typename T>
 struct ndFlags {
