@@ -1224,7 +1224,7 @@ bool nd_scan_dotd(const string &path, vector<string> &files) {
 
     closedir(dh);
 
-    return (files.size() > 0);
+    return true;
 }
 
 void nd_set_hostname(string &dst, bool strict) {

@@ -389,7 +389,8 @@ bool ndCategories::LoadDotDirectory(const string &path) {
     vector<string> files;
     // /etc/netifyd/categories.d/10-adult.conf
     // /etc/netifyd/categories.d/{pri}-{cat_tag}.conf
-    if (! nd_scan_dotd(path, files)) return true;
+    if (! nd_scan_dotd(path, files) || files.empty())
+        return true;
 
     ResetDomains();
     ResetNetworks(false);
