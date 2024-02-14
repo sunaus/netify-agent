@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Netify Agent command-line options for systemd(1)
 # Copyright (C) 2016-2024 eGloo Incorporated
 #
