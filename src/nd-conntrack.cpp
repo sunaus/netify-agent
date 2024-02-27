@@ -18,7 +18,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <libmnl/libmnl.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -26,6 +25,8 @@
 #include <array>
 #include <sstream>
 #include <string>
+
+#include <libmnl/libmnl.h>
 
 #include "nd-conntrack.hpp"
 #include "nd-except.hpp"

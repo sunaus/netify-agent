@@ -18,7 +18,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-risks.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -30,6 +29,7 @@
 #include "nd-category.hpp"
 #include "nd-flags.hpp"
 #include "nd-flow.hpp"
+#include "nd-risks.hpp"
 #include "nd-sha1.h"
 
 using namespace std;

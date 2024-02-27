@@ -22,8 +22,6 @@
 #include "config.h"
 #endif
 
-// #include <linux/if_packet.h>
-// #include <linux/netlink.h>
 #include <fcntl.h>
 #include <libnfnetlink/libnfnetlink.h>
 #include <linux/rtnetlink.h>

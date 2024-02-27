@@ -18,7 +18,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-config.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -124,6 +123,7 @@
 #define _ND_GTP_G_PDU  0xff
 
 #include "nd-capture.hpp"
+#include "nd-config.hpp"
 #include "nd-detection.hpp"
 
 using namespace std;

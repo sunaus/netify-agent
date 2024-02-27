@@ -22,7 +22,6 @@
 #include "config.h"
 #endif
 
-//#include "nd-flow.hpp"
 #include "nd-protos.hpp"
 
 using namespace ndProto;

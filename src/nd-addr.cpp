@@ -18,7 +18,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-flags.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -27,6 +26,7 @@
 #include <sys/types.h>
 
 #include "nd-addr.hpp"
+#include "nd-flags.hpp"
 
 using namespace std;
 

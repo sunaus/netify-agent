@@ -18,7 +18,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-flags.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -47,6 +46,7 @@
 #include "nd-config.hpp"
 #include "nd-detection.hpp"
 #include "nd-except.hpp"
+#include "nd-flags.hpp"
 #include "nd-util.hpp"
 
 using namespace std;
