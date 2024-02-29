@@ -759,10 +759,12 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
 
         if (strncasecmp(s.c_str(), key, key_len)) continue;
 
-        size_t p = s.find_last_of("-");
+        size_t p = strlen(key) >= s.size() ?
+          string::npos :
+          strlen(key);
         if (p == string::npos) continue;
 
-        string iface = s.substr(p + 1);
+        string iface = s.substr(p);
 
         string interface_role = r->Get(s, "role", "none");
 
