@@ -759,7 +759,7 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
 
         if (strncasecmp(s.c_str(), key, key_len)) continue;
 
-        size_t p = s.find_last_of("-");
+        size_t p = s.find_first_of(key);
         if (p == string::npos) continue;
 
         string iface = s.substr(p + 1);
