@@ -17,17 +17,15 @@ NETIFYD_DEPENDENCIES = host-pkgconf host-automake host-autoconf host-libtool zli
 NETIFYD_INSTALL_STAGING = YES
 
 NETIFYD_CONF_OPTS = \
-	--enable-lean-and-mean \
-	--disable-watchdogs \
 	--disable-ndpi-debug \
 	--disable-libtcmalloc \
-	--disable-jemalloc \
 	$(if $(BR2_PACKAGE_NETIFYD_TPACKETV3),--enable-tpacketv3,--disable-tpacketv3) \
 	$(if $(BR2_PACKAGE_NETIFYD_NFQUEUE),--enable-nfqueue ,--disable-nfqueue) \
 	$(if $(BR2_PACKAGE_NETIFYD_CONNTRACK),--enable-conntrack,--disable-conntrack) \
 	$(if $(BR2_PACKAGE_NETIFYD_CONNTRACK_MDATA),--enable-conntrack-mdata,--disable-conntrack-mdata) \
 	$(if $(BR2_PACKAGE_NETIFYD_NETLINK),--enable-netlink,--disable-netlink) \
-	$(if $(BR2_PACKAGE_NETIFYD_PLUGINS),--enable-plugins,--disable-plugins) \
+	$(if $(BR2_PACKAGE_NETIFYD_EXTENDED_STATS),--enable-extended-stats,--disable-extended-stats) \
+	$(if $(BR2_PACKAGE_NETIFYD_LEAN_AND_MEAN),--enable-lean-and-mean,--disable-lean-and-mean) \
 
 define NETIFYD_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 $(@D)/deploy/systemd/netifyd.service \

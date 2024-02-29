@@ -63,10 +63,16 @@ config BR2_PACKAGE_NETIFYD_NETLINK
 	help
 	  Enable dynamic interface configuration messaging via Netlink.
 
-config BR2_PACKAGE_NETIFYD_PLUGINS
-	bool "plugins support"
+config BR2_PACKAGE_NETIFYD_EXTENDED_STATS
+	bool "enable extended statistics"
 	default y
 	help
-	  Enable support for Netify Agent Plugins.
+	  Enable extra per-flow statistics such as the number of TCP resets, sequence errors, etc.
+
+config BR2_PACKAGE_NETIFYD_LEAN_AND_MEAN
+	bool "enable lean-and-mean build"
+	default n
+	help
+	  Enabling lean-and-mean build disables as many extra features as possible to produce the smallest binary.
 
 endif
