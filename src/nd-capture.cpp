@@ -129,28 +129,28 @@
 using namespace std;
 
 // Enable to log discarded packets
-// #define _ND_LOG_PKT_DISCARD     1
+// #define _ND_LOG_PKT_DISCARD 1
 
 // Enable to log discarded TCP flags
-// #define _ND_LOG_PKT_TCP_FLAGS   1
+// #define _ND_LOG_PKT_TCP_FLAGS 1
 
 // Enable to log discarded TCP packets
 // #define _ND_LOG_PKT_TCP_DISCARD 1
 
 // Enable to log replay packet delay intervals
-// #define _ND_LOG_PKT_DELAY_TIME    1
+// #define _ND_LOG_PKT_DELAY_TIME 1
 
 // Enable to log discarded flows
-// #define _ND_LOG_FLOW_DISCARD    1
+// #define _ND_LOG_FLOW_DISCARD 1
 
 // Enable DNS response debug logging
-// #define _ND_LOG_DNS_RESPONSE    1
+// #define _ND_LOG_DNS_RESPONSE 1
 
 // Enable DNS hint cache debug logging
-// #define _ND_LOG_DHC             1
+// #define _ND_LOG_DHC 1
 
 // Enable flow hash cache debug logging
-// #define _ND_LOG_FHC             1
+// #define _ND_LOG_FHC 1
 
 // Enable GTP tunnel dissection
 #define _ND_DISSECT_GTP 1
@@ -1165,8 +1165,7 @@ nd_process_ip:
             proto = ndProto::Id::LLMNR;
 
         if (proto != ndProto::Id::UNKNOWN) {
-            bool is_query = ProcessDNSPacket(nf, pkt,
-              pkt_len - (packet->length - packet->caplen), proto);
+            bool is_query = ProcessDNSPacket(nf, pkt, pkt_len, proto);
 
             if (is_query && nf->flags.detection_complete.load())
             {
@@ -1222,6 +1221,14 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
     ns_msg ns_h;
     const char *host = nullptr;
     int rc = ns_initparse(pkt, pkt_len, &ns_h);
+
+    if (rc < 0) {
+        // XXX: (Most) TCP DNS packets have a two byte header
+        pkt += 2;
+        pkt_len -= 2;
+    }
+
+    rc = ns_initparse(pkt, pkt_len, &ns_h);
 
     if (rc < 0) {
 #ifdef _ND_LOG_DHC
@@ -1365,7 +1372,7 @@ bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
               "%d: "
               "%s\n",
               tag.c_str(), ns_rr_ttl(rr), ns_rr_rdlen(rr),
-              flow->mdns.domain_name);
+              flow->mdns.domain_name.c_str());
 #endif
             continue;
         }

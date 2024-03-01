@@ -581,7 +581,17 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
 
             break;
         case ndProto::Id::DNS:
-            // nd_dprintf("DNS flow updated.\n");
+        case ndProto::Id::LLMNR:
+            if (ndEF->host_server_name.empty() &&
+              ndEFNF->host_server_name[0] != '\0')
+            {
+                flow_update = true;
+                ndEF->host_server_name.assign(ndEFNF->host_server_name);
+                nd_set_hostname(ndEF->host_server_name);
+
+                SetDetectedApplication(entry,
+                  ndi.apps.Find(ndEF->host_server_name));
+            }
             break;
         case ndProto::Id::MDNS:
             if (ndEF->HasMDNSDomainName()) {
@@ -592,9 +602,6 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             //     ndEF->host_server_name,
             //     ndEFNF->host_server_name,
             //     ndEF->mdns.domain_name);
-            break;
-        case ndProto::Id::LLMNR:
-            // nd_dprintf("LLMNR flow updated.\n");
             break;
         case ndProto::Id::SSH:
             if (ndEF->ssh.server_agent.empty() &&
