@@ -8,10 +8,11 @@ umask 077
 source /usr/share/netifyd/functions.sh
 
 NETIFY_OPTS=$(auto_detect_options)
+NETIFY_PID="/var/run/netifyd/netifyd.pid"
 
 start() {
 	printf "Starting netifyd: "
-	/usr/sbin/netifyd $NETIFY_OPTS
+	start-stop-daemon -S /usr/sbin/netifyd -- $NETIFY_OPTS
 	if [ $? -eq 0 ]; then
 		touch /var/lock/netifyd
 		echo "OK"
@@ -24,9 +25,8 @@ start() {
 
 stop() {
 	printf "Stopping netifyd: "
-	if [ -e "/var/run/netifyd/netifyd.pid" ]; then
-		killall netifyd
-		killall netifyd
+	if [ -e "${NETIFY_PID}" ]; then
+		start-stop-daemon -q -K -p "${NETIFY_PID}"
 		rm -f /var/lock/netifyd
 		echo "OK"
 		exit 0
@@ -37,7 +37,7 @@ stop() {
 }
 
 reload() {
-	killall -HUP netifyd
+	start-stop-daemon -q -K -s HUP -p "${NETIFY_PID}"
 }
 
 restart() {
@@ -52,6 +52,9 @@ case "$1" in
   stop)
 	stop
 	;;
+  status)
+	netifyd --status
+	;;
   reload)
 	reload
 	;;
@@ -59,9 +62,8 @@ case "$1" in
 	restart
 	;;
   *)
-	echo "Usage: $0 {start|stop|reload|restart}"
+	echo "Usage: $0 {start|stop|status|reload|restart}"
 	exit 1
 esac
 
 exit $?
-
