@@ -9,6 +9,7 @@ source /usr/share/netifyd/functions.sh
 
 NETIFY_OPTS=$(auto_detect_options)
 NETIFY_PID="/var/run/netifyd/netifyd.pid"
+NETIFY_TIMEOUT=60
 
 start() {
 	printf "Starting netifyd: "
@@ -16,7 +17,6 @@ start() {
 	if [ $? -eq 0 ]; then
 		touch /var/lock/netifyd
 		echo "OK"
-		exit 0
 	else
 		echo "FAIL"
 		exit 1
@@ -24,15 +24,25 @@ start() {
 }
 
 stop() {
-	printf "Stopping netifyd: "
 	if [ -e "${NETIFY_PID}" ]; then
+		printf "Stopping netifyd: "
 		start-stop-daemon -q -K -p "${NETIFY_PID}"
+
+		PID=$(cat "${NETIFY_PID}")
+
+		for i in $(seq ${NETIFY_TIMEOUT}); do
+			if [ ! -e "/proc/${PID}" ]; then
+				break
+			fi
+			sleep 1
+		done
+
+		if [ -e "/proc/${PID}" ]; then
+			start-stop-daemon -q -K -p "/var/run/netifyd/netifyd.pid"
+		fi
+
 		rm -f /var/lock/netifyd
 		echo "OK"
-		exit 0
-	else
-		echo "FAIL"
-		exit 1
 	fi
 }
 
