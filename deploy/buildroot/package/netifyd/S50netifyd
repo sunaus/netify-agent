@@ -5,6 +5,10 @@
 
 umask 077
 
+source /usr/share/netifyd/functions.sh
+
+NETIFY_OPTS=$(auto_detect_options)
+
 start() {
 	printf "Starting netifyd: "
 	/usr/sbin/netifyd $NETIFY_OPTS
