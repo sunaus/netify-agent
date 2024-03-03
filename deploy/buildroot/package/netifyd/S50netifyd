@@ -1,22 +1,35 @@
 #!/bin/sh
 #
-# netifyd        Starts netifyd.
+# netifyd        Starts the Netify Agent.
 #
 
 umask 077
 
 start() {
 	printf "Starting netifyd: "
-	/usr/sbin/netifyd
-	touch /var/lock/netifyd
-	echo "OK"
+	/usr/sbin/netifyd $NETIFY_OPTS
+	if [ $? -eq 0 ]; then
+		touch /var/lock/netifyd
+		echo "OK"
+		exit 0
+	else
+		echo "FAILED"
+		exit 1
+	fi
 }
 
 stop() {
 	printf "Stopping netifyd: "
-	killall netifyd
-	rm -f /var/lock/netifyd
-	echo "OK"
+	if [ -e "/var/run/netifyd/netifyd.pid" ]; then
+		killall netifyd
+		killall netifyd
+		rm -f /var/lock/netifyd
+		echo "OK"
+		exit 0
+	else
+		echo "FAILED"
+		exit 1
+	fi
 }
 
 reload() {
