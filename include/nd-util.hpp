@@ -423,15 +423,21 @@ public:
         uint64_t insert_miss = stats.insert_miss;
         uint64_t insert_total = insert_hit + insert_miss;
 
-        float insert_hit_pct = 100.0f * (float)insert_hit /
-          (float)insert_total;
+        float insert_hit_pct = 0;
+	if (insert_total > 0) {
+            insert_hit_pct = 100.0f * (float)insert_hit /
+              (float)insert_total;
+	}
 
         uint64_t lookup_hit = stats.lookup_hit;
         uint64_t lookup_miss = stats.lookup_miss;
         uint64_t lookup_total = lookup_hit + lookup_miss;
 
-        float lookup_hit_pct = 100.0f * (float)lookup_hit /
-          (float)lookup_total;
+        float lookup_hit_pct = 0;
+	if (lookup_total > 0) {
+	    lookup_hit_pct = 100.0f * (float)lookup_hit /
+              (float)lookup_total;
+	}
 
         jstats["cache_size"] = cache_size;
         jstats["insert_hit"] = insert_hit;

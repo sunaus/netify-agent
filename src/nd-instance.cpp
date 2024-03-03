@@ -1609,7 +1609,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
 
             size_t cache_size = 0;
             uint64_t insert_hit = 0;
-            float insert_hit_pct = 0.0;
+            float insert_hit_pct = 0;
             uint64_t insert_miss = 0;
             uint64_t insert_total = 0;
             uint64_t lookup_hit = 0;
@@ -1658,7 +1658,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
 
             size_t cache_size = 0;
             uint64_t insert_hit = 0;
-            float insert_hit_pct = 0.0;
+            float insert_hit_pct = 0;
             uint64_t insert_miss = 0;
             uint64_t insert_total = 0;
             uint64_t lookup_hit = 0;
