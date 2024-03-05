@@ -8,10 +8,6 @@
 %{!?_with_conntrack: %{!?_without_conntrack: %define _with_conntrack --enable-conntrack}}
 %{!?_with_netlink: %{!?_without_netlink: %define _with_netlink --enable-netlink}}
 
-%if 0%{?centos_version} == 600
-%define _with_bundled_libs 1
-%endif
-
 %{?_unitdir:%define _with_systemd 1}
 
 # RH-specific configuration files/paths
@@ -80,32 +76,6 @@ Report bugs to: @PACKAGE_BUGREPORT@
 # Prepare
 %prep
 %setup -q
-
-%if 0%{?_with_bundled_libs:1}
-
-(cd libs/libmnl && ./autogen.sh && \
-    CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix="$(pwd)" --disable-shared --enable-static --with-pic && \
-    make %{?_smp_mflags} && ln -s src lib)
-
-(cd libs/libnfnetlink && ./autogen.sh && \
-    CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix="$(pwd)" --disable-shared --enable-static --with-pic && \
-    make %{?_smp_mflags} && ln -s src lib)
-
-export PKG_CONFIG_PATH=$(pwd)/libs/libmnl:$(pwd)/libs/libnfnetlink
-
-(cd libs/libnetfilter-conntrack && ./autogen.sh && \
-    CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix="$(pwd)" --disable-shared --enable-static --with-pic && \
-    make %{?_smp_mflags} && ln -s src lib)
-
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$(pwd)/libs/libnetfilter-conntrack
-
-(cd libs/gperftools && ./autogen.sh && \
-    CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix="$(pwd)" --disable-shared --enable-static --with-pic && \
-    make %{?_smp_mflags} && ln -s .libs lib)
-
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$(pwd)/libs/gperftools
-
-%endif
 
 ./autogen.sh
 %{configure} %{?_with_conntrack} %{?_with_netlink}
