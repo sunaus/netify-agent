@@ -9,7 +9,7 @@ TEMPLATEFILES = functions.sh netifyd.conf netifyd.init watchdog.cron watchdog.sh
 TEMPLATEFILES_IN = functions.sh.in netifyd.conf.in netifyd.init.in watchdog.cron.in watchdog.sh.in
 
 sharedatadir = $(datadir)/netifyd
-sharedata_DATA = functions.sh watchdog.sh
+sharedata_DATA = functions.sh watchdog.sh netify-apps.conf
 
 sysconf_DATA = netifyd.conf
 
