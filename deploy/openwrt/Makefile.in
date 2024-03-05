@@ -53,11 +53,13 @@ define Package/@PACKAGE_TARNAME@/config
 endef
 
 define Package/@PACKAGE_TARNAME@/conffiles
-/etc/@PACKAGE_TARNAME@.conf
 /etc/config/@PACKAGE_TARNAME@
 /etc/netifyd/agent.uuid
+/etc/netifyd/netify-apps.conf
+/etc/netifyd/netify-categories.json
 /etc/netifyd/serial.uuid
 /etc/netifyd/site.uuid
+/etc/@PACKAGE_TARNAME@.conf
 endef
 
 TARGET_CFLAGS+=-ffunction-sections -fdata-sections -Wno-psabi
