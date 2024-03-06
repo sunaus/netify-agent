@@ -489,8 +489,11 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
 
                 // Detect application by server CN if still
                 // unknown.
-                SetDetectedApplication(entry,
-                  ndi.apps.Find(ndEF->tls.server_cn));
+                if (ndEF->detected_application == ND_APP_UNKNOWN)
+                {
+                    SetDetectedApplication(entry,
+                      ndi.apps.Find(ndEF->tls.server_cn));
+                }
 
                 flow_update = true;
                 ndEF->flags.detection_updated = true;
