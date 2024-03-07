@@ -1,4 +1,4 @@
-config BR2_PACKAGE_NETIFYD
+menuconfig BR2_PACKAGE_NETIFYD
 	bool "netifyd"
 	depends on BR2_USE_MMU
 	depends on BR2_INSTALL_LIBSTDCPP
@@ -15,16 +15,9 @@ config BR2_PACKAGE_NETIFYD
 	  See the following website for more information:
 	  http://www.netify.ai/
 
-comment "The Netify Agent is a C++11 application, please enable C++ under Toolchain"
-	depends on !BR2_INSTALL_LIBSTDCPP
-
-comment "The Netify Agent requires libCURL with TLS support enabled"
-	depends on !BR2_PACKAGE_OPENSSL
-	depends on !BR2_PACKAGE_LIBCURL
-	depends on !BR2_PACKAGE_LIBCURL_OPENSSL
-	depends on BR2_PACKAGE_LIBCURL_TLS_NONE
-
 if BR2_PACKAGE_NETIFYD
+
+comment "capture sources"
 
 config BR2_PACKAGE_NETIFYD_TPACKETV3
 	bool "TPACKETv3 support"
@@ -39,6 +32,8 @@ config BR2_PACKAGE_NETIFYD_NFQUEUE
 	select BR2_PACKAGE_LIBNETFILTER_CONNTRACK
 	help
 	  Enable NFQUEUE capture support.
+
+comment "conntrack options"
 
 config BR2_PACKAGE_NETIFYD_CONNTRACK
 	bool "conntrack support"
@@ -56,6 +51,8 @@ config BR2_PACKAGE_NETIFYD_CONNTRACK_MDATA
 	  Enable connection tracking support for NAT detection.
 
 endif
+
+comment "other options"
 
 config BR2_PACKAGE_NETIFYD_NETLINK
 	bool "netlink support"
@@ -76,3 +73,13 @@ config BR2_PACKAGE_NETIFYD_LEAN_AND_MEAN
 	  Enabling lean-and-mean build disables as many extra features as possible to produce the smallest binary.
 
 endif
+
+comment "The Netify Agent is a C++11 application, please enable C++ under Toolchain"
+	depends on !BR2_INSTALL_LIBSTDCPP
+
+comment "The Netify Agent requires libCURL with TLS support enabled"
+	depends on !BR2_PACKAGE_OPENSSL
+	depends on !BR2_PACKAGE_LIBCURL
+	depends on !BR2_PACKAGE_LIBCURL_OPENSSL
+	depends on BR2_PACKAGE_LIBCURL_TLS_NONE
+
