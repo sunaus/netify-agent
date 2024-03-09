@@ -17,7 +17,7 @@ menuconfig BR2_PACKAGE_NETIFYD
 
 if BR2_PACKAGE_NETIFYD
 
-comment "capture sources"
+comment "Capture Sources"
 
 config BR2_PACKAGE_NETIFYD_TPACKETV3
 	bool "TPACKETv3 support"
@@ -33,7 +33,7 @@ config BR2_PACKAGE_NETIFYD_NFQUEUE
 	help
 	  Enable NFQUEUE capture support.
 
-comment "conntrack options"
+comment "Conntrack Options"
 
 config BR2_PACKAGE_NETIFYD_CONNTRACK
 	bool "conntrack support"
@@ -52,7 +52,7 @@ config BR2_PACKAGE_NETIFYD_CONNTRACK_MDATA
 
 endif
 
-comment "other options"
+comment "Miscellaneous Options"
 
 config BR2_PACKAGE_NETIFYD_NETLINK
 	bool "netlink support"
@@ -74,10 +74,10 @@ config BR2_PACKAGE_NETIFYD_LEAN_AND_MEAN
 
 endif
 
-comment "The Netify Agent is a C++11 application, please enable C++ under Toolchain"
+comment "The Netify Agent requires a Toolchain with C++11 support"
 	depends on !BR2_INSTALL_LIBSTDCPP
 
-comment "The Netify Agent requires libCURL with TLS support enabled"
+comment "The Netify Agent requires libCURL with TLS support"
 	depends on !BR2_PACKAGE_OPENSSL
 	depends on !BR2_PACKAGE_LIBCURL
 	depends on !BR2_PACKAGE_LIBCURL_OPENSSL
