@@ -904,11 +904,11 @@ void ndInstance::CommandLineHelp(bool version_only) {
       nd_get_version_and_features().c_str(), PACKAGE_URL);
     if (version_only) {
         fprintf(stderr,
-          "\nThis application uses nDPI v%s, API v%u\n"
+          "\nThis application uses nDPI v%s\n"
           "https://www.ntop.org/products/"
           "deep-packet-inspection/ndpi/\n"
           "https://github.com/ntop/nDPI\n",
-          ndpi_revision(), NDPI_API_VERSION);
+          ndpi_version());
 
         fprintf(stderr,
           "\n  This program comes with ABSOLUTELY NO "
