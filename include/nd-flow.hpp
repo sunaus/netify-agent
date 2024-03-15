@@ -217,7 +217,8 @@ public:
         std::atomic<uint32_t> last_seq;
     } tcp;
 
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && \
+  defined(_ND_ENABLE_CONNTRACK_MDATA)
     struct {
         uint32_t id = { 0 };
         uint32_t mark = { 0 };
@@ -481,9 +482,10 @@ public:
             }
             serialize(output, { "soft_dissector" },
               (bool)flags.soft_dissector.load());
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-            serialize(output, { "ct_id" }, ct_id);
-            serialize(output, { "ct_mark" }, ct_mark);
+#if defined(_ND_ENABLE_CONNTRACK) && \
+  defined(_ND_ENABLE_CONNTRACK_MDATA)
+            serialize(output, { "ct_id" }, conntrack.id);
+            serialize(output, { "ct_mark" }, conntrack.mark);
 #endif
             serialize(output, { "ip_version" }, (unsigned)ip_version);
             serialize(output, { "ip_protocol" },

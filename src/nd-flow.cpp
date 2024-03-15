@@ -78,7 +78,8 @@ ndFlow::ndFlow(const ndFlow &flow)
     digest_lower(flow.digest_lower.begin(),
       flow.digest_lower.end()),
     digest_mdata(SHA1_DIGEST_LENGTH, 0), flags{}, tcp{},
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+#if defined(_ND_ENABLE_CONNTRACK) && \
+  defined(_ND_ENABLE_CONNTRACK_MDATA)
     conntrack(flow.conntrack),
 #endif
     gtp(flow.gtp), detected_protocol_name("Unknown") {

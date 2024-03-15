@@ -558,9 +558,9 @@ void ndConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
 
         ct_flow->updated_at = nd_time_monotonic();
 
-#if defined(_ND_WITH_CONNTRACK_MDATA)
-        flow->ct_id = ct_flow->id;
-        flow->ct_mark = ct_flow->mark;
+#if defined(_ND_ENABLE_CONNTRACK_MDATA)
+        flow->conntrack.id = ct_flow->id;
+        flow->conntrack.mark = ct_flow->mark;
 #endif
 
         switch (ct_flow->l3_proto) {

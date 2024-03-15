@@ -124,8 +124,9 @@ case "${host_os}" in
             [enable_conntrack_mdata=no])
 
         AS_IF([test "x$enable_conntrack_mdata" = "xyes"], [
-            AC_DEFINE([_ND_WITH_CONNTRACK_MDATA], [1], [Enable to extract conntrack metadata.])
-            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_WITH_CONNTRACK_MDATA=1"])
+            AC_DEFINE([_ND_ENABLE_CONNTRACK_MDATA], [1],
+                [Enable to extract additional conntrack metadata (ID and mark).])
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK_MDATA=1"])
         ])
 
         dnl NETLINK support

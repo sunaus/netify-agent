@@ -1618,64 +1618,64 @@ expr_detected_hostname:
 
 expr_fwmark:
       FLOW_CT_MARK {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark != 0));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark != 0));
         _NDFP_debugf("FWMARK set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
     | '!' FLOW_CT_MARK {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark == 0));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark == 0));
         _NDFP_debugf("FWMARK not set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
     | FLOW_CT_MARK CMP_EQUAL VALUE_NUMBER {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark == $3));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark == $3));
         _NDFP_debugf("FWMARK == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
     | FLOW_CT_MARK CMP_NOTEQUAL VALUE_NUMBER {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark != $3));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark != $3));
         _NDFP_debugf("FWMARK != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
     | FLOW_CT_MARK CMP_GTHANEQUAL VALUE_NUMBER {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark >= $3));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark >= $3));
         _NDFP_debugf("FWMARK >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
     | FLOW_CT_MARK CMP_LTHANEQUAL VALUE_NUMBER {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark <= $3));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark <= $3));
         _NDFP_debugf("FWMARK <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
     | FLOW_CT_MARK '>' VALUE_NUMBER {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark > $3));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark > $3));
         _NDFP_debugf("FWMARK > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
     | FLOW_CT_MARK '<' VALUE_NUMBER {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ($$ = (_NDFP_flow->ct_mark < $3));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark < $3));
         _NDFP_debugf("FWMARK < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));

@@ -4128,8 +4128,8 @@ yyreduce:
   case 229: /* expr_fwmark: FLOW_CT_MARK  */
 #line 1620 "nd-flow-expr.ypp"
                    {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark != 0));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark != 0));
         _NDFP_debugf("FWMARK set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));
@@ -4141,8 +4141,8 @@ yyreduce:
   case 230: /* expr_fwmark: '!' FLOW_CT_MARK  */
 #line 1628 "nd-flow-expr.ypp"
                        {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark == 0));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark == 0));
         _NDFP_debugf("FWMARK not set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));
@@ -4154,8 +4154,8 @@ yyreduce:
   case 231: /* expr_fwmark: FLOW_CT_MARK CMP_EQUAL VALUE_NUMBER  */
 #line 1636 "nd-flow-expr.ypp"
                                           {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark == (yyvsp[0].ul_number)));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark == (yyvsp[0].ul_number)));
         _NDFP_debugf("FWMARK == %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));
@@ -4167,8 +4167,8 @@ yyreduce:
   case 232: /* expr_fwmark: FLOW_CT_MARK CMP_NOTEQUAL VALUE_NUMBER  */
 #line 1644 "nd-flow-expr.ypp"
                                              {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark != (yyvsp[0].ul_number)));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark != (yyvsp[0].ul_number)));
         _NDFP_debugf("FWMARK != %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));
@@ -4180,8 +4180,8 @@ yyreduce:
   case 233: /* expr_fwmark: FLOW_CT_MARK CMP_GTHANEQUAL VALUE_NUMBER  */
 #line 1652 "nd-flow-expr.ypp"
                                                {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark >= (yyvsp[0].ul_number)));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark >= (yyvsp[0].ul_number)));
         _NDFP_debugf("FWMARK >= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));
@@ -4193,8 +4193,8 @@ yyreduce:
   case 234: /* expr_fwmark: FLOW_CT_MARK CMP_LTHANEQUAL VALUE_NUMBER  */
 #line 1660 "nd-flow-expr.ypp"
                                                {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark <= (yyvsp[0].ul_number)));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark <= (yyvsp[0].ul_number)));
         _NDFP_debugf("FWMARK <= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));
@@ -4206,8 +4206,8 @@ yyreduce:
   case 235: /* expr_fwmark: FLOW_CT_MARK '>' VALUE_NUMBER  */
 #line 1668 "nd-flow-expr.ypp"
                                     {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark > (yyvsp[0].ul_number)));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark > (yyvsp[0].ul_number)));
         _NDFP_debugf("FWMARK > %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));
@@ -4219,8 +4219,8 @@ yyreduce:
   case 236: /* expr_fwmark: FLOW_CT_MARK '<' VALUE_NUMBER  */
 #line 1676 "nd-flow-expr.ypp"
                                     {
-#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
-        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->ct_mark < (yyvsp[0].ul_number)));
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark < (yyvsp[0].ul_number)));
         _NDFP_debugf("FWMARK < %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ((yyval.bool_result) = (false));

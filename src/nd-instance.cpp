@@ -457,7 +457,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 #else
             cerr << "Sorry, this feature was disabled "
                     "(embedded).\n";
-            return ConfigResult::DISABLED_OPTION;
+            return ndEnumCast(ConfigResult, DISABLED_OPTION);
 #endif
         case 't':
             ndGC_SetFlag(ndGlobalFlags::USE_CONNTRACK, false);
@@ -516,7 +516,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 #else
             cerr << "Sorry, this feature was disabled "
                     "(embedded).\n";
-            return ConfigResult::DISABLED_OPTION;
+            return ndEnumCast(ConfigResult, DISABLED_OPTION);
 #endif
         case _ND_LO_EXPORT_APPS_LEGACY:
 #ifndef _ND_LEAN_AND_MEAN
