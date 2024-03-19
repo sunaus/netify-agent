@@ -248,6 +248,10 @@ void ndNetifyApiThread::CreateHeaders(const Headers &headers) {
     header.append(nd_get_version_and_features());
     headers_tx = curl_slist_append(headers_tx, header.c_str());
 
+    header = "X-Vendor-ID: ";
+    header.append(ndGC.napi_vendor.c_str());
+    headers_tx = curl_slist_append(headers_tx, header.c_str());
+
     for (auto &h : headers) {
         header = h.first;
         header.append(": ");
