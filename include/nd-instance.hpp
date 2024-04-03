@@ -202,6 +202,7 @@ public:
     }
 
     bool SetConfigOption(int option, const std::string &arg) const;
+    bool SetPluginOption(int option, const std::string &arg) const;
 
     bool DumpList(ndFlags<DumpFlags> type = DumpFlags::TYPE_ALL);
 

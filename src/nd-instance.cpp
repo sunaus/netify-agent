@@ -763,6 +763,10 @@ bool ndInstance::SetConfigOption(int option, const string &arg) const {
     return true;
 }
 
+bool ndInstance::SetPluginOption(int option, const string &arg) const {
+    return false;
+}
+
 bool ndInstance::DumpList(ndFlags<DumpFlags> flags) {
     if (! ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) &&
       ! ndFlagBoolean(flags, DumpFlags::TYPE_APPS) &&

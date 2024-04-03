@@ -19,6 +19,9 @@
 %define statedir_vdata %{_localstatedir}/run/%{name}
 %define statedir_vdata_old %{_sharedstatedir}/%{name}
 
+# Extra files to package
+%define EXTRA_DIST EXTRA_DIST.txt
+
 # RPM package details
 Name: @PACKAGE_TARNAME@
 Summary: @PACKAGE_NAME@
@@ -87,7 +90,6 @@ make %{?_smp_mflags}
 # Install
 %install
 
-EXTRA_DIST=%{buildroot}/EXTRA_DIST.txt
 touch %{EXTRA_DIST}
 
 make install DESTDIR=%{buildroot}
