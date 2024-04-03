@@ -206,6 +206,23 @@ Rocky Linux/8/x86-64:
       expand: true
     OS_REPOS: --enablerepo=powertools,epel
 
+Rocky Linux/9/x86-64:
+  extends: .rhel_build
+  tags:
+    - docker
+  only:
+    - tags
+    - web
+  variables:
+    OS_NAME: rockylinux
+    OS_VERSION: 8
+    OS_IMAGE: "rockylinux:9"
+    OS_ARCH: x86_64
+    OS_ARCH_PATH:
+      value: $OS_ARCH
+      expand: true
+    OS_REPOS: --enablerepo=crb
+
 AlmaLinux/8/x86-64:
   extends: .rhel_build
   tags:
