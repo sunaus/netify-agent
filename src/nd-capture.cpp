@@ -422,6 +422,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 #endif
     }
 
+    flow.vlan_id = 0;
+
     while (true) {
         if (type == ETHERTYPE_VLAN) {
             if (l2_len + 4 > packet->caplen) {
