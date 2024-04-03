@@ -131,17 +131,33 @@ using namespace std;
 // Enable to log discarded packets
 // #define _ND_LOG_PKT_DISCARD 1
 
-// Enable to log discarded TCP flags
-// #define _ND_LOG_PKT_TCP_FLAGS 1
-
 // Enable to log discarded TCP packets
-// #define _ND_LOG_PKT_TCP_DISCARD 1
-
-// Enable to log replay packet delay intervals
-// #define _ND_LOG_PKT_DELAY_TIME 1
+// #define _ND_LOG_PKT_DISCARD_TCP 1
 
 // Enable to log discarded flows
 // #define _ND_LOG_FLOW_DISCARD 1
+
+#define _ND_LOG_DISCARD(tag, reason) \
+    nd_dprintf("%s: discard: %s\n", tag, reason);
+
+#define _ND_LOG_DISCARD_ETHER(tag, reason, eth_hdr) \
+    nd_dprintf( \
+      "%s: discard: %s: src: " \
+      "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx, dst: " \
+      "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n", \
+      tag, reason, eth_hdr->ether_shost[0], \
+      eth_hdr->ether_shost[1], eth_hdr->ether_shost[2], \
+      eth_hdr->ether_shost[3], eth_hdr->ether_shost[4], \
+      eth_hdr->ether_shost[5], eth_hdr->ether_dhost[0], \
+      eth_hdr->ether_dhost[1], eth_hdr->ether_dhost[2], \
+      eth_hdr->ether_dhost[3], eth_hdr->ether_dhost[4], \
+      eth_hdr->ether_dhost[5]);
+
+// Enable to log TCP flags
+// #define _ND_LOG_PKT_TCP_FLAGS 1
+
+// Enable to log replay packet delay intervals
+// #define _ND_LOG_PKT_DELAY_TIME 1
 
 // Enable DNS response debug logging
 // #define _ND_LOG_DNS_RESPONSE 1
@@ -314,8 +330,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf("%s: discard: Truncated packet.",
-              tag.c_str());
+            _ND_LOG_DISCARD(tag.c_str(), "truncated packet");
 #endif
             return packet;
         }
@@ -329,11 +344,9 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 #ifdef _ND_LOG_PKT_DISCARD
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
-            nd_dprintf(
-              "%s: discard: Unsupported BSD loopback "
-              "encapsulation type: %lu\n",
-              tag.c_str(),
-              ntohl(*((uint32_t *)packet->data)));
+            _ND_LOG_DISCARD(tag.c_str(),
+              "unsupported BSD loopback encapsulation "
+              "type");
 #endif
             return packet;
         }
@@ -346,8 +359,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf("%s: discard: Truncated packet.",
-              tag.c_str());
+            _ND_LOG_DISCARD(tag.c_str(), "truncated packet");
 #endif
             return packet;
         }
@@ -369,7 +381,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf("%s: discard: STP protocol.\n", tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "bridge group address", hdr_eth);
 #endif
             return packet;
         }
@@ -381,8 +394,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf("%s: discard: Truncated packet.",
-              tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "truncated packet", hdr_eth);
 #endif
             return packet;
         }
@@ -404,9 +417,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        nd_dprintf(
-          "%s: discard: Unsupported datalink type: 0x%x\n",
-          tag.c_str(), (unsigned)dl_type);
+        _ND_LOG_DISCARD_ETHER(tag.c_str(),
+          "unsupported datalink type", hdr_eth);
 #endif
         return packet;
     }
@@ -415,10 +427,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        nd_dprintf(
-          "%s: discard: layer-2 length is beyond capture "
-          "length.\n",
-          tag.c_str());
+        _ND_LOG_DISCARD_ETHER(tag.c_str(),
+          "layer-2 length is beyond capture length", hdr_eth);
 #endif
     }
 
@@ -430,11 +440,10 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                nd_dprintf(
-                  "%s: discard: layer-2 + VLAN length is "
-                  "beyond "
-                  "capture length.\n",
-                  tag.c_str());
+                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                  "layer-2 + VLAN length is beyond capture "
+                  "length",
+                  hdr_eth);
 #endif
             }
 
@@ -463,10 +472,10 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                nd_dprintf(
-                  "%s: discard: layer-2 + MPLS length is "
-                  "beyond capture length.\n",
-                  tag.c_str());
+                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                  "layer-2 + MPLS length is beyond capture "
+                  "length",
+                  hdr_eth);
 #endif
             }
 
@@ -477,10 +486,10 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                     stats.pkt.discard++;
                     stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                    nd_dprintf(
+                    _ND_LOG_DISCARD_ETHER(tag.c_str(),
                       "%s: discard: layer-2 + MPLS length "
-                      "is beyond capture length.\n",
-                      tag.c_str());
+                      "is beyond capture length",
+                      hdr_eth);
 #endif
                 }
                 u32 = (uint32_t)ntohl(
@@ -497,10 +506,10 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                nd_dprintf(
-                  "%s: discard: layer-2 + PPP length is "
-                  "beyond capture length.\n",
-                  tag.c_str());
+                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                  "layer-2 + PPP length is beyond capture "
+                  "length",
+                  hdr_eth);
 #endif
             }
 
@@ -511,10 +520,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                nd_dprintf(
-                  "%s: discard: unsupported PPP protocol: "
-                  "0x%04hx\n",
-                  tag.c_str(), ppp_proto);
+                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                  "unsupported PPP protocol", hdr_eth);
 #endif
                 return packet;
             }
@@ -525,10 +532,10 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                nd_dprintf(
-                  "%s: discard: layer-2 + PPP length is "
-                  "beyond capture length.\n",
-                  tag.c_str());
+                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                  "layer-2 + PPP length is beyond capture "
+                  "length",
+                  hdr_eth);
 #endif
             }
         }
@@ -537,9 +544,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf(
-              "%s: discard: PPPoE discovery protocol.\n",
-              tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "PPPoE discovery protocol", hdr_eth);
 #endif
             return packet;
         }
@@ -555,10 +561,8 @@ nd_process_ip:
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        nd_dprintf(
-          "%s: discard: layer-2 + IP length is beyond "
-          "capture length.\n",
-          tag.c_str());
+        _ND_LOG_DISCARD_ETHER(tag.c_str(),
+          "layer-2 + IP length is beyond capture length", hdr_eth);
 #endif
     }
 
@@ -584,8 +588,8 @@ nd_process_ip:
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf("%s: discard: header too small\n",
-              tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "IP header too small", hdr_eth);
 #endif
             return packet;
         }
@@ -596,8 +600,8 @@ nd_process_ip:
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf("%s: discard: fragmented 0x3FFF\n",
-              tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "fragmented IP, offset: 0x3fff\n", hdr_eth);
 #endif
             return packet;
         }
@@ -608,8 +612,8 @@ nd_process_ip:
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf("%s: discard: fragmented 0x1FFF\n",
-              tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "fragmented IP, offset: 0x1fff\n", hdr_eth);
 #endif
             return packet;
         }
@@ -685,10 +689,8 @@ nd_process_ip:
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf(
-              "%s: discard: Error walking IPv6 "
-              "extensions.\n",
-              tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "error walking IPv6 extensions", hdr_eth);
 #endif
             return packet;
         }
@@ -741,10 +743,8 @@ nd_process_ip:
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        nd_dprintf(
-          "%s: discard: invalid IP protocol version: "
-          "%hhx\n",
-          tag.c_str(), packet->data[l2_len]);
+        _ND_LOG_DISCARD_ETHER(tag.c_str(),
+          "invalid IP protocol version", hdr_eth);
 #endif
         return packet;
     }
@@ -753,10 +753,10 @@ nd_process_ip:
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        nd_dprintf(
-          "%s: discard: L2 + L3 + L4 length is beyond "
-          "capture length.\n",
-          tag.c_str());
+        _ND_LOG_DISCARD_ETHER(tag.c_str(),
+          "layer-2 + layer-3 + layer-4 length is beyond "
+          "capture length",
+          hdr_eth);
 #endif
         return packet;
     }
@@ -827,8 +827,8 @@ nd_process_ip:
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf(
-              "%s: discard: TCP header too small.\n", tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "layer-4 length is too small for TCP header", hdr_eth);
 #endif
             return packet;
         }
@@ -849,10 +849,8 @@ nd_process_ip:
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                nd_dprintf(
-                  "%s: discard: unexpected TCP payload "
-                  "length.\n",
-                  tag.c_str());
+                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                  "unexpected TCP payload length", hdr_eth);
 #endif
                 return packet;
             }
@@ -890,8 +888,8 @@ nd_process_ip:
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf(
-              "%s: discard: UDP header too small.\n", tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "layer-4 length is too small for UDP header", hdr_eth);
 #endif
             return packet;
         }
@@ -921,9 +919,8 @@ nd_process_ip:
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            nd_dprintf(
-              "%s: discard: unexpected UDP data length.\n",
-              tag.c_str());
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "unexpected UDP data length", hdr_eth);
 #endif
             return packet;
         }
@@ -992,9 +989,8 @@ nd_process_ip:
           ndi.status.flows.load() + 1 > ndGC.max_flows)
         {
 #ifdef _ND_LOG_FLOW_DISCARD
-            nd_dprintf(
-              "%s: discard: maximum flows exceeded: %u\n",
-              tag.c_str(), ndGC.max_flows);
+            _ND_LOG_DISCARD(tag.c_str(),
+              "maximum flows exceeded");
 #endif
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
@@ -1008,11 +1004,9 @@ nd_process_ip:
         if (ndGC_SYN_SCAN_PROTECTION && flow.ip_protocol == IPPROTO_TCP &&
           hdr_tcp->th_flags != (TH_SYN | TH_ACK))
         {
-#ifdef _ND_LOG_PKT_TCP_DISCARD
-            nd_dprintf(
-              "%s: discard: new TCP flow without "
-              "SYN/ACK.\n",
-              tag.c_str());
+#ifdef _ND_LOG_PKT_DISCARD_TCP
+            _ND_LOG_DISCARD(tag.c_str(),
+              "new TCP flow without SYN/ACK");
 #endif
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
