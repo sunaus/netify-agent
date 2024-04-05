@@ -269,6 +269,7 @@ public:
     std::string path_legacy_config;
     std::string path_pid_file;
     std::string path_plugins;
+    std::string path_plugin_libdir;
     std::string path_shared_data;
     std::string path_state_persistent;
     std::string path_state_volatile;

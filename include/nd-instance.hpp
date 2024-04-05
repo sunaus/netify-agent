@@ -145,7 +145,9 @@ public:
         OK,
         AGENT_STATUS,
         DISABLED_OPTION,
+        DISABLE_PLUGIN,
         DUMP_LIST,
+        ENABLE_PLUGIN,
         EXPORT_APPS,
         FORCE_RESULT,
         GENERATE_UUID,
@@ -201,8 +203,9 @@ public:
         );
     }
 
-    bool SetConfigOption(int option, const std::string &arg) const;
-    bool SetPluginOption(int option, const std::string &arg) const;
+    bool RestartAgent(bool conditional = true) const;
+    bool EnablePlugin(const std::string &tag, bool enable = true) const;
+    bool EnableInformatics(bool enable = true) const;
 
     bool DumpList(ndFlags<DumpFlags> type = DumpFlags::TYPE_ALL);
 

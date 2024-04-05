@@ -52,6 +52,7 @@ ndGlobalConfig::ndGlobalConfig()
     path_interfaces(ND_INTERFACES_PATH),
     path_legacy_config(ND_CONF_LEGACY_PATH),
     path_pid_file(ND_PID_FILE_NAME), path_plugins(ND_PLUGINS_PATH),
+    path_plugin_libdir(ND_PLUGIN_LIBDIR),
     path_shared_data(ND_SHARED_DATADIR),
     path_state_persistent(ND_PERSISTENT_STATEDIR),
     path_state_volatile(ND_VOLATILE_STATEDIR),
@@ -184,6 +185,9 @@ bool ndGlobalConfig::Load(const string &filename) {
     value = r->Get("netifyd", "path_plugins",
       path_state_persistent + "/" + ND_PLUGINS_BASE);
     nd_expand_variables(value, path_plugins, conf_vars);
+
+    value = r->Get("netifyd", "path_plugin_libdir", ND_PLUGIN_LIBDIR),
+    nd_expand_variables(value, path_plugin_libdir, conf_vars);
 
     value = r->Get("netifyd", "path_categories",
       path_state_persistent + "/" + ND_CATEGORIES_BASE);
@@ -1093,7 +1097,9 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
         if (mpi == nullptr || p != 0) continue;
         if (! r.GetBoolean(tag, "enable", true)) continue;
 
-        string so_name = r.Get(tag, "plugin_library", "");
+        string so_name;
+        nd_expand_variables(r.Get(tag, "plugin_library", ""),
+          so_name, conf_vars);
 
         if (so_name.empty()) {
             fprintf(stderr, "Plugin library not set: %s\n",
@@ -1143,9 +1149,7 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
             }
         }
         catch (exception &e) {
-            fprintf(stderr,
-              "Plugin cannot be loaded: %s: %s: %s\n",
-              tag.c_str(), so_name.c_str(), e.what());
+            fprintf(stderr, "Plugin cannot be loaded: %s\n", e.what());
             return false;
         }
 
@@ -1174,6 +1178,8 @@ void ndGlobalConfig::UpdatePaths(void) {
 
     path_plugins = path_state_persistent + "/" + ND_PLUGINS_BASE;
 
+    path_plugin_libdir = ND_PLUGIN_LIBDIR;
+
     path_categories = path_state_persistent + "/" + ND_CATEGORIES_BASE;
 
     path_functions = path_shared_data + "/" + ND_FUNCTIONS_BASE;
@@ -1193,6 +1199,8 @@ void ndGlobalConfig::UpdateConfigVars(void) {
     conf_vars.insert(
       make_pair("${path_category_config}", path_cat_config));
     conf_vars.insert(make_pair("${path_plugins}", path_plugins));
+    conf_vars.insert(
+      make_pair("${path_plugin_libdir}", path_plugin_libdir));
     conf_vars.insert(
       make_pair("${path_categories}", path_categories));
     conf_vars.insert(

@@ -78,7 +78,6 @@ post-install:
 	${RM} ${STAGEDIR}${DATADIR}/README-JSON-socket-example.md
 	${RM} ${STAGEDIR}${DATADIR}/json-socket-example.sh
 	${RM} ${STAGEDIR}${DATADIR}/json-socket-filter.jq
-	${RM} ${STAGEDIR}${PREFIX}/share/netifyd/watchdog.sh
 
 post-install-DEVEL-on:
 	${MV} ${STAGEDIR}${PREFIX}/include/ndpi ${STAGEDIR}${PREFIX}/include/netifyd

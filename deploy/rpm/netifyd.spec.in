@@ -3,12 +3,13 @@
 #
 # This is free software, licensed under the GNU General Public License v3.
 
+# Install systemd files?
+%{?_unitdir:%define _have_systemd 1}
+
 # Configure conditionals
 # Default values: --with conntrack --with netlink
 %{!?_with_conntrack: %{!?_without_conntrack: %define _with_conntrack --enable-conntrack}}
 %{!?_with_netlink: %{!?_without_netlink: %define _with_netlink --enable-netlink}}
-
-%{?_unitdir:%define _with_systemd 1}
 
 # RH-specific configuration files/paths
 %define netifyd_default deploy/%{name}.default
@@ -116,7 +117,7 @@ install -D -m 0755 %{netifyd_init} %{buildroot}/%{_sysconfdir}/init.d/%{name}
 
 echo "%config(noreplace) %attr(660,root,root) %{_sysconfdir}/%{name}.conf" > %{EXTRA_DIST}
 
-%if %{?_with_systemd:1}%{!?_with_systemd:0}
+%if %{?_have_systemd:1}%{!?_have_systemd:0}
 echo "%{_unitdir}/%{name}.service" >> %{EXTRA_DIST}
 echo "%{_tmpfilesdir}/%{name}.conf" >> %{EXTRA_DIST}
 echo "%config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/env.sh" >> %{EXTRA_DIST}
@@ -128,7 +129,7 @@ echo "%config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/env.sh" >> %{E
 
 # Post-install
 %post
-%if %{?_with_systemd:1}%{!?_with_systemd:0}
+%if %{?_have_systemd:1}%{!?_have_systemd:0}
 %systemd_post %{name}.service
 %endif
 
@@ -147,13 +148,13 @@ exit 0
 
 # Pre-uninstall
 %preun
-%if %{?_with_systemd:1}%{!?_with_systemd:0}
+%if %{?_have_systemd:1}%{!?_have_systemd:0}
 %systemd_preun %{name}.service
 %endif
 
 # Post-uninstall
 %postun
-%if %{?_with_systemd:1}%{!?_with_systemd:0}
+%if %{?_have_systemd:1}%{!?_have_systemd:0}
 %systemd_postun_with_restart %{name}.service
 %endif
 

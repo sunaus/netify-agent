@@ -17,7 +17,8 @@ AM_CPPFLAGS = $(CPPFLAGS) -D_GNU_SOURCE $(ND_DEFINES) \
 	-D'ND_PID_FILE_NAME="$(volatilestatedir)/$(PACKAGE_TARNAME).pid"' \
 	-D'ND_CONF_FILE_NAME="$(sysconfdir)/$(PACKAGE_TARNAME).conf"' \
 	-D'ND_PERSISTENT_STATEDIR="$(persistentstatedir)"' \
-	-D'ND_VOLATILE_STATEDIR="$(volatilestatedir)"'
+	-D'ND_VOLATILE_STATEDIR="$(volatilestatedir)"' \
+	-D'ND_PLUGIN_LIBDIR="$(plugin_libdir)"'
 
 if USE_LIBTCMALLOC
 AM_CPPFLAGS += $(LIBTCMALLOC_CFLAGS)

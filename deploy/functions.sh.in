@@ -3,11 +3,11 @@
 #
 # This is free software, licensed under the GNU General Public License v3.
 
-NETIFYD_CONF="@sysconfdir@/netifyd.conf"
+SYSCONFDIR="${NETIFYD_DESTDIR}@sysconfdir@"
 
-[ -f @sysconfdir@/conf.d/@PACKAGE_TARNAME@ ] && . @sysconfdir@/conf.d/@PACKAGE_TARNAME@
-[ -f @sysconfdir@/default/@PACKAGE_TARNAME@ ] && . @sysconfdir@/default/@PACKAGE_TARNAME@
-[ -f @sysconfdir@/sysconfig/@PACKAGE_TARNAME@ ] && . @sysconfdir@/sysconfig/@PACKAGE_TARNAME@
+[ -f ${SYSCONFDIR}/conf.d/@PACKAGE_TARNAME@ ] && . ${SYSCONFDIR}/conf.d/@PACKAGE_TARNAME@
+[ -f ${SYSCONFDIR}/default/@PACKAGE_TARNAME@ ] && . ${SYSCONFDIR}/default/@PACKAGE_TARNAME@
+[ -f ${SYSCONFDIR}/sysconfig/@PACKAGE_TARNAME@ ] && . ${SYSCONFDIR}/sysconfig/@PACKAGE_TARNAME@
 
 # Load defaults for RedHat/CentOS/Ubuntu/Debian
 load_defaults()
@@ -55,7 +55,7 @@ load_defaults()
 load_nethserver()
 {
     local options=""
-    local ifcfg_sw="@sysconfdir@/shorewall/interfaces"
+    local ifcfg_sw="${SYSCONFDIR}/shorewall/interfaces"
 
     if [ -f "$ifcfg_sw" ]; then
         for ifn in $(grep -E '^loc[[:space:]]' $ifcfg_sw | awk '{ print $2 }'); do
@@ -75,8 +75,8 @@ load_nethserver()
 
         for ifn in $(grep -E '^net[[:space:]]' $ifcfg_sw | awk '{ print $2 }'); do
             [ -z "$ifn" ] && break
-            [ -f "@sysconfdir@/sysconfig/network-scripts/ifcfg-${ifn}" ] &&
-                . "@sysconfdir@/sysconfig/network-scripts/ifcfg-${ifn}"
+            [ -f "${SYSCONFDIR}/sysconfig/network-scripts/ifcfg-${ifn}" ] &&
+                . "${SYSCONFDIR}/sysconfig/network-scripts/ifcfg-${ifn}"
             if [ ! -z "$ETH" ]; then
                 options="$options -E $ETH -N $ifn"
                 unset ETH
@@ -176,20 +176,27 @@ auto_detect_options()
 
 restart_netifyd()
 {
+    local CMD="restart"
+    local FMT="${SYSCONFDIR}/init.d/@PACKAGE_TARNAME@ %s"
+
     case "$(detect_os)" in
-        centos)
-            systemctl try-restart netifyd
-        ;;
-        nethserver)
-            systemctl try-restart netifyd
+        centos|nethserver|ubuntu)
+            if [ "x$1" = "xtrue" ]; then
+                CMD="try-restart"
+            fi
+            FMT="systemctl %s @PACKAGE_TARNAME@"
         ;;
         freebsd)
-            @sysconfdir@/rc.d/@PACKAGE_TARNAME@ restart
+            FMT="${SYSCONFDIR}/rc.d/@PACKAGE_TARNAME@ %s"
         ;;
-        *)
-            @sysconfdir@/init.d/@PACKAGE_TARNAME@ restart
+        openwrt)
+            if [ "x$1" = "xtrue" ]; then
+                ${SYSCONFDIR}/init.d/@PACKAGE_TARNAME@ running || exit 0
+            fi
         ;;
     esac
+
+    exec $(printf "$FMT" "$CMD")
 }
 
 config_enable_plugin()

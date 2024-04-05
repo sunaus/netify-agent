@@ -18,6 +18,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "netifyd.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -37,6 +38,8 @@
 #elif defined(HAVE_MALLOC_TRIM)
 #include <malloc.h>
 #endif
+
+#include "INIReader.h"
 
 #include "nd-config.hpp"
 #include "nd-detection.hpp"
@@ -187,10 +190,12 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 #define _ND_LO_DISABLE_PLUGIN 2
         { "enable-plugin", 1, 0, _ND_LO_ENABLE_PLUGIN },
         { "disable-plugin", 1, 0, _ND_LO_DISABLE_PLUGIN },
-#define _ND_LO_ENABLE_SINK  3
-#define _ND_LO_DISABLE_SINK 4
-        { "enable-sink", 0, 0, _ND_LO_ENABLE_SINK },
-        { "disable-sink", 0, 0, _ND_LO_DISABLE_SINK },
+#define _ND_LO_ENABLE_INFORMATICS  3
+#define _ND_LO_DISABLE_INFORMATICS 4
+        { "enable-informatics", 0, 0, _ND_LO_ENABLE_INFORMATICS },
+        { "disable-informatics", 0, 0, _ND_LO_DISABLE_INFORMATICS },
+        { "enable-sink", 0, 0, _ND_LO_ENABLE_INFORMATICS },
+        { "disable-sink", 0, 0, _ND_LO_DISABLE_INFORMATICS },
 #define _ND_LO_FORCE_RESET 5
         { "force-reset", 0, 0, _ND_LO_FORCE_RESET },
 #define _ND_LO_CA_CAPTURE_BASE    6
@@ -263,6 +268,33 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         }
     }
 
+    optind = 1;
+    while (true) {
+        if ((rc = getopt_long(argc, argv, flags, options, NULL)) == -1)
+            break;
+
+        switch (rc) {
+        case _ND_LO_ENABLE_PLUGIN:
+            ndGC.Load(conf_filename);
+            return ndCR_Pack(ENABLE_PLUGIN,
+              (EnablePlugin(optarg) && RestartAgent()) ? 0 : 1);
+        case _ND_LO_DISABLE_PLUGIN:
+            ndGC.Load(conf_filename);
+            return ndCR_Pack(DISABLE_PLUGIN,
+              (EnablePlugin(optarg, false) && RestartAgent()) ? 0 : 1);
+        case _ND_LO_ENABLE_INFORMATICS:
+            return ndCR_Pack(ENABLE_PLUGIN,
+              (EnableInformatics()) ? 0 : 1);
+        case _ND_LO_DISABLE_INFORMATICS:
+            return ndCR_Pack(DISABLE_PLUGIN,
+              (EnableInformatics(false)) ? 0 : 1);
+        case '?':
+            cerr << "Try `--help' for more information.\n";
+            return ndEnumCast(ConfigResult, INVALID_OPTION);
+        default: break;
+        }
+    }
+
     if (conf_filename != "/dev/null") {
         if (ndGC.Load(conf_filename) == false) {
             cerr << "Error while loading configuration: "
@@ -292,11 +324,8 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             break;
         case _ND_LO_ENABLE_PLUGIN:
         case _ND_LO_DISABLE_PLUGIN:
-        case _ND_LO_ENABLE_SINK:
-        case _ND_LO_DISABLE_SINK:
-            return ndCR_Pack(DUMP_LIST,
-              (SetConfigOption(rc, (optarg) ? optarg : string())) ? 0 : 1);
-            break;
+        case _ND_LO_ENABLE_INFORMATICS:
+        case _ND_LO_DISABLE_INFORMATICS: break;
         case _ND_LO_FORCE_RESET:
             rc = ndGC.ForceReset();
             return ndCR_Pack(FORCE_RESULT, (rc) ? 0 : 1);
@@ -684,87 +713,125 @@ bool ndInstance::Daemonize(void) {
     return true;
 }
 
-bool ndInstance::SetConfigOption(int option, const string &arg) const {
-    string func, output, filename(conf_filename);
+bool ndInstance::RestartAgent(bool conditional) const {
+    string output;
+    int rc = nd_functions_exec("restart_netifyd",
+      (conditional) ? "true" : "false", output);
+    if (rc != 0) {
+        cerr << "An error occured while restarting the "
+                "Netify Agent.\n";
 
-    switch (option) {
-    case _ND_LO_ENABLE_SINK:
-        cout << "Enabling Netify Cloud Sink.\n";
-        func = "config_enable_plugin";
-        filename = ndGC.path_plugins;
-        filename.append("/\?\?-netify-sink-mqtt.conf");
-        break;
-    case _ND_LO_ENABLE_PLUGIN:
-        func = "config_enable_plugin";
-        filename = ndGC.path_plugins;
-        filename.append("/\?\?-netify-");
-        filename.append(arg);
-        filename.append(".conf");
-        break;
-    case _ND_LO_DISABLE_SINK:
-        cout << "Disabling Netify Cloud Sink.\n";
-        func = "config_disable_plugin";
-        filename = ndGC.path_plugins;
-        filename.append("/\?\?-netify-sink-mqtt.conf");
-        break;
-    case _ND_LO_DISABLE_PLUGIN:
-        func = "config_disable_plugin";
-        filename = ndGC.path_plugins;
-        filename.append("/\?\?-netify-");
-        filename.append(arg);
-        filename.append(".conf");
-        break;
-    default:
-        cerr << "Unrecognized configuration option: " << option
-             << endl;
+        if (ndGC_DEBUG) cerr << output;
+
+        return false;
+    }
+    else cout << "The Netify Agent was restarted.\n";
+
+    return true;
+}
+
+bool ndInstance::EnablePlugin(const string &tag, bool enable) const {
+
+    bool current_state = false;
+    string filename,
+      func((enable) ? "config_enable_plugin" : "config_disable_plugin");
+
+    vector<string> configs;
+    if (nd_scan_dotd(ndGC.path_plugins, configs)) {
+        for (auto &config : configs) {
+            string fullpath(ndGC.path_plugins + "/" + config);
+
+            INIReader r = INIReader(fullpath);
+            if (r.ParseError() != 0) continue;
+
+            set<string> sections;
+            r.GetSections(sections);
+
+            if (sections.find(tag) == sections.end())
+                continue;
+
+            filename = fullpath;
+            current_state = r.GetBoolean(tag, "enable", false);
+            break;
+        }
+    }
+
+    if (filename.empty()) {
+        cerr << "Unable to find configuration file for "
+                "plugin: "
+             << tag << endl;
         return false;
     }
 
-    int rc;
-    vector<string> files;
-
-    if ((rc = nd_glob(filename, files)) != 0) {
-        cerr << "Error locating configuration file: " << filename
-             << ": " << strerror(errno) << endl;
+    if (current_state == enable) {
+        cerr << "The " << tag << " plugin is already "
+             << ((enable) ? "enabled." : "disabled.") << endl;
         return false;
     }
 
-    for (string &file : files) {
-        rc = nd_functions_exec(func, file, output);
-        if (rc != 0) {
-            cerr << "Error while modifying configuration "
-                    "file.\n";
-            cerr << "Manually edit configuration file: " << filename
-                 << endl;
+    string output;
+    int rc = nd_functions_exec(func, filename, output);
+    if (rc != 0) {
+        cerr << "Error " << ((enable) ? "enabling" : "disabling")
+             << " plugin: " << tag.c_str() << endl;
 
-            if (ndGC_DEBUG) cerr << output;
+        if (ndGC_DEBUG) cerr << output;
 
-            return false;
-        }
-        else {
-            cout << "Configuration modified: " << filename << endl;
-        }
-    }
-
-    if (files.size() && rc == 0) {
-        rc = nd_functions_exec("restart_netifyd", string(), output);
-        if (rc != 0) {
-            cerr << "Error while restarting agent.\nA "
-                    "manual restart is required to apply "
-                    "changes.\n";
-
-            if (ndGC_DEBUG) cerr << output;
-
-            return false;
-        }
-        else cout << "Configuration applied.\n";
+        return false;
     }
 
     return true;
 }
 
-bool ndInstance::SetPluginOption(int option, const string &arg) const {
-    return false;
+bool ndInstance::EnableInformatics(bool enable) const {
+    ndGC.Load(conf_filename);
+
+    if (! enable) {
+        int rc = (int)EnablePlugin("proc-core-auto", false);
+        rc += (int)EnablePlugin("sink-http-auto", false);
+
+        if (rc == 0) {
+            cerr << "No configuration changes were made.\n";
+            return false;
+        }
+
+        return RestartAgent();
+    }
+
+    auto copy_configs = [](const string &tag) {
+        string conf = "/" ND_PLUGINS_BASE "/99-netify-" +
+          tag + ".conf";
+
+        string src(ndGC.path_shared_data);
+        src.append(conf);
+        string dst(ndGC.path_state_persistent);
+        dst.append(conf);
+
+        if (! nd_copy_file(src, dst)) return false;
+
+        conf = "/netify-" + tag + ".json";
+
+        src = ndGC.path_shared_data + conf;
+        dst = ndGC.path_state_persistent + conf;
+
+        if (! nd_copy_file(src, dst)) return false;
+
+        return true;
+    };
+
+    if (! copy_configs("proc-core-auto")) {
+        cerr << "Error while copying Informatics processor "
+                "plugin configuration files.\n";
+        return false;
+    }
+
+    if (! copy_configs("sink-http-auto")) {
+        cerr << "Error while copying Informatics sink "
+                "plugin configuration files.\n";
+        return false;
+    }
+
+    return RestartAgent();
 }
 
 bool ndInstance::DumpList(ndFlags<DumpFlags> flags) {
@@ -773,7 +840,8 @@ bool ndInstance::DumpList(ndFlags<DumpFlags> flags) {
       ! ndFlagBoolean(flags, DumpFlags::TYPE_CATS) &&
       ! ndFlagBoolean(flags, DumpFlags::TYPE_RISKS))
     {
-        cerr << "No filter flags specified (application, "
+        cerr << "No filter flags specified "
+                "(application, "
                 "protocol).\n";
         return false;
     }
@@ -948,7 +1016,8 @@ void ndInstance::CommandLineHelp(bool version_only) {
         }
         catch (exception &e) {
             fprintf(stderr,
-              "\nError while loading plugins: %s\n", e.what());
+              "\nError while loading plugins: %s\n",
+              e.what());
         }
     }
     else {
@@ -964,8 +1033,8 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "(compile-time).\n"
           "  -D, --debug-curl\n    In debug mode, display "
           "debug output from libCURL.\n"
-          "  -x, --debug-flow-expression <expr>\n    In "
-          "debug mode, filter flow detections by "
+          "  -x, --debug-flow-expression <expr>\n    "
+          "In debug mode, filter flow detections by "
           "expression.\n"
           "  -v, --verbose\n    In debug mode, display "
           "real-time flow detections.  Specify multiple "
@@ -988,8 +1057,7 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "    Default: %s\n"
           "  -f, --ndpi-config <filename>\n    Specify an "
           "alternate legacy (nDPI) application "
-          "configuration "
-          "file.\n"
+          "configuration file.\n"
           "    Default: %s\n"
           "  --force-reset\n    Reset global sink "
           "configuration options.\n"
@@ -997,15 +1065,15 @@ void ndInstance::CommandLineHelp(bool version_only) {
 
           "\nPlugin options:\n"
           "  --enable-plugin <plugin>\n    Enable the "
-          "loader "
-          "for <plugin> and restart the Agent.\n"
+          "loader for <plugin> and restart the Agent.\n"
           "  --disable-plugin <plugin>\n    Disable the "
           "loader for <plugin> and restart the Agent.\n"
-          "  --enable-sink\n    Compatibility wrapper for: "
-          "--enable-plugin sink-mqtt\n"
-          "  --disable-sink\n    Compatibility wrapper "
-          "for: "
-          "--disable-plugin sink-mqtt\n"
+          "  --enable-informatics\n    Automatically "
+          "configure and enable the "
+          "plugins required for Netify Informatics.\n"
+          "  --disable-informatics\n    Disable and remove "
+          "any automatically configured "
+          "Netify Informatics plugins.\n"
 
           "\nDump options:\n"
           "  --dump-sort-by-tag\n    Sort entries by tag.\n"
@@ -1017,16 +1085,14 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "  --dump-categories\n    Dump application and "
           "protocol categories.\n"
           "  --dump-category <type>\n    Dump categories "
-          "by "
-          "type: application or protocol\n"
+          "by type: application or protocol\n"
           "  --dump-risks\n    Dump flow security risks.\n"
           "  --lookup-ip <addr>\n    Perform application "
           "query by IP address.\n"
 
           "\nCapture options:\n"
           "  --capture-delay <seconds>\n     Wait "
-          "<seconds> "
-          "before starting capture thread(s).\n"
+          "<seconds> before starting capture thread(s).\n"
           "  --ignore-interface-configs\n    Don't load "
           "capture interface configuration file entries.  "
           "Only configure capture interfaces set using "
@@ -1035,12 +1101,10 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "auto-expire flows on exit.\n"
           "  -I, --internal [<interface>|<file>]\n    "
           "Specify an internal (LAN) interface, or file, "
-          "to "
-          "capture from.\n"
+          "to capture from.\n"
           "  -E, --external [<interface>|<file>]\n    "
           "Specify an external (WAN) interface, or file, "
-          "to "
-          "capture from.\n"
+          "to capture from.\n"
           "  -A, --device-address <address>\n    "
           "Interface/device option: consider address is "
           "assigned to interface.\n"
@@ -1049,11 +1113,9 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "expression to interface.\n"
           "  -N, --device-peer <interface>\n    "
           "Interface/device option: associate interface "
-          "with "
-          "a peer (ex: PPPoE interface, pppX).\n"
+          "with a peer (ex: PPPoE interface, pppX).\n"
           "  -t, --disable-conntrack\n    Disable "
-          "connection "
-          "tracking thread.\n"
+          "connection tracking thread.\n"
           "  -l, --disable-netlink\n    Don't process "
           "Netlink messages for capture interfaces.\n"
           "  -r, --replay-delay\n    Simulate "
@@ -1067,16 +1129,14 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "  --thread-conntrack <cpu>\n    Specify a CPU "
           "affinity ID for the conntrack thread.\n"
           "  --thread-detection-base <offset>\n    Specify "
-          "a "
-          "thread affinity base or offset for detection "
+          "a thread affinity base or offset for detection "
           "(DPI) threads.\n"
           "  --thread-detection-cores <count>\n    Specify "
           "the number of detection (DPI) threads to "
           "start.\n"
 
           "\nSee netifyd(8) and netifyd.conf(5) for "
-          "further "
-          "options.\n",
+          "further options.\n",
           ND_CONF_FILE_NAME, ND_CONF_LEGACY_PATH,
           ndGC.path_uuid.c_str(), ndGC.path_uuid_site.c_str());
     }
@@ -1294,7 +1354,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
           status.size() == 0)
         {
             fprintf(stderr,
-              "%s%s%s agent run-time status could not be "
+              "%s%s%s agent run-time status could not "
+              "be "
               "determined.\n",
               ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
 
@@ -1313,7 +1374,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
 
         if (nd_pid <= 0) {
             fprintf(stderr,
-              "%s%s The following run-time information is "
+              "%s%s The following run-time information "
+              "is "
               "likely out-dated.%s\n",
               ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
         }
@@ -1361,7 +1423,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
             fprintf(stderr, "%s%s%s site UUID is not set.\n",
               ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
             fprintf(stderr,
-              "  %s A new site UUID will be automatically "
+              "  %s A new site UUID will be "
+              "automatically "
               "set after this agent has been "
               "provisioned.\n",
               ND_I_NOTE);
@@ -1379,7 +1442,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
 
         if (! ndGC_USE_NAPI) {
             fprintf(stderr,
-              "  %s Netify API updates can be enabled from "
+              "  %s Netify API updates can be enabled "
+              "from "
               "the configuration file:\n    %s\n",
               ND_I_NOTE, conf_filename.c_str());
         }
@@ -1718,7 +1782,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
 int ndInstance::Run(void) {
     if (version.empty()) {
         nd_printf(
-          "%s: Instance configuration not initialized.\n",
+          "%s: Instance configuration not "
+          "initialized.\n",
           tag.c_str());
         goto ndInstance_RunReturn;
     }
@@ -1794,7 +1859,8 @@ int ndInstance::Run(void) {
     if (clock_gettime(CLOCK_MONOTONIC_RAW, &status.ts_epoch) != 0)
     {
         nd_printf(
-          "%s: Error loading epoch time (clock_gettime): "
+          "%s: Error loading epoch time "
+          "(clock_gettime): "
           "%s\n",
           tag.c_str(), strerror(errno));
         goto ndInstance_RunReturn;
@@ -2140,7 +2206,8 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 #endif
         default:
             nd_printf(
-              "%s: WARNING: Unsupported capture type: %s: "
+              "%s: WARNING: Unsupported capture type: "
+              "%s: "
               "%u\n",
               tag.c_str(), it.second->ifname.c_str(),
               static_cast<unsigned>(it.second->capture_type.flags));

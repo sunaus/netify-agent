@@ -44,6 +44,8 @@ echo " LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}"
 ARGS="-c ${NETIFYD_CONF} ${NETIFYD_OPTIONS} $@"
 echo -e "Arguments:\n $ARGS"
 
+export NETIFYD_DESTDIR="${NETIFYD_PREFIX}"
+
 SUDO=$(which sudo)
 
 if [ -z "${SUDO}" ]; then

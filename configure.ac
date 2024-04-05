@@ -7,7 +7,7 @@ m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
 
 AC_PREREQ([2.69])
-AC_INIT([Netify Agent], [5.0.32],
+AC_INIT([Netify Agent], [5.0.33],
     [https://gitlab.com/netify.ai/public/netify-agent/issues],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
@@ -251,6 +251,15 @@ AC_ARG_WITH([volatilestatedir],
 AS_IF([test "x$with_volatilestatedir" = "xyes" -o "x$with_volatilestatedir" = "xauto"],
     AC_SUBST([volatilestatedir], [$localstatedir/run/$PACKAGE_TARNAME]),
     AC_SUBST([volatilestatedir], [$with_volatilestatedir])
+)
+
+AC_ARG_WITH([plugin_libdir],
+     [AS_HELP_STRING([--with-plugin-libdir=DIR], [Directory where plugin libraries are found])],,
+     [with_plugin_libdir=auto])
+
+AS_IF([test "x$with_plugin_libdir" = "xyes" -o "x$with_plugin_libdir" = "xauto"],
+    AC_SUBST([plugin_libdir], [$libdir]),
+    AC_SUBST([plugin_libdir], [$with_plugin_libdir])
 )
 
 AM_CONDITIONAL(USE_LIBGCRYPT_SYSTEM, false)

@@ -1511,10 +1511,17 @@ void nd_tmpfile(const string &prefix, string &filename) {
 
 bool nd_copy_file(const string &src, const string &dst, mode_t mode) {
     ifstream ifs(src, ios::binary);
-    if (! ifs.is_open()) return false;
+    if (! ifs.is_open()) {
+        nd_dprintf("error opening source file: %s\n", src.c_str());
+        return false;
+    }
 
     ofstream ofs(dst, ofstream::trunc | ios::binary);
-    if (! ofs.is_open()) return false;
+    if (! ofs.is_open()) {
+        nd_dprintf("error opening destination file: %s\n",
+          dst.c_str());
+        return false;
+    }
 
     ofs << ifs.rdbuf();
 
@@ -1523,8 +1530,7 @@ bool nd_copy_file(const string &src, const string &dst, mode_t mode) {
     if (chmod(dst.c_str(), mode) != 0) {
         nd_dprintf(
           "WARNING: unable to change file permissions: "
-          "%s: "
-          "%s\n",
+          "%s: %s\n",
           dst.c_str(), strerror(errno));
     }
 

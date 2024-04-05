@@ -2,5 +2,3 @@
 functions.sh
 netifyd.conf
 netifyd.init
-watchdog.cron
-watchdog.sh

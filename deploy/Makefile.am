@@ -5,11 +5,12 @@
 
 SUBDIRS = debian systemd
 
-TEMPLATEFILES = functions.sh netifyd.conf netifyd.init watchdog.cron watchdog.sh
-TEMPLATEFILES_IN = functions.sh.in netifyd.conf.in netifyd.init.in watchdog.cron.in watchdog.sh.in
+TEMPLATEFILES = functions.sh netifyd.conf netifyd.init
+TEMPLATEFILES_IN = functions.sh.in netifyd.conf.in netifyd.init.in
 
 sharedatadir = $(datadir)/netifyd
-sharedata_DATA = functions.sh watchdog.sh netify-apps.conf
+sharedata_DATA = functions.sh netify-apps.conf netify-proc-core-auto.json \
+	netify-sink-http-auto.json
 
 sysconf_DATA = netifyd.conf
 
@@ -18,6 +19,10 @@ persistentstate_DATA = netify-apps.conf netify-categories.json
 interfacesdir = $(persistentstatedir)/interfaces.d
 interfaces_DATA = ./interfaces.d/10-example-nfq.conf \
 	./interfaces.d/10-example-tpv3.conf ./interfaces.d/10-example-pcap.conf
+
+autopluginsdir = $(datadir)/netifyd/plugins.d
+autoplugins_DATA = ./plugins.d/99-netify-proc-core-auto.conf \
+	./plugins.d/99-netify-sink-http-auto.conf
 
 BUILT_SOURCES = $(TEMPLATEFILES)
 CLEANFILES = $(TEMPLATEFILES)
