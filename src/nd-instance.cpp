@@ -724,7 +724,6 @@ bool ndInstance::RestartAgent(bool conditional) const {
 
         return false;
     }
-    else cout << "The Netify Agent was restarted.\n";
 
     return true;
 }
