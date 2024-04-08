@@ -714,24 +714,25 @@ bool ndInstance::Daemonize(void) {
 }
 
 bool ndInstance::RestartAgent(bool conditional) const {
-    ndProgress progress("Restarting the Agent...",
-      "Restart request sent.");
+    ndProgress progress("Restarting the Netify Agent...",
+      "The Netify Agent was restarted.");
     progress.Start();
 
     string output;
     int rc = nd_functions_exec("restart_netifyd",
       (conditional) ? "true" : "false", output);
 
-    progress.Stop();
-
     if (rc != 0) {
-        cerr << "An error occured while restarting the "
-                "Netify Agent.\n";
+        progress.Stop(
+          "An error occured while restarting the Netify "
+          "Agent.");
 
         if (ndGC_DEBUG) cerr << output;
 
         return false;
     }
+
+    progress.Stop();
 
     return true;
 }

@@ -159,6 +159,10 @@ public:
         return false;
     };
     void Stop(void);
+    inline void Stop(const std::string &complete) {
+      this->complete = complete;
+      Stop();
+    }
 
 protected:
     Type type = { Type::SPINNER };
