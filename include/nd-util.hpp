@@ -43,7 +43,6 @@
 
 constexpr unsigned ND_SHA1_BUFFER = 4096;
 
-constexpr const char *ND_C_RESET = "\033[0m";
 constexpr const char *ND_C_RED = "\033[0;31m";
 constexpr const char *ND_C_GREEN = "\033[0;32m";
 constexpr const char *ND_C_YELLOW = "\033[0;33m";
@@ -54,6 +53,11 @@ constexpr const char *ND_I_WARN = "!";
 constexpr const char *ND_I_FAIL = "✗";
 constexpr const char *ND_I_NOTE = "↪";
 constexpr const char *ND_I_RARROW = "→";
+
+constexpr const char *ND_A_RESET = "\033[0m";
+constexpr const char *ND_A_CURSOR_HIDE = "\033[?25l";
+constexpr const char *ND_A_CURSOR_SHOW = "\033[?25h";
+constexpr const char *ND_A_CLEAR_EOL = "\033[0K";
 
 constexpr const char *_ND_LOG_FILE_STAMP = "%Y%m%d-%H%M%S";
 constexpr size_t _ND_LOG_FILE_STAMP_SIZE = sizeof(

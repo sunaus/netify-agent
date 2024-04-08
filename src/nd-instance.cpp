@@ -43,6 +43,7 @@
 #include "nd-config.hpp"
 #include "nd-detection.hpp"
 #include "nd-instance.hpp"
+#include "nd-progress.hpp"
 #include "nd-util.hpp"
 #ifdef _ND_ENABLE_LIBPCAP
 #include "nd-capture-pcap.hpp"
@@ -713,9 +714,16 @@ bool ndInstance::Daemonize(void) {
 }
 
 bool ndInstance::RestartAgent(bool conditional) const {
+    ndProgress progress("Restarting the Agent...",
+      "Restart request sent.");
+    progress.Start();
+
     string output;
     int rc = nd_functions_exec("restart_netifyd",
       (conditional) ? "true" : "false", output);
+
+    progress.Stop();
+
     if (rc != 0) {
         cerr << "An error occured while restarting the "
                 "Netify Agent.\n";
@@ -1253,7 +1261,7 @@ static void DisplayApiStatus(json &jstatus,
     string updated_ago = "last update unknown";
     string message = "No update data";
     const char *icon = ND_I_INFO;
-    const char *color = ND_C_RESET;
+    const char *color = ND_A_RESET;
 
     auto jnetify_api = jstatus.find("netify_api");
     if (jnetify_api != jstatus.end() && jnetify_api->is_object())
@@ -1309,13 +1317,13 @@ static void DisplayApiStatus(json &jstatus,
     }
 
     fprintf(stderr, "%s%s%s API %s (%s): [%d] %s%s%s\n", color,
-      icon, ND_C_RESET, label.c_str(), updated_ago.c_str(),
-      code, color, message.c_str(), ND_C_RESET);
+      icon, ND_A_RESET, label.c_str(), updated_ago.c_str(),
+      code, color, message.c_str(), ND_A_RESET);
 }
 
 bool ndInstance::DisplayAgentStatus(void) const {
     const char *icon = ND_I_INFO;
-    const char *color = ND_C_RESET;
+    const char *color = ND_A_RESET;
 
     fprintf(stderr, "%s\n", nd_get_version_and_features().c_str());
 
@@ -1323,8 +1331,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
         fprintf(stderr,
           "%s%s%s Error while retrieving agent status: "
           "%s%s%s\n",
-          ND_C_RED, ND_I_FAIL, ND_C_RESET, ND_C_RED,
-          strerror(EPERM), ND_C_RESET);
+          ND_C_RED, ND_I_FAIL, ND_A_RESET, ND_C_RED,
+          strerror(EPERM), ND_A_RESET);
         return false;
     }
 
@@ -1338,7 +1346,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
       (nd_pid < 0)    ? ND_I_WARN :
         (nd_pid == 0) ? ND_I_FAIL :
                         ND_I_OK,
-      ND_C_RESET,
+      ND_A_RESET,
       (nd_pid < 0)    ? "status could not be determined" :
         (nd_pid == 0) ? "is not running" :
                         "is running",
@@ -1355,7 +1363,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
               "%s%s%s agent run-time status could not "
               "be "
               "determined.\n",
-              ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
+              ND_C_YELLOW, ND_I_WARN, ND_A_RESET);
 
             return false;
         }
@@ -1375,13 +1383,13 @@ bool ndInstance::DisplayAgentStatus(void) const {
               "%s%s The following run-time information "
               "is "
               "likely out-dated.%s\n",
-              ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
+              ND_C_YELLOW, ND_I_WARN, ND_A_RESET);
         }
 
         if (strftime(timestamp, sizeof(timestamp), "%c", tm_local) > 0)
         {
             fprintf(stderr, "%s%s%s agent timestamp: %s\n",
-              ND_C_GREEN, ND_I_INFO, ND_C_RESET, timestamp);
+              ND_C_GREEN, ND_I_INFO, ND_A_RESET, timestamp);
         }
 
         string uptime;
@@ -1396,7 +1404,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
         {
             fprintf(stderr,
               "%s%s%s agent UUID is not set.\n", ND_C_RED,
-              ND_I_FAIL, ND_C_RESET);
+              ND_I_FAIL, ND_A_RESET);
             fprintf(stderr,
               "  %s To generate a new one, run the "
               "following command:\n",
@@ -1405,21 +1413,21 @@ bool ndInstance::DisplayAgentStatus(void) const {
         }
         else {
             fprintf(stderr, "%s%s%s agent UUID: %s\n",
-              ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
+              ND_C_GREEN, ND_I_OK, ND_A_RESET, uuid.c_str());
         }
 
         ndGC.LoadUUID(ndUUID::SERIAL, uuid);
 
         if (! uuid.empty() && uuid != ND_AGENT_SERIAL_NULL) {
             fprintf(stderr, "%s%s%s serial UUID: %s\n",
-              ND_C_GREEN, ND_I_INFO, ND_C_RESET, uuid.c_str());
+              ND_C_GREEN, ND_I_INFO, ND_A_RESET, uuid.c_str());
         }
 
         ndGC.LoadUUID(ndUUID::SITE, uuid);
 
         if (uuid.empty() || uuid == ND_SITE_UUID_NULL) {
             fprintf(stderr, "%s%s%s site UUID is not set.\n",
-              ND_C_YELLOW, ND_I_WARN, ND_C_RESET);
+              ND_C_YELLOW, ND_I_WARN, ND_A_RESET);
             fprintf(stderr,
               "  %s A new site UUID will be "
               "automatically "
@@ -1429,14 +1437,14 @@ bool ndInstance::DisplayAgentStatus(void) const {
         }
         else {
             fprintf(stderr, "%s%s%s agent site UUID: %s\n",
-              ND_C_GREEN, ND_I_OK, ND_C_RESET, uuid.c_str());
+              ND_C_GREEN, ND_I_OK, ND_A_RESET, uuid.c_str());
         }
 
         fprintf(stderr, "%s%s%s API updates: %s%s%s\n",
           (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
-          (ndGC_USE_NAPI) ? ND_I_INFO : ND_I_WARN, ND_C_RESET,
+          (ndGC_USE_NAPI) ? ND_I_INFO : ND_I_WARN, ND_A_RESET,
           (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
-          (ndGC_USE_NAPI) ? "enabled" : "disabled", ND_C_RESET);
+          (ndGC_USE_NAPI) ? "enabled" : "disabled", ND_A_RESET);
 
         if (! ndGC_USE_NAPI) {
             fprintf(stderr,
@@ -1490,25 +1498,25 @@ bool ndInstance::DisplayAgentStatus(void) const {
         fprintf(stderr,
           "%s%s%s active flows: %s%u%s / %s "
           "(%s%.01lf%%%s)\n",
-          color, icon, ND_C_RESET, color, (unsigned)flows,
-          ND_C_RESET, max_flows.c_str(), color,
-          flow_utilization, ND_C_RESET);
+          color, icon, ND_A_RESET, color, (unsigned)flows,
+          ND_A_RESET, max_flows.c_str(), color,
+          flow_utilization, ND_A_RESET);
 
         unsigned long flows_in_use =
           (unsigned long)jstatus["flows_in_use"].get<unsigned>();
 
         icon = ND_I_INFO;
-        color = ND_C_RESET;
+        color = ND_A_RESET;
 
         fprintf(stderr,
           "%s%s%s flows purged: %lu, in-use: %s%lu%s\n",
-          color, icon, ND_C_RESET,
+          color, icon, ND_A_RESET,
           (unsigned long)jstatus["flows_purged"].get<unsigned>(),
-          color, flows_in_use, ND_C_RESET);
+          color, flows_in_use, ND_A_RESET);
 
         fprintf(stderr,
           "%s%s%s flows expiring: %lu, expired: %lu\n",
-          color, icon, ND_C_RESET,
+          color, icon, ND_A_RESET,
           (unsigned long)jstatus["flows_expiring"].get<unsigned>(),
           (unsigned long)jstatus["flows_expired"].get<unsigned>());
 
@@ -1548,21 +1556,21 @@ bool ndInstance::DisplayAgentStatus(void) const {
         fprintf(stderr,
           "%s%s%s CPU utilization (user + system): "
           "%s%.1f%%%s\n",
-          color, icon, ND_C_RESET, color, cpu_total, ND_C_RESET);
+          color, icon, ND_A_RESET, color, cpu_total, ND_A_RESET);
         fprintf(stderr,
           "%s%s%s CPU time (user / system): %.1fs / "
           "%.1fs\n",
-          color, icon, ND_C_RESET, cpu_user_delta, cpu_system_delta);
+          color, icon, ND_A_RESET, cpu_user_delta, cpu_system_delta);
 
 #if (defined(_ND_ENABLE_LIBTCMALLOC) && \
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
         fprintf(stderr,
           "%s%s%s current memory usage: %u kB\n", ND_C_GREEN, ND_I_INFO,
-          ND_C_RESET, jstatus["tcm_kb"].get<unsigned>());
+          ND_A_RESET, jstatus["tcm_kb"].get<unsigned>());
 #endif  // _ND_ENABLE_LIBTCMALLOC
         fprintf(stderr,
           "%s%s%s maximum memory usage: %u kB\n", ND_C_GREEN, ND_I_INFO,
-          ND_C_RESET, jstatus["maxrss_kb"].get<unsigned>());
+          ND_A_RESET, jstatus["maxrss_kb"].get<unsigned>());
 
         if (jstatus.find("interfaces") != jstatus.end()) {
             for (auto &i : jstatus["interfaces"].items()) {
@@ -1574,7 +1582,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 color = ND_C_RED;
                 string state = "unknown";
 
-                const char *colors[2] = { ND_C_RED, ND_C_RESET };
+                const char *colors[2] = { ND_C_RED, ND_A_RESET };
 
                 try {
                     auto jstate = j.find("state");
@@ -1633,18 +1641,18 @@ bool ndInstance::DisplayAgentStatus(void) const {
                       "%s%s%s: error decoding "
                       "interface "
                       "stats.\n",
-                      ND_C_RED, ND_I_FAIL, ND_C_RESET);
+                      ND_C_RED, ND_I_FAIL, ND_A_RESET);
                 }
 
                 fprintf(stderr,
                   "%s%s%s %s [%s %s %s]: %s%s%s: "
                   "packets "
                   "dropped: %s%.03lf%%%s\n",
-                  color, icon, ND_C_RESET, iface.c_str(),
+                  color, icon, ND_A_RESET, iface.c_str(),
                   j["role"].get<string>().c_str(), ND_I_RARROW,
                   j["capture_type"].get<string>().c_str(),
-                  colors[0], state.c_str(), ND_C_RESET,
-                  colors[1], dropped_percent, ND_C_RESET);
+                  colors[0], state.c_str(), ND_A_RESET,
+                  colors[1], dropped_percent, ND_A_RESET);
                 auto jcapture_file = j.find("capture_file");
                 if (jcapture_file != j.end()) {
                     fprintf(stderr, "  %s %s\n", ND_I_NOTE,
@@ -1666,9 +1674,9 @@ bool ndInstance::DisplayAgentStatus(void) const {
         bool dhc_status = jstatus["dhc_status"].get<bool>();
         fprintf(stderr, "%s%s%s DNS hint cache: %s%s%s\n",
           (dhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (dhc_status) ? ND_I_OK : ND_I_WARN, ND_C_RESET,
+          (dhc_status) ? ND_I_OK : ND_I_WARN, ND_A_RESET,
           (dhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (dhc_status) ? "enabled" : "disabled", ND_C_RESET);
+          (dhc_status) ? "enabled" : "disabled", ND_A_RESET);
 
         if (dhc_status) {
             json jstats = jstatus["dns_hint_cache"];
@@ -1708,16 +1716,16 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 fprintf(stderr,
                   "%s%s%s error decoding %s "
                   "status.\n",
-                  ND_C_RED, ND_I_FAIL, ND_C_RESET, "DHC");
+                  ND_C_RED, ND_I_FAIL, ND_A_RESET, "DHC");
             }
         }
 
         bool fhc_status = jstatus["fhc_status"].get<bool>();
         fprintf(stderr, "%s%s%s flow hash cache: %s%s%s\n",
           (fhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (fhc_status) ? ND_I_OK : ND_I_WARN, ND_C_RESET,
+          (fhc_status) ? ND_I_OK : ND_I_WARN, ND_A_RESET,
           (fhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (fhc_status) ? "enabled" : "disabled", ND_C_RESET);
+          (fhc_status) ? "enabled" : "disabled", ND_A_RESET);
 
         if (fhc_status) {
             json jstats = jstatus["flow_hash_cache"];
@@ -1757,7 +1765,7 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 fprintf(stderr,
                   "%s%s%s error decoding %s "
                   "status.\n",
-                  ND_C_RED, ND_I_FAIL, ND_C_RESET, "FHC");
+                  ND_C_RED, ND_I_FAIL, ND_A_RESET, "FHC");
             }
         }
     }
@@ -1765,8 +1773,8 @@ bool ndInstance::DisplayAgentStatus(void) const {
         fprintf(stderr,
           "%s%s%s agent run-time status exception: "
           "%s%s%s\n",
-          ND_C_RED, ND_I_FAIL, ND_C_RESET, ND_C_RED,
-          e.what(), ND_C_RESET);
+          ND_C_RED, ND_I_FAIL, ND_A_RESET, ND_C_RED,
+          e.what(), ND_A_RESET);
     }
 
     fprintf(stderr, "%s persistent state path: %s\n",

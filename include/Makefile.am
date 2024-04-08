@@ -9,13 +9,13 @@ ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = nlohmann pcap-compat radix
 
 netifyincludedir = $(includedir)/netifyd
-netifyinclude_HEADERS = nd-apps.hpp nd-addr.hpp nd-base64.hpp nd-category.hpp \
-	nd-config.hpp nd-conntrack.hpp nd-capture.hpp nd-capture-pcap.hpp \
-	nd-capture-nfq.hpp nd-capture-tpv3.hpp nd-detection.hpp nd-dhc.hpp \
-	nd-except.hpp nd-fhc.hpp nd-flags.hpp nd-flow.hpp nd-flow-map.hpp \
-	nd-flow-parser.h nd-flow-parser.hpp nd-instance.hpp nd-napi.hpp nd-ndpi.hpp \
-	nd-netlink.hpp nd-plugin.hpp nd-packet.hpp nd-protos.hpp nd-risks.hpp \
-	nd-serializer.hpp nd-sha1.h nd-signal.hpp nd-tls-alpn.hpp nd-thread.hpp \
+netifyinclude_HEADERS = nd-addr.hpp nd-apps.hpp nd-base64.hpp nd-capture.hpp \
+	nd-capture-nfq.hpp nd-capture-pcap.hpp nd-capture-tpv3.hpp nd-category.hpp \
+	nd-config.hpp nd-conntrack.hpp nd-detection.hpp nd-dhc.hpp nd-except.hpp \
+	nd-fhc.hpp nd-flags.hpp nd-flow.hpp nd-flow-map.hpp nd-flow-parser.h \
+	nd-flow-parser.hpp nd-instance.hpp nd-napi.hpp nd-ndpi.hpp nd-netlink.hpp \
+	nd-packet.hpp nd-plugin.hpp nd-progress.hpp nd-protos.hpp nd-risks.hpp \
+	nd-serializer.hpp nd-sha1.h nd-signal.hpp nd-thread.hpp nd-tls-alpn.hpp \
 	nd-util.hpp netifyd.hpp
 
 nlohmannincludedir = $(includedir)/netifyd/nlohmann

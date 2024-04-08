@@ -549,11 +549,11 @@ bool ndGlobalConfig::ForceReset(void) {
     fprintf(stdout,
       "%sWARNING%s: Resetting Agent state files in "
       "%s%d%s seconds...\n",
-      ND_C_RED, ND_C_RESET, ND_C_RED, seconds, ND_C_RESET);
+      ND_C_RED, ND_A_RESET, ND_C_RED, seconds, ND_A_RESET);
     for (; seconds >= 0; seconds--) {
         fprintf(stdout,
           "%sWARNING%s: Press CTRL-C to abort: %s%d%s\r",
-          ND_C_RED, ND_C_RESET, ND_C_RED, seconds, ND_C_RESET);
+          ND_C_RED, ND_A_RESET, ND_C_RED, seconds, ND_A_RESET);
         fflush(stdout);
         sleep(1);
     }
@@ -1149,7 +1149,8 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
             }
         }
         catch (exception &e) {
-            fprintf(stderr, "Plugin cannot be loaded: %s\n", e.what());
+            fprintf(stderr, "Plugin cannot be loaded: %s\n",
+              e.what());
             return false;
         }
 
