@@ -714,6 +714,20 @@ bool ndInstance::Daemonize(void) {
 }
 
 bool ndInstance::RestartAgent(bool conditional) const {
+    if (! ndGC_ALLOW_UNPRIV) {
+        // Require UID 0 from this point on...
+        if (geteuid() != 0) {
+            cerr << "Error restarting Agent: " << strerror(EPERM)
+                 << " (not root)\n";
+            return false;
+        }
+    }
+
+    pid_t pid = nd_load_pid(ndGC.path_pid_file);
+    pid = nd_is_running(pid, self);
+
+    if (pid < 1 && conditional) return true;
+
     ndProgress progress("Restarting the Netify Agent...",
       "The Netify Agent was restarted.");
     progress.Start();
