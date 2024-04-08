@@ -1,5 +1,10 @@
 %%DATADIR%%/functions.sh
+%%DATADIR%%/netify-apps.conf
 %%DATADIR%%/netifyd-sample.conf
+%%DATADIR%%/netify-proc-core-auto.json
+%%DATADIR%%/netify-sink-http-auto.json
+%%DATADIR%%/plugins.d/99-netify-proc-core-auto.conf
+%%DATADIR%%/plugins.d/99-netify-sink-http-auto.conf
 @sample %%ETCDIR%%.conf.sample
 @sample %%ETCDIR%%/netify-apps.conf.sample
 @sample %%ETCDIR%%/netify-categories.json.sample
