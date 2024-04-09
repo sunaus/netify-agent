@@ -307,7 +307,7 @@ protected:
 
     void *Entry(void);
 
-    bool Reload(bool broadcast = true);
+    bool Reload(bool broadcast = true, bool silent = true);
 
     void CreateCaptureInterfaces(ndInterfaces &ifaces) const;
 

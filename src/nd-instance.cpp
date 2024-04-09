@@ -2026,7 +2026,7 @@ void *ndInstance::ndInstance::Entry(void) {
         case InstanceEvent::RELOAD:
             nd_dprintf("%s: received IPC: [%d] %s\n", tag.c_str(),
               ipc, "Reload run-time configuration");
-            Reload();
+            Reload(true, false);
             if (! ReloadCaptureThreads(thread_capture)) {
                 exit_code = EXIT_FAILURE;
                 goto ndInstance_EntryReturn;
@@ -2050,7 +2050,7 @@ void *ndInstance::ndInstance::Entry(void) {
               tag.c_str(), ipc, "Netify API update");
             if (ndGC_USE_NAPI) {
                 if (api_manager.Update()) {
-                    Reload(false);
+                    Reload(false, false);
                 }
             }
             break;
@@ -2100,7 +2100,7 @@ ndInstance_EntryReturn:
     return nullptr;
 }
 
-bool ndInstance::Reload(bool broadcast) {
+bool ndInstance::Reload(bool broadcast, bool silent) {
     bool result = true;
 
     nd_dprintf("%s: reloading configuration...\n", tag.c_str());
@@ -2121,8 +2121,14 @@ bool ndInstance::Reload(bool broadcast) {
           ndPlugin::Event::RELOAD);
     }
 
-    nd_printf("%s: Configuration reloaded %s.\n",
-      tag.c_str(), (result) ? "successfully" : "with errors");
+    if (silent) {
+        nd_dprintf("%s: configuration reloaded %s.\n",
+          tag.c_str(), (result) ? "successfully" : "with errors");
+    }
+    else {
+        nd_printf("%s: Configuration reloaded %s.\n",
+          tag.c_str(), (result) ? "successfully" : "with errors");
+    }
 
     return result;
 }
