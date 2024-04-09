@@ -549,11 +549,13 @@ bool ndGlobalConfig::ForceReset(void) {
     fprintf(stdout,
       "%sWARNING%s: Resetting Agent state files in "
       "%s%d%s seconds...\n",
-      ND_C_RED, ND_A_RESET, ND_C_RED, seconds, ND_A_RESET);
+      ndTerm::Color::RED, ndTerm::Attr::RESET,
+      ndTerm::Color::RED, seconds, ndTerm::Attr::RESET);
     for (; seconds >= 0; seconds--) {
         fprintf(stdout,
           "%sWARNING%s: Press CTRL-C to abort: %s%d%s\r",
-          ND_C_RED, ND_A_RESET, ND_C_RED, seconds, ND_A_RESET);
+          ndTerm::Color::RED, ndTerm::Attr::RESET,
+          ndTerm::Color::RED, seconds, ndTerm::Attr::RESET);
         fflush(stdout);
         sleep(1);
     }

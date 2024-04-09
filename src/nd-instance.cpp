@@ -993,17 +993,17 @@ void ndInstance::CommandLineHelp(bool version_only) {
         ndGC_SetFlag(ndGlobalFlags::QUIET, true);
     }
 
-    fprintf(stderr, "%s\n%s\n",
+    fprintf(stdout, "%s\n%s\n",
       nd_get_version_and_features().c_str(), PACKAGE_URL);
     if (version_only) {
-        fprintf(stderr,
+        fprintf(stdout,
           "\nThis application uses nDPI v%s\n"
           "https://www.ntop.org/products/"
           "deep-packet-inspection/ndpi/\n"
           "https://github.com/ntop/nDPI\n",
           ndpi_version());
 
-        fprintf(stderr,
+        fprintf(stdout,
           "\n  This program comes with ABSOLUTELY NO "
           "WARRANTY.\n"
           "  Netifyd is dual-licensed under commercial "
@@ -1020,18 +1020,18 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "projects where all open source license\n"
           "  obligations can be met.\n");
 #ifdef PACKAGE_BUGREPORT
-        fprintf(stderr, "\nReport bugs to: %s\n", PACKAGE_BUGREPORT);
+        fprintf(stdout, "\nReport bugs to: %s\n", PACKAGE_BUGREPORT);
 #endif
         try {
             plugins.Load(ndPlugin::Type::BASE, false);
 
             if (! ndGC.plugin_processors.empty()) {
-                fprintf(stderr, "\nProcessor plugins:\n\n");
+                fprintf(stdout, "\nProcessor plugins:\n\n");
                 plugins.DumpVersions(ndPlugin::Type::PROC);
             }
 
             if (! ndGC.plugin_sinks.empty()) {
-                fprintf(stderr, "\nSink plugins:\n\n");
+                fprintf(stdout, "\nSink plugins:\n\n");
                 plugins.DumpVersions(ndPlugin::Type::SINK);
             }
         }
@@ -1042,7 +1042,7 @@ void ndInstance::CommandLineHelp(bool version_only) {
         }
     }
     else {
-        fprintf(stderr,
+        fprintf(stdout,
           "\nStatus options:\n"
           "  -s, --status\n    Display Agent status.\n"
 
@@ -1275,8 +1275,8 @@ static void DisplayApiStatus(json &jstatus,
     time_t last_update = 0;
     string updated_ago = "last update unknown";
     string message = "No update data";
-    const char *icon = ND_I_INFO;
-    const char *color = ND_A_RESET;
+    const char *icon = ndTerm::Icon::INFO;
+    const char *color = ndTerm::Attr::RESET;
 
     auto jnetify_api = jstatus.find("netify_api");
     if (jnetify_api != jstatus.end() && jnetify_api->is_object())
@@ -1313,16 +1313,16 @@ static void DisplayApiStatus(json &jstatus,
 
     switch (code) {
     case -1:
-        icon = ND_I_FAIL;
-        color = ND_C_RED;
+        icon = ndTerm::Icon::FAIL;
+        color = ndTerm::Color::RED;
         break;
     case -10:
-        icon = ND_I_WARN;
-        color = ND_C_YELLOW;
+        icon = ndTerm::Icon::WARN;
+        color = ndTerm::Color::YELLOW;
         break;
     default:
-        icon = ND_I_OK;
-        color = ND_C_GREEN;
+        icon = ndTerm::Icon::OK;
+        color = ndTerm::Color::GREEN;
         break;
     }
 
@@ -1331,37 +1331,39 @@ static void DisplayApiStatus(json &jstatus,
         updated_ago.append(" ago");
     }
 
-    fprintf(stderr, "%s%s%s API %s (%s): [%d] %s%s%s\n", color,
-      icon, ND_A_RESET, label.c_str(), updated_ago.c_str(),
-      code, color, message.c_str(), ND_A_RESET);
+    fprintf(stdout, "%s%s%s API %s (%s): [%d] %s%s%s\n",
+      color, icon, ndTerm::Attr::RESET, label.c_str(),
+      updated_ago.c_str(), code, color, message.c_str(),
+      ndTerm::Attr::RESET);
 }
 
 bool ndInstance::DisplayAgentStatus(void) const {
-    const char *icon = ND_I_INFO;
-    const char *color = ND_A_RESET;
+    const char *icon = ndTerm::Icon::INFO;
+    const char *color = ndTerm::Attr::RESET;
 
-    fprintf(stderr, "%s\n", nd_get_version_and_features().c_str());
+    fprintf(stdout, "%s\n", nd_get_version_and_features().c_str());
 
     if (geteuid() != 0) {
         fprintf(stderr,
           "%s%s%s Error while retrieving agent status: "
           "%s%s%s\n",
-          ND_C_RED, ND_I_FAIL, ND_A_RESET, ND_C_RED,
-          strerror(EPERM), ND_A_RESET);
+          ndTerm::Color::RED, ndTerm::Icon::FAIL,
+          ndTerm::Attr::RESET, ndTerm::Color::RED,
+          strerror(EPERM), ndTerm::Attr::RESET);
         return false;
     }
 
     pid_t nd_pid = nd_load_pid(ndGC.path_pid_file);
     nd_pid = nd_is_running(nd_pid, self);
 
-    fprintf(stderr, "%s%s%s agent %s: PID %d\n",
-      (nd_pid < 0)    ? ND_C_YELLOW :
-        (nd_pid == 0) ? ND_C_RED :
-                        ND_C_GREEN,
-      (nd_pid < 0)    ? ND_I_WARN :
-        (nd_pid == 0) ? ND_I_FAIL :
-                        ND_I_OK,
-      ND_A_RESET,
+    fprintf(stdout, "%s%s%s agent %s: PID %d\n",
+      (nd_pid < 0)    ? ndTerm::Color::YELLOW :
+        (nd_pid == 0) ? ndTerm::Color::RED :
+                        ndTerm::Color::GREEN,
+      (nd_pid < 0)    ? ndTerm::Icon::WARN :
+        (nd_pid == 0) ? ndTerm::Icon::FAIL :
+                        ndTerm::Icon::OK,
+      ndTerm::Attr::RESET,
       (nd_pid < 0)    ? "status could not be determined" :
         (nd_pid == 0) ? "is not running" :
                         "is running",
@@ -1374,11 +1376,11 @@ bool ndInstance::DisplayAgentStatus(void) const {
         if (nd_file_load(ndGC.path_agent_status, status) < 0 ||
           status.size() == 0)
         {
-            fprintf(stderr,
-              "%s%s%s agent run-time status could not "
-              "be "
+            fprintf(stdout,
+              "%s%s%s agent run-time status could not be "
               "determined.\n",
-              ND_C_YELLOW, ND_I_WARN, ND_A_RESET);
+              ndTerm::Color::YELLOW, ndTerm::Icon::WARN,
+              ndTerm::Attr::RESET);
 
             return false;
         }
@@ -1394,79 +1396,85 @@ bool ndInstance::DisplayAgentStatus(void) const {
         const struct tm *tm_local = localtime(&ts);
 
         if (nd_pid <= 0) {
-            fprintf(stderr,
-              "%s%s The following run-time information "
-              "is "
+            fprintf(stdout,
+              "%s%s The following run-time information is "
               "likely out-dated.%s\n",
-              ND_C_YELLOW, ND_I_WARN, ND_A_RESET);
+              ndTerm::Color::YELLOW, ndTerm::Icon::WARN,
+              ndTerm::Attr::RESET);
         }
 
         if (strftime(timestamp, sizeof(timestamp), "%c", tm_local) > 0)
         {
-            fprintf(stderr, "%s%s%s agent timestamp: %s\n",
-              ND_C_GREEN, ND_I_INFO, ND_A_RESET, timestamp);
+            fprintf(stdout, "%s%s%s agent timestamp: %s\n",
+              ndTerm::Color::GREEN, ndTerm::Icon::INFO,
+              ndTerm::Attr::RESET, timestamp);
         }
 
         string uptime;
         nd_uptime(jstatus["uptime"].get<time_t>(), uptime);
-        fprintf(stderr, "%s agent uptime: %s\n", ND_I_INFO,
-          uptime.c_str());
+        fprintf(stdout, "%s agent uptime: %s\n",
+          ndTerm::Icon::INFO, uptime.c_str());
 
         string uuid;
         ndGC.LoadUUID(ndUUID::AGENT, uuid);
 
         if (uuid.size() != ND_AGENT_UUID_LEN || uuid == ND_AGENT_UUID_NULL)
         {
-            fprintf(stderr,
-              "%s%s%s agent UUID is not set.\n", ND_C_RED,
-              ND_I_FAIL, ND_A_RESET);
-            fprintf(stderr,
+            fprintf(stdout,
+              "%s%s%s agent UUID is not set.\n", ndTerm::Color::RED,
+              ndTerm::Icon::FAIL, ndTerm::Attr::RESET);
+            fprintf(stdout,
               "  %s To generate a new one, run the "
               "following command:\n",
-              ND_I_NOTE);
-            fprintf(stderr, "  %s # netifyd --provision\n", ND_I_NOTE);
+              ndTerm::Icon::NOTE);
+            fprintf(stdout, "  %s # netifyd --provision\n",
+              ndTerm::Icon::NOTE);
         }
         else {
-            fprintf(stderr, "%s%s%s agent UUID: %s\n",
-              ND_C_GREEN, ND_I_OK, ND_A_RESET, uuid.c_str());
+            fprintf(stdout, "%s%s%s agent UUID: %s\n",
+              ndTerm::Color::GREEN, ndTerm::Icon::OK,
+              ndTerm::Attr::RESET, uuid.c_str());
         }
 
         ndGC.LoadUUID(ndUUID::SERIAL, uuid);
 
         if (! uuid.empty() && uuid != ND_AGENT_SERIAL_NULL) {
-            fprintf(stderr, "%s%s%s serial UUID: %s\n",
-              ND_C_GREEN, ND_I_INFO, ND_A_RESET, uuid.c_str());
+            fprintf(stdout, "%s%s%s serial UUID: %s\n",
+              ndTerm::Color::GREEN, ndTerm::Icon::INFO,
+              ndTerm::Attr::RESET, uuid.c_str());
         }
 
         ndGC.LoadUUID(ndUUID::SITE, uuid);
 
         if (uuid.empty() || uuid == ND_SITE_UUID_NULL) {
-            fprintf(stderr, "%s%s%s site UUID is not set.\n",
-              ND_C_YELLOW, ND_I_WARN, ND_A_RESET);
-            fprintf(stderr,
-              "  %s A new site UUID will be "
-              "automatically "
+            fprintf(stdout, "%s%s%s site UUID is not set.\n",
+              ndTerm::Color::YELLOW, ndTerm::Icon::WARN,
+              ndTerm::Attr::RESET);
+            fprintf(stdout,
+              "  %s A new site UUID will be automatically "
               "set after this agent has been "
               "provisioned.\n",
-              ND_I_NOTE);
+              ndTerm::Icon::NOTE);
         }
         else {
-            fprintf(stderr, "%s%s%s agent site UUID: %s\n",
-              ND_C_GREEN, ND_I_OK, ND_A_RESET, uuid.c_str());
+            fprintf(stdout, "%s%s%s agent site UUID: %s\n",
+              ndTerm::Color::GREEN, ndTerm::Icon::OK,
+              ndTerm::Attr::RESET, uuid.c_str());
         }
 
-        fprintf(stderr, "%s%s%s API updates: %s%s%s\n",
-          (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
-          (ndGC_USE_NAPI) ? ND_I_INFO : ND_I_WARN, ND_A_RESET,
-          (ndGC_USE_NAPI) ? ND_C_GREEN : ND_C_YELLOW,
-          (ndGC_USE_NAPI) ? "enabled" : "disabled", ND_A_RESET);
+        fprintf(stdout, "%s%s%s API updates: %s%s%s\n",
+          (ndGC_USE_NAPI) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
+          (ndGC_USE_NAPI) ? ndTerm::Icon::INFO : ndTerm::Icon::WARN,
+          ndTerm::Attr::RESET,
+          (ndGC_USE_NAPI) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
+          (ndGC_USE_NAPI) ? "enabled" : "disabled",
+          ndTerm::Attr::RESET);
 
         if (! ndGC_USE_NAPI) {
-            fprintf(stderr,
-              "  %s Netify API updates can be enabled "
-              "from "
+            fprintf(stdout,
+              "  %s Netify API updates can be enabled from "
               "the configuration file:\n    %s\n",
-              ND_I_NOTE, conf_filename.c_str());
+              ndTerm::Icon::NOTE, conf_filename.c_str());
         }
         else {
             DisplayApiStatus(jstatus, "bootstrap",
@@ -1488,57 +1496,58 @@ bool ndInstance::DisplayAgentStatus(void) const {
         if (flows > 0) {
             if (ndGC.max_flows) {
                 if (flow_utilization < 75) {
-                    icon = ND_I_OK;
-                    color = ND_C_GREEN;
+                    icon = ndTerm::Icon::OK;
+                    color = ndTerm::Color::GREEN;
                 }
                 else if (flow_utilization < 90) {
-                    icon = ND_I_WARN;
-                    color = ND_C_YELLOW;
+                    icon = ndTerm::Icon::WARN;
+                    color = ndTerm::Color::YELLOW;
                 }
                 else {
-                    icon = ND_I_FAIL;
-                    color = ND_C_RED;
+                    icon = ndTerm::Icon::FAIL;
+                    color = ndTerm::Color::RED;
                 }
             }
             else {
-                icon = ND_I_OK;
-                color = ND_C_GREEN;
+                icon = ndTerm::Icon::OK;
+                color = ndTerm::Color::GREEN;
             }
         }
         else {
-            icon = ND_I_WARN;
-            color = ND_C_YELLOW;
+            icon = ndTerm::Icon::WARN;
+            color = ndTerm::Color::YELLOW;
         }
 
-        fprintf(stderr,
+        fprintf(stdout,
           "%s%s%s active flows: %s%u%s / %s "
           "(%s%.01lf%%%s)\n",
-          color, icon, ND_A_RESET, color, (unsigned)flows,
-          ND_A_RESET, max_flows.c_str(), color,
-          flow_utilization, ND_A_RESET);
+          color, icon, ndTerm::Attr::RESET, color, (unsigned)flows,
+          ndTerm::Attr::RESET, max_flows.c_str(), color,
+          flow_utilization, ndTerm::Attr::RESET);
 
         unsigned long flows_in_use =
           (unsigned long)jstatus["flows_in_use"].get<unsigned>();
 
-        icon = ND_I_INFO;
-        color = ND_A_RESET;
+        icon = ndTerm::Icon::INFO;
+        color = ndTerm::Attr::RESET;
 
-        fprintf(stderr,
+        fprintf(stdout,
           "%s%s%s flows purged: %lu, in-use: %s%lu%s\n",
-          color, icon, ND_A_RESET,
+          color, icon, ndTerm::Attr::RESET,
           (unsigned long)jstatus["flows_purged"].get<unsigned>(),
-          color, flows_in_use, ND_A_RESET);
+          color, flows_in_use, ndTerm::Attr::RESET);
 
-        fprintf(stderr,
+        fprintf(stdout,
           "%s%s%s flows expiring: %lu, expired: %lu\n",
-          color, icon, ND_A_RESET,
+          color, icon, ndTerm::Attr::RESET,
           (unsigned long)jstatus["flows_expiring"].get<unsigned>(),
           (unsigned long)jstatus["flows_expired"].get<unsigned>());
 
-        fprintf(stderr, "%s minimum flow size: %lu\n", ND_I_INFO,
+        fprintf(stdout, "%s minimum flow size: %lu\n",
+          ndTerm::Icon::INFO,
           sizeof(ndFlow) + sizeof(struct ndpi_flow_struct));
 
-        fprintf(stderr, "%s CPU cores: %u\n", ND_I_INFO,
+        fprintf(stdout, "%s CPU cores: %u\n", ndTerm::Icon::INFO,
           jstatus["cpu_cores"].get<unsigned>());
 
         double cpu_user_delta = jstatus["cpu_user"].get<double>() -
@@ -1556,36 +1565,41 @@ bool ndInstance::DisplayAgentStatus(void) const {
         double cpu_total = cpu_user_percent + cpu_system_percent;
 
         if (cpu_total < 33.34) {
-            icon = ND_I_OK;
-            color = ND_C_GREEN;
+            icon = ndTerm::Icon::OK;
+            color = ndTerm::Color::GREEN;
         }
         else if (cpu_total < 66.67) {
-            icon = ND_I_WARN;
-            color = ND_C_YELLOW;
+            icon = ndTerm::Icon::WARN;
+            color = ndTerm::Color::YELLOW;
         }
         else {
-            icon = ND_I_FAIL;
-            color = ND_C_RED;
+            icon = ndTerm::Icon::FAIL;
+            color = ndTerm::Color::RED;
         }
 
-        fprintf(stderr,
+        fprintf(stdout,
           "%s%s%s CPU utilization (user + system): "
           "%s%.1f%%%s\n",
-          color, icon, ND_A_RESET, color, cpu_total, ND_A_RESET);
-        fprintf(stderr,
+          color, icon, ndTerm::Attr::RESET, color,
+          cpu_total, ndTerm::Attr::RESET);
+        fprintf(stdout,
           "%s%s%s CPU time (user / system): %.1fs / "
           "%.1fs\n",
-          color, icon, ND_A_RESET, cpu_user_delta, cpu_system_delta);
+          color, icon, ndTerm::Attr::RESET, cpu_user_delta,
+          cpu_system_delta);
 
 #if (defined(_ND_ENABLE_LIBTCMALLOC) && \
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H))
-        fprintf(stderr,
-          "%s%s%s current memory usage: %u kB\n", ND_C_GREEN, ND_I_INFO,
-          ND_A_RESET, jstatus["tcm_kb"].get<unsigned>());
+        fprintf(stdout,
+          "%s%s%s current memory usage: %u kB\n",
+          ndTerm::Color::GREEN, ndTerm::Icon::INFO,
+          ndTerm::Attr::RESET, jstatus["tcm_kb"].get<unsigned>());
 #endif  // _ND_ENABLE_LIBTCMALLOC
-        fprintf(stderr,
-          "%s%s%s maximum memory usage: %u kB\n", ND_C_GREEN, ND_I_INFO,
-          ND_A_RESET, jstatus["maxrss_kb"].get<unsigned>());
+        fprintf(stdout,
+          "%s%s%s maximum memory usage: %u kB\n",
+          ndTerm::Color::GREEN, ndTerm::Icon::INFO,
+          ndTerm::Attr::RESET,
+          jstatus["maxrss_kb"].get<unsigned>());
 
         if (jstatus.find("interfaces") != jstatus.end()) {
             for (auto &i : jstatus["interfaces"].items()) {
@@ -1593,11 +1607,12 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 const string &iface = i.key();
                 double dropped_percent = 0;
 
-                icon = ND_I_FAIL;
-                color = ND_C_RED;
+                icon = ndTerm::Icon::FAIL;
+                color = ndTerm::Color::RED;
                 string state = "unknown";
 
-                const char *colors[2] = { ND_C_RED, ND_A_RESET };
+                const char *colors[2] = { ndTerm::Color::RED,
+                    ndTerm::Attr::RESET };
 
                 try {
                     auto jstate = j.find("state");
@@ -1607,13 +1622,13 @@ bool ndInstance::DisplayAgentStatus(void) const {
                           jstate->get<unsigned>()))
                         {
                         case ndCaptureThread::State::INIT:
-                            icon = ND_I_WARN;
-                            colors[0] = color = ND_C_YELLOW;
+                            icon = ndTerm::Icon::WARN;
+                            colors[0] = color = ndTerm::Color::YELLOW;
                             state = "initializing";
                             break;
                         case ndCaptureThread::State::ONLINE:
-                            icon = ND_I_OK;
-                            colors[0] = color = ND_C_GREEN;
+                            icon = ndTerm::Icon::OK;
+                            colors[0] = color = ndTerm::Color::GREEN;
                             state = "online";
                             break;
                         case ndCaptureThread::State::OFFLINE:
@@ -1634,64 +1649,67 @@ bool ndInstance::DisplayAgentStatus(void) const {
                                         .get<unsigned>();
 
                     if (pkts == 0) {
-                        icon = ND_I_WARN;
-                        colors[1] = color = ND_C_YELLOW;
+                        icon = ndTerm::Icon::WARN;
+                        colors[1] = color = ndTerm::Color::YELLOW;
                     }
                     else {
                         dropped_percent = (double)dropped *
                           100 / (double)pkts;
 
                         if (dropped_percent > 0.001) {
-                            icon = ND_I_WARN;
-                            colors[1] = color = ND_C_YELLOW;
+                            icon = ndTerm::Icon::WARN;
+                            colors[1] = color = ndTerm::Color::YELLOW;
                         }
                         else if (dropped_percent > 5.0) {
-                            icon = ND_I_FAIL;
-                            colors[1] = color = ND_C_RED;
+                            icon = ndTerm::Icon::FAIL;
+                            colors[1] = color = ndTerm::Color::RED;
                         }
                     }
                 }
                 catch (json::exception &e) {
-                    fprintf(stderr,
-                      "%s%s%s: error decoding "
-                      "interface "
+                    fprintf(stdout,
+                      "%s%s%s: error decoding interface "
                       "stats.\n",
-                      ND_C_RED, ND_I_FAIL, ND_A_RESET);
+                      ndTerm::Color::RED, ndTerm::Icon::FAIL,
+                      ndTerm::Attr::RESET);
                 }
 
-                fprintf(stderr,
-                  "%s%s%s %s [%s %s %s]: %s%s%s: "
-                  "packets "
+                fprintf(stdout,
+                  "%s%s%s %s [%s %s %s]: %s%s%s: packets "
                   "dropped: %s%.03lf%%%s\n",
-                  color, icon, ND_A_RESET, iface.c_str(),
-                  j["role"].get<string>().c_str(), ND_I_RARROW,
+                  color, icon, ndTerm::Attr::RESET,
+                  iface.c_str(), j["role"].get<string>().c_str(),
+                  ndTerm::Icon::RARROW,
                   j["capture_type"].get<string>().c_str(),
-                  colors[0], state.c_str(), ND_A_RESET,
-                  colors[1], dropped_percent, ND_A_RESET);
+                  colors[0], state.c_str(),
+                  ndTerm::Attr::RESET, colors[1],
+                  dropped_percent, ndTerm::Attr::RESET);
                 auto jcapture_file = j.find("capture_file");
                 if (jcapture_file != j.end()) {
-                    fprintf(stderr, "  %s %s\n", ND_I_NOTE,
+                    fprintf(stdout, "  %s %s\n", ndTerm::Icon::NOTE,
                       jcapture_file->get<string>().c_str());
                 }
             }
         }
 
         json jsig = jstatus["signatures"];
-        fprintf(stderr,
+        fprintf(stdout,
           "%s apps: %u, domains: %u, networks: %u, "
           "soft-dissectors: %u, transforms: %u\n",
-          ND_I_INFO, jsig["apps"].get<unsigned>(),
+          ndTerm::Icon::INFO, jsig["apps"].get<unsigned>(),
           jsig["domains"].get<unsigned>(),
           jsig["networks"].get<unsigned>(),
           jsig["soft_dissectors"].get<unsigned>(),
           jsig["transforms"].get<unsigned>());
 
         bool dhc_status = jstatus["dhc_status"].get<bool>();
-        fprintf(stderr, "%s%s%s DNS hint cache: %s%s%s\n",
-          (dhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (dhc_status) ? ND_I_OK : ND_I_WARN, ND_A_RESET,
-          (dhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (dhc_status) ? "enabled" : "disabled", ND_A_RESET);
+        fprintf(stdout, "%s%s%s DNS hint cache: %s%s%s\n",
+          (dhc_status) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
+          (dhc_status) ? ndTerm::Icon::OK : ndTerm::Icon::WARN,
+          ndTerm::Attr::RESET,
+          (dhc_status) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
+          (dhc_status) ? "enabled" : "disabled",
+          ndTerm::Attr::RESET);
 
         if (dhc_status) {
             json jstats = jstatus["dns_hint_cache"];
@@ -1719,28 +1737,29 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 lookup_miss = jstats["lookup_miss"].get<uint64_t>();
                 lookup_total = lookup_hit + lookup_miss;
 
-                fprintf(stderr,
-                  "%s %s entries: %lu, inserts: "
-                  "%lu "
-                  "(%.01f%%), "
-                  "lookups: %lu (%.01f%%)\n",
-                  ND_I_INFO, "DHC", cache_size, insert_total,
-                  insert_hit_pct, lookup_total, lookup_hit_pct);
+                fprintf(stdout,
+                  "%s %s entries: %lu, inserts: %lu "
+                  "(%.01f%%), lookups: %lu (%.01f%%)\n",
+                  ndTerm::Icon::INFO, "DHC", cache_size,
+                  insert_total, insert_hit_pct,
+                  lookup_total, lookup_hit_pct);
             }
             catch (json::exception &e) {
-                fprintf(stderr,
-                  "%s%s%s error decoding %s "
-                  "status.\n",
-                  ND_C_RED, ND_I_FAIL, ND_A_RESET, "DHC");
+                fprintf(stdout,
+                  "%s%s%s error decoding %s status.\n",
+                  ndTerm::Color::RED, ndTerm::Icon::FAIL,
+                  ndTerm::Attr::RESET, "DHC");
             }
         }
 
         bool fhc_status = jstatus["fhc_status"].get<bool>();
-        fprintf(stderr, "%s%s%s flow hash cache: %s%s%s\n",
-          (fhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (fhc_status) ? ND_I_OK : ND_I_WARN, ND_A_RESET,
-          (fhc_status) ? ND_C_GREEN : ND_C_YELLOW,
-          (fhc_status) ? "enabled" : "disabled", ND_A_RESET);
+        fprintf(stdout, "%s%s%s flow hash cache: %s%s%s\n",
+          (fhc_status) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
+          (fhc_status) ? ndTerm::Icon::OK : ndTerm::Icon::WARN,
+          ndTerm::Attr::RESET,
+          (fhc_status) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
+          (fhc_status) ? "enabled" : "disabled",
+          ndTerm::Attr::RESET);
 
         if (fhc_status) {
             json jstats = jstatus["flow_hash_cache"];
@@ -1768,34 +1787,34 @@ bool ndInstance::DisplayAgentStatus(void) const {
                 lookup_miss = jstats["lookup_miss"].get<uint64_t>();
                 lookup_total = lookup_hit + lookup_miss;
 
-                fprintf(stderr,
-                  "%s %s entries: %lu, inserts: "
-                  "%lu "
-                  "(%.01f%%), "
-                  "lookups: %lu (%.01f%%)\n",
-                  ND_I_INFO, "FHC", cache_size, insert_total,
-                  insert_hit_pct, lookup_total, lookup_hit_pct);
+                fprintf(stdout,
+                  "%s %s entries: %lu, inserts: %lu "
+                  "(%.01f%%), lookups: %lu (%.01f%%)\n",
+                  ndTerm::Icon::INFO, "FHC", cache_size,
+                  insert_total, insert_hit_pct,
+                  lookup_total, lookup_hit_pct);
             }
             catch (json::exception &e) {
-                fprintf(stderr,
-                  "%s%s%s error decoding %s "
-                  "status.\n",
-                  ND_C_RED, ND_I_FAIL, ND_A_RESET, "FHC");
+                fprintf(stdout,
+                  "%s%s%s error decoding %s status.\n",
+                  ndTerm::Color::RED, ndTerm::Icon::FAIL,
+                  ndTerm::Attr::RESET, "FHC");
             }
         }
     }
     catch (exception &e) {
-        fprintf(stderr,
+        fprintf(stdout,
           "%s%s%s agent run-time status exception: "
           "%s%s%s\n",
-          ND_C_RED, ND_I_FAIL, ND_A_RESET, ND_C_RED,
-          e.what(), ND_A_RESET);
+          ndTerm::Color::RED, ndTerm::Icon::FAIL,
+          ndTerm::Attr::RESET, ndTerm::Color::RED, e.what(),
+          ndTerm::Attr::RESET);
     }
 
-    fprintf(stderr, "%s persistent state path: %s\n",
-      ND_I_INFO, ndGC.path_state_persistent.c_str());
-    fprintf(stderr, "%s volatile state path: %s\n",
-      ND_I_INFO, ndGC.path_state_volatile.c_str());
+    fprintf(stdout, "%s persistent state path: %s\n",
+      ndTerm::Icon::INFO, ndGC.path_state_persistent.c_str());
+    fprintf(stdout, "%s volatile state path: %s\n",
+      ndTerm::Icon::INFO, ndGC.path_state_volatile.c_str());
 
     return true;
 }

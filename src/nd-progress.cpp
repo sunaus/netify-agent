@@ -32,10 +32,12 @@ static void nd_progress_spinner(atomic<ndProgress::State> *state,
   const string *message, const string *complete,
   const time_t *delay) {
 
-    cout << ND_A_CURSOR_HIDE << flush;
+    if (! ndTerm::IsTTY()) cout << *message << endl;
+    else cout << ndTerm::Attr::CURSOR_HIDE << flush;
 
     while (*state != ndProgress::State::STOPPED) {
-        if (*state == ndProgress::State::PAUSED) {
+        if (*state == ndProgress::State::PAUSED || ! ndTerm::IsTTY())
+        {
             this_thread::sleep_for(seconds(1));
             continue;
         }
@@ -72,13 +74,17 @@ static void nd_progress_spinner(atomic<ndProgress::State> *state,
           << (nd_progress_chars[rand() % nd_progress_size])
           << "[38;5;" << c << "m"
           << (nd_progress_chars[rand() % nd_progress_size])
-          << ND_A_RESET << " " << *message << flush;
+          << ndTerm::Attr::RESET << " " << *message << flush;
 
         this_thread::sleep_for(microseconds(*delay));
     }
 
-    cout << "\r" << ND_A_CLEAR_EOL << *complete << endl;
-    cout << ND_A_CURSOR_SHOW << ND_A_RESET << flush;
+    if (! ndTerm::IsTTY()) cout << *complete << endl;
+    else {
+        cout << "\r" << ndTerm::Attr::CLEAR_EOL << *complete << endl;
+        cout << ndTerm::Attr::CURSOR_SHOW
+             << ndTerm::Attr::RESET << flush;
+    }
 }
 
 ndProgress::ndProgress(const std::string &message,

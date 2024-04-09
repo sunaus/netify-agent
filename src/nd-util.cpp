@@ -72,6 +72,35 @@ using json = nlohmann::json;
 
 static mutex nd_printf_mutex;
 
+const bool nd_isatty = (isatty(STDOUT_FILENO) == 1 &&
+  isatty(STDERR_FILENO) == 1);
+
+const char *ndTerm::Color::RED =
+  (nd_isatty) ? "\033[0;31m" : "";
+const char *ndTerm::Color::GREEN =
+  (nd_isatty) ? "\033[0;32m" : "";
+const char *ndTerm::Color::YELLOW =
+  (nd_isatty) ? "\033[0;33m" : "";
+
+const char *ndTerm::Attr::RESET = (nd_isatty) ? "\033[0m" : "";
+const char *ndTerm::Attr::CURSOR_HIDE =
+  (nd_isatty) ? "\033[?25l" : "";
+const char *ndTerm::Attr::CURSOR_SHOW =
+  (nd_isatty) ? "\033[?25h" : "";
+const char *ndTerm::Attr::CLEAR_EOL =
+  (nd_isatty) ? "\033[0K" : "";
+
+const char *ndTerm::Icon::INFO = "•";
+const char *ndTerm::Icon::OK = "✓";
+const char *ndTerm::Icon::WARN = "!";
+const char *ndTerm::Icon::FAIL = "✗";
+const char *ndTerm::Icon::NOTE = "↪";
+const char *ndTerm::Icon::RARROW = "→";
+
+bool ndTerm::IsTTY(void) {
+    return nd_isatty;
+}
+
 void *nd_mem_alloc(size_t size) {
     return malloc(size);
 }

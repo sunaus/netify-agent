@@ -43,21 +43,39 @@
 
 constexpr unsigned ND_SHA1_BUFFER = 4096;
 
-constexpr const char *ND_C_RED = "\033[0;31m";
-constexpr const char *ND_C_GREEN = "\033[0;32m";
-constexpr const char *ND_C_YELLOW = "\033[0;33m";
+namespace ndTerm {
 
-constexpr const char *ND_I_INFO = "•";
-constexpr const char *ND_I_OK = "✓";
-constexpr const char *ND_I_WARN = "!";
-constexpr const char *ND_I_FAIL = "✗";
-constexpr const char *ND_I_NOTE = "↪";
-constexpr const char *ND_I_RARROW = "→";
+class Attr
+{
+public:
+    static const char *RESET;
+    static const char *CURSOR_HIDE;
+    static const char *CURSOR_SHOW;
+    static const char *CLEAR_EOL;
+};
 
-constexpr const char *ND_A_RESET = "\033[0m";
-constexpr const char *ND_A_CURSOR_HIDE = "\033[?25l";
-constexpr const char *ND_A_CURSOR_SHOW = "\033[?25h";
-constexpr const char *ND_A_CLEAR_EOL = "\033[0K";
+class Color
+{
+public:
+    static const char *RED;
+    static const char *GREEN;
+    static const char *YELLOW;
+};
+
+class Icon
+{
+public:
+    static const char *INFO;
+    static const char *OK;
+    static const char *WARN;
+    static const char *FAIL;
+    static const char *NOTE;
+    static const char *RARROW;
+};
+
+bool IsTTY(void);
+
+}  // namespace ndTerm
 
 constexpr const char *_ND_LOG_FILE_STAMP = "%Y%m%d-%H%M%S";
 constexpr size_t _ND_LOG_FILE_STAMP_SIZE = sizeof(
