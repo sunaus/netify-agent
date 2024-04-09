@@ -2121,7 +2121,7 @@ bool ndInstance::Reload(bool broadcast) {
           ndPlugin::Event::RELOAD);
     }
 
-    nd_dprintf("%s: configuration reloaded %s.\n",
+    nd_printf("%s: Configuration reloaded %s.\n",
       tag.c_str(), (result) ? "successfully" : "with errors");
 
     return result;

@@ -21,6 +21,7 @@ rcvar="${name}_enable"
 command="%%PREFIX%%/sbin/${name}"
 pidfile="/var/run/${name}/${name}.pid"
 
+extra_commands=reload
 start_precmd="${name}_prestart"
 
 export ASAN_OPTIONS=log_path=/var/run/${name}/${name}-asan.log:atexit=1
