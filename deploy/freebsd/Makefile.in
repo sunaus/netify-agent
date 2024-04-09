@@ -56,6 +56,7 @@ SUB_LIST=PACKAGE_TARNAME=@PACKAGE_TARNAME@
 
 CONFIGURE_ARGS=\
 	MAKE=${GMAKE} YACC=bison \
+	--with-volatilestatedir=/var/run/@PACKAGE_TARNAME@ \
 	--with-pic=inih --disable-libtcmalloc
 
 INSTALL_TARGET=install-strip
