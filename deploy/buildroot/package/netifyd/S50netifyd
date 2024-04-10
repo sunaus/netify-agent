@@ -38,7 +38,7 @@ stop() {
 		done
 
 		if [ -e "/proc/${PID}" ]; then
-			start-stop-daemon -q -K -p "/var/run/netifyd/netifyd.pid"
+			start-stop-daemon -q -K -p "${NETIFY_PID}"
 		fi
 
 		rm -f /var/lock/netifyd
