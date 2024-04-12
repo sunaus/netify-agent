@@ -54,6 +54,9 @@ Debian/11/x86-64:
   extends: .debian_build
   tags:
     - docker
+  only:
+    - tags
+    - web
   variables:
     OS_NAME: debian
     OS_VERSION: 11
@@ -277,7 +280,7 @@ AlmaLinux/9/x86-64:
 
 OpenWrt/19.07/x86-64:
   extends: .openwrt_build
-  when: manual
+  #when: manual
   tags:
     - docker
   variables:
@@ -309,6 +312,9 @@ FreeBSD/13.2/x86-64:
   extends: .freebsd_build
   tags:
     - freebsd13.2
+  only:
+    - tags
+    - web
   variables:
     OS_NAME: freebsd
     OS_ARCH: amd64
