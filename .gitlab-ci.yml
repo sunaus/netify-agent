@@ -138,6 +138,9 @@ Debian/12/x86-64:
   extends: .debian_build
   tags:
     - docker
+  only:
+    - tags
+    - web
   variables:
     OS_NAME: debian
     OS_VERSION: 12
