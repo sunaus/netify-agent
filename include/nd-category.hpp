@@ -58,6 +58,8 @@ public:
     nd_cat_id_t
     ResolveTag(Type type, unsigned id, std::string &tag) const;
 
+    bool GetTag(Type type, nd_cat_id_t id, std::string &tag) const;
+
     nd_cat_id_t LookupDotDirectory(const std::string &domain);
     nd_cat_id_t LookupDotDirectory(const ndAddr &addr);
 

@@ -397,6 +397,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             }
             break;
         case _ND_LO_LOOKUP_IP:
+            break;
         case _ND_LO_EXPORT_APPS:
         case _ND_LO_EXPORT_APPS_LEGACY:
         case _ND_LO_DUMP_PROTOS:
@@ -980,10 +981,20 @@ bool ndInstance::LookupAddress(const string &ip) {
         return false;
     }
 
-    nd_app_id_t id = apps.Find(addr);
+    nd_app_id_t id_app = apps.Find(addr);
+    nd_cat_id_t id_cat = categories.LookupDotDirectory(addr);
 
-    cout << right << setw(6) << id << ": " << left
-         << setw(0) << apps.Lookup(id) << endl;
+    cout << "Application ID:" << endl;
+    cout << right << setw(6) << id_app << ": " << left
+         << setw(0) << apps.Lookup(id_app) << endl;
+
+    string tag;
+    if (! categories.GetTag(ndCategories::Type::APP, id_cat, tag))
+        tag = "unknown";
+
+    cout << "Category ID (" << ndGC.path_categories << ")" << endl;
+    cout << right << setw(6) << id_cat << ": " << left
+         << setw(0) << tag << endl;
 
     return true;
 }
@@ -1109,7 +1120,7 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "by type: application or protocol\n"
           "  --dump-risks\n    Dump flow security risks.\n"
           "  --lookup-ip <addr>\n    Perform application "
-          "query by IP address.\n"
+          "and category query by IP address.\n"
 
           "\nCapture options:\n"
           "  --capture-delay <seconds>\n     Wait "
