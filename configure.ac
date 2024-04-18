@@ -1,5 +1,4 @@
-# Netify Agent
-# GNU Autoconf configuration
+# Netify Agent Autoconf configuration
 
 m4_include([m4/ax_pkg_installdir.m4])
 m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
