@@ -567,5 +567,32 @@ nd_cat_id_t ndCategories::LookupDotDirectory(const string &domain) {
 }
 
 nd_cat_id_t ndCategories::LookupDotDirectory(const ndAddr &addr) {
+    if (addr.IsIPv4()) {
+        ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
+        if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
+              entry, addr))
+        {
+            lock_guard<mutex> ul(lock);
+
+            nd_rn4_cat::iterator it;
+            nd_rn4_cat *rn4 = static_cast<nd_rn4_cat *>(networks4);
+            if ((it = rn4->longest_match(entry)) != rn4->end())
+                return it->second;
+        }
+    }
+    else if (addr.IsIPv6()) {
+        ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
+        if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
+              entry, addr))
+        {
+            lock_guard<mutex> ul(lock);
+
+            nd_rn6_cat::iterator it;
+            nd_rn6_cat *rn6 = static_cast<nd_rn6_cat *>(networks6);
+            if ((it = rn6->longest_match(entry)) != rn6->end())
+                return it->second;
+        }
+    }
+
     return ND_CAT_UNKNOWN;
 }
