@@ -231,7 +231,7 @@ Rocky Linux/9/x86-64:
     - web
   variables:
     OS_NAME: rockylinux
-    OS_VERSION: 8
+    OS_VERSION: 9
     OS_IMAGE: "rockylinux:9"
     OS_ARCH: x86_64
     OS_ARCH_PATH:
