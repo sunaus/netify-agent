@@ -15,8 +15,8 @@
 lib/libnetifyd.so
 lib/libnetifyd.so.4
 lib/libnetifyd.so.4.0.0
-man/man5/netifyd.conf.5.gz
-man/man8/netifyd.8.gz
+share/man/man5/netifyd.conf.5.gz
+share/man/man8/netifyd.8.gz
 sbin/netifyd
 %%DEVEL%%include/netifyd/nd-addr.hpp
 %%DEVEL%%include/netifyd/nd-apps.hpp

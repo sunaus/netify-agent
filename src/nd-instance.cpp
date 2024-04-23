@@ -396,8 +396,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
                   "WARNING: Invalid verbose-flag: %s\n", optarg);
             }
             break;
-        case _ND_LO_LOOKUP_IP:
-            break;
+        case _ND_LO_LOOKUP_IP: break;
         case _ND_LO_EXPORT_APPS:
         case _ND_LO_EXPORT_APPS_LEGACY:
         case _ND_LO_DUMP_PROTOS:

@@ -1,5 +1,4 @@
-# Netify Agent
-# GNU Autoconf configuration
+# Netify Agent Autoconf configuration
 
 m4_include([m4/ax_pkg_installdir.m4])
 m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
@@ -7,7 +6,7 @@ m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
 
 AC_PREREQ([2.69])
-AC_INIT([Netify Agent], [5.0.36],
+AC_INIT([Netify Agent], [5.0.37],
     [https://gitlab.com/netify.ai/public/netify-agent/issues],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
