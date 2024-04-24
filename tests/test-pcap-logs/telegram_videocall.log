@@ -11,7 +11,7 @@ offline0: i4pc-g-----rs-- TCP [OR] 149.154.167.91:443 <-- [L] 192.168.12.169:379
         : RID 52: Fully Encrypted Flow
         : DP: 32
 
-offline0: i4pc-g-----rs-- TCP [OR] 149.154.167.222:443 <-- [L] 192.168.12.169:40830
+offline0: i4pc-g-----rsF- TCP [OR] 149.154.167.222:443 <-- [L] 192.168.12.169:40830
         : Telegram.netify.telegram
         : RID 52: Fully Encrypted Flow
         : DP: 32

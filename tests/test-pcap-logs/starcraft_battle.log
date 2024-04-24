@@ -29,7 +29,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.254:38605 --> [OM] 239.255.255.250:1
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc-------r--- TCP [OR] 173.194.113.224:80 <-- [L] 192.168.1.100:3506
+offline0: i4pc-------r-F- TCP [OR] 173.194.113.224:80 <-- [L] 192.168.1.100:3506
         : HTTP.netify.analytics
         : H: www.google-analytics.com
         : HTTP/UA: Battle.net/1.3.0.5952
@@ -44,7 +44,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.100:60026 --> [OL] 192.168.1.254:53
         : RID 27: Suspicious DGA Domain name
         : DP: 3
 
-offline0: i4pc----d--r--- TCP [OR] 87.248.221.254:80 <-- [L] 192.168.1.100:3508
+offline0: i4pc----d--r-F- TCP [OR] 87.248.221.254:80 <-- [L] 192.168.1.100:3508
         : HTTP.netify.blizzard
         : D: blizzard.vo.llnwd.net H: llnw.blizzard.com
         : HTTP/UA: Blizzard Web Client
@@ -54,7 +54,7 @@ offline0: i4pc----d--r--- TCP [OR] 87.248.221.254:80 <-- [L] 192.168.1.100:3508
         : RID 27: Suspicious DGA Domain name
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 12.129.222.54:80 <-- [L] 192.168.1.100:3512
+offline0: i4pc-------r-F- TCP [OR] 12.129.222.54:80 <-- [L] 192.168.1.100:3512
         : HTTP
         : H: us.scan.worldofwarcraft.com
         : URL: us.scan.worldofwarcraft.com/update/Launcher.txt
@@ -103,7 +103,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.100:53145 --> [OL] 192.168.1.254:53
         : H: nydus.battle.net
         : DP: 3
 
-offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3515
+offline0: i4pc----d--r-F- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3515
         : HTTP.netify.blizzard
         : D: nydus.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -111,7 +111,7 @@ offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3515
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3516
+offline0: i4pc-------r-F- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3516
         : HTTP.netify.blizzard
         : H: eu.launcher.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -119,7 +119,7 @@ offline0: i4pc-------r--- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3516
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3518
+offline0: i4pc----d--r-F- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3518
         : HTTP.netify.blizzard
         : D: nydus.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -131,7 +131,7 @@ offline0: i4pc----------- TCP [L] 192.168.1.100:3517 --> [OR] 213.248.127.130:11
         : Starcraft
         : DP: 4
 
-offline0: i4pc-------r--- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3519
+offline0: i4pc-------r-F- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3519
         : HTTP.netify.blizzard
         : H: eu.launcher.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -139,7 +139,7 @@ offline0: i4pc-------r--- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3519
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3521
+offline0: i4pc----d--r-F- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3521
         : HTTP.netify.blizzard
         : D: nydus.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -147,7 +147,7 @@ offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3521
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3522
+offline0: i4pc-------r-F- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3522
         : HTTP.netify.blizzard
         : H: eu.launcher.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -155,7 +155,7 @@ offline0: i4pc-------r--- TCP [OR] 80.239.186.21:80 <-- [L] 192.168.1.100:3522
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3523
+offline0: i4pc----d--r-F- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3523
         : HTTP.netify.blizzard
         : D: nydus.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -163,7 +163,7 @@ offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3523
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3524
+offline0: i4pc----d--r-F- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3524
         : HTTP.netify.blizzard
         : D: nydus.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -171,7 +171,7 @@ offline0: i4pc----d--r--- TCP [OR] 80.239.186.26:80 <-- [L] 192.168.1.100:3524
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 80.239.186.40:80 <-- [L] 192.168.1.100:3525
+offline0: i4pc-------r-F- TCP [OR] 80.239.186.40:80 <-- [L] 192.168.1.100:3525
         : HTTP.netify.blizzard
         : H: eu.battle.net
         : HTTP/UA: Battle.net Web Client
@@ -179,7 +179,7 @@ offline0: i4pc-------r--- TCP [OR] 80.239.186.40:80 <-- [L] 192.168.1.100:3525
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 80.239.186.40:80 <-- [L] 192.168.1.100:3526
+offline0: i4pc-------r-F- TCP [OR] 80.239.186.40:80 <-- [L] 192.168.1.100:3526
         : HTTP.netify.blizzard
         : H: eu.battle.net
         : HTTP/UA: Battle.net Web Client

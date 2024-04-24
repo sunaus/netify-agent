@@ -165,7 +165,8 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2753
         : DP: 2
 
 offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2755
-        : DNS
+        : DNS.netify.reverse-dns
+        : H: 1.0.0.127.in-addr.arpa
         : DP: 2
 
 offline0: i4pc-------r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2757
@@ -1295,6 +1296,7 @@ offline0: i4pc-gx----r--- UDP [OR] 128.168.1.2:2810 --> [L] 192.168.1.1:53
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2772
         : DNS
+        : H: _sip
         : RID 15: Text With Non-Printable Characters
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic

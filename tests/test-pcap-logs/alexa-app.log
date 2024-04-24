@@ -1063,7 +1063,7 @@ offline0: i4pc----d--r-F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:58048
         : DP: 7
 
 offline0: i4pcu---d--r--- TCP [OR] 52.85.209.143:443 <-- [L] 172.16.42.216:38483
-        : HTTP/S.netify.amazon
+        : HTTP/S.netify.amazon-cloudfront
         : D: d3ag4hukkh62yn.cloudfront.net
         : V: 0x0303 CS: 0xc02f
         : TLS/CN: www.amazon.com

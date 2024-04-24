@@ -10,9 +10,9 @@ offline0: i4pcu------r--- TCP [OR] 173.252.107.4:443 <-- [L] 192.168.0.103:56382
         : RID 36: Obsolete TLS (v1.1 or older)
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 46.33.70.160:80 <-- [L] 192.168.0.103:38816
+offline0: i4pc----d--r--- TCP [OR] 46.33.70.160:80 <-- [L] 192.168.0.103:38816
         : HTTP.netify.instagram
-        : H: photos-h.ak.instagram.com
+        : D: a1408.dspw43.akamai.net H: photos-h.ak.instagram.com
         : HTTP/UA: Instagram 7.1.1 Android (19/4.4.2; 480dpi; 1080x1920; samsung; GT-I9505; jflte; qcom; it_IT)
         : URL: photos-h.ak.instagram.com/hphotos-ak-xap1/t51.2885-15/e35/10859994_1009433792434447_1627646062_n.jpg?se=7
         : RID 14: HTTP Suspicious User-Agent
@@ -26,7 +26,7 @@ offline0: i4pc-------r--- TCP [OR] 82.85.26.162:80 <-- [L] 192.168.0.103:57936
         : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 82.85.26.186:80 <-- [L] 192.168.0.103:44379
+offline0: i4pc---------F- TCP [OR] 82.85.26.186:80 <-- [L] 192.168.0.103:44379
         : HTTP.netify.instagram
         : H: photos-e.ak.instagram.com
         : HTTP/UA: Instagram 7.1.1 Android (19/4.4.2; 480dpi; 1080x1920; samsung; GT-I9505; jflte; qcom; it_IT)

@@ -156,7 +156,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80a::200e:443 <-- [L] 2a01:cb0
         : DP: 6
 
 offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:7a6e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40114
-        : HTTP/S.netify.fastly
+        : HTTP/S.netify.new-relic
         : H: js-agent.newrelic.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: js-agent.newrelic.com TLS/CN: f4.shared.global.fastly.net

@@ -13,7 +13,7 @@ offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:62872
         : H: mapi.apptimize.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36986
+offline0: i4pcu---d--r--- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36986
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: mapi.apptimize.com
         : V: 0x0303 CS: 0xc02f
@@ -22,7 +22,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36986
         : RID 30: TLS Certificate Expired
         : DP: 9
 
-offline0: i4pc----d----F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36988
+offline0: i4pc----d------ TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36988
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: mapi.apptimize.com
         : V: 0x0303
@@ -99,7 +99,7 @@ offline0: i4pc-------r--- UDP [OR] 18.201.4.32:7987 <-- [L] 192.168.0.17:47171
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.187.91.182:443 <-- [L] 192.168.0.17:49048
+offline0: i4pcu---d--r--- TCP [OR] 54.187.91.182:443 <-- [L] 192.168.0.17:49048
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: brahe.apptimize.com
         : V: 0x0303 CS: 0xc02f

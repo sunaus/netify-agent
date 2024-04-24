@@ -36,22 +36,23 @@ offline0: i4pc----d--r--- UDP [L] 192.168.1.103:57591 --> [OR] 216.58.198.46:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54089 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54089 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pc----------- TCP [L] 192.168.1.103:54058 --> [OR] 203.205.151.162:443
-        : HTTP/S
+offline0: i4pc----d------ TCP [L] 192.168.1.103:54058 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
+        : D: web1.wechat.com
         : DP: 3
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54090 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54090 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
@@ -68,67 +69,68 @@ offline0: i6pc----------- UDP [L] fe80::7a92:9cff:fe0f:a88e:5353 --> [OM] ff02::
         : H: _googlecast._tcp.local
         : DP: 6
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54091 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54091 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54092 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54092 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54094 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54094 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54095 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54095 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
         : RID 30: TLS Certificate Expired
         : DP: 10
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54096 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54096 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54097 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54097 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pc----------- TCP [L] 192.168.1.103:40740 --> [OR] 203.205.151.211:443
-        : HTTP/S
+offline0: i4pc----d----F- TCP [L] 192.168.1.103:40740 --> [OR] 203.205.151.211:443
+        : HTTP/S.netify.qq
+        : D: ssd.tcdn.qq.com
         : DP: 3
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54098 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54098 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
@@ -147,9 +149,9 @@ offline0: i4pc----------- IGMP [L] 192.168.1.103:0 --> [OM] 224.0.0.22:0
         : IGMP
         : DP: 1
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.103:54099 --> [OR] 203.205.151.162:443
+offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54099 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : H: web.wechat.com
+        : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com

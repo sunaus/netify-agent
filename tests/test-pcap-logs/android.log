@@ -14,7 +14,7 @@ offline0: i4pc----------- UDP [L] 0.0.0.0:68 --> [OB] 255.255.255.255:67
         : DHCP/FP: 1,121,3,6,15,119,252,95,44,46
         : DP: 1
 
-offline0: i4pc-------r-F- TCP [OR] 17.248.185.10:443 <-- [L] 192.168.2.17:50702
+offline0: i4pc-------r--- TCP [OR] 17.248.185.10:443 <-- [L] 192.168.2.17:50702
         : HTTP/S.netify.apple
         : RID 46: Unidirectional Traffic
         : DP: 1

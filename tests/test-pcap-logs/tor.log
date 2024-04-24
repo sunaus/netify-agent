@@ -1,4 +1,4 @@
-offline0: i4pcu------r-F- TCP [OR] 91.143.93.242:443 <-- [L] 192.168.1.252:51110
+offline0: i4pcu------r--- TCP [OR] 91.143.93.242:443 <-- [L] 192.168.1.252:51110
         : HTTP/S
         : H: www.ct7ctrgb6cr7.com
         : V: 0x0301 CS: 0xc013
@@ -8,7 +8,7 @@ offline0: i4pcu------r-F- TCP [OR] 91.143.93.242:443 <-- [L] 192.168.1.252:51110
         : RID 36: Obsolete TLS (v1.1 or older)
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [OR] 46.59.52.31:443 <-- [L] 192.168.1.252:51111
+offline0: i4pcu------r--- TCP [OR] 46.59.52.31:443 <-- [L] 192.168.1.252:51111
         : HTTP/S
         : H: www.e6r5p57kbafwrxj3plz.com
         : V: 0x0301 CS: 0xc013
@@ -42,7 +42,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.252:138 --> [OL] 192.168.1.255:138
         : RID 42: Unsafe Protocol
         : DP: 1
 
-offline0: i4pcu------r-F- TCP [L] 192.168.1.252:51174 --> [OR] 212.83.155.250:443
+offline0: i4pcu------r--- TCP [L] 192.168.1.252:51174 --> [OR] 212.83.155.250:443
         : HTTP/S
         : H: www.t3i3ru.com
         : V: 0x0301 CS: 0xc013
@@ -52,7 +52,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.1.252:51174 --> [OR] 212.83.155.250:44
         : RID 36: Obsolete TLS (v1.1 or older)
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [OR] 91.143.93.242:443 <-- [L] 192.168.1.252:51175
+offline0: i4pcu------r--- TCP [OR] 91.143.93.242:443 <-- [L] 192.168.1.252:51175
         : HTTP/S
         : H: www.gfu7hbxpfp.com
         : V: 0x0301 CS: 0xc013
@@ -74,7 +74,7 @@ offline0: i4pcu------r--- TCP [OR] 38.229.70.53:443 <-- [L] 192.168.1.252:51176
         : RID 36: Obsolete TLS (v1.1 or older)
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [OR] 62.210.137.230:443 <-- [L] 192.168.1.252:51185
+offline0: i4pcu------r--- TCP [OR] 62.210.137.230:443 <-- [L] 192.168.1.252:51185
         : HTTP/S
         : H: www.6gyip7tqim7sieb.com
         : V: 0x0301 CS: 0xc013

@@ -2,12 +2,6 @@ offline0: i6pc----------- UDP [OR] 20ed:470f:6f73:ce60:60be:8b4f:df37:b080:45658
         : STUN
         : DP: 12
 
-offline0: i6pc-------r--- UDP [OR] 3024:e5ee:ac2f:cd76:5dd6:a7a1:f17f:5c27:60506 --> [L] 3991:72d:336e:65ec:c5bf:a5fa:83ad:23de:6881
-        : BitTorrent
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 8
-
 offline0: i6pc-------r--- UDP [OR] 2a2f:8509:1cb2:466d:ecbf:69d6:109c:608:62229 --> [L] 3991:72d:336e:65ec:c5bf:a5fa:83ad:23de:6881
         : BitTorrent
         : RID 16: Known Protocol on Non-standard Port
@@ -62,9 +56,13 @@ offline0: i6pc--x----r--- UDP [OR] 38b2:46b7:27a4:94c3:c134:948:e069:d71f:1 <-- 
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i6pc--x----r--- UDP [OR] 2c7f:d7a0:44a9:49e9:e586:fb7f:5b85:9c83:1 <-- [L] 3991:72d:336e:65ec:c5bf:a5fa:83ad:23de:6881
-        : BitTorrent
-        : RID 16: Known Protocol on Non-standard Port
+offline0: i6pc-gx----r--- UDP [OR] 3024:e5ee:ac2f:cd76:5dd6:a7a1:f17f:5c27:60506 --> [L] 3991:72d:336e:65ec:c5bf:a5fa:83ad:23de:6881
+        : Unknown
+        : RID 46: Unidirectional Traffic
+        : DP: 11
+
+offline0: i6pc-gx----r--- UDP [OR] 2c7f:d7a0:44a9:49e9:e586:fb7f:5b85:9c83:1 <-- [L] 3991:72d:336e:65ec:c5bf:a5fa:83ad:23de:6881
+        : Unknown
         : RID 46: Unidirectional Traffic
         : DP: 1
 

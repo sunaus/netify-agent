@@ -1,5 +1,5 @@
 offline0: i4pcu------r--- TCP [L] 10.0.2.15:42834 --> [OR] 162.159.128.233:443
-        : HTTP/S.netify.cloudflare
+        : HTTP/S.netify.discord
         : H: discord.com
         : V: 0x0303 CS: 0xc02b
         : TLS/SNI: discord.com TLS/CN: sni.cloudflaressl.com

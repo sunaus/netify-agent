@@ -177,7 +177,7 @@ offline0: i4pc----d------ TCP [OR] 52.114.77.58:443 <-- [L] 192.168.1.6:60545
         : TLS/SNI: presence.teams.microsoft.com
         : DP: 5
 
-offline0: i4pcu------r--- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.6:60546
+offline0: i4pcu------r-F- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.6:60546
         : TLS
         : H: dati.ntop.org
         : V: 0x0303 CS: 0xc030

@@ -5,14 +5,14 @@ offline0: i4pcu---------- TCP [OR] 69.171.250.20:443 <-- [L] 192.168.12.169:4616
         : TLS/SNI: edge-mqtt.facebook.com
         : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 92.122.95.99:443 <-- [L] 192.168.1.250:41878
+offline0: i4pcu--------F- TCP [OR] 92.122.95.99:443 <-- [L] 192.168.1.250:41878
         : HTTP/S.netify.tiktok
         : H: vcs-va.tiktokv.com
         : V: 0x0303 CS: 0x1302
         : TLS/SNI: vcs-va.tiktokv.com
         : DP: 6
 
-offline0: i4pcu------r--- TCP [OR] 52.73.71.226:443 <-- [L] 192.168.1.227:50071
+offline0: i4pcu------r-F- TCP [OR] 52.73.71.226:443 <-- [L] 192.168.1.227:50071
         : HTTP/S
         : H: presence.fuze.com
         : V: 0x0303 CS: 0xc02f
@@ -21,14 +21,14 @@ offline0: i4pcu------r--- TCP [OR] 52.73.71.226:443 <-- [L] 192.168.1.227:50071
         : RID 30: TLS Certificate Expired
         : DP: 9
 
-offline0: i4pcu---------- TCP [OR] 91.198.174.208:443 <-- [L] 192.168.1.128:50620
+offline0: i4pcu--------F- TCP [OR] 91.198.174.208:443 <-- [L] 192.168.1.128:50620
         : HTTP/S.netify.wikimedia
         : H: upload.wikimedia.org
         : V: 0x0303 CS: 0x1302
         : TLS/SNI: upload.wikimedia.org
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
+offline0: i4pc-------r-F- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
         : HTTP.netify.likee
         : H: videosnap.like.video
         : HTTP/UA: Like-Android
@@ -36,7 +36,7 @@ offline0: i4pc-------r--- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.128:46724 --> [OR] 199.232.82.109:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.128:46724 --> [OR] 199.232.82.109:443
         : HTTP/S.netify.vimeo
         : H: f.vimeocdn.com
         : V: 0x0303 CS: 0xc02f
@@ -45,14 +45,14 @@ offline0: i4pcu------r--- TCP [L] 192.168.1.128:46724 --> [OR] 199.232.82.109:44
         : RID 30: TLS Certificate Expired
         : DP: 10
 
-offline0: i4pcu---------- TCP [OR] 143.204.9.65:443 <-- [L] 192.168.1.128:48918
+offline0: i4pcu--------F- TCP [OR] 143.204.9.65:443 <-- [L] 192.168.1.128:48918
         : HTTP/S.netify.disney-plus
         : H: prod-static.disney-plus.net
         : V: 0x0303 CS: 0x1301
         : TLS/SNI: prod-static.disney-plus.net
         : DP: 8
 
-offline0: i4pcu---------- TCP [OR] 23.12.104.83:443 <-- [L] 192.168.12.169:39248
+offline0: i4pcu--------F- TCP [OR] 23.12.104.83:443 <-- [L] 192.168.12.169:39248
         : HTTP/S.netify.accuweather
         : H: api.accuweather.com
         : V: 0x0303 CS: 0x1302

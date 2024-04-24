@@ -6,7 +6,7 @@ offline0: i4pc----------- TCP [L] 10.200.3.125:57841 --> [OR] 147.92.165.194:443
         : HTTP/S.netify.line
         : DP: 5
 
-offline0: i4pcu------r--- TCP [L] 10.200.3.125:58160 --> [OR] 147.92.242.232:443
+offline0: i4pcu------r-F- TCP [L] 10.200.3.125:58160 --> [OR] 147.92.242.232:443
         : HTTP/S.netify.line
         : H: uts-front.line-apps.com
         : V: 0x0303 CS: 0xc030
