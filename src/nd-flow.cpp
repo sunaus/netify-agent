@@ -357,12 +357,15 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
           << (risk.risks.empty() ? '-' : 'r')
           << (flags.soft_dissector.load() ? 's' : '-')
           << (tcp.fin_ack.load() ? 'F' : '-')
-          << (ndFlagBoolean(privacy_mask, PrivacyMask::LOWER) ?
+          << (ndFlagBoolean(privacy_mask,
+                (PrivacyMask::LOWER_MAC | PrivacyMask::LOWER_IP)) ?
                  'v' :
-                 ndFlagBoolean(privacy_mask, PrivacyMask::UPPER) ?
+                 ndFlagBoolean(privacy_mask,
+                   (PrivacyMask::UPPER_MAC | PrivacyMask::UPPER_IP)) ?
                  'V' :
                  ndFlagBoolean(privacy_mask,
-                   (PrivacyMask::LOWER | PrivacyMask::UPPER)) ?
+                   (PrivacyMask::LOWER_MAC | PrivacyMask::LOWER_IP |
+                     PrivacyMask::UPPER_MAC | PrivacyMask::UPPER_IP)) ?
                  '?' :
                  '-')
           << " ";

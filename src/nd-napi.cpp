@@ -679,8 +679,8 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
                 jstatus["bootstrap"]["code"] = 0;
                 jstatus["bootstrap"]["message"] =
                   "Site provisioned";
-                nd_dprintf(
-                  "netify-api: set new Site UUID: %s\n",
+                nd_printf(
+                  "netify-api: Site UUID provisioned: %s\n",
                   new_uuid.c_str());
             }
             return false;

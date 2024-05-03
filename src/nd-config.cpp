@@ -332,15 +332,6 @@ bool ndGlobalConfig::Load(const string &filename) {
 
         if (mac_addr.size() == 0) break;
 
-        /*
-    if (mac_addr.size() != ND_STR_ETHALEN) continue;
-
-    uint8_t mac[ETH_ALEN], *p = mac;
-    const char *a = mac_addr.c_str();
-    for (int j = 0; j < ND_STR_ETHALEN; j += 3, p++)
-        sscanf(a + j, "%2hhx", p);
-    p = new uint8_t[ETH_ALEN];
-    */
         uint8_t mac[ETH_ALEN];
         if (nd_string_to_mac(mac_addr, mac)) {
             uint8_t *p = new uint8_t[ETH_ALEN];
@@ -372,9 +363,9 @@ bool ndGlobalConfig::Load(const string &filename) {
         }
 
         for (rp = result; rp != NULL; rp = rp->ai_next) {
-            struct sockaddr *saddr =
-              reinterpret_cast<struct sockaddr *>(
-                new uint8_t[rp->ai_addrlen]);
+            struct sockaddr *saddr = new struct sockaddr;
+            //reinterpret_cast<struct sockaddr *>(
+            //  new uint8_t[rp->ai_addrlen]);
             memcpy(saddr, rp->ai_addr, rp->ai_addrlen);
             privacy_filter_host.push_back(saddr);
         }

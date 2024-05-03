@@ -189,8 +189,10 @@ public:
 
     enum class PrivacyMask : uint8_t {
         NONE = 0,
-        LOWER = (1 << 0),
-        UPPER = (1 << 1)
+        LOWER_MAC = (1 << 0),
+        UPPER_MAC = (1 << 1),
+        UPPER_IP = (1 << 2),
+        LOWER_IP = (1 << 3)
     };
 
     ndFlags<PrivacyMask> privacy_mask = { PrivacyMask::NONE };
@@ -508,19 +510,19 @@ public:
             // 00-52-14 to 00-52-FF: Unserialized (small
             // allocations)
             serialize(output, { _lower_mac },
-              ndFlagBoolean(privacy_mask, PrivacyMask::LOWER) ?
+              ndFlagBoolean(privacy_mask, PrivacyMask::LOWER_MAC) ?
                 "00:52:14:00:00:00" :
                 (lower_mac.IsValid()) ?
                 lower_mac.GetString() :
                 "00:00:00:00:00:00");
             serialize(output, { _upper_mac },
-              ndFlagBoolean(privacy_mask, PrivacyMask::UPPER) ?
+              ndFlagBoolean(privacy_mask, PrivacyMask::UPPER_MAC) ?
                 "00:52:ff:00:00:00" :
                 (upper_mac.IsValid()) ?
                 upper_mac.GetString() :
                 "00:00:00:00:00:00");
 
-            if (ndFlagBoolean(privacy_mask, PrivacyMask::LOWER))
+            if (ndFlagBoolean(privacy_mask, PrivacyMask::LOWER_IP))
             {
                 if (ip_version == 4)
                     serialize(output, { _lower_ip },
@@ -533,7 +535,7 @@ public:
                 serialize(output, { _lower_ip },
                   lower_addr.GetString());
 
-            if (ndFlagBoolean(privacy_mask, PrivacyMask::UPPER))
+            if (ndFlagBoolean(privacy_mask, PrivacyMask::UPPER_IP))
             {
                 if (ip_version == 4)
                     serialize(output, { _upper_ip },

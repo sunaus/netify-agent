@@ -1074,19 +1074,19 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         ndGC.privacy_filter_mac.begin();
       i != ndGC.privacy_filter_mac.end() &&
       ndEF->privacy_mask !=
-        (ndFlow::PrivacyMask::LOWER | ndFlow::PrivacyMask::UPPER);
+        (ndFlow::PrivacyMask::LOWER_MAC | ndFlow::PrivacyMask::UPPER_MAC);
       i++)
     {
 #if defined(__linux__)
         if (! memcmp((*i), ndEF->lower_mac.addr.ll.sll_addr, ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER_MAC;
         if (! memcmp((*i), ndEF->upper_mac.addr.ll.sll_addr, ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER_MAC;
 #elif defined(__FreeBSD__)
         if (! memcmp((*i), LLADDR(&ndEF->lower_mac.addr.dl), ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER_MAC;
         if (! memcmp((*i), LLADDR(&ndEF->upper_mac.addr.dl), ETH_ALEN))
-            ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
+            ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER_MAC;
 #endif
     }
 
@@ -1095,7 +1095,7 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         ndGC.privacy_filter_host.begin();
       i != ndGC.privacy_filter_host.end() &&
       ndEF->privacy_mask !=
-        (ndFlow::PrivacyMask::LOWER | ndFlow::PrivacyMask::UPPER);
+        (ndFlow::PrivacyMask::LOWER_IP | ndFlow::PrivacyMask::UPPER_IP);
       i++)
     {
         struct sockaddr_in *sa_in;
@@ -1107,22 +1107,22 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
             if (! memcmp(&ndEF->lower_addr.addr.in.sin_addr,
                   &sa_in->sin_addr,
                   sizeof(struct in_addr)))
-                ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER_IP;
             if (! memcmp(&ndEF->upper_addr.addr.in.sin_addr,
                   &sa_in->sin_addr,
                   sizeof(struct in_addr)))
-                ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER_IP;
             break;
         case AF_INET6:
             sa_in6 = reinterpret_cast<struct sockaddr_in6 *>((*i));
             if (! memcmp(&ndEF->lower_addr.addr.in6.sin6_addr,
                   &sa_in6->sin6_addr,
                   sizeof(struct in6_addr)))
-                ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::LOWER_IP;
             if (! memcmp(&ndEF->upper_addr.addr.in6.sin6_addr,
                   &sa_in6->sin6_addr,
                   sizeof(struct in6_addr)))
-                ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER;
+                ndEF->privacy_mask |= ndFlow::PrivacyMask::UPPER_IP;
             break;
         }
 
