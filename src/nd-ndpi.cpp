@@ -107,9 +107,10 @@ void ndpi_global_init(void) {
         if (proto == ndProto::Id::UNKNOWN) {
             id = ndProto::nDPI::Find(static_cast<ndProto::Id>(
               strtoul(it.first.c_str(), nullptr, 0)));
-
-            if (id == NDPI_PROTOCOL_UNKNOWN) continue;
         }
+        else id = ndProto::nDPI::Find(proto);
+
+        if (id == NDPI_PROTOCOL_UNKNOWN) continue;
 
         switch (action) {
         case 0:
