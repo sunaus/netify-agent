@@ -49,8 +49,7 @@ Debian/10/x86-64:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
+    CONFIGURE_EXTRA_FLAGS: ''
 
 Debian/11/x86-64:
   extends: .debian_build
@@ -182,8 +181,7 @@ Ubuntu/20.04/x86-64:
       value: binary-$OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: byacc
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
+    CONFIGURE_EXTRA_FLAGS: ''
 
 Ubuntu/22.04/x86-64:
   extends: .debian_build
