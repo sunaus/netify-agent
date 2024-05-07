@@ -48,7 +48,9 @@ Debian/10/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: flex libnetfilter-queue-dev
+    OS_EXTRA_PACKAGES: flex
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Debian/11/x86-64:
   extends: .debian_build
@@ -62,7 +64,8 @@ Debian/11/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: libnetfilter-queue-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Debian/11/x86-32:
   extends: .debian_build
@@ -79,7 +82,9 @@ Debian/11/x86-32:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex libnetfilter-queue-dev
+    OS_EXTRA_PACKAGES: byacc flex
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Debian/11/ARM-32v5:
   extends: .debian_build
@@ -97,7 +102,9 @@ Debian/11/ARM-32v5:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex libnetfilter-queue-dev
+    OS_EXTRA_PACKAGES: byacc flex
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Debian/11/ARM-32v7:
   extends: .debian_build
@@ -115,7 +122,9 @@ Debian/11/ARM-32v7:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex libnetfilter-queue-dev
+    OS_EXTRA_PACKAGES: byacc flex
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Debian/11/ARM-64v8:
   extends: .debian_build
@@ -133,7 +142,9 @@ Debian/11/ARM-64v8:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex libnetfilter-queue-dev
+    OS_EXTRA_PACKAGES: byacc flex
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Debian/12/x86-64:
   extends: .debian_build
@@ -150,7 +161,8 @@ Debian/12/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: libnetfilter-queue-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 # Ubuntu Targets
 
@@ -169,7 +181,9 @@ Ubuntu/20.04/x86-64:
     OS_ARCH_PATH:
       value: binary-$OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc libnetfilter-queue-dev
+    OS_EXTRA_PACKAGES: byacc
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Ubuntu/22.04/x86-64:
   extends: .debian_build
@@ -186,7 +200,9 @@ Ubuntu/22.04/x86-64:
     OS_ARCH_PATH:
       value: binary-$OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex libnetfilter-queue-dev
+    OS_EXTRA_PACKAGES: byacc flex
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 # RedHat Targets
 
@@ -206,7 +222,8 @@ CentOS/7/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: libnetfilter_queue-devel
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Rocky Linux/8/x86-64:
   extends: .rhel_build
@@ -224,7 +241,8 @@ Rocky Linux/8/x86-64:
       value: $OS_ARCH
       expand: true
     OS_REPOS: --enablerepo=powertools,epel
-    OS_EXTRA_PACKAGES: libnetfilter_queue-devel
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 Rocky Linux/9/x86-64:
   extends: .rhel_build
@@ -242,7 +260,8 @@ Rocky Linux/9/x86-64:
       value: $OS_ARCH
       expand: true
     OS_REPOS: --enablerepo=crb
-    OS_EXTRA_PACKAGES: libnetfilter_queue-devel
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 AlmaLinux/8/x86-64:
   extends: .rhel_build
@@ -260,7 +279,8 @@ AlmaLinux/8/x86-64:
       value: $OS_ARCH
       expand: true
     OS_REPOS: --enablerepo=powertools,epel
-    OS_EXTRA_PACKAGES: libnetfilter_queue-devel
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 AlmaLinux/9/x86-64:
   extends: .rhel_build
@@ -278,7 +298,8 @@ AlmaLinux/9/x86-64:
       value: $OS_ARCH
       expand: true
     OS_REPOS: --enablerepo=crb
-    OS_EXTRA_PACKAGES: libnetfilter_queue-devel
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
 
 # FreeBSD Targets
 
