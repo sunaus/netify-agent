@@ -118,9 +118,11 @@ define Package/@PACKAGE_TARNAME@/install
 	$(INSTALL_DIR) $(1)/etc/netifyd/plugins.d
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/deploy/netify-apps.conf $(1)/etc/netifyd
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/deploy/netify-categories.json $(1)/etc/netifyd
-	$(INSTALL_DIR) $(1)/usr/share/netifyd
+	$(INSTALL_DIR) $(1)/usr/share/netifyd/plugins.d
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/deploy/functions.sh $(1)/usr/share/netifyd
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/deploy/netify-apps.conf $(1)/usr/share/netifyd
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/deploy/*.json $(1)/usr/share/netifyd
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/deploy/plugins.d/*.conf $(1)/usr/share/netifyd/plugins.d
 endef
 
 $(eval $(call BuildPackage,@PACKAGE_TARNAME@))
