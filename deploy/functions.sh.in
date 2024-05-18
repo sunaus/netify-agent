@@ -199,6 +199,20 @@ restart_netifyd()
     exec $(printf "$FMT" "$CMD")
 }
 
+config_enable_informatics()
+{
+    if grep -E -i -q '^auto_informatics = (no|0|false)' $1; then
+        sed -i -e 's/^auto_informatics.*/auto_informatics = yes/' $1
+    fi
+}
+
+config_disable_informatics()
+{
+    if grep -E -i -q '^auto_informatics = (yes|1|true)' $1; then
+        sed -i -e 's/^auto_informatics.*/auto_informatics = no/' $1
+    fi
+}
+
 config_enable_plugin()
 {
     if grep -E -i -q '^enable = (no|0|false)' $1; then

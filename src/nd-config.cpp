@@ -156,6 +156,9 @@ bool ndGlobalConfig::Load(const string &filename) {
     string value;
 
     // Netify section
+    ndGC_SetFlag(ndGlobalFlags::AUTO_INFORMATICS,
+      r->GetBoolean("netifyd", "auto_informatics", false));
+
     if (uuid.empty())
         uuid = r->Get("netifyd", "uuid", ND_AGENT_UUID_NULL);
 

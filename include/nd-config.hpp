@@ -128,6 +128,7 @@ enum class ndGlobalFlags : uint32_t {
     SOFT_DISSECTORS = (1 << 24),
     DOTD_CATEGORIES = (1 << 25),
     RUN_WITHOUT_SOURCES = (1 << 26),
+    AUTO_INFORMATICS = (1 << 27),
 };
 
 #define ndGC_DEBUG \
@@ -208,6 +209,9 @@ enum class ndGlobalFlags : uint32_t {
 #define ndGC_RUN_WITHOUT_SOURCES \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::RUN_WITHOUT_SOURCES)
+#define ndGC_AUTO_INFORMATICS \
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::AUTO_INFORMATICS)
 
 #define ndGC ndGlobalConfig::GetInstance()
 

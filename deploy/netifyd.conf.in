@@ -28,12 +28,17 @@ path_pid_file = ${path_state_volatile}/netifyd.pid
 # Path to shared data files
 path_shared_data = @sharedatadir@
 
+# Enable automatic Netify Informatics integration.  This option is intended to
+# be managed exclusively by the --enable/disable-informatics command-line
+# parameters.
+auto_informatics = no
+
 # Netify Informatics/API Integration
 # https://www.netify.ai/products/netify-informatics
 ##############################################################################
 [netify-api]
 
-# Enable/disable integration with Netify Informatics
+# Enable/disable API integration with Netify Informatics
 enable = no
 
 # Protocol Dissector Options

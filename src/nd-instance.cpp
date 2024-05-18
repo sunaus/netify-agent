@@ -660,7 +660,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 bool ndInstance::InitializeTimers(int sig_update, int sig_update_napi) {
     try {
         timer_update.Create(sig_update);
-        if (ndGC_USE_NAPI)
+        if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS)
             timer_update_napi.Create(sig_update_napi);
     }
     catch (exception &e) {
@@ -807,8 +807,21 @@ bool ndInstance::EnablePlugin(const string &tag, bool enable) const {
 bool ndInstance::EnableInformatics(bool enable) const {
     ndGC.Load(conf_filename);
 
+    string output;
+    int rc = nd_functions_exec(
+      (enable) ? "config_enable_informatics" : "config_disable_informatics",
+      conf_filename, output);
+
+    if (rc != 0) {
+        cerr << "WARNING: Error "
+             << ((enable) ? "enabling" : "disabling")
+             << " \"auto_informatics\" in: " << conf_filename
+             << endl;
+        if (ndGC_DEBUG) cerr << output;
+    }
+
     if (! enable) {
-        int rc = (int)EnablePlugin("proc-core-auto", false);
+        rc = (int)EnablePlugin("proc-core-auto", false);
         rc += (int)EnablePlugin("sink-http-auto", false);
 
         if (rc == 0) {
@@ -1237,7 +1250,7 @@ bool ndInstance::SaveAgentStatus(const ndCaptureThreads &threads,
             jstatus["flow_hash_cache"] = jstats;
         }
 
-        if (ndGC_USE_NAPI) {
+        if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
             json jnetify_api;
             jstatus["netify_api"] = api_manager.GetStatus();
         }
@@ -1473,14 +1486,22 @@ bool ndInstance::DisplayAgentStatus(void) const {
         }
 
         fprintf(stdout, "%s%s%s API updates: %s%s%s\n",
-          (ndGC_USE_NAPI) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
-          (ndGC_USE_NAPI) ? ndTerm::Icon::INFO : ndTerm::Icon::WARN,
+          (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) ?
+            ndTerm::Color::GREEN :
+            ndTerm::Color::YELLOW,
+          (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) ?
+            ndTerm::Icon::INFO :
+            ndTerm::Icon::WARN,
           ndTerm::Attr::RESET,
-          (ndGC_USE_NAPI) ? ndTerm::Color::GREEN : ndTerm::Color::YELLOW,
-          (ndGC_USE_NAPI) ? "enabled" : "disabled",
+          (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) ?
+            ndTerm::Color::GREEN :
+            ndTerm::Color::YELLOW,
+          (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) ?
+            "enabled" :
+            "disabled",
           ndTerm::Attr::RESET);
 
-        if (! ndGC_USE_NAPI) {
+        if (! ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
             fprintf(stdout,
               "  %s Netify API updates can be enabled from "
               "the configuration file:\n    %s\n",
@@ -2010,7 +2031,7 @@ void *ndInstance::ndInstance::Entry(void) {
 
     timer_update.Set(itspec);
 
-    if (ndGC_USE_NAPI) {
+    if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
         itspec.it_value.tv_sec = min(5u, ndGC.ttl_napi_tick);
         itspec.it_value.tv_nsec = 0;
         itspec.it_interval.tv_sec = ndGC.ttl_napi_tick;
@@ -2058,7 +2079,7 @@ void *ndInstance::ndInstance::Entry(void) {
         case InstanceEvent::UPDATE_NAPI:
             nd_dprintf("%s: received IPC: [%d] %s\n",
               tag.c_str(), ipc, "Netify API update");
-            if (ndGC_USE_NAPI) {
+            if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
                 if (api_manager.Update()) {
                     Reload(false, false);
                 }
