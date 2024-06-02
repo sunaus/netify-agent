@@ -443,20 +443,19 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
   const ndAddr &addr, const string &ifname) {
     if (! addr.IsValid()) {
         nd_printf("Invalid address: %s\n",
-          addr.GetString().c_str());
+          addr.GetString(ndAddr::MakeFlags::PREFIX).c_str());
         return false;
     }
-#if 0
-    nd_dprintf("%s: %d: %s: %s\n", __PRETTY_FUNCTION__, type,
-        (! ifname.empty()) ?
-            ifname.c_str() : "(global)", addr.GetString().c_str()
-    );
+#ifdef _ND_ENABLE_DEBUG_STATS
+    nd_dprintf("%s: %d: %s: %s\n", __func__, type,
+      (! ifname.empty()) ? ifname.c_str() : "(global)",
+      addr.GetString(ndAddr::MakeFlags::PREFIX).c_str());
 #endif
     lock_guard<mutex> ul(lock);
 
     try {
         if (addr.IsEthernet()) {
-            string mac = addr.GetString();
+            string mac = addr.GetString(ndAddr::MakeFlags::PREFIX);
             auto it = ether_reserved.find(mac);
             if (it != ether_reserved.end()) {
                 nd_dprintf(
@@ -508,7 +507,8 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
     }
     catch (runtime_error &e) {
         nd_dprintf("Error adding address: %s: %s\n",
-          addr.GetString().c_str(), e.what());
+          addr.GetString(ndAddr::MakeFlags::PREFIX).c_str(),
+          e.what());
     }
 
     return false;
@@ -518,20 +518,19 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
   const string &ifname) {
     if (! addr.IsValid()) {
         nd_printf("Invalid address: %s\n",
-          addr.GetString().c_str());
+          addr.GetString(ndAddr::MakeFlags::PREFIX).c_str());
         return false;
     }
-#if 0
-    nd_dprintf("%s: %s: %s\n", __PRETTY_FUNCTION__,
-        (! ifname.empty()) ?
-            ifname.c_str() : "(global)", addr.GetString().c_str()
-    );
+#ifdef _ND_ENABLE_DEBUG_STATS
+    nd_dprintf("%s: %s: %s\n", __func__,
+      (! ifname.empty()) ? ifname.c_str() : "(global)",
+      addr.GetString(ndAddr::MakeFlags::PREFIX).c_str());
 #endif
     lock_guard<mutex> ul(lock);
 
     try {
         if (addr.IsEthernet()) {
-            string mac = addr.GetString();
+            string mac = addr.GetString(ndAddr::MakeFlags::PREFIX);
             auto it = ether_reserved.find(mac);
             if (it != ether_reserved.end()) {
                 ether_reserved.erase(it);
@@ -580,7 +579,8 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
     }
     catch (runtime_error &e) {
         nd_dprintf("Error removing address: %s: %s\n",
-          addr.GetString().c_str(), e.what());
+          addr.GetString(ndAddr::MakeFlags::PREFIX).c_str(),
+          e.what());
     }
 
     return false;
