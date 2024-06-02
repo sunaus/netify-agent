@@ -13,7 +13,7 @@ offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:62872
         : H: mapi.apptimize.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36986
+offline0: i4pcu------r-F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36986
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: mapi.apptimize.com
         : V: 0x0303 CS: 0xc02f
@@ -22,7 +22,7 @@ offline0: i4pcu---d--r--- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36986
         : RID 30: TLS Certificate Expired
         : DP: 9
 
-offline0: i4pc----d------ TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36988
+offline0: i4pc---------F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36988
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: mapi.apptimize.com
         : V: 0x0303
@@ -34,7 +34,7 @@ offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:37418
         : H: media.cdn.viber.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 54.230.93.96:443 <-- [L] 192.168.0.17:57520
+offline0: i4pcu------r--- TCP [OR] 54.230.93.96:443 <-- [L] 192.168.0.17:57520
         : HTTP/S.netify.viber
         : D: do2gy2kwak9k2.cloudfront.net H: media.cdn.viber.com
         : V: 0x0303 CS: 0xc02f
@@ -48,7 +48,7 @@ offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:40445
         : H: dl-media.viber.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 54.230.93.53:443 <-- [L] 192.168.0.17:53934
+offline0: i4pcu------r--- TCP [OR] 54.230.93.53:443 <-- [L] 192.168.0.17:53934
         : HTTP/S.netify.viber
         : D: d1fje9gm3d05t8.cloudfront.net H: dl-media.viber.com
         : V: 0x0303 CS: 0xc02f
@@ -62,7 +62,7 @@ offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:35331
         : H: app-measurement.com
         : DP: 2
 
-offline0: i4pcu---d------ TCP [OR] 172.217.23.78:443 <-- [L] 192.168.0.17:43702
+offline0: i4pcu---------- TCP [OR] 172.217.23.78:443 <-- [L] 192.168.0.17:43702
         : HTTP/S.netify.google-ads
         : D: app-measurement.com
         : V: 0x0303 CS: 0xc02f
@@ -78,7 +78,7 @@ offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:44376
         : H: venetia.iad.appboy.com
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 151.101.1.130:443 <-- [L] 192.168.0.17:55746
+offline0: i4pc----------- TCP [OR] 151.101.1.130:443 <-- [L] 192.168.0.17:55746
         : HTTP/S.netify.braze
         : D: y.ssl.global.fastly.net H: venetia.iad.appboy.com
         : V: 0x0303
@@ -86,7 +86,7 @@ offline0: i4pc----d------ TCP [OR] 151.101.1.130:443 <-- [L] 192.168.0.17:55746
         : DP: 6
 
 offline0: i4pc-g--------- TCP [OR] 52.0.253.101:4244 <-- [L] 192.168.0.17:33208
-        : Unknown.netify.viber
+        : Viber.netify.viber
         : DP: 32
 
 offline0: i4pc-------r--- UDP [OR] 18.201.4.32:7985 <-- [L] 192.168.0.17:47171
@@ -99,7 +99,7 @@ offline0: i4pc-------r--- UDP [OR] 18.201.4.32:7987 <-- [L] 192.168.0.17:47171
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu---d--r--- TCP [OR] 54.187.91.182:443 <-- [L] 192.168.0.17:49048
+offline0: i4pcu------r-F- TCP [OR] 54.187.91.182:443 <-- [L] 192.168.0.17:49048
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: brahe.apptimize.com
         : V: 0x0303 CS: 0xc02f
@@ -147,14 +147,14 @@ offline0: i4pc--x-------- UDP [L] 192.168.0.17:5353 --> [OM] 224.0.0.251:5353
         : DP: 4
 
 offline0: i4pc-gx-------- UDP [OR] 172.217.23.106:443 <-- [L] 192.168.0.17:41993
-        : Unknown.netify.google
+        : QUIC.netify.google
         : DP: 3
 
 offline0: i4pc-gx------F- TCP [OR] 18.201.4.32:443 <-- [L] 192.168.0.17:45424
-        : Unknown
+        : HTTP/S
         : DP: 6
 
 offline0: i4pc-gx------F- TCP [OR] 18.201.4.3:443 <-- [L] 192.168.0.17:33744
-        : Unknown
+        : HTTP/S
         : DP: 6
 

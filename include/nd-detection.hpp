@@ -90,8 +90,6 @@ protected:
     pthread_cond_t pkt_queue_cond;
     pthread_mutex_t pkt_queue_cond_mutex;
 
-    size_t flows;
-
     ndFlowParser parser;
 
     ndProto::Id
@@ -112,4 +110,13 @@ protected:
     void SetDetectionComplete(ndDetectionQueueEntry *entry);
 
     void FlowUpdate(ndDetectionQueueEntry *entry);
+
+#ifdef _ND_ENABLE_DEBUG_STATS
+    uint64_t flows = { 0 };
+    uint64_t pkts = { 0 };
+    uint64_t queued_pkts = { 0 };
+    uint64_t queued_size = { 0 };
+    uint64_t max_queued_pkts = { 0 };
+    uint64_t max_queued_size = { 0 };
+#endif
 };

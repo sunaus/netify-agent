@@ -31,7 +31,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:55619
         : H: connectivitycheck.android.com
         : DP: 2
 
-offline0: i4pc----d--r--- TCP [L] 172.16.42.216:60246 --> [OR] 172.217.9.142:80
+offline0: i4pc-------r--- TCP [L] 172.16.42.216:60246 --> [OR] 172.217.9.142:80
         : HTTP.netify.android
         : D: connectivitycheck.android.com
         : HTTP/UA: Dalvik/2.1.0 (Linux; U; Android 5.1.1; LGLS751 Build/LMY47V)
@@ -49,14 +49,14 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:53188
         : H: mtalk.google.com
         : DP: 2
 
-offline0: i4pc----d--rs-- TCP [L] 172.16.42.216:42878 --> [OR] 173.194.223.188:5228
+offline0: i4pc-------rs-- TCP [L] 172.16.42.216:42878 --> [OR] 173.194.223.188:5228
         : XMPP.netify.google-chat
         : D: mobile-gtalk.l.google.com H: mtalk.google.com
         : RID 16: Known Protocol on Non-standard Port
         : RID 47: TLS ALPN Not Found
         : DP: 4
 
-offline0: i4pc----d--rs-- TCP [L] 172.16.42.216:42878 --> [OR] 173.194.223.188:5228
+offline0: i4pc-------rs-- TCP [L] 172.16.42.216:42878 --> [OR] 173.194.223.188:5228
         : XMPP.netify.google-chat
         : D: mobile-gtalk.l.google.com H: mtalk.google.com
         : RID 16: Known Protocol on Non-standard Port
@@ -68,7 +68,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:10462
         : H: www.google.com
         : DP: 2
 
-offline0: i4pc----d--r--- TCP [L] 172.16.42.216:35540 --> [OR] 172.217.9.142:80
+offline0: i4pc-------r--- TCP [L] 172.16.42.216:35540 --> [OR] 172.217.9.142:80
         : HTTP.netify.android
         : D: connectivitycheck.android.com
         : HTTP/UA: Dalvik/2.1.0 (Linux; U; Android 5.1.1; LGLS751 Build/LMY47V)
@@ -86,7 +86,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:48155
         : H: www.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 52.85.209.197:443 <-- [L] 172.16.42.216:55242
+offline0: i4pcu------r-F- TCP [OR] 52.85.209.197:443 <-- [L] 172.16.42.216:55242
         : HTTP/S.netify.amazon
         : D: d3ag4hukkh62yn.cloudfront.net H: www.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -101,7 +101,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:19967
         : H: mads.amazon-adsystem.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 52.94.232.0:443 <-- [L] 172.16.42.216:33556
+offline0: i4pcu------r--- TCP [OR] 52.94.232.0:443 <-- [L] 172.16.42.216:33556
         : HTTP/S.netify.amazon-advertising
         : D: mads.amazon.com H: mads.amazon-adsystem.com
         : V: 0x0303 CS: 0xc02f
@@ -116,7 +116,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:7358
         : H: firs-ta-g7g.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 54.239.22.185:443 <-- [L] 172.16.42.216:53682
+offline0: i4pcu------r--- TCP [OR] 54.239.22.185:443 <-- [L] 172.16.42.216:53682
         : HTTP/S.netify.amazon
         : D: firs-ta-g7g.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -131,7 +131,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:41030
         : H: alexa.amazon.com
         : DP: 2
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49572
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49572
         : HTTP.netify.amazon-alexa
         : D: pitangui.amazon.com H: alexa.amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36
@@ -148,7 +148,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:23559
         : H: cognito-identity.us-east-1.amazonaws.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38363
+offline0: i4pcu------r-F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38363
         : HTTP/S.netify.amazon-aws
         : D: cognito-identity.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -157,7 +157,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38363
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d----F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38364
+offline0: i4pcu--------F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38364
         : HTTP/S.netify.amazon-aws
         : D: cognito-identity.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -169,7 +169,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:54886
         : H: pitangui.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45661
+offline0: i4pcu------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45661
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -179,7 +179,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45661
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45663
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45663
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -187,7 +187,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45663
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45662
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45662
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -205,7 +205,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:52077
         : H: www.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54411
+offline0: i4pcu------r-F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54411
         : HTTP/S.netify.amazon
         : D: d3ag4hukkh62yn.cloudfront.net H: www.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -214,7 +214,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54411
         : RID 30: TLS Certificate Expired
         : DP: 9
 
-offline0: i4pcu---d--r--- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54412
+offline0: i4pcu------r--- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54412
         : HTTP/S.netify.amazon
         : D: d3ag4hukkh62yn.cloudfront.net H: www.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -223,7 +223,7 @@ offline0: i4pcu---d--r--- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54412
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34019
+offline0: i4pcu------r-F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34019
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -237,7 +237,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:43350
         : H: fls-na.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42129
+offline0: i4pcu------r-F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42129
         : HTTP/S.netify.amazon
         : D: fls-na.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -246,7 +246,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42129
         : RID 30: TLS Certificate Expired
         : DP: 9
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45673
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45673
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -254,7 +254,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45673
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45674
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45674
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -262,7 +262,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45674
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45677
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45677
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -270,7 +270,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45677
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45676
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45676
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -278,7 +278,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45676
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45679
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45679
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -286,7 +286,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45679
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45678
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45678
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -294,7 +294,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45678
         : RID 41: Weak TLS Cipher
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42130
+offline0: i4pcu------r-F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42130
         : HTTP/S.netify.amazon
         : D: fls-na.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -303,7 +303,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42130
         : RID 30: TLS Certificate Expired
         : DP: 11
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49589
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49589
         : HTTP.netify.amazon-alexa
         : D: pitangui.amazon.com H: alexa.amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -312,7 +312,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49589
         : RID 14: HTTP Suspicious User-Agent
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45680
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45680
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -320,21 +320,21 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45680
         : RID 41: Weak TLS Cipher
         : DP: 8
 
-offline0: i4pcu---d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34033
+offline0: i4pcu--------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34033
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: mobileanalytics.us-east-1.amazonaws.com
         : DP: 7
 
-offline0: i4pcu---d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34034
+offline0: i4pcu--------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34034
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: mobileanalytics.us-east-1.amazonaws.com
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45683
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45683
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -342,28 +342,28 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45683
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pcu---d----F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54427
+offline0: i4pcu--------F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54427
         : HTTP/S.netify.amazon
         : D: d3ag4hukkh62yn.cloudfront.net H: www.amazon.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: www.amazon.com
         : DP: 6
 
-offline0: i4pcu---d----F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42143
+offline0: i4pcu--------F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42143
         : HTTP/S.netify.amazon
         : D: fls-na.amazon.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: fls-na.amazon.com
         : DP: 7
 
-offline0: i4pcu---d----F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42144
+offline0: i4pcu--------F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42144
         : HTTP/S.netify.amazon
         : D: fls-na.amazon.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: fls-na.amazon.com
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45687
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45687
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -375,7 +375,7 @@ offline0: i4pc----------- IGMP [L] 0.0.0.0:0 --> [OM] 224.0.0.1:0
         : IGMP
         : DP: 1
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45688
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45688
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -383,7 +383,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45688
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pcu---d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34041
+offline0: i4pcu--------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34041
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -395,14 +395,14 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:44475
         : H: www.amazon.com
         : DP: 2
 
-offline0: i4pcu---d----F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42148
+offline0: i4pcu--------F- TCP [OR] 72.21.206.135:443 <-- [L] 172.16.42.216:42148
         : HTTP/S.netify.amazon
         : D: fls-na.amazon.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: fls-na.amazon.com
         : DP: 7
 
-offline0: i4pcu---d----F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54434
+offline0: i4pcu--------F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54434
         : HTTP/S.netify.amazon
         : D: d3ag4hukkh62yn.cloudfront.net H: www.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -414,7 +414,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:60804
         : H: api.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 54.239.29.146:443 <-- [L] 172.16.42.216:41691
+offline0: i4pcu------r--- TCP [OR] 54.239.29.146:443 <-- [L] 172.16.42.216:41691
         : HTTP/S.netify.amazon
         : D: api.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -429,7 +429,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:25081
         : H: alexa.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45694
+offline0: i4pcu------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45694
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -439,7 +439,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45694
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45693
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45693
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -447,7 +447,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45693
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49606
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49606
         : HTTP.netify.amazon-alexa
         : D: pitangui.amazon.com H: alexa.amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36
@@ -455,7 +455,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49606
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45696
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45696
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -463,7 +463,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45696
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45695
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45695
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -471,7 +471,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45695
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:59698
+offline0: i4pcu------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:59698
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -483,7 +483,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:59698
         : RID 47: TLS ALPN Not Found
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45698
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45698
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -491,7 +491,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45698
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45697
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45697
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -499,7 +499,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45697
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:37113
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:37113
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0301 CS: 0x002f
@@ -507,7 +507,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:37113
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49613
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49613
         : HTTP.netify.amazon-alexa
         : D: pitangui.amazon.com H: alexa.amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36
@@ -515,7 +515,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49613
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pcu---d--r-F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38404
+offline0: i4pcu------r-F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38404
         : HTTP/S.netify.amazon-aws
         : D: cognito-identity.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -524,14 +524,14 @@ offline0: i4pcu---d--r-F- TCP [OR] 34.199.52.240:443 <-- [L] 172.16.42.216:38404
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34053
+offline0: i4pcu--------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34053
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: mobileanalytics.us-east-1.amazonaws.com
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45703
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45703
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -539,7 +539,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45703
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45704
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45704
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -547,7 +547,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45704
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45705
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45705
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -555,7 +555,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45705
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45710
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45710
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -563,7 +563,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45710
         : RID 41: Weak TLS Cipher
         : DP: 8
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45709
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45709
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -571,7 +571,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45709
         : RID 41: Weak TLS Cipher
         : DP: 8
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45715
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45715
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -579,7 +579,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45715
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45712
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45712
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -587,7 +587,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45712
         : RID 41: Weak TLS Cipher
         : DP: 9
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45714
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45714
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -595,7 +595,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45714
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49630
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49630
         : HTTP.netify.amazon-alexa
         : D: pitangui.amazon.com H: alexa.amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -604,7 +604,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49630
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pcu---d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34069
+offline0: i4pcu--------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34069
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -616,7 +616,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:35726
         : H: s3-external-2.amazonaws.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.231.72.88:443 <-- [L] 172.16.42.216:41820
+offline0: i4pcu------r-F- TCP [OR] 54.231.72.88:443 <-- [L] 172.16.42.216:41820
         : HTTP/S.netify.amazon-aws
         : D: s3-external-1.amazonaws.com H: s3-external-2.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -630,7 +630,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:41639
         : H: dp-gw-na-js.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [L] 172.16.42.216:44001 --> [OR] 176.32.101.52:443
+offline0: i4pcu------r-F- TCP [L] 172.16.42.216:44001 --> [OR] 176.32.101.52:443
         : HTTP/S.netify.amazon-alexa
         : D: dp-gw-na.amazon.com H: dp-gw-na-js.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -640,7 +640,7 @@ offline0: i4pcu---d--r-F- TCP [L] 172.16.42.216:44001 --> [OR] 176.32.101.52:443
         : RID 47: TLS ALPN Not Found
         : DP: 8
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45711
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45711
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -648,14 +648,14 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45711
         : RID 41: Weak TLS Cipher
         : DP: 11
 
-offline0: i4pcu---d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34074
+offline0: i4pcu--------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34074
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: mobileanalytics.us-east-1.amazonaws.com
         : DP: 7
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.231.72.88:443 <-- [L] 172.16.42.216:41825
+offline0: i4pcu------r-F- TCP [OR] 54.231.72.88:443 <-- [L] 172.16.42.216:41825
         : HTTP/S.netify.amazon-aws
         : D: s3-external-1.amazonaws.com H: s3-external-2.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -669,7 +669,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:14476
         : H: skills-store.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40854
+offline0: i4pcu------r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40854
         : HTTP/S.netify.amazon
         : D: skills-store.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -679,7 +679,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40854
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40853
+offline0: i4pcu------r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40853
         : HTTP/S.netify.amazon
         : D: skills-store.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -689,7 +689,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40853
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40856
+offline0: i4pcu------r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40856
         : HTTP/S.netify.amazon
         : D: skills-store.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -704,7 +704,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:20922
         : H: pitangui.amazon.com
         : DP: 2
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45729
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45729
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -712,7 +712,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45729
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45728
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45728
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -720,7 +720,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45728
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45731
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45731
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -728,7 +728,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45731
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45730
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45730
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -736,7 +736,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45730
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45732
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45732
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -749,14 +749,14 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:28614
         : H: mobileanalytics.us-east-1.amazonaws.com
         : DP: 2
 
-offline0: i4pcu---d----F- TCP [OR] 54.239.24.180:443 <-- [L] 172.16.42.216:37551
+offline0: i4pcu--------F- TCP [OR] 54.239.24.180:443 <-- [L] 172.16.42.216:37551
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: mobileanalytics.us-east-1.amazonaws.com
         : DP: 9
 
-offline0: i4pc----d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40864
+offline0: i4pc-------r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40864
         : HTTP/S.netify.amazon
         : D: skills-store.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -769,7 +769,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:4920
         : H: ecx.images-amazon.com
         : DP: 2
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51986
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51986
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -777,7 +777,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51986
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51985
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51985
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -785,7 +785,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51985
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51987
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51987
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -793,7 +793,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51987
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51990
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51990
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -801,7 +801,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51990
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51988
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51988
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -809,7 +809,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51988
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51989
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51989
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -817,7 +817,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51989
         : RID 14: HTTP Suspicious User-Agent
         : DP: 8
 
-offline0: i4pc----d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40871
+offline0: i4pc-------r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40871
         : HTTP/S.netify.amazon
         : D: skills-store.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -825,7 +825,7 @@ offline0: i4pc----d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40871
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51992
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51992
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -833,7 +833,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51992
         : RID 14: HTTP Suspicious User-Agent
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51994
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51994
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -841,7 +841,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51994
         : RID 14: HTTP Suspicious User-Agent
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51995
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51995
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -849,7 +849,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51995
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51993
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51993
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -857,7 +857,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51993
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51996
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51996
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -865,7 +865,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51996
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51997
+offline0: i4pc-------r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51997
         : HTTP.netify.amazon
         : D: d1ge0kk1l5kms0.cloudfront.net H: ecx.images-amazon.com
         : HTTP/UA: Mozilla/5.0 (Linux; Android 5.1.1; LGLS751 Build/LMY47V; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 PitanguiBridge/1.16.4.5-[MANUFACTURER=LGE][RELEASE=5.1.1][BRAND=lge][SDK=22][MODEL=LGLS751]
@@ -873,7 +873,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.84.63.56:80 <-- [L] 172.16.42.216:51997
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40878
+offline0: i4pc-------r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40878
         : HTTP/S.netify.amazon
         : D: skills-store.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -881,7 +881,7 @@ offline0: i4pc----d--r-F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40878
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45750
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45750
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -889,7 +889,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45750
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45751
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45751
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -902,7 +902,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:64073
         : H: alexa.amazon.com
         : DP: 2
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:39750
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:39750
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0301 CS: 0x002f
@@ -910,7 +910,7 @@ offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:39750
         : RID 41: Weak TLS Cipher
         : DP: 6
 
-offline0: i4pc----d--r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45752
+offline0: i4pc-------r-F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45752
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -923,7 +923,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:4312
         : H: pitangui.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50796
+offline0: i4pcu------r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50796
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -933,7 +933,7 @@ offline0: i4pcu---d--r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50796
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pcu---d--r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50797
+offline0: i4pcu------r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50797
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -943,7 +943,7 @@ offline0: i4pcu---d--r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50797
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50799
+offline0: i4pcu------r-F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50799
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -953,7 +953,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50799
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pcu---d--r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50800
+offline0: i4pcu------r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50800
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0303 CS: 0x002f
@@ -968,7 +968,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:8669
         : H: mobileanalytics.us-east-1.amazonaws.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 54.239.23.94:443 <-- [L] 172.16.42.216:44912
+offline0: i4pcu------r-F- TCP [OR] 54.239.23.94:443 <-- [L] 172.16.42.216:44912
         : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : V: 0x0303 CS: 0xc02f
@@ -982,7 +982,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:59908
         : H: alexa.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:38757
+offline0: i4pcu------r--- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:38757
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0301 CS: 0x002f
@@ -998,7 +998,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:14934
         : H: www.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 52.85.209.143:443 <-- [L] 172.16.42.216:41828
+offline0: i4pcu------r--- TCP [OR] 52.85.209.143:443 <-- [L] 172.16.42.216:41828
         : HTTP/S.netify.amazon
         : D: d3ag4hukkh62yn.cloudfront.net H: www.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -1012,7 +1012,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:40425
         : H: android.clients.google.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [L] 172.16.42.216:49067 --> [OR] 216.58.194.78:443
+offline0: i4pcu------r--- TCP [L] 172.16.42.216:49067 --> [OR] 216.58.194.78:443
         : HTTP/S.netify.android
         : D: android.l.google.com H: android.clients.google.com
         : V: 0x0303 CS: 0xcca9
@@ -1027,7 +1027,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:4612
         : H: images-na.ssl-images-amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41913
+offline0: i4pcu------r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41913
         : HTTP/S.netify.amazon
         : D: dk9ps7goqoeef.cloudfront.net H: images-na.ssl-images-amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -1036,7 +1036,7 @@ offline0: i4pcu---d--r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41913
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41914
+offline0: i4pcu------r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41914
         : HTTP/S.netify.amazon
         : D: dk9ps7goqoeef.cloudfront.net H: images-na.ssl-images-amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -1045,7 +1045,7 @@ offline0: i4pcu---d--r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41914
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41912
+offline0: i4pcu------r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41912
         : HTTP/S.netify.amazon
         : D: dk9ps7goqoeef.cloudfront.net H: images-na.ssl-images-amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -1054,7 +1054,7 @@ offline0: i4pcu---d--r--- TCP [OR] 52.84.62.115:443 <-- [L] 172.16.42.216:41912
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pc----d--r-F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:58048
+offline0: i4pc-------r-F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:58048
         : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : V: 0x0301 CS: 0x002f
@@ -1062,7 +1062,7 @@ offline0: i4pc----d--r-F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:58048
         : RID 41: Weak TLS Cipher
         : DP: 7
 
-offline0: i4pcu---d--r--- TCP [OR] 52.85.209.143:443 <-- [L] 172.16.42.216:38483
+offline0: i4pcu------r--- TCP [OR] 52.85.209.143:443 <-- [L] 172.16.42.216:38483
         : HTTP/S.netify.amazon-cloudfront
         : D: d3ag4hukkh62yn.cloudfront.net
         : V: 0x0303 CS: 0xc02f
@@ -1078,7 +1078,7 @@ offline0: i4pc----------- UDP [L] 172.16.42.1:53 <-- [OL] 172.16.42.216:2707
         : H: fls-na.amazon.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 72.21.206.121:443 <-- [L] 172.16.42.216:47605
+offline0: i4pcu------r--- TCP [OR] 72.21.206.121:443 <-- [L] 172.16.42.216:47605
         : HTTP/S.netify.amazon
         : D: fls-na.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -1087,7 +1087,7 @@ offline0: i4pcu---d--r--- TCP [OR] 72.21.206.121:443 <-- [L] 172.16.42.216:47605
         : RID 30: TLS Certificate Expired
         : DP: 10
 
-offline0: i4pcu---d--r--- TCP [OR] 72.21.206.121:443 <-- [L] 172.16.42.216:47606
+offline0: i4pcu------r--- TCP [OR] 72.21.206.121:443 <-- [L] 172.16.42.216:47606
         : HTTP/S.netify.amazon
         : D: fls-na.amazon.com
         : V: 0x0303 CS: 0xc02f
@@ -1097,74 +1097,74 @@ offline0: i4pcu---d--r--- TCP [OR] 72.21.206.121:443 <-- [L] 172.16.42.216:47606
         : DP: 9
 
 offline0: i4pc-gx----r--- TCP [L] 172.16.42.216:38434 --> [OL] 192.168.11.1:8080
-        : Unknown
+        : HTTP/Proxy
         : RID 51: TCP Connection Issues
         : DP: 2
 
-offline0: i4pc-gx-d----F- TCP [OR] 54.231.72.88:443 <-- [L] 172.16.42.216:41821
-        : Unknown.netify.amazon-aws
+offline0: i4pc-gx------F- TCP [OR] 54.231.72.88:443 <-- [L] 172.16.42.216:41821
+        : HTTP/S.netify.amazon-aws
         : D: s3-external-1.amazonaws.com
         : DP: 7
 
 offline0: i4pc-gx----r--- TCP [L] 10.201.126.241:8080 <-- [OL] 172.16.42.216:40242
-        : Unknown
+        : HTTP/Proxy
         : RID 46: Unidirectional Traffic
         : DP: 7
 
 offline0: i4pc-gx----r--- TCP [L] 10.201.126.241:8080 <-- [OL] 172.16.42.216:40202
-        : Unknown
+        : HTTP/Proxy
         : RID 46: Unidirectional Traffic
         : RID 51: TCP Connection Issues
         : DP: 8
 
-offline0: i4pc-gx-d----F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49627
-        : Unknown.netify.amazon-alexa
+offline0: i4pc-gx------F- TCP [OR] 52.94.232.134:80 <-- [L] 172.16.42.216:49627
+        : HTTP.netify.amazon-alexa
         : D: pitangui.amazon.com
         : DP: 9
 
-offline0: i4pc-gx-d----F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54413
-        : Unknown.netify.amazon-cloudfront
+offline0: i4pc-gx------F- TCP [OR] 52.85.209.216:443 <-- [L] 172.16.42.216:54413
+        : HTTP/S.netify.amazon-cloudfront
         : D: d3ag4hukkh62yn.cloudfront.net
         : DP: 6
 
 offline0: i4pc-gx----r--- TCP [L] 10.201.126.241:8080 <-- [OL] 172.16.42.216:40200
-        : Unknown
+        : HTTP/Proxy
         : RID 46: Unidirectional Traffic
         : RID 51: TCP Connection Issues
         : DP: 8
 
-offline0: i4pc-gx-d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34073
-        : Unknown.netify.amazon-aws
+offline0: i4pc-gx------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34073
+        : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : DP: 8
 
 offline0: i4pc-gx----r--- TCP [L] 172.16.42.216:38391 --> [OL] 192.168.11.1:8080
-        : Unknown
+        : HTTP/Proxy
         : RID 51: TCP Connection Issues
         : DP: 2
 
-offline0: i4pc-gx-d----F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40855
-        : Unknown.netify.amazon
+offline0: i4pc-gx------F- TCP [OR] 54.239.29.253:443 <-- [L] 172.16.42.216:40855
+        : HTTP/S.netify.amazon
         : D: skills-store.amazon.com
         : DP: 7
 
-offline0: i4pc-gx-d----F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45707
-        : Unknown.netify.amazon-alexa
+offline0: i4pc-gx------F- TCP [OR] 52.94.232.134:443 <-- [L] 172.16.42.216:45707
+        : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : DP: 6
 
-offline0: i4pc-gx-d----F- TCP [OR] 54.239.24.180:443 <-- [L] 172.16.42.216:37552
-        : Unknown.netify.amazon-aws
+offline0: i4pc-gx------F- TCP [OR] 54.239.24.180:443 <-- [L] 172.16.42.216:37552
+        : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : DP: 7
 
-offline0: i4pc-gx-d----F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50798
-        : Unknown.netify.amazon-alexa
+offline0: i4pc-gx------F- TCP [OR] 54.239.28.178:443 <-- [L] 172.16.42.216:50798
+        : HTTP/S.netify.amazon-alexa
         : D: pitangui.amazon.com
         : DP: 7
 
-offline0: i4pc-gx-d----F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34054
-        : Unknown.netify.amazon-aws
+offline0: i4pc-gx------F- TCP [OR] 54.239.24.186:443 <-- [L] 172.16.42.216:34054
+        : HTTP/S.netify.amazon-aws
         : D: mobileanalytics.us-east-1.amazonaws.com
         : DP: 7
 

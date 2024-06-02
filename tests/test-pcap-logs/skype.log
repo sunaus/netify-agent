@@ -934,7 +934,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.34:62454
         : H: p05-keyvalueservice.icloud.com.akadns.net
         : DP: 2
 
-offline0: i4pc----d--r--- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:50128
+offline0: i4pc-------r--- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:50128
         : HTTP/S.netify.apple-icloud
         : D: p05-keyvalueservice.icloud.com.akadns.net H: p05-keyvalueservice.icloud.com
         : V: 0x0303 CS: 0x0004
@@ -1037,11 +1037,11 @@ offline0: i4pc-gx----r-F- TCP [OR] 111.221.77.142:40023 <-- [L] 192.168.1.34:500
         : DP: 16
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.176:443 <-- [L] 192.168.1.34:50081
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx------F- TCP [L] 192.168.1.34:50039 --> [OR] 213.199.179.175:443
-        : Unknown
+        : HTTP/S
         : DP: 16
 
 offline0: i4pc-gx----r-F- TCP [OR] 80.14.46.121:4415 <-- [L] 192.168.1.34:50127
@@ -1055,11 +1055,11 @@ offline0: i4pc-gx----r-F- TCP [L] 192.168.1.34:50130 --> [OR] 212.161.8.36:13392
         : DP: 17
 
 offline0: i4pc-gx------F- TCP [OR] 157.56.52.44:443 <-- [L] 192.168.1.34:50036
-        : Unknown
+        : HTTP/S
         : DP: 14
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.56.160:443 <-- [L] 192.168.1.34:50069
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx----r-F- TCP [OR] 157.55.130.155:40020 <-- [L] 192.168.1.34:50092
@@ -1068,7 +1068,7 @@ offline0: i4pc-gx----r-F- TCP [OR] 157.55.130.155:40020 <-- [L] 192.168.1.34:500
         : DP: 17
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.235.156:443 <-- [L] 192.168.1.34:50080
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx------F- TCP [OR] 91.190.218.125:12350 <-- [L] 192.168.1.34:50129
@@ -1116,7 +1116,7 @@ offline0: i6pc--x-------- UDP [L] fe80::c62c:3ff:fe06:49fe:5353 --> [OM] ff02::f
         : DP: 4
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.235.176:443 <-- [L] 192.168.1.34:50101
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:5351 <-- [OL] 192.168.1.34:49511
@@ -1129,8 +1129,8 @@ offline0: i4pc-gx----r-F- TCP [OR] 157.55.130.173:40003 <-- [L] 192.168.1.34:500
         : RID 52: Fully Encrypted Flow
         : DP: 17
 
-offline0: i4pc-gx-d----F- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:50024
-        : Unknown.netify.apple-icloud
+offline0: i4pc-gx------F- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:50024
+        : HTTP/S.netify.apple-icloud
         : D: p05-keyvalueservice.icloud.com.akadns.net
         : DP: 3
 
@@ -1140,15 +1140,15 @@ offline0: i4pc-gx----r-F- TCP [L] 192.168.1.34:50075 --> [OR] 213.199.179.142:40
         : DP: 19
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.150:443 <-- [L] 192.168.1.34:50048
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.167:443 <-- [L] 192.168.1.34:50045
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx------F- TCP [OR] 65.55.223.12:443 <-- [L] 192.168.1.34:50066
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx----r-F- TCP [OR] 5.248.186.221:31010 <-- [L] 192.168.1.34:50137
@@ -1167,7 +1167,7 @@ offline0: i4pc-gx----r-F- TCP [OR] 65.55.223.15:40026 <-- [L] 192.168.1.34:50098
         : DP: 17
 
 offline0: i4pc-gx------F- TCP [OR] 111.221.74.47:443 <-- [L] 192.168.1.34:50058
-        : Unknown
+        : HTTP/S
         : DP: 14
 
 offline0: i4pc-gx----r-F- TCP [OR] 86.31.35.30:59621 <-- [L] 192.168.1.34:50115
@@ -1185,7 +1185,7 @@ offline0: i4pc-gx----r--- TCP [OR] 91.190.216.125:12350 <-- [L] 192.168.1.34:501
         : RID 52: Fully Encrypted Flow
         : DP: 6
 
-offline0: i4pc--x-d--r-F- TCP [OR] 23.206.33.166:443 <-- [L] 192.168.1.34:50090
+offline0: i4pc--x----r-F- TCP [OR] 23.206.33.166:443 <-- [L] 192.168.1.34:50090
         : HTTP/S.netify.skype
         : D: e4593.g.akamaiedge.net H: apps.skype.com
         : V: 0x0301
@@ -1208,14 +1208,14 @@ offline0: i4pc-gx----r-F- TCP [OR] 157.55.235.146:33033 <-- [L] 192.168.1.34:500
         : DP: 18
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.153:443 <-- [L] 192.168.1.34:50057
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx------F- TCP [L] 192.168.1.34:50079 --> [OR] 213.199.179.142:443
-        : Unknown
+        : HTTP/S
         : DP: 16
 
-offline0: i4pc--x-d--r--- TCP [OR] 23.206.33.166:443 <-- [L] 192.168.1.34:50029
+offline0: i4pc--x----r--- TCP [OR] 23.206.33.166:443 <-- [L] 192.168.1.34:50029
         : HTTP/S.netify.skype
         : D: e4593.g.akamaiedge.net H: apps.skype.com
         : V: 0x0303
@@ -1269,7 +1269,7 @@ offline0: i4pc-gx----r-F- TCP [OR] 81.83.77.141:17639 <-- [L] 192.168.1.34:50116
         : DP: 19
 
 offline0: i4pc-gx------F- TCP [OR] 111.221.77.142:443 <-- [L] 192.168.1.34:50087
-        : Unknown
+        : HTTP/S
         : DP: 12
 
 offline0: i4pc-gx----r-F- TCP [OR] 157.55.56.146:40030 <-- [L] 192.168.1.34:50053
@@ -1298,24 +1298,24 @@ offline0: i4pc-gx----r-F- TCP [OR] 78.202.226.115:29059 <-- [L] 192.168.1.34:501
         : DP: 14
 
 offline0: i4pc-gx----r--- TCP [OR] 157.56.53.51:443 <-- [L] 192.168.1.34:50146
-        : Unknown
+        : HTTP/S
         : RID 46: Unidirectional Traffic
         : DP: 8
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.235.146:443 <-- [L] 192.168.1.34:50091
-        : Unknown
+        : HTTP/S
         : DP: 16
 
 offline0: i4pc-gx------F- TCP [OR] 64.4.23.166:443 <-- [L] 192.168.1.34:50103
-        : Unknown
+        : HTTP/S
         : DP: 12
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.170:443 <-- [L] 192.168.1.34:50072
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.173:443 <-- [L] 192.168.1.34:50078
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx----r--- TCP [OR] 76.167.161.6:20274 <-- [L] 192.168.1.34:50140
@@ -1339,11 +1339,11 @@ offline0: i4pc-gx----r-F- TCP [OR] 157.55.235.156:40014 <-- [L] 192.168.1.34:500
         : DP: 18
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.56.146:443 <-- [L] 192.168.1.34:50056
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx------F- TCP [OR] 65.55.223.33:443 <-- [L] 192.168.1.34:50030
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc--x----r-F- TCP [OR] 149.13.32.15:13392 <-- [L] 192.168.1.34:50133
@@ -1383,7 +1383,7 @@ offline0: i4pc-gx----r-F- TCP [OR] 157.55.235.176:40022 <-- [L] 192.168.1.34:500
         : DP: 17
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.140:443 <-- [L] 192.168.1.34:50038
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc--x------F- TCP [OR] 91.190.216.125:443 <-- [L] 192.168.1.34:50111
@@ -1396,7 +1396,7 @@ offline0: i4pc-gx----r-F- TCP [OR] 157.55.56.170:40015 <-- [L] 192.168.1.34:5003
         : DP: 17
 
 offline0: i4pc-gx------F- TCP [OR] 65.55.223.15:443 <-- [L] 192.168.1.34:50102
-        : Unknown
+        : HTTP/S
         : DP: 14
 
 offline0: i4pc-gx------F- TCP [OR] 65.55.223.12:40031 <-- [L] 192.168.1.34:50065
@@ -1404,7 +1404,7 @@ offline0: i4pc-gx------F- TCP [OR] 65.55.223.12:40031 <-- [L] 192.168.1.34:50065
         : DP: 17
 
 offline0: i4pc-gx------F- TCP [OR] 111.221.74.46:443 <-- [L] 192.168.1.34:50100
-        : Unknown
+        : HTTP/S
         : DP: 13
 
 offline0: i4pc-gx----r-F- TCP [OR] 91.190.218.125:12350 <-- [L] 192.168.1.34:50125
@@ -1418,7 +1418,7 @@ offline0: i4pc-gx----r-F- TCP [OR] 80.14.46.121:4415 <-- [L] 192.168.1.34:50142
         : DP: 18
 
 offline0: i4pc-gx------F- TCP [OR] 111.221.74.38:443 <-- [L] 192.168.1.34:50063
-        : Unknown
+        : HTTP/S
         : DP: 13
 
 offline0: i4pc-gx----r-F- TCP [OR] 157.55.130.167:40031 <-- [L] 192.168.1.34:50044
@@ -1427,7 +1427,7 @@ offline0: i4pc-gx----r-F- TCP [OR] 157.55.130.167:40031 <-- [L] 192.168.1.34:500
         : DP: 17
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.166:443 <-- [L] 192.168.1.34:50051
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx----r-F- TCP [OR] 76.167.161.6:20274 <-- [L] 192.168.1.34:50135
@@ -1440,7 +1440,7 @@ offline0: i4pc-gx-------- TCP [OR] 91.190.216.125:12350 <-- [L] 192.168.1.34:501
         : DP: 6
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.130.155:443 <-- [L] 192.168.1.34:50094
-        : Unknown
+        : HTTP/S
         : DP: 15
 
 offline0: i4pc-gx----r-F- TCP [OR] 157.55.130.153:40005 <-- [L] 192.168.1.34:50054
@@ -1454,10 +1454,10 @@ offline0: i4pc-gx----r-F- TCP [OR] 71.238.7.203:18767 <-- [L] 192.168.1.34:50136
         : DP: 14
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.56.170:443 <-- [L] 192.168.1.34:50037
-        : Unknown
+        : HTTP/S
         : DP: 15
 
-offline0: i4pc--x-d--r-F- TCP [OR] 23.223.73.34:443 <-- [L] 192.168.1.34:50027
+offline0: i4pc--x----r-F- TCP [OR] 23.223.73.34:443 <-- [L] 192.168.1.34:50027
         : HTTP/S.netify.skype
         : D: e7768.b.akamaiedge.net H: apps.skypeassets.com
         : V: 0x0303

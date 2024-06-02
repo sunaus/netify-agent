@@ -17,7 +17,7 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:57621 --> [OL] 192.168.2.255:57621
         : Spotify.netify.spotify
         : DP: 1
 
-offline0: i4pc----d------ TCP [OR] 157.240.20.53:5222 <-- [L] 192.168.2.12:49355
+offline0: i4pc----------- TCP [OR] 157.240.20.53:5222 <-- [L] 192.168.2.12:49355
         : WhatsApp.netify.whatsapp
         : D: chat.cdn.whatsapp.net
         : DP: 4
@@ -27,7 +27,7 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.12:55296
         : H: media-mxp1-1.cdn.whatsapp.net
         : DP: 2
 
-offline0: i4pcu---d------ TCP [OR] 31.13.86.51:443 <-- [L] 192.168.2.12:50503
+offline0: i4pcu---------- TCP [OR] 31.13.86.51:443 <-- [L] 192.168.2.12:50503
         : HTTP/S.netify.whatsapp
         : D: media-mxp1-1.cdn.whatsapp.net
         : V: 0x0303 CS: 0x1303
@@ -88,7 +88,7 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.12:60549
         : H: pps.whatsapp.net
         : DP: 2
 
-offline0: i4pcu---d----F- TCP [OR] 157.240.20.52:443 <-- [L] 192.168.2.12:50504
+offline0: i4pcu--------F- TCP [OR] 157.240.20.52:443 <-- [L] 192.168.2.12:50504
         : HTTP/S.netify.whatsapp
         : D: mmx-ds.cdn.whatsapp.net H: pps.whatsapp.net
         : V: 0x0303 CS: 0x1303

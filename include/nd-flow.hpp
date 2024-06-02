@@ -319,6 +319,7 @@ public:
 
     mutable std::recursive_mutex lock;
 
+    uint8_t dpi_queued = { 0 };
     int16_t dpi_thread_id = { -1 };
 
     struct ndpi_flow_struct *ndpi_flow = { nullptr };

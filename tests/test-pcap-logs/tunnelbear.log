@@ -167,6 +167,6 @@ offline0: i4pc--x----r--- TCP [L] 10.158.132.91:38398 --> [OR] 104.17.114.40:443
         : DP: 5
 
 offline0: i4pc-gx------F- TCP [OR] 8.8.8.8:53 <-- [L] 10.158.132.91:51120
-        : Unknown.netify.google
+        : DNS.netify.google
         : DP: 5
 

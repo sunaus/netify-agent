@@ -1181,8 +1181,11 @@ nd_process_ip:
 
     if (nf->flags.detection_complete.load() == false &&
       nf->flags.expired.load() == false &&
-      nf->stats.detection_packets.load() <= ndGC.max_detection_pkts)
+      nf->stats.detection_packets.load() < ndGC.max_detection_pkts &&
+      nf->dpi_queued < ndGC.max_detection_pkts)
     {
+        nf->dpi_queued++;
+
         if (nf->dpi_thread_id < 0) {
             nf->dpi_thread_id = dpi_thread_id;
             if (++dpi_thread_id == (int16_t)threads_dpi.size())

@@ -353,7 +353,7 @@ offline0: i4pc--x----r--- TCP [L] 10.8.0.1:51190 --> [OR] 62.109.224.120:443
         : DP: 11
 
 offline0: i4pc-gx------F- TCP [L] 10.133.206.47:54651 --> [OR] 185.63.147.10:443
-        : Unknown
+        : HTTP/S
         : DP: 3
 
 offline0: i4pc--x----r-F- TCP [L] 10.8.0.1:51833 --> [OR] 62.109.229.158:443
@@ -381,7 +381,7 @@ offline0: i4pc--x----r--- TCP [L] 10.8.0.1:51195 --> [OR] 62.109.224.120:443
         : DP: 5
 
 offline0: i4pc-gx------F- TCP [L] 10.133.206.47:59447 --> [OR] 107.20.242.44:443
-        : Unknown
+        : HTTP/S
         : DP: 3
 
 offline0: i4pc--x----r-F- TCP [L] 10.8.0.1:33511 --> [OR] 80.74.110.68:443
@@ -409,7 +409,7 @@ offline0: i4pc--x----r-F- TCP [L] 10.8.0.1:41726 --> [OR] 114.29.213.212:443
         : DP: 8
 
 offline0: i4pc-gx----r--- TCP [L] 10.8.0.1:51859 --> [OR] 62.109.229.158:443
-        : Unknown.netify.webex
+        : HTTP/S.netify.webex
         : RID 51: TCP Connection Issues
         : DP: 3
 

@@ -11,14 +11,14 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:60813
 
 offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60533
         : HTTP/S.netify.teams
-        : H: teams.microsoft.com
+        : D: s-0005.s-msedge.net H: teams.microsoft.com
         : V: 0x0303 CS: 0xc030
         : TLS/SNI: teams.microsoft.com TLS/CN: teams.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=teams.microsoft.com
         : RID 30: TLS Certificate Expired
         : DP: 12
 
-offline0: i4pcu---d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60532
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60532
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -28,14 +28,14 @@ offline0: i4pcu---d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60532
         : RID 47: TLS ALPN Not Found
         : DP: 8
 
-offline0: i4pc----------- TCP [OR] 40.126.9.5:443 <-- [L] 192.168.1.6:60534
+offline0: i4pc---------F- TCP [OR] 40.126.9.5:443 <-- [L] 192.168.1.6:60534
         : HTTP/S.netify.microsoft-authentication
         : H: login.microsoftonline.com
         : V: 0x0303
         : TLS/SNI: login.microsoftonline.com
         : DP: 5
 
-offline0: i4pc----d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60535
+offline0: i4pc-------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60535
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303
@@ -45,14 +45,14 @@ offline0: i4pc----d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60535
 
 offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60536
         : HTTP/S.netify.teams
-        : H: teams.microsoft.com
+        : D: s-0005.s-msedge.net H: teams.microsoft.com
         : V: 0x0303 CS: 0xc030
         : TLS/SNI: teams.microsoft.com TLS/CN: teams.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=teams.microsoft.com
         : RID 30: TLS Certificate Expired
         : DP: 12
 
-offline0: i4pcu---d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60537
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60537
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -95,28 +95,28 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:51033
         : H: eu-api.asm.skype.com
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 52.114.75.70:443 <-- [L] 192.168.1.6:60538
+offline0: i4pc----------- TCP [OR] 52.114.75.70:443 <-- [L] 192.168.1.6:60538
         : HTTP/S.netify.teams
         : D: weu1-api-teams.cloudapp.net H: eu-prod.asyncgw.teams.microsoft.com
         : V: 0x0303
         : TLS/SNI: eu-prod.asyncgw.teams.microsoft.com
         : DP: 5
 
-offline0: i4pc----d------ TCP [OR] 52.114.75.69:443 <-- [L] 192.168.1.6:60539
+offline0: i4pc----------- TCP [OR] 52.114.75.69:443 <-- [L] 192.168.1.6:60539
         : HTTP/S.netify.skype
         : D: weu1-api-skype.cloudapp.net H: eu-api.asm.skype.com
         : V: 0x0303
         : TLS/SNI: eu-api.asm.skype.com
         : DP: 5
 
-offline0: i4pc----d------ TCP [OR] 52.114.75.70:443 <-- [L] 192.168.1.6:60540
+offline0: i4pc----------- TCP [OR] 52.114.75.70:443 <-- [L] 192.168.1.6:60540
         : HTTP/S.netify.teams
         : D: weu1-api-teams.cloudapp.net H: eu-prod.asyncgw.teams.microsoft.com
         : V: 0x0303
         : TLS/SNI: eu-prod.asyncgw.teams.microsoft.com
         : DP: 5
 
-offline0: i4pcu---d--r--- TCP [OR] 52.114.75.69:443 <-- [L] 192.168.1.6:60541
+offline0: i4pcu------r--- TCP [OR] 52.114.75.69:443 <-- [L] 192.168.1.6:60541
         : HTTP/S.netify.skype
         : D: weu1-api-skype.cloudapp.net H: eu-api.asm.skype.com
         : V: 0x0303 CS: 0xc030
@@ -130,7 +130,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:49514
         : H: config.teams.microsoft.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60542
+offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60542
         : HTTP/S.netify.teams
         : D: s-0005.s-msedge.net H: config.teams.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -144,14 +144,14 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:65387
         : H: northeuropecns.trafficmanager.net
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 52.114.76.48:443 <-- [L] 192.168.1.6:60544
+offline0: i4pc----------- TCP [OR] 52.114.76.48:443 <-- [L] 192.168.1.6:60544
         : HTTP/S.netify.teams
         : D: northeuropecns-32.northeurope.cloudapp.azure.com H: northeurope.notifications.teams.microsoft.com
         : V: 0x0303
         : TLS/SNI: northeurope.notifications.teams.microsoft.com
         : DP: 5
 
-offline0: i4pcu---d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60543
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60543
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -170,7 +170,7 @@ offline0: i4pc----------- TCP [OR] 162.125.19.131:443 <-- [L] 192.168.1.6:60344
         : HTTP/S.netify.dropbox
         : DP: 3
 
-offline0: i4pc----d------ TCP [OR] 52.114.77.58:443 <-- [L] 192.168.1.6:60545
+offline0: i4pc----------- TCP [OR] 52.114.77.58:443 <-- [L] 192.168.1.6:60545
         : HTTP/S.netify.teams
         : D: a-ups-presence4-prod.northeurope.cloudapp.azure.com H: presence.teams.microsoft.com
         : V: 0x0303
@@ -190,14 +190,14 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:57504
         : H: chatsvcagg.svcs.teams.office.com
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 52.114.88.59:443 <-- [L] 192.168.1.6:60547
+offline0: i4pc----------- TCP [OR] 52.114.88.59:443 <-- [L] 192.168.1.6:60547
         : HTTP/S.netify.teams
         : D: msg-ukso-01-chatsvcagg.uksouth.cloudapp.azure.com H: chatsvcagg.teams.microsoft.com
         : V: 0x0303
         : TLS/SNI: chatsvcagg.teams.microsoft.com
         : DP: 14
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60548
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60548
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -212,7 +212,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:59403
         : H: substrate.office.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 13.107.18.11:443 <-- [L] 192.168.1.6:60549
+offline0: i4pcu------r--- TCP [OR] 13.107.18.11:443 <-- [L] 192.168.1.6:60549
         : HTTP/S.netify.outlook
         : D: k-0002.k-msedge.net H: substrate.office.com
         : V: 0x0303 CS: 0xc030
@@ -252,7 +252,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:51309
         : H: skypedataprdcolneu04.cloudapp.net
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60554
+offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60554
         : HTTP/S.netify.teams
         : D: s-0005.s-msedge.net H: config.teams.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -269,7 +269,7 @@ offline0: i4pc---------F- TCP [OR] 40.126.9.7:443 <-- [L] 192.168.1.6:60556
         : TLS/SNI: login.microsoftonline.com
         : DP: 5
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60552
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60552
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -279,7 +279,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60552
         : RID 47: TLS ALPN Not Found
         : DP: 8
 
-offline0: i4pcu---d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60555
+offline0: i4pcu------r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60555
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -289,7 +289,7 @@ offline0: i4pcu---d--r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60555
         : RID 47: TLS ALPN Not Found
         : DP: 11
 
-offline0: i4pcu---d--r--- TCP [OR] 52.114.15.45:443 <-- [L] 192.168.1.6:60551
+offline0: i4pcu------r--- TCP [OR] 52.114.15.45:443 <-- [L] 192.168.1.6:60551
         : HTTP/S.netify.teams
         : D: trouter2-asse-a.cloudapp.net H: trouter2-asse-a.trouter.teams.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -299,7 +299,7 @@ offline0: i4pcu---d--r--- TCP [OR] 52.114.15.45:443 <-- [L] 192.168.1.6:60551
         : RID 47: TLS ALPN Not Found
         : DP: 11
 
-offline0: i4pcu---d--r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60557
+offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60557
         : HTTP/S.netify.teams
         : D: s-0005.s-msedge.net H: teams.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -309,7 +309,7 @@ offline0: i4pcu---d--r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60557
         : RID 47: TLS ALPN Not Found
         : DP: 12
 
-offline0: i4pc----d--r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60559
+offline0: i4pc-------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60559
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303
@@ -335,14 +335,14 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:54069
         : H: api.microsoftstream.com
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 104.40.187.151:443 <-- [L] 192.168.1.6:60562
+offline0: i4pc----------- TCP [OR] 104.40.187.151:443 <-- [L] 192.168.1.6:60562
         : HTTP/S.netify.microsoft
         : D: ams-euwe-1-hos-apigateway-1-1.cloudapp.net H: api.microsoftstream.com
         : V: 0x0303
         : TLS/SNI: api.microsoftstream.com
         : DP: 14
 
-offline0: i4pcu---d--r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60561
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60561
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -357,7 +357,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:62735
         : H: euno-1.api.microsoftstream.com
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 52.169.186.119:443 <-- [L] 192.168.1.6:60563
+offline0: i4pc----------- TCP [OR] 52.169.186.119:443 <-- [L] 192.168.1.6:60563
         : HTTP/S.netify.microsoft
         : D: ams-euno-1-hos-apigateway-1-1.cloudapp.net H: euno-1.api.microsoftstream.com
         : V: 0x0303
@@ -369,7 +369,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:63930
         : H: dc.applicationinsights.microsoft.com
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 40.79.138.41:443 <-- [L] 192.168.1.6:60564
+offline0: i4pc----------- TCP [OR] 40.79.138.41:443 <-- [L] 192.168.1.6:60564
         : HTTP/S.netify.azure
         : D: cfr-breeziest-in.cloudapp.net H: gate.hockeyapp.net
         : V: 0x0303
@@ -381,7 +381,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:62863
         : H: emea.ng.msg.teams-msgapi.trafficmanager.net
         : DP: 2
 
-offline0: i4pc----d------ TCP [OR] 52.114.108.8:443 <-- [L] 192.168.1.6:60565
+offline0: i4pc----------- TCP [OR] 52.114.108.8:443 <-- [L] 192.168.1.6:60565
         : HTTP/S.netify.teams
         : D: msgapi-prod-sfr.cloudapp.net H: emea.ng.msg.teams.microsoft.com
         : V: 0x0303
@@ -396,7 +396,7 @@ offline0: i4pcu------r--- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.6:60566
         : RID 16: Known Protocol on Non-standard Port
         : DP: 6
 
-offline0: i4pc----d--r--- UDP [OR] 52.114.250.123:3478 <-- [L] 192.168.1.6:50016
+offline0: i4pc-------r--- UDP [OR] 52.114.250.123:3478 <-- [L] 192.168.1.6:50016
         : Skype/Teams/Call.netify.teams
         : D: b-tr-teams-euno-05.northeurope.cloudapp.azure.com
         : RID 46: Unidirectional Traffic
@@ -407,7 +407,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:55765
         : H: b-tr-teams-euno-05.northeurope.cloudapp.azure.com
         : DP: 2
 
-offline0: i4pc----d--r--- UDP [OR] 52.114.250.123:3478 <-- [L] 192.168.1.6:50036
+offline0: i4pc-------r--- UDP [OR] 52.114.250.123:3478 <-- [L] 192.168.1.6:50036
         : Skype/Teams/Call.netify.teams
         : D: b-tr-teams-euno-05.northeurope.cloudapp.azure.com
         : RID 46: Unidirectional Traffic
@@ -418,7 +418,7 @@ offline0: i4pc-------r--- UDP [OR] 52.114.250.141:3478 <-- [L] 192.168.1.6:50016
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----d--r-F- TCP [OR] 52.114.250.123:443 <-- [L] 192.168.1.6:50018
+offline0: i4pc-------r-F- TCP [OR] 52.114.250.123:443 <-- [L] 192.168.1.6:50018
         : HTTP/S.netify.teams
         : D: b-tr-teams-euno-05.northeurope.cloudapp.azure.com H: euaz.tr.teams.microsoft.com
         : V: 0x0303
@@ -441,7 +441,7 @@ offline0: i4pc-------r--- UDP [OR] 52.114.250.137:3478 <-- [L] 192.168.1.6:50037
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----d--r-F- TCP [OR] 52.114.250.123:443 <-- [L] 192.168.1.6:50021
+offline0: i4pc-------r-F- TCP [OR] 52.114.250.123:443 <-- [L] 192.168.1.6:50021
         : HTTP/S.netify.teams
         : D: b-tr-teams-euno-05.northeurope.cloudapp.azure.com H: euaz.tr.teams.microsoft.com
         : V: 0x0303
@@ -478,7 +478,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:60837
         : H: c-flightproxy-euno-01-teams.cloudapp.net
         : DP: 2
 
-offline0: i4pc----d--r--- TCP [OR] 52.114.77.136:443 <-- [L] 192.168.1.6:60567
+offline0: i4pc-------r--- TCP [OR] 52.114.77.136:443 <-- [L] 192.168.1.6:60567
         : HTTP/S.netify.teams
         : D: c-flightproxy-euno-01-teams.cloudapp.net H: api.flightproxy.teams.microsoft.com
         : V: 0x0303
@@ -522,7 +522,7 @@ offline0: i4pc-------r--- UDP [OR] 52.114.252.8:3479 <-- [L] 192.168.1.6:50016
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----d------ TCP [OR] 40.79.138.41:443 <-- [L] 192.168.1.6:60568
+offline0: i4pc----------- TCP [OR] 40.79.138.41:443 <-- [L] 192.168.1.6:60568
         : HTTP/S.netify.azure
         : D: cfr-breeziest-in.cloudapp.net H: gate.hockeyapp.net
         : V: 0x0303
@@ -534,8 +534,8 @@ offline0: i4pc-------r--- ICMP [OR] 93.71.110.205:0 --> [L] 192.168.1.6:0
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-d------ UDP [OR] 52.114.77.136:3478 <-- [L] 192.168.1.6:51681
-        : Unknown.netify.azure
+offline0: i4pc-gx-------- UDP [OR] 52.114.77.136:3478 <-- [L] 192.168.1.6:51681
+        : STUN.netify.azure
         : D: c-flightproxy-euno-01-teams.cloudapp.net
         : DP: 31
 

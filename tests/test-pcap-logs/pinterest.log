@@ -165,66 +165,66 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:7a6e:443 <-- [L] 2a01:cb01:2049
         : DP: 12
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:807::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40876
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:33164
-        : Unknown
+        : HTTP/S
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56940 --> [L] 2a04:4e42:1d::720:443
-        : Unknown
+        : HTTP/S
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:80c::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:57130
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2600:1901:0:7a0b:::443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46918
-        : Unknown
+        : HTTP/S
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:33156
-        : Unknown
+        : HTTP/S
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 64:ff9b::acd9:13e2:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:34626
-        : Unknown
+        : HTTP/S
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47682
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:80b::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:58726
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:815::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:48890
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::2004:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40560
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:806::200e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:54308
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38402 --> [L] 2a04:4e42:1d::84:443
-        : Unknown
+        : HTTP/S
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51472
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51446
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i6pc-gx-------- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38406 --> [L] 2a04:4e42:1d::84:443
-        : Unknown
+        : HTTP/S
         : DP: 2
 

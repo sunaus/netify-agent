@@ -510,7 +510,8 @@ public:
     }
 
 protected:
-    void CacheInsert(const K &key, const V &value) {
+    void CacheInsert(const K &key, const V &value,
+      bool update = false) {
         std::unique_lock<std::mutex> lg(lock, std::defer_lock);
 
         if (lockable) lg.lock();
@@ -534,6 +535,7 @@ protected:
             entries.push_front(key);
 
             i->second.second = entries.begin();
+            if (update) i->second.first = value;
         }
     }
 

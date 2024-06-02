@@ -14,13 +14,13 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2714
         : H: 1.0.0.127.in-addr.arpa
         : DP: 2
 
-offline0: i4pc----d--r--- UDP [L] 192.168.1.52:5060 --> [OR] 212.242.33.35:5060
+offline0: i4pc-------r--- UDP [L] 192.168.1.52:5060 --> [OR] 212.242.33.35:5060
         : SIP
         : D: sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----d--r--- UDP [L] 192.168.1.2:5060 <-- [OR] 212.242.33.35:5060
+offline0: i4pc-------r--- UDP [L] 192.168.1.2:5060 <-- [OR] 212.242.33.35:5060
         : SIP
         : D: sip.cybercity.dk
         : RID 46: Unidirectional Traffic
@@ -87,7 +87,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2737
         : H: 1.0.0.127.in-addr.arpa
         : DP: 2
 
-offline0: i4pc----d--r--- UDP [L] 192.168.1.2:20932 --> [OR] 212.242.33.35:5060
+offline0: i4pc-------r--- UDP [L] 192.168.1.2:20932 --> [OR] 212.242.33.35:5060
         : SIP
         : D: sip.cybercity.dk
         : RID 46: Unidirectional Traffic
@@ -243,7 +243,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.5.2:2784
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----d------ UDP [OR] 192.37.115.0:5060 <-- [L] 212.242.33.35:5060
+offline0: i4pc----------- UDP [OR] 192.37.115.0:5060 <-- [L] 212.242.33.35:5060
         : SIP
         : D: sip.cybercity.dk
         : DP: 1
@@ -449,7 +449,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2784
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.168.1.2:2679
-        : Unknown
+        : FTP/C
         : RID  3: Clear-Text Credentials
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
@@ -518,7 +518,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2742
         : DP: 4
 
 offline0: i4pc-gx-------- UDP [L] 192.168.1.2:137 <-- [OL] 192.168.1.255:8329
-        : Unknown
+        : NETBIOS
         : DP: 1
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2752
@@ -528,7 +528,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2752
         : DP: 3
 
 offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.169.1.2:2720
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -579,7 +579,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2749
         : DP: 1
 
 offline0: i4pc-gx-------- UDP [L] 192.168.1.41:138 <-- [OL] 192.168.1.255:394
-        : Unknown
+        : NETBIOS
         : DP: 1
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.110:2765
@@ -607,13 +607,13 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.2:2736 --> [OL] 192.168.1.17:53
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [OR] 128.168.1.1:53 <-- [L] 192.168.37.115:2758
-        : Unknown
+        : DNS
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx-------- UDP [L] 192.168.1.255:137 <-- [OR] 217.168.1.2:137
-        : Unknown
+        : NETBIOS
         : DP: 1
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.2:2794 --> [OL] 192.168.108.1:53
@@ -633,8 +633,8 @@ offline0: i4pc-gx----r--- UDP [L] 192.168.1.2:30000 <-- [OR] 214.242.33.36:40392
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-d--r--- UDP [L] 192.168.1.6:5060 --> [OR] 212.242.33.35:5060
-        : Unknown
+offline0: i4pc-gx----r--- UDP [L] 192.168.1.6:5060 --> [OR] 212.242.33.35:5060
+        : SIP
         : D: sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -648,7 +648,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2750
         : DP: 4
 
 offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.168.1.2:2208
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -671,7 +671,7 @@ offline0: i4pc--x----r--- UDP [OR] 14.168.1.2:2754 --> [L] 192.168.1.1:53
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 37.115.0.2:2639 --> [L] 147.234.1.253:21
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -700,7 +700,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.18:2751
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 147.117.1.253:21 <-- [L] 192.168.1.2:2720
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -780,7 +780,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2783
         : DP: 3
 
 offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.168.1.66:2720
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -800,7 +800,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2796
         : DP: 3
 
 offline0: i4pc-gx-------- UDP [L] 192.168.1.2:137 <-- [OL] 192.168.1.255:35721
-        : Unknown
+        : NETBIOS
         : DP: 1
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2785
@@ -871,12 +871,12 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2827
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [OR] 147.137.21.94:445 <-- [L] 192.168.1.2:2717
-        : Unknown
+        : SMBv23
         : RID 46: Unidirectional Traffic
         : DP: 3
 
 offline0: i4pc-gx-------- UDP [L] 192.168.1.2:137 <-- [OL] 192.168.1.255:905
-        : Unknown
+        : NETBIOS
         : DP: 1
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OR] 192.170.1.2:2810
@@ -891,8 +891,8 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2766
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-d--r--- UDP [L] 192.168.1.2:5060 <-- [OR] 212.242.33.35:17860
-        : Unknown
+offline0: i4pc-gx----r--- UDP [L] 192.168.1.2:5060 <-- [OR] 212.242.33.35:17860
+        : SIP
         : D: sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -927,7 +927,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.57:2771
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-d--r--- UDP [L] 192.168.1.2:196 <-- [OR] 212.242.33.35:9587
+offline0: i4pc-gx----r--- UDP [L] 192.168.1.2:196 <-- [OR] 212.242.33.35:9587
         : Unknown
         : D: sip.cybercity.dk
         : RID 46: Unidirectional Traffic
@@ -957,7 +957,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.2:2791 --> [OL] 192.168.67.1:53
         : DP: 1
 
 offline0: i4pc-gx----r-F- TCP [OR] 147.234.1.253:21 <-- [L] 192.168.1.2:2720
-        : Unknown
+        : FTP/C
         : H: proftpd
         : RID 42: Unsafe Protocol
         : DP: 25
@@ -1001,7 +1001,7 @@ offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:1045 <-- [L] 192.168.1.2:2720
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 147.137.21.122:139 <-- [L] 192.168.1.71:2718
-        : Unknown
+        : NETBIOS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -1040,7 +1040,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2773
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.112.1.2:2720
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -1081,7 +1081,7 @@ offline0: i4pc-gx----r--- UDP [OR] 37.115.0.36:40392 --> [L] 192.168.1.2:30000
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [OR] 192.22.1.2:2760 --> [L] 192.168.1.1:53
-        : Unknown
+        : DNS
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -1176,7 +1176,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:19192
         : DP: 1
 
 offline0: i4pc-gx-------- UDP [L] 192.168.1.2:137 <-- [OL] 192.168.1.255:169
-        : Unknown
+        : NETBIOS
         : DP: 1
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2811
@@ -1186,13 +1186,13 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2811
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.2.1.2:2720
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.168.65.2:2720
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -1204,12 +1204,12 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2732
         : DP: 2
 
 offline0: i4pc-gx----r--- UDP [OR] 192.86.1.2:5060 --> [L] 200.68.120.99:5060
-        : Unknown
+        : SIP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 84.168.1.2:2720 --> [L] 147.234.1.253:21
-        : Unknown
+        : FTP/C
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -1254,7 +1254,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:14798
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 147.137.21.94:139 <-- [L] 192.168.1.2:2718
-        : Unknown
+        : NETBIOS
         : RID 46: Unidirectional Traffic
         : DP: 2
 
@@ -1285,11 +1285,11 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OR] 194.168.1.2:2807
         : DP: 1
 
 offline0: i4pc-gx-------- UDP [L] 192.168.1.2:137 <-- [OL] 192.168.1.255:25481
-        : Unknown
+        : NETBIOS
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [OR] 128.168.1.2:2810 --> [L] 192.168.1.1:53
-        : Unknown
+        : DNS
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
         : DP: 1

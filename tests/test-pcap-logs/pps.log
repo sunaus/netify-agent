@@ -606,7 +606,7 @@ offline0: i4pc-gx----r--- UDP [OR] 61.227.170.88:20227 <-- [L] 192.168.115.8:227
         : DP: 2
 
 offline0: i4pc-gx----r-F- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.15:65125
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -674,7 +674,7 @@ offline0: i4pc-gx----r--- UDP [OR] 36.233.39.81:18590 <-- [L] 192.168.115.8:2279
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [L] 192.168.115.8:50462 --> [OR] 202.108.14.236:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 2
 

@@ -76,6 +76,6 @@ offline0: i4pc-------r--- UDP [L] 10.0.1.87:57921 --> [OL] 10.0.4.24:137
         : DP: 1
 
 offline0: i4pc-gx-------- TCP [L] 10.0.4.24:139 <-- [OL] 10.0.4.131:1398
-        : Unknown
+        : NETBIOS
         : DP: 2
 

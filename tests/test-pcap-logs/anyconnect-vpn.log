@@ -38,7 +38,7 @@ offline0: i4pc----------- UDP [L] 10.0.0.227:62322 --> [OR] 75.75.76.76:53
         : H: vco.pandion.viasat.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56918
+offline0: i4pcu------r-F- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56918
         : HTTP/S.netify.viasat
         : D: vco.pandion.viasat.com
         : V: 0x0303 CS: 0x0035
@@ -49,7 +49,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56918
         : RID 53: TLS ALPN/SNI Mismatch
         : DP: 12
 
-offline0: i4pcu---d--r-F- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56919
+offline0: i4pcu------r-F- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56919
         : HTTP/S.netify.viasat
         : D: vco.pandion.viasat.com
         : V: 0x0303 CS: 0x0035
@@ -109,7 +109,7 @@ offline0: i4pc----------- UDP [L] 10.0.0.227:58155 --> [OR] 75.75.76.76:53
         : H: slack.com
         : DP: 2
 
-offline0: i4pcu---d----F- TCP [L] 10.0.0.227:56920 --> [OR] 99.86.34.156:443
+offline0: i4pcu--------F- TCP [L] 10.0.0.227:56920 --> [OR] 99.86.34.156:443
         : HTTP/S.netify.slack
         : D: slack.com
         : V: 0x0303 CS: 0xc02f
@@ -166,7 +166,7 @@ offline0: i6pc----------- UDP [L] fe80::408:3e45:3abc:1552:5353 --> [OM] ff02::f
         : H: _companion-link._tcp.local
         : DP: 6
 
-offline0: i4pcu---d--r--- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56929
+offline0: i4pcu------r--- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56929
         : HTTP/S.netify.viasat
         : D: vco.pandion.viasat.com
         : V: 0x0303 CS: 0x0035
@@ -222,13 +222,13 @@ offline0: i4pc----------- UDP [L] 10.0.0.227:51060 --> [OR] 75.75.75.75:53
         : H: 1-courier.push.apple.com
         : DP: 2
 
-offline0: i4pc----d--rsF- TCP [L] 10.0.0.227:56886 --> [OR] 17.57.144.116:5223
+offline0: i4pc-------rsF- TCP [L] 10.0.0.227:56886 --> [OR] 17.57.144.116:5223
         : Apple/Push.netify.apple-push
         : D: us-sw-courier-4.push-apple.com.akadns.net
         : RID 16: Known Protocol on Non-standard Port
         : DP: 2
 
-offline0: i4pc----d--rsF- TCP [L] 10.0.0.227:56886 --> [OR] 17.57.144.116:5223
+offline0: i4pc-------rsF- TCP [L] 10.0.0.227:56886 --> [OR] 17.57.144.116:5223
         : Apple/Push.netify.apple-push
         : D: us-sw-courier-4.push-apple.com.akadns.net
         : RID 16: Known Protocol on Non-standard Port
@@ -281,7 +281,7 @@ offline0: i4pc-------r--- UDP [L] 10.0.0.149:50081 <-- [OL] 10.0.0.227:57547
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----d--r--- UDP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:54107
+offline0: i4pc-------r--- UDP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:54107
         : DTLS.netify.viasat
         : D: vco.pandion.viasat.com
         : RID 36: Obsolete TLS (v1.1 or older)
@@ -349,8 +349,8 @@ offline0: i4pc--x----r--- UDP [L] 10.0.0.227:61613 --> [OR] 75.75.75.75:53
         : RID  8: Error Code
         : DP: 2
 
-offline0: i4pc-gx-d----F- TCP [OR] 8.37.103.196:443 <-- [L] 10.0.0.227:56871
-        : Unknown.netify.viasat
+offline0: i4pc-gx------F- TCP [OR] 8.37.103.196:443 <-- [L] 10.0.0.227:56871
+        : HTTP/S.netify.viasat
         : D: mail.viasat.com
         : DP: 6
 
@@ -360,7 +360,7 @@ offline0: i4pc-gx----r--- UDP [L] 10.0.0.1:192 <-- [OL] 10.0.0.227:52595
         : DP: 10
 
 offline0: i4pc-gx------F- TCP [L] 10.0.0.227:56885 --> [OR] 184.25.56.53:80
-        : Unknown
+        : HTTP
         : DP: 3
 
 offline0: i4pc--x----r--- UDP [L] 10.0.0.227:64972 --> [OR] 75.75.75.75:53
@@ -370,7 +370,7 @@ offline0: i4pc--x----r--- UDP [L] 10.0.0.227:64972 --> [OR] 75.75.75.75:53
         : DP: 2
 
 offline0: i4pc-gx------F- TCP [L] 10.0.0.149:8008 <-- [OL] 10.0.0.227:56865
-        : Unknown
+        : Cisco/VPN
         : DP: 3
 
 offline0: i4pc-gx----r-F- TCP [L] 10.0.0.151:8060 <-- [OL] 10.0.0.227:56866
@@ -379,15 +379,15 @@ offline0: i4pc-gx----r-F- TCP [L] 10.0.0.151:8060 <-- [OL] 10.0.0.227:56866
         : DP: 9
 
 offline0: i4pc-gx-------- TCP [L] 10.0.0.227:56881 --> [OR] 162.222.43.153:443
-        : Unknown
+        : HTTP/S
         : DP: 12
 
 offline0: i4pc-gx------F- TCP [L] 10.0.0.227:56874 --> [OR] 74.125.197.188:443
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [L] 10.0.0.151:8009 <-- [OL] 10.0.0.227:56916
-        : Unknown
+        : AJP
         : RID 46: Unidirectional Traffic
         : DP: 5
 

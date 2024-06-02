@@ -74,7 +74,7 @@ void ndDNSHintCache::Insert(const ndAddr &addr,
     digest.assign((const char *)sha1_result(&ctx, _digest),
       SHA1_DIGEST_LENGTH);
 
-    CacheInsert(digest, hostname);
+    CacheInsert(digest, hostname, true);
 }
 
 void ndDNSHintCache::Insert(const string &digest,
@@ -83,7 +83,7 @@ void ndDNSHintCache::Insert(const string &digest,
 
     if (nd_string_to_sha1(digest, _digest_bin)) {
         string _digest(_digest_bin.begin(), _digest_bin.end());
-        CacheInsert(_digest, hostname);
+        CacheInsert(_digest, hostname, true);
     }
 }
 

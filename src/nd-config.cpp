@@ -311,6 +311,8 @@ bool ndGlobalConfig::Load(const string &filename) {
     // DNS Cache section
     ndGC_SetFlag(ndGlobalFlags::USE_DHC,
       r->GetBoolean("dns-hint-cache", "enable", true));
+    ndGC_SetFlag(ndGlobalFlags::DHC_PARTIAL_LOOKUPS,
+      r->GetBoolean("dns-hint-cache", "partial_lookups", false));
 
     string dhc_storage_mode = r->Get("dns-hint-cache",
       "save", "persistent");

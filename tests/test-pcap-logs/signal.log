@@ -9,14 +9,14 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.17:60793
         : H: e673.dsce9.akamaiedge.net
         : DP: 2
 
-offline0: i4pcu---d----F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57018
+offline0: i4pcu--------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57018
         : HTTP/S.netify.apple-itunes
         : D: e673.dsce9.akamaiedge.net H: itunes.apple.com
         : V: 0x0303 CS: 0x1302
         : TLS/SNI: itunes.apple.com
         : DP: 6
 
-offline0: i4pcu---d--r-F- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:49226
+offline0: i4pcu------r-F- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:49226
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -25,7 +25,7 @@ offline0: i4pcu---d--r-F- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:49226
         : RID 47: TLS ALPN Not Found
         : DP: 7
 
-offline0: i4pcu---d------ TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57019
+offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57019
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -33,7 +33,7 @@ offline0: i4pcu---d------ TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57019
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=textsecure-service.whispersystems.org
         : DP: 7
 
-offline0: i4pcu---d------ TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57021
+offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57021
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -41,7 +41,7 @@ offline0: i4pcu---d------ TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57021
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=textsecure-service.whispersystems.org
         : DP: 7
 
-offline0: i4pcu---d------ TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57020
+offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57020
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -69,14 +69,14 @@ offline0: i4pc-------r--- ICMP [L] 192.168.2.1:0 <-- [OL] 192.168.2.17:0
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu---d----F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57022
+offline0: i4pcu--------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57022
         : HTTP/S.netify.apple-itunes
         : D: e673.dsce9.akamaiedge.net H: itunes.apple.com
         : V: 0x0303 CS: 0x1302
         : TLS/SNI: itunes.apple.com
         : DP: 6
 
-offline0: i4pcu---d--r--- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:49227
+offline0: i4pcu------r--- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:49227
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -85,7 +85,7 @@ offline0: i4pcu---d--r--- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:49227
         : RID 47: TLS ALPN Not Found
         : DP: 7
 
-offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57023
+offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57023
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -93,7 +93,7 @@ offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57023
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=textsecure-service.whispersystems.org
         : DP: 7
 
-offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57025
+offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57025
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -101,7 +101,7 @@ offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57025
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=textsecure-service.whispersystems.org
         : DP: 7
 
-offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57024
+offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57024
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -109,7 +109,7 @@ offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57024
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=textsecure-service.whispersystems.org
         : DP: 7
 
-offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57026
+offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57026
         : HTTP/S.netify.signal
         : D: textsecure-service.whispersystems.org
         : V: 0x0303 CS: 0xc02f
@@ -117,7 +117,7 @@ offline0: i4pcu---d------ TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57026
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=textsecure-service.whispersystems.org
         : DP: 7
 
-offline0: i4pc----d----F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57016
+offline0: i4pc---------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57016
         : HTTP/S.netify.apple-itunes
         : D: e673.dsce9.akamaiedge.net
         : DP: 7

@@ -42,16 +42,16 @@ offline0: i4pc--x----r--- TCP [L] 172.20.2.13:80 <-- [OL] 172.20.3.5:2607
         : DP: 1
 
 offline0: i4pc-gx------F- TCP [L] 172.20.3.5:2600 --> [OL] 172.20.3.13:80
-        : Unknown
+        : HTTP
         : DP: 4
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.13:80 <-- [OL] 172.20.76.5:65069
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.5:80 <-- [OR] 172.57.3.13:53132
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -62,27 +62,27 @@ offline0: i4pc--x----r--- TCP [L] 172.20.3.5:9587 --> [OL] 172.20.3.13:80
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.5:80 <-- [OL] 172.20.35.13:53136
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.13:80 <-- [OL] 172.20.148.5:2608
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.5:2602 --> [OL] 172.21.3.13:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.13:53136 --> [OR] 172.70.3.5:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 0.20.3.13:80 <-- [L] 172.20.3.5:2601
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -93,35 +93,35 @@ offline0: i4pc--x----r--- TCP [OR] 44.20.3.5:2605 --> [L] 172.20.3.13:80
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.5:80 <-- [OL] 172.20.3.13:53193
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx-------- TCP [L] 172.20.3.5:2607 --> [OL] 172.20.3.13:80
-        : Unknown
+        : HTTP
         : DP: 6
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.82:2601 --> [OL] 172.20.3.88:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx------F- TCP [L] 172.20.3.5:2605 --> [OL] 172.20.3.13:80
-        : Unknown
+        : HTTP
         : DP: 5
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.5:80 <-- [OL] 172.20.67.13:53136
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r-F- TCP [L] 172.20.3.5:2093 --> [OR] 172.52.3.13:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 51.20.3.5:2605 --> [L] 172.20.3.13:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -131,12 +131,12 @@ offline0: i4pc--x----r-F- TCP [L] 172.20.3.5:2603 --> [OL] 172.20.3.13:80
         : DP: 6
 
 offline0: i4pc-gx----r--- TCP [OR] 76.20.3.5:2602 --> [L] 172.20.3.13:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.13:80 <-- [OL] 172.20.68.5:2604
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : RID 51: TCP Connection Issues
         : DP: 1
@@ -148,21 +148,21 @@ offline0: i4pc--x----r--- TCP [L] 172.20.3.1:80 <-- [OL] 172.20.3.13:53132
         : DP: 1
 
 offline0: i4pc-gx------F- TCP [L] 172.20.3.5:80 <-- [OL] 172.20.3.13:53132
-        : Unknown
+        : HTTP
         : DP: 13
 
 offline0: i4pc-gx----r-F- TCP [OR] 72.20.3.13:80 <-- [L] 172.20.3.5:2603
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 172.6.3.5:80 <-- [L] 172.20.3.13:53132
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.13:80 <-- [OL] 172.20.82.5:2603
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -182,12 +182,12 @@ offline0: i4pc-gx----r--- L2TP [L] 172.20.3.5:0 <-- [OL] 172.20.3.13:0
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.5:2603 --> [OL] 172.20.3.77:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx-------- TCP [OR] 68.37.115.0:80 <-- [L] 172.20.3.5:2603
-        : Unknown
+        : HTTP
         : DP: 1
 
 offline0: i4pc--x----r--- TCP [L] 172.20.3.13:80 <-- [OL] 172.20.72.5:2606
@@ -197,7 +197,7 @@ offline0: i4pc--x----r--- TCP [L] 172.20.3.13:80 <-- [OL] 172.20.72.5:2606
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 172.20.3.5:2639 --> [OL] 172.20.3.13:80
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 

@@ -6,7 +6,7 @@ m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
 
 AC_PREREQ([2.69])
-AC_INIT([Netify Agent], [5.0.44],
+AC_INIT([Netify Agent], [5.0.45],
     [https://gitlab.com/netify.ai/public/netify-agent/issues],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
@@ -350,6 +350,20 @@ AS_IF([test "x$enable_ndpi_debug" = "xyes"], [
     AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_NDPI_DEBUG=1"])
 ])
 
+AC_ARG_ENABLE([debug-stats],
+    [AS_HELP_STRING([--enable-debug-stats], [Enable the collection of additional flow statistics [default=no]])],
+    [],
+    [enable_debug_stats=no])
+
+AS_IF([test "x$enable_debug_stats" = "xyes"], [
+    AC_DEFINE([_ND_ENABLE_DEBUG_STATS], [1],
+        [Define to enable the output of debug statistics.])
+    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_DEBUG_STATS=1"])
+    AM_CONDITIONAL(ENABLE_DEBUG_STATS, true)
+], [
+    AM_CONDITIONAL(ENABLE_DEBUG_STATS, false)
+])
+
 # Checks for required header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h net/ethernet.h stdint.h stdlib.h string.h sys/file.h sys/ioctl.h sys/socket.h sys/types.h sys/time.h sys/un.h syslog.h unistd.h], [], AC_MSG_ERROR([required header(s) not found.]))
 AC_CHECK_HEADERS([netinet/in.h netinet/ip.h netinet/tcp.h netinet/udp.h], [], AC_MSG_ERROR([required netinet header(s) not found.]),
@@ -441,6 +455,7 @@ AC_MSG_NOTICE([Use system libgcrypt: ${with_local_libgcrypt}])
 AC_MSG_NOTICE([Use thread-caching malloc: ${enable_libtcmalloc}])
 AC_MSG_NOTICE([Enable lean-and-mean build: ${enable_lean_and_mean}])
 AC_MSG_NOTICE([Enable extended flow stats: ${enable_extended_stats}])
+AC_MSG_NOTICE([Enable debug stats: ${enable_debug_stats}])
 AC_MSG_NOTICE([Installation prefix directory: ${prefix}])
 AC_MSG_NOTICE([Persistent state directory: ${persistentstatedir}])
 AC_MSG_NOTICE([Volatile state directory: ${volatilestatedir}])

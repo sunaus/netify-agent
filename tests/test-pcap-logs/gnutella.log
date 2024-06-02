@@ -3236,7 +3236,7 @@ offline0: i4pc-gx-------- UDP [L] 10.0.2.15:28681 --> [OR] 180.218.135.222:4548
         : DP: 2
 
 offline0: i4pc-gx----r--- UDP [L] 10.0.2.15:28681 <-- [OR] 164.132.10.25:47808
-        : Unknown
+        : BACnet
         : RID 46: Unidirectional Traffic
         : DP: 2
 

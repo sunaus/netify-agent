@@ -3,7 +3,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.103:53734 --> [OL] 192.168.1.254:53
         : H: safebrowsing.googleusercontent.com
         : DP: 2
 
-offline0: i4pcu---d--r--- TCP [OR] 172.217.22.14:443 <-- [L] 192.168.1.103:38657
+offline0: i4pcu------r--- TCP [OR] 172.217.22.14:443 <-- [L] 192.168.1.103:38657
         : HTTP/S.netify.google
         : D: sb.l.google.com H: safebrowsing.googleusercontent.com
         : V: 0x0303 CS: 0xcca9
@@ -17,7 +17,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.103:46078 --> [OL] 192.168.1.254:53
         : H: ssl.gstatic.com
         : DP: 2
 
-offline0: i4pc----d--r--- UDP [OR] 172.217.23.67:443 <-- [L] 192.168.1.103:51507
+offline0: i4pc-------r--- UDP [OR] 172.217.23.67:443 <-- [L] 192.168.1.103:51507
         : QUIC.netify.google
         : D: ssl.gstatic.com
         : TLS/SNI: ssl.gstatic.com
@@ -29,14 +29,14 @@ offline0: i4pc----------- UDP [L] 192.168.1.103:55862 --> [OL] 192.168.1.254:53
         : H: docs.google.com
         : DP: 2
 
-offline0: i4pc----d--r--- UDP [L] 192.168.1.103:57591 --> [OR] 216.58.198.46:443
+offline0: i4pc-------r--- UDP [L] 192.168.1.103:57591 --> [OR] 216.58.198.46:443
         : QUIC.netify.gsuite
         : D: docs.google.com
         : TLS/SNI: docs.google.com
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54089 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54089 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -45,12 +45,12 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54089 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pc----d------ TCP [L] 192.168.1.103:54058 --> [OR] 203.205.151.162:443
+offline0: i4pc----------- TCP [L] 192.168.1.103:54058 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 3
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54090 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54090 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -69,7 +69,7 @@ offline0: i6pc----------- UDP [L] fe80::7a92:9cff:fe0f:a88e:5353 --> [OM] ff02::
         : H: _googlecast._tcp.local
         : DP: 6
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54091 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54091 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -78,7 +78,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54091 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54092 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54092 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -87,7 +87,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54092 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54094 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54094 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -96,7 +96,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54094 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54095 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54095 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -105,7 +105,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54095 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 10
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54096 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54096 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -114,7 +114,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54096 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54097 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54097 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -123,12 +123,12 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54097 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pc----d----F- TCP [L] 192.168.1.103:40740 --> [OR] 203.205.151.211:443
+offline0: i4pc---------F- TCP [L] 192.168.1.103:40740 --> [OR] 203.205.151.211:443
         : HTTP/S.netify.qq
         : D: ssd.tcdn.qq.com
         : DP: 3
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54098 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54098 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -149,7 +149,7 @@ offline0: i4pc----------- IGMP [L] 192.168.1.103:0 --> [OM] 224.0.0.22:0
         : IGMP
         : DP: 1
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54099 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54099 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -158,7 +158,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54099 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54100 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54100 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -167,7 +167,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54100 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 10
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54102 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54102 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -176,7 +176,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54102 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54101 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54101 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -185,7 +185,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54101 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54103 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54103 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -194,7 +194,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54103 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54104 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54104 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -203,7 +203,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54104 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54111 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54111 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -212,7 +212,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54111 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54113 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54113 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -226,7 +226,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.103:19041 --> [OL] 192.168.1.254:53
         : H: res.wx.qq.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:43850 --> [OR] 203.205.158.34:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:43850 --> [OR] 203.205.158.34:443
         : HTTP/S.netify.wechat
         : D: ssd.tcdn.qq.com H: res.wx.qq.com
         : V: 0x0303 CS: 0x009d
@@ -241,7 +241,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.103:60562 --> [OL] 192.168.1.254:53
         : H: ssl.gstatic.com
         : DP: 2
 
-offline0: i4pc----d--r--- UDP [OR] 172.217.23.67:443 <-- [L] 192.168.1.103:35601
+offline0: i4pc-------r--- UDP [OR] 172.217.23.67:443 <-- [L] 192.168.1.103:35601
         : QUIC.netify.google
         : D: ssl.gstatic.com
         : TLS/SNI: ssl.gstatic.com
@@ -254,7 +254,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.100:138 --> [OL] 192.168.1.255:138
         : RID 42: Unsafe Protocol
         : DP: 1
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54117 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54117 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -263,7 +263,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54117 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54118 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54118 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -272,7 +272,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54118 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54119 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54119 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -281,7 +281,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54119 --> [OR] 203.205.151.162:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:54120 --> [OR] 203.205.151.162:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54120 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -295,7 +295,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.103:60356 --> [OL] 192.168.1.254:53
         : H: web.wechat.com
         : DP: 2
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58036 --> [OR] 203.205.147.171:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:58036 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -304,7 +304,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58036 --> [OR] 203.205.147.171:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58038 --> [OR] 203.205.147.171:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:58038 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -376,7 +376,7 @@ offline0: i6pc----------- IPv6-ICMP [L] fe80::842:a3f3:a286:6c5b:0 --> [OM] ff02
         : ICMPv6
         : DP: 1
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58040 --> [OR] 203.205.147.171:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:58040 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -385,7 +385,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58040 --> [OR] 203.205.147.171:4
         : RID 30: TLS Certificate Expired
         : DP: 8
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58041 --> [OR] 203.205.147.171:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:58041 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -394,7 +394,7 @@ offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58041 --> [OR] 203.205.147.171:4
         : RID 30: TLS Certificate Expired
         : DP: 10
 
-offline0: i4pcu---d--r-F- TCP [L] 192.168.1.103:58042 --> [OR] 203.205.147.171:443
+offline0: i4pcu------r-F- TCP [L] 192.168.1.103:58042 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
@@ -418,22 +418,22 @@ offline0: i4pc----------- IGMP [L] 192.168.1.108:0 --> [OM] 224.0.0.22:0
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.233.167.188:443 <-- [L] 192.168.1.103:54205
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:54112 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54112 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 9
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:54085 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54085 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 3
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:34981
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 9
 
@@ -443,8 +443,8 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:56367 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:58039 --> [OR] 203.205.147.171:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:58039 --> [OR] 203.205.147.171:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 17
 
@@ -454,18 +454,18 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:42856 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:40741 --> [OR] 203.205.151.211:443
-        : Unknown.netify.qq
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:40741 --> [OR] 203.205.151.211:443
+        : HTTP/S.netify.qq
         : D: ssd.tcdn.qq.com
         : DP: 4
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:58037 --> [OR] 203.205.147.171:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:58037 --> [OR] 203.205.147.171:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 8
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:54109 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54109 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 2
 
@@ -476,7 +476,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:58165 --> [OL] 192.168.1.254:53
         : DP: 1
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.34:80 <-- [L] 192.168.1.103:39207
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 9
 
@@ -486,19 +486,19 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:43705 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-d--r-F- TCP [L] 192.168.1.103:54106 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54106 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : RID 46: Unidirectional Traffic
         : DP: 2
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.34:80 <-- [L] 192.168.1.103:39195
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 8
 
-offline0: i4pc-gx-d------ TCP [L] 192.168.1.103:58043 --> [OR] 203.205.147.171:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx-------- TCP [L] 192.168.1.103:58043 --> [OR] 203.205.147.171:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 5
 
@@ -509,22 +509,22 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:43317 --> [OL] 192.168.1.254:53
         : DP: 1
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:34996
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 9
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:54110 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54110 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 2
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:54114 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54114 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 9
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:54093 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54093 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 8
 
@@ -534,8 +534,8 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:53515 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:54084 --> [OR] 203.205.151.162:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54084 --> [OR] 203.205.151.162:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : DP: 6
 
@@ -581,29 +581,30 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:44346 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc--x-d--r--- TCP [L] 192.168.1.103:54183 --> [OR] 203.205.151.162:443
+offline0: i4pc--x----r--- TCP [L] 192.168.1.103:54183 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
+        : D: web1.wechat.com
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx-d--r-F- TCP [L] 192.168.1.103:58226 --> [OR] 203.205.147.171:443
-        : Unknown.netify.wechat
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:58226 --> [OR] 203.205.147.171:443
+        : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : RID 46: Unidirectional Traffic
         : DP: 6
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.34:80 <-- [L] 192.168.1.103:39231
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 9
 
-offline0: i4pc-gx-d----F- TCP [L] 192.168.1.103:43851 --> [OR] 203.205.158.34:443
-        : Unknown.netify.qq
+offline0: i4pc-gx------F- TCP [L] 192.168.1.103:43851 --> [OR] 203.205.158.34:443
+        : HTTP/S.netify.qq
         : D: ssd.tcdn.qq.com
         : DP: 9
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:35000
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 9
 
@@ -625,16 +626,16 @@ offline0: i4pc--x----r-F- TCP [L] 192.168.1.103:58143 --> [OR] 216.58.205.131:44
         : DP: 3
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.180.179:80 <-- [L] 192.168.1.103:52020
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 8
 
 offline0: i4pc-gx-------- TCP [L] 192.168.1.103:49787 --> [OR] 216.58.205.142:443
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : DP: 6
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:34999
-        : Unknown
+        : HTTP
         : RID 46: Unidirectional Traffic
         : DP: 9
 

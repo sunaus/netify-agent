@@ -6,7 +6,7 @@ set -euo pipefail
 : ${OPTION_GDB:=disable}
 : ${OPTION_VALGRIND:=disable}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
-: ${NETIFYD_OPTIONS:=-d --run-without-sources}
+: ${NETIFYD_OPTIONS:=-d --run-without-sources --thread-detection-cores=4}
 : ${NETIFYD_CONF:=$(pwd)/netifyd-debug.conf}
 
 if [ -z "${NETIFYD_CONF}" -a -f netifyd-debug.conf ]; then

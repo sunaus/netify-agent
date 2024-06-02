@@ -54,7 +54,7 @@ offline0: i4pc-------r--- TCP [L] 10.0.0.1:1433 <-- [OL] 10.111.111.111:33333
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 10.0.0.1:1433 <-- [OL] 10.111.111.111:6666
-        : Unknown
+        : MSSQL/TDS
         : RID 46: Unidirectional Traffic
         : DP: 7
 

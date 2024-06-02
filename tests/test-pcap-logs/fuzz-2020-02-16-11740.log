@@ -272,7 +272,7 @@ offline0: i4pc-gx----r--- 170 [OR] 170.170.170.170:0 <-- [L] 170.170.170.170:0
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.120.30:29200 --> [OR] 198.226.25.53:1812
-        : Unknown
+        : RADIUS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -337,12 +337,12 @@ offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 --> [OR] 198.226.25.53:1796
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.66:29200 --> [OR] 198.226.25.53:1812
-        : Unknown
+        : RADIUS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 --> [OR] 198.119.25.53:1812
-        : Unknown
+        : RADIUS
         : RID 46: Unidirectional Traffic
         : DP: 1
 

@@ -73,7 +73,7 @@ offline0: i4pc-gx-------- TCP [L] 10.24.82.188:58916 --> [OR] 54.255.185.236:522
         : DP: 4
 
 offline0: i4pc-gx-------- TCP [L] 10.24.82.188:46947 --> [OR] 139.150.0.125:443
-        : Unknown.netify.kakao-corp
+        : HTTP/S.netify.kakao-corp
         : DP: 5
 
 offline0: i4pc--x----r-F- TCP [L] 10.24.82.188:48489 --> [OR] 203.205.147.215:80
@@ -85,13 +85,13 @@ offline0: i4pc--x----r-F- TCP [L] 10.24.82.188:48489 --> [OR] 203.205.147.215:80
         : DP: 15
 
 offline0: i4pc-gx----r--- TCP [L] 10.24.82.188:56697 --> [OR] 216.58.220.161:443
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : RID 46: Unidirectional Traffic
         : RID 51: TCP Connection Issues
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 10.24.82.188:59912 --> [OR] 173.252.88.128:443
-        : Unknown.netify.meta
+        : HTTP/S.netify.meta
         : RID 46: Unidirectional Traffic
         : DP: 2
 
@@ -100,23 +100,23 @@ offline0: i4pc-gx-----s-- TCP [L] 10.24.82.188:51021 --> [OR] 103.246.57.251:808
         : DP: 11
 
 offline0: i4pc-gx----r--- TCP [L] 10.24.82.188:38380 --> [OR] 173.194.117.229:443
-        : Unknown.netify.google
+        : HTTP/S.netify.google
         : RID 46: Unidirectional Traffic
         : RID 51: TCP Connection Issues
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 10.24.82.188:52123 --> [OR] 173.252.122.1:443
-        : Unknown.netify.meta
+        : HTTP/S.netify.meta
         : RID 46: Unidirectional Traffic
         : RID 51: TCP Connection Issues
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [L] 10.24.82.188:53974 --> [OR] 203.205.151.233:8080
-        : Unknown
+        : HTTP/Proxy
         : RID 46: Unidirectional Traffic
         : DP: 5
 
 offline0: i4pc-gx------F- TCP [L] 10.24.82.188:34533 --> [OR] 120.28.26.242:80
-        : Unknown
+        : HTTP
         : DP: 5
 

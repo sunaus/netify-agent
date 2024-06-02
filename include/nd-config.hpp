@@ -117,7 +117,7 @@ enum class ndGlobalFlags : uint32_t {
     USE_FHC = (1 << 13),
     EXPORT_JSON = (1 << 14),
     VERBOSE = (1 << 15),
-    FREE_BIT17 = (1 << 16),
+    DHC_PARTIAL_LOOKUPS = (1 << 16),
     REPLAY_DELAY = (1 << 17),
     REMAIN_IN_FOREGROUND = (1 << 18),
     ALLOW_UNPRIV = (1 << 19),
@@ -179,6 +179,9 @@ enum class ndGlobalFlags : uint32_t {
 #define ndGC_VERBOSE \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::VERBOSE)
+#define ndGC_DHC_PARTIAL_LOOKUPS \
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::DHC_PARTIAL_LOOKUPS)
 #define ndGC_REPLAY_DELAY \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::REPLAY_DELAY)

@@ -71,7 +71,7 @@ ndDetectionThread::ndDetectionThread(int16_t cpu, const string &tag,
 #ifdef _ND_ENABLE_CONNTRACK
     thread_conntrack(thread_conntrack),
 #endif
-    ndpi(nullptr), dhc(dhc), fhc(fhc), flows(0) {
+    ndpi(nullptr), dhc(dhc), fhc(fhc) {
     Reload();
 
     private_addrs.first.ss_family = AF_INET;
@@ -111,19 +111,29 @@ ndDetectionThread::~ndDetectionThread() {
     pthread_cond_destroy(&pkt_queue_cond);
     pthread_mutex_destroy(&pkt_queue_cond_mutex);
 
+#ifdef _ND_ENABLE_DEBUG_STATS
+    uint64_t pkts_flushed = 0;
+#endif
     while (pkt_queue.size()) {
         ndDetectionQueueEntry *entry = pkt_queue.front();
         pkt_queue.pop();
 
         delete entry;
+#ifdef _ND_ENABLE_DEBUG_STATS
+        pkts_flushed++;
+#endif
     }
 
     if (ndpi != nullptr) nd_ndpi_free(ndpi);
 
+    nd_dprintf("%s: detection thread destroyed.\n", tag.c_str());
+#ifdef _ND_ENABLE_DEBUG_STATS
     nd_dprintf(
-      "%s: detection thread destroyed, %u flows "
-      "processed.\n",
-      tag.c_str(), flows);
+      "%s: %llu flows, %llu pkts, %llu pkts flushed, max "
+      "pkts queued: %llu, max pkts queue size: %llu MB.\n",
+      tag.c_str(), flows, pkts, pkts_flushed,
+      max_queued_pkts, (max_queued_size / 1024 / 1024));
+#endif
 }
 
 void ndDetectionThread::Reload(void) {
@@ -142,6 +152,14 @@ void ndDetectionThread::QueuePacket(nd_flow_ptr &flow,
 
     pkt_queue.push(entry);
 
+#ifdef _ND_ENABLE_DEBUG_STATS
+    pkts++;
+    queued_pkts++;
+    queued_size += (entry->length + sizeof(ndDetectionQueueEntry));
+
+    max_queued_pkts = max(max_queued_pkts, queued_pkts);
+    max_queued_size = max(max_queued_size, queued_size);
+#endif
     Unlock();
 
     int rc;
@@ -308,6 +326,11 @@ void ndDetectionThread::ProcessPacketQueue(void) {
         if (pkt_queue.size()) {
             entry = pkt_queue.front();
             pkt_queue.pop();
+#ifdef _ND_ENABLE_DEBUG_STATS
+            queued_pkts--;
+            queued_size -= (entry->length +
+              sizeof(ndDetectionQueueEntry));
+#endif
         }
         else entry = nullptr;
 
@@ -362,8 +385,9 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
     bool flow_update = false;
 
     if (ndEFNF == nullptr) {
+#ifdef _ND_ENABLE_DEBUG_STATS
         flows++;
-
+#endif
         ndEFNF = (ndpi_flow_struct *)ndpi_malloc(
           sizeof(ndpi_flow_struct));
         if (ndEFNF == nullptr) {
@@ -731,17 +755,12 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
         string hostname;
 
         if (ndEF->lower_type == ndAddr::Type::OTHER)
-            ndEF->flags.dhc_hit = dhc->Lookup(
-              ndEF->lower_addr, hostname);
+            dhc->Lookup(ndEF->lower_addr, hostname);
 
-        if (! ndEF->flags.dhc_hit.load() &&
-          ndEF->upper_type == ndAddr::Type::OTHER)
-        {
-            ndEF->flags.dhc_hit = dhc->Lookup(
-              ndEF->upper_addr, hostname);
-        }
+        if (hostname.empty() && ndEF->upper_type == ndAddr::Type::OTHER)
+            dhc->Lookup(ndEF->upper_addr, hostname);
 
-        if (ndEF->flags.dhc_hit.load())
+        if (! hostname.empty())
             ndEF->dns_host_name = hostname;
     }
 
@@ -856,12 +875,23 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
               ndi.apps.Find(ndEF->host_server_name));
     }
 
-    // Determine application by dns_host_name if still
+    // Determine application by DHC (dns_host_name) if still
     // unknown.
     if (ndEF->detected_application == ND_APP_UNKNOWN) {
-        if (! ndEF->dns_host_name.empty())
-            SetDetectedApplication(entry,
-              ndi.apps.Find(ndEF->dns_host_name));
+        if (! ndEF->dns_host_name.empty()) {
+            if (! ndGC_DHC_PARTIAL_LOOKUPS ||
+              ndEF->host_server_name.empty())
+            {
+                SetDetectedApplication(entry,
+                  ndi.apps.Find(ndEF->dns_host_name));
+
+                if (ndEF->detected_application == ND_APP_UNKNOWN)
+                {
+                    ndEF->flags.dhc_hit = (ndEF->detected_application !=
+                      ND_APP_UNKNOWN);
+                }
+            }
+        }
     }
 
     // Determine application by network CIDR if still unknown.
@@ -1171,9 +1201,15 @@ void ndDetectionThread::SetGuessedProtocol(
         if (ndEF->detected_protocol == ndProto::Id::UNKNOWN) {
             ndEF->detected_protocol = ProtocolLookup(
               ndpi_rc.app_protocol, entry);
+            if (ndEF->detected_protocol != ndProto::Id::UNKNOWN)
+            {
+                ndEF->detected_protocol_name =
+                  ndProto::GetName(ndEF->detected_protocol);
+            }
         }
     }
 
+    ndEF->flags.detection_init = true;
     ndEF->flags.detection_guessed = true;
 }
 

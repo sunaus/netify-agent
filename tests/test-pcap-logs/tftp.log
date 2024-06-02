@@ -24,12 +24,12 @@ offline0: i4pc-------r--- UDP [L] 172.28.5.91:44618 <-- [OL] 172.28.5.170:62058
         : DP: 4
 
 offline0: i4pc-gx----r--- UDP [L] 172.16.5.170:69 <-- [OL] 172.28.4.53:54632
-        : Unknown
+        : TFTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [L] 172.16.5.170:69 <-- [OL] 172.28.4.53:54626
-        : Unknown
+        : TFTP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
