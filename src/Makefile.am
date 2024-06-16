@@ -76,6 +76,7 @@ if USE_LIBTCMALLOC
 AM_CPPFLAGS += $(LIBTCMALLOC_CFLAGS) -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free
 # XXX: It's important that this library be linked after all others.
 netifyd_LDADD += $(LIBTCMALLOC_LIBS)
+libnetifyd_la_LIBADD += $(LIBTCMALLOC_LIBS)
 endif
 
 # For debugging ns_initparse
