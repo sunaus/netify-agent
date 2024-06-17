@@ -49,7 +49,8 @@ Debian/10/x86-64:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: flex
-    CONFIGURE_EXTRA_FLAGS: ''
+    CONFIGURE_EXTRA_FLAGS: >
+      --disable-libtcmalloc
 
 Debian/11/x86-64:
   extends: .debian_build
@@ -241,6 +242,7 @@ Rocky Linux/8/x86-64:
     OS_REPOS: --enablerepo=powertools,epel
     CONFIGURE_EXTRA_FLAGS: >
       --enable-nfqueue
+      --disable-libtcmalloc
 
 Rocky Linux/9/x86-64:
   extends: .rhel_build
@@ -279,6 +281,7 @@ AlmaLinux/8/x86-64:
     OS_REPOS: --enablerepo=powertools,epel
     CONFIGURE_EXTRA_FLAGS: >
       --enable-nfqueue
+      --disable-libtcmalloc
 
 AlmaLinux/9/x86-64:
   extends: .rhel_build
