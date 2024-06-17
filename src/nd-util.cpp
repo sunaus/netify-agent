@@ -1333,11 +1333,52 @@ void nd_expand_variables(const string &input,
     }
 }
 
+void nd_gz_inflate(size_t length, const uint8_t *data,
+  vector<uint8_t> &output) {
+    int rc;
+    z_stream zs;
+    array<uint8_t, ND_ZLIB_CHUNK_SIZE> chunk;
+
+    zs.zalloc = Z_NULL;
+    zs.zfree = Z_NULL;
+    zs.opaque = Z_NULL;
+    zs.next_in = Z_NULL;
+    zs.avail_in = 0;
+
+    if (inflateInit2(&zs, 15 + 32) != Z_OK) {
+        throw ndException("%s: inflateInit: %s",
+          __PRETTY_FUNCTION__, strerror(EINVAL));
+    }
+
+    zs.next_in = (uint8_t *)data;
+    zs.avail_in = length;
+
+    do {
+        zs.avail_out = chunk.size();
+        zs.next_out = chunk.data();
+
+        if ((rc = inflate(&zs, Z_SYNC_FLUSH)) < 0) {
+            throw ndException("%s: inflate: %d",
+              __PRETTY_FUNCTION__, rc);
+        }
+        output.insert(output.end(), chunk.begin(),
+          chunk.end() + (chunk.size() - zs.avail_out));
+    }
+    while (zs.avail_out == 0);
+
+    inflateEnd(&zs);
+
+    if (rc != Z_STREAM_END) {
+        throw ndException("%s: inflate: %d",
+          __PRETTY_FUNCTION__, rc);
+    }
+}
+
 void nd_gz_deflate(size_t length, const uint8_t *data,
   vector<uint8_t> &output) {
     int rc;
     z_stream zs;
-    uint8_t chunk[ND_ZLIB_CHUNK_SIZE];
+    array<uint8_t, ND_ZLIB_CHUNK_SIZE> chunk;
 
     output.clear();
 
@@ -1357,24 +1398,22 @@ void nd_gz_deflate(size_t length, const uint8_t *data,
     zs.avail_in = length;
 
     do {
-        zs.avail_out = ND_ZLIB_CHUNK_SIZE;
-        zs.next_out = chunk;
+        zs.avail_out = chunk.size();
+        zs.next_out = chunk.data();
         if ((rc = deflate(&zs, Z_FINISH)) == Z_STREAM_ERROR) {
             throw ndException("%s: deflate: %s",
               __PRETTY_FUNCTION__, strerror(EINVAL));
         }
-        for (size_t i = 0; i < ND_ZLIB_CHUNK_SIZE - zs.avail_out; i++)
-        {
-            output.push_back(chunk[i]);
-        }
+        output.insert(output.end(), chunk.begin(),
+          chunk.end() + (chunk.size() - zs.avail_out));
     }
     while (zs.avail_out == 0);
 
     deflateEnd(&zs);
 
     if (rc != Z_STREAM_END) {
-        throw ndException("%s: deflate: %s",
-          __PRETTY_FUNCTION__, strerror(EINVAL));
+        throw ndException("%s: deflate: %d",
+          __PRETTY_FUNCTION__, rc);
     }
 #if 0
     nd_dprintf(

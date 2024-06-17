@@ -366,6 +366,8 @@ void nd_set_hostname(char *dst, const char *src,
 void nd_expand_variables(const std::string &input,
   std::string &output, std::map<std::string, std::string> &vars);
 
+void nd_gz_inflate(size_t length, const uint8_t *data,
+  std::vector<uint8_t> &output);
 void nd_gz_deflate(size_t length, const uint8_t *data,
   std::vector<uint8_t> &output);
 
