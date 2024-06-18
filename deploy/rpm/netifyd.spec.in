@@ -82,7 +82,7 @@ Report bugs to: @PACKAGE_BUGREPORT@
 %setup -q
 
 ./autogen.sh
-%{configure} %{?_with_conntrack} %{?_with_netlink}
+%{configure} %{?_with_conntrack} %{?_with_netlink} %{_configure_extra_flags}
 
 # Build
 %build
