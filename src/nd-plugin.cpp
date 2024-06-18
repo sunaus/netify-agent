@@ -18,6 +18,8 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "nd-util.hpp"
+#include "nlohmann/json.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -681,6 +683,98 @@ void ndPluginManager::BroadcastProcessorEvent(
     for (auto &p : processors) {
         reinterpret_cast<ndPluginProcessor *>(p.second->GetPlugin())
           ->DispatchProcessorEvent(event);
+    }
+}
+
+void ndPluginManager::Encode(nlohmann::json &output) const {
+    auto add_plugins =
+      [](const map_plugin &plugins_in, json &plugins_out,
+        const string &type) {
+        for (auto &p : plugins_in) {
+            json plugin;
+
+            plugin["tag"] = p.first;
+            plugin["type"] = type;
+
+            string version;
+            p.second->GetPlugin()->GetVersion(version);
+
+            plugin["version"] = version;
+
+            json status;
+            p.second->GetPlugin()->GetStatus(status);
+            plugin["status"] = status;
+
+            plugins_out[p.first] = plugin;
+        }
+    };
+
+    json plugins;
+    add_plugins(processors, plugins, "processor");
+    add_plugins(sinks, plugins, "sink");
+
+    output["plugins"] = plugins;
+}
+
+void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
+    auto display_plugin = [this](const json &plugin) {
+        const string plugin_tag = plugin["tag"].get<string>();
+
+        fprintf(stdout, "\n%s%s v%s [%s]%s\n",
+          ndTerm::Attr::UNDERLINE, plugin_tag.c_str(),
+          plugin["version"].get<string>().c_str(),
+          plugin["type"].get<string>().c_str(),
+          ndTerm::Attr::RESET);
+
+        ndPluginLoader *pl = nullptr;
+
+        if (plugin["type"].get<string>() == "processor") {
+            for (auto &p : processors) {
+                if (p.second->GetTag() != plugin_tag)
+                    continue;
+                pl = p.second;
+                break;
+            }
+        }
+        else if (plugin["type"].get<string>() == "sink") {
+            for (auto &p : sinks) {
+                if (p.second->GetTag() != plugin_tag)
+                    continue;
+                pl = p.second;
+                break;
+            }
+        }
+
+        if (pl != nullptr) {
+            auto s = plugin.find("status");
+            if (s != plugin.end() && s->is_object())
+                pl->GetPlugin()->DisplayStatus(
+                  s->get<json::object_t>());
+        }
+        else {
+            fprintf(stdout, "%s%s%s %s\n", ndTerm::Color::RED,
+              ndTerm::Icon::WARN, ndTerm::Attr::RESET,
+              "Plugin no longer loaded.");
+        }
+    };
+
+    auto plugins = status.find("plugins");
+    if (plugins != status.end()) {
+        if (plugins->empty()) {
+            fprintf(stdout, "%s%s %s%s\n",
+              ndTerm::Color::YELLOW, ndTerm::Icon::WARN,
+              "No plugins configured to load.",
+              ndTerm::Attr::RESET);
+        }
+
+        for (auto &it_kvp : plugins->get<json::object_t>()) {
+            display_plugin(it_kvp.second);
+        }
+    }
+    else {
+        fprintf(stdout, "%s%s%s %s\n", ndTerm::Color::RED,
+          ndTerm::Icon::FAIL, ndTerm::Attr::RESET,
+          "Plugin status unavailable.");
     }
 }
 

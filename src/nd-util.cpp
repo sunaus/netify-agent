@@ -89,6 +89,8 @@ const char *ndTerm::Attr::CURSOR_SHOW =
   (nd_isatty) ? "\033[?25h" : "";
 const char *ndTerm::Attr::CLEAR_EOL =
   (nd_isatty) ? "\033[0K" : "";
+const char *ndTerm::Attr::UNDERLINE =
+  (nd_isatty) ? "\033[4m" : "";
 
 const char *ndTerm::Icon::INFO = "•";
 const char *ndTerm::Icon::OK = "✓";

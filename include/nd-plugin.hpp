@@ -70,23 +70,12 @@ public:
 
     virtual void GetVersion(std::string &version) = 0;
 
+    virtual void GetStatus(nlohmann::json &status) { }
+
+    virtual void DisplayStatus(const nlohmann::json &status) { }
+
     inline const std::string &GetConfiguration(void) {
         return conf_filename;
-    }
-
-    template <class T>
-    void GetStatus(T &output) const {
-        switch (type) {
-        case Type::PROC:
-            serialize(output, { tag, "type" }, "processor");
-            break;
-        case Type::SINK:
-            serialize(output, { tag, "type" }, "sink");
-            break;
-        default:
-            serialize(output, { tag, "type" }, "unkown");
-            break;
-        }
     }
 
     enum class Event : uint8_t {
@@ -331,17 +320,9 @@ public:
       ndInstanceStatus *status);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event);
 
-    template <class T>
-    void Encode(T &output) const {
-        T plugins;
+    void Encode(nlohmann::json &output) const;
 
-        for (auto &p : processors)
-            p.second->GetPlugin()->GetStatus(plugins);
-        for (auto &p : sinks)
-            p.second->GetPlugin()->GetStatus(plugins);
-
-        serialize(output, { "plugins" }, plugins);
-    }
+    void DisplayStatus(const nlohmann::json &status) const;
 
     void DumpVersions(ndPlugin::Type type = ndPlugin::Type::BASE);
 

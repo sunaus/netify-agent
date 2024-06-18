@@ -52,6 +52,7 @@ public:
     static const char *CURSOR_HIDE;
     static const char *CURSOR_SHOW;
     static const char *CLEAR_EOL;
+    static const char *UNDERLINE;
 };
 
 class Color

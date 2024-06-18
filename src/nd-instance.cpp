@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <cstdlib>
 #include <ios>
 #include <iostream>
 
@@ -188,29 +189,31 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         { "verbose", 0, 0, 'v' }, { "version", 0, 0, 'V' },
 #define _ND_LO_ENABLE_PLUGIN  1
 #define _ND_LO_DISABLE_PLUGIN 2
+#define _ND_LO_EDIT_PLUGIN    3
         { "enable-plugin", 1, 0, _ND_LO_ENABLE_PLUGIN },
         { "disable-plugin", 1, 0, _ND_LO_DISABLE_PLUGIN },
-#define _ND_LO_ENABLE_INFORMATICS  3
-#define _ND_LO_DISABLE_INFORMATICS 4
+        { "edit-plugin", 1, 0, _ND_LO_EDIT_PLUGIN },
+#define _ND_LO_ENABLE_INFORMATICS  4
+#define _ND_LO_DISABLE_INFORMATICS 5
         { "enable-informatics", 0, 0, _ND_LO_ENABLE_INFORMATICS },
         { "disable-informatics", 0, 0, _ND_LO_DISABLE_INFORMATICS },
         { "enable-sink", 0, 0, _ND_LO_ENABLE_INFORMATICS },
         { "disable-sink", 0, 0, _ND_LO_DISABLE_INFORMATICS },
-#define _ND_LO_FORCE_RESET 5
+#define _ND_LO_FORCE_RESET 6
         { "force-reset", 0, 0, _ND_LO_FORCE_RESET },
-#define _ND_LO_CA_CAPTURE_BASE    6
-#define _ND_LO_CA_CONNTRACK       7
-#define _ND_LO_CA_DETECTION_BASE  8
-#define _ND_LO_CA_DETECTION_CORES 9
+#define _ND_LO_CA_CAPTURE_BASE    7
+#define _ND_LO_CA_CONNTRACK       8
+#define _ND_LO_CA_DETECTION_BASE  9
+#define _ND_LO_CA_DETECTION_CORES 10
         { "thread-capture-base", 1, 0, _ND_LO_CA_CAPTURE_BASE },
         { "thread-conntrack", 1, 0, _ND_LO_CA_CONNTRACK },
         { "thread-detection-base", 1, 0, _ND_LO_CA_DETECTION_BASE },
         { "thread-detection-cores", 1, 0, _ND_LO_CA_DETECTION_CORES },
-#define _ND_LO_DUMP_PROTOS 10
-#define _ND_LO_DUMP_APPS   11
-#define _ND_LO_DUMP_CAT    12
-#define _ND_LO_DUMP_CATS   13
-#define _ND_LO_DUMP_RISKS  14
+#define _ND_LO_DUMP_PROTOS 11
+#define _ND_LO_DUMP_APPS   12
+#define _ND_LO_DUMP_CAT    13
+#define _ND_LO_DUMP_CATS   14
+#define _ND_LO_DUMP_RISKS  15
         { "dump-all", 0, 0, 'P' },
         { "dump-protos", 0, 0, _ND_LO_DUMP_PROTOS },
         { "dump-protocols", 0, 0, _ND_LO_DUMP_PROTOS },
@@ -219,27 +222,27 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         { "dump-category", 1, 0, _ND_LO_DUMP_CAT },
         { "dump-categories", 0, 0, _ND_LO_DUMP_CATS },
         { "dump-risks", 0, 0, _ND_LO_DUMP_RISKS },
-#define _ND_LO_DUMP_SORT_BY_TAG 15
+#define _ND_LO_DUMP_SORT_BY_TAG 16
         { "dump-sort-by-tag", 0, 0, _ND_LO_DUMP_SORT_BY_TAG },
-#define _ND_LO_DUMP_WITH_CATS 16
+#define _ND_LO_DUMP_WITH_CATS 17
         { "dump-with-categories", 0, 0, _ND_LO_DUMP_WITH_CATS },
-#define _ND_LO_EXPORT_APPS 17
+#define _ND_LO_EXPORT_APPS 18
         { "export-apps", 0, 0, _ND_LO_EXPORT_APPS },
-#define _ND_LO_EXPORT_APPS_LEGACY 18
+#define _ND_LO_EXPORT_APPS_LEGACY 19
         { "export-legacy", 0, 0, _ND_LO_EXPORT_APPS_LEGACY },
-#define _ND_LO_LOOKUP_IP 19
+#define _ND_LO_LOOKUP_IP 20
         { "lookup-ip", 1, 0, _ND_LO_LOOKUP_IP },
-#define _ND_LO_CAPTURE_DELAY 20
+#define _ND_LO_CAPTURE_DELAY 21
         { "capture-delay", 1, 0, _ND_LO_CAPTURE_DELAY },
-#define _ND_LO_ALLOW_UNPRIV 21
+#define _ND_LO_ALLOW_UNPRIV 22
         { "allow-unprivileged", 0, 0, _ND_LO_ALLOW_UNPRIV },
-#define _ND_LO_IGNORE_IFACE_CONFIGS 22
+#define _ND_LO_IGNORE_IFACE_CONFIGS 23
         { "ignore-interface-configs", 0, 0, _ND_LO_IGNORE_IFACE_CONFIGS },
-#define _ND_LO_DISABLE_AUTO_FLOW_EXPIRY 23
+#define _ND_LO_DISABLE_AUTO_FLOW_EXPIRY 24
         { "disable-auto-flow-expiry", 0, 0, _ND_LO_DISABLE_AUTO_FLOW_EXPIRY },
-#define _ND_LO_RUN_WITHOUT_SOURCES 24
+#define _ND_LO_RUN_WITHOUT_SOURCES 25
         { "run-without-sources", 0, 0, _ND_LO_RUN_WITHOUT_SOURCES },
-#define _ND_LO_VERBOSE_FLAG 25
+#define _ND_LO_VERBOSE_FLAG 26
         { "verbose-flag", 1, 0, _ND_LO_VERBOSE_FLAG },
 
         { NULL, 0, 0, 0 } };
@@ -282,6 +285,12 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             ndGC.Load(conf_filename);
             return ndCR_Pack(DISABLE_PLUGIN,
               (EnablePlugin(optarg, false) && RestartAgent()) ? 0 : 1);
+        case _ND_LO_EDIT_PLUGIN:
+            ndGC.Load(conf_filename);
+            if (! ndTerm::IsTTY())
+                return ndCR_Pack(EDIT_PLUGIN, 1);
+            return ndCR_Pack(EDIT_PLUGIN,
+              (EditPlugin(optarg) && RestartAgent()) ? 0 : 1);
         case _ND_LO_ENABLE_INFORMATICS:
             return ndCR_Pack(ENABLE_PLUGIN,
               (EnableInformatics()) ? 0 : 1);
@@ -804,6 +813,44 @@ bool ndInstance::EnablePlugin(const string &tag, bool enable) const {
     return true;
 }
 
+bool ndInstance::EditPlugin(const string &tag) const {
+    string filename;
+
+    vector<string> configs;
+    if (nd_scan_dotd(ndGC.path_plugins, configs)) {
+        for (auto &config : configs) {
+            string fullpath(ndGC.path_plugins + "/" + config);
+
+            INIReader r = INIReader(fullpath);
+            if (r.ParseError() != 0) continue;
+
+            set<string> sections;
+            r.GetSections(sections);
+
+            if (sections.find(tag) == sections.end())
+                continue;
+
+            filename = r.Get(tag, "conf_filename", "");
+            break;
+        }
+    }
+
+    if (filename.empty()) {
+        fprintf(stderr, "No plugin configuration set.\n");
+        return false;
+    }
+
+    nd_expand_variables(filename, filename, ndGC.conf_vars);
+
+    const char *editor = getenv("EDITOR");
+    if (editor == nullptr) editor = "vi";
+
+    if (execlp(editor, editor, filename.c_str(), nullptr) == -1)
+        return false;
+
+    return true;
+}
+
 bool ndInstance::EnableInformatics(bool enable) const {
     ndGC.Load(conf_filename);
 
@@ -1112,6 +1159,9 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "loader for <plugin> and restart the Agent.\n"
           "  --disable-plugin <plugin>\n    Disable the "
           "loader for <plugin> and restart the Agent.\n"
+          "  --edit-plugin <plugin>\n    Edit the "
+          "the plugin configuration and restart the "
+          "Agent.\n"
           "  --enable-informatics\n    Automatically "
           "configure and enable the "
           "plugins required for Netify Informatics.\n"
@@ -1360,7 +1410,7 @@ static void DisplayApiStatus(json &jstatus,
       ndTerm::Attr::RESET);
 }
 
-bool ndInstance::DisplayAgentStatus(void) const {
+bool ndInstance::DisplayAgentStatus(void) {
     const char *icon = ndTerm::Icon::INFO;
     const char *color = ndTerm::Attr::RESET;
 
@@ -1846,6 +1896,19 @@ bool ndInstance::DisplayAgentStatus(void) const {
       ndTerm::Icon::INFO, ndGC.path_state_persistent.c_str());
     fprintf(stdout, "%s volatile state path: %s\n",
       ndTerm::Icon::INFO, ndGC.path_state_volatile.c_str());
+
+    try {
+        plugins.Load(ndPlugin::Type::BASE, false);
+        plugins.DisplayStatus(jstatus);
+    }
+    catch (exception &e) {
+        fprintf(stdout,
+          "%s%s%s error loading plugin status: "
+          "%s%s%s\n",
+          ndTerm::Color::RED, ndTerm::Icon::FAIL,
+          ndTerm::Attr::RESET, ndTerm::Color::RED, e.what(),
+          ndTerm::Attr::RESET);
+    }
 
     return true;
 }

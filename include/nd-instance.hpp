@@ -147,6 +147,7 @@ public:
         DISABLED_OPTION,
         DISABLE_PLUGIN,
         DUMP_LIST,
+        EDIT_PLUGIN,
         ENABLE_PLUGIN,
         EXPORT_APPS,
         FORCE_RESULT,
@@ -205,6 +206,7 @@ public:
 
     bool RestartAgent(bool conditional = true) const;
     bool EnablePlugin(const std::string &tag, bool enable = true) const;
+    bool EditPlugin(const std::string &tag) const;
     bool EnableInformatics(bool enable = true) const;
 
     bool DumpList(ndFlags<DumpFlags> type = DumpFlags::TYPE_ALL);
@@ -220,7 +222,7 @@ public:
 
     bool SaveAgentStatus(const ndCaptureThreads &threads,
       const ndInterfaceStats &stats);
-    bool DisplayAgentStatus(void) const;
+    bool DisplayAgentStatus(void);
 
     int Run(void);
 
