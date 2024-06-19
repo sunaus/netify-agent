@@ -720,7 +720,7 @@ void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
     auto display_plugin = [this](const json &plugin) {
         const string plugin_tag = plugin["tag"].get<string>();
 
-        fprintf(stdout, "\n%s%s v%s [%s]%s\n",
+        fprintf(stdout, "%s%s v%s [%s]%s\n",
           ndTerm::Attr::UNDERLINE, plugin_tag.c_str(),
           plugin["version"].get<string>().c_str(),
           plugin["type"].get<string>().c_str(),

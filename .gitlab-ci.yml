@@ -203,6 +203,25 @@ Ubuntu/22.04/x86-64:
     CONFIGURE_EXTRA_FLAGS: >
       --enable-nfqueue
 
+Ubuntu/24.04/x86-64:
+  extends: .debian_build
+  tags:
+    - docker
+  only:
+    - tags
+    - web
+  variables:
+    OS_NAME: ubuntu
+    OS_VERSION: noble
+    OS_IMAGE: "ubuntu:24.04"
+    OS_ARCH: amd64
+    OS_ARCH_PATH:
+      value: binary-$OS_ARCH
+      expand: true
+    OS_EXTRA_PACKAGES: byacc flex
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
+
 # RedHat Targets
 
 CentOS/7/x86-64:
