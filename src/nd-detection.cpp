@@ -238,15 +238,15 @@ ndProto::Id ndDetectionThread::ProtocolLookup(uint16_t id,
 void ndDetectionThread::HashCacheLookup(
   ndDetectionQueueEntry *entry, bool insert) {
 
-    if (fhc != nullptr && ! ndEF->flags.fhc_hit &&
+    if (fhc != nullptr && ! ndEF->flags.fhc_hit.load() &&
       ndEF->ip_protocol != IPPROTO_ICMP &&
       ndEF->ip_protocol != IPPROTO_ICMPV6 &&
       ndEF->ip_protocol != IPPROTO_IGMP &&
       ndEF->GetMasterProtocol() != ndProto::Id::DNS)
     {
         if (insert) {
-            if (! ndEF->flags.fhc_hit &&
-              ! ndEF->flags.detection_guessed &&
+            if (! ndEF->flags.fhc_hit.load() &&
+              ! ndEF->flags.detection_guessed.load() &&
               (ndEF->detected_protocol != ndProto::Id::UNKNOWN ||
                 ndEF->detected_application != ND_APP_UNKNOWN))
             {
