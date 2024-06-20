@@ -15,6 +15,7 @@ confdefs.h
 config.*
 configure
 /debian
+defines.gdb
 depcomp
 distinfo
 install-sh
@@ -24,9 +25,9 @@ Makefile
 /Makefile.in
 missing
 netifyd-CentOS_8.spec
+netifyd-debug.conf
 netifyd-*.tar.gz
 netifyd-*.txz
-netifyd-debug.conf
 /.scannerwork
 /scratch
 stamp-h1

@@ -1091,14 +1091,16 @@ expr_category:
         while ((p = category.find_first_of("'")) != string::npos)
             category.erase(p, 1);
 
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) == _NDFP_flow->category.application
-            )
-        );
+        if (_NDFP_flow->category.application != ND_CAT_UNKNOWN) {
+            _NDFP_result = (
+                $$ = (
+                    _NDFP_categories.LookupTag(
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.application
+                )
+            );
+        }
 
-        if (! _NDFP_result) {
+        if (! _NDFP_result && _NDFP_flow->category.domain != ND_CAT_UNKNOWN) {
             _NDFP_result = (
                 $$ = (
                     _NDFP_categories.LookupTag(
@@ -1107,7 +1109,7 @@ expr_category:
             );
         }
 
-        if (! _NDFP_result) {
+        if (! _NDFP_result && _NDFP_flow->category.network != ND_CAT_UNKNOWN) {
             _NDFP_result = (
                 $$ = (
                     _NDFP_categories.LookupTag(
