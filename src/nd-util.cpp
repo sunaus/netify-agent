@@ -1364,7 +1364,7 @@ void nd_gz_inflate(size_t length, const uint8_t *data,
               __PRETTY_FUNCTION__, rc);
         }
         output.insert(output.end(), chunk.begin(),
-          chunk.end() + (chunk.size() - zs.avail_out));
+          chunk.begin() + (chunk.size() - zs.avail_out));
     }
     while (zs.avail_out == 0);
 
@@ -1407,7 +1407,7 @@ void nd_gz_deflate(size_t length, const uint8_t *data,
               __PRETTY_FUNCTION__, strerror(EINVAL));
         }
         output.insert(output.end(), chunk.begin(),
-          chunk.end() + (chunk.size() - zs.avail_out));
+          chunk.begin() + (chunk.size() - zs.avail_out));
     }
     while (zs.avail_out == 0);
 
