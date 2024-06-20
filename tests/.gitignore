@@ -5,3 +5,4 @@ check-risks
 .libs
 *.o
 netifyd-test-pcap.conf
+/netifyd
