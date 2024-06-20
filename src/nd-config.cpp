@@ -1132,7 +1132,8 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
             nd_expand_variables(value, expanded, conf_vars);
             params.insert(make_pair(key, expanded));
         }
-
+#if 0
+        // XXX: Do we really need to validate the plugin here?
         try {
             ndPluginLoader loader(tag, so_name, params);
 
@@ -1151,7 +1152,7 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
               e.what());
             return false;
         }
-
+#endif
         if (! mpi
                 ->insert(make_pair(tag, make_pair(so_name, params)))
                 .second)
