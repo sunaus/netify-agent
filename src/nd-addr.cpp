@@ -28,6 +28,7 @@
 #include "nd-addr.hpp"
 #include "nd-flags.hpp"
 #include "nd-instance.hpp"
+#include "nd-util.hpp"
 
 using namespace std;
 
@@ -809,6 +810,7 @@ size_t ndInterface::UpdateAddrs(const struct ifaddrs *if_addrs) {
             continue;
 
         ndAddr addr;
+        uint8_t prefix = 0;
         ndInstance &ndi = ndInstance::GetInstance();
 
         switch (ifa_addr->ifa_addr->sa_family) {
@@ -831,9 +833,13 @@ size_t ndInterface::UpdateAddrs(const struct ifaddrs *if_addrs) {
             }
             break;
         case AF_INET:
+            prefix = nd_netmask_to_prefix(
+              reinterpret_cast<struct sockaddr_storage *>(
+                ifa_addr->ifa_netmask));
             ndAddr::Create(addr,
               reinterpret_cast<const struct sockaddr_in *>(
-                ifa_addr->ifa_addr));
+                ifa_addr->ifa_addr),
+              prefix);
             if (addrs.Push(addr)) count++;
             if (ndGC_USE_GETIFADDRS) {
                 ndi.addr_lookup.AddAddress(
@@ -841,9 +847,13 @@ size_t ndInterface::UpdateAddrs(const struct ifaddrs *if_addrs) {
             }
             break;
         case AF_INET6:
+            prefix = nd_netmask_to_prefix(
+              reinterpret_cast<struct sockaddr_storage *>(
+                ifa_addr->ifa_netmask));
             ndAddr::Create(addr,
               reinterpret_cast<const struct sockaddr_in6 *>(
-                ifa_addr->ifa_addr));
+                ifa_addr->ifa_addr),
+              prefix);
             if (addrs.Push(addr)) count++;
             if (ndGC_USE_GETIFADDRS) {
                 ndi.addr_lookup.AddAddress(

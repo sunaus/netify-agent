@@ -1930,8 +1930,6 @@ int ndInstance::Run(void) {
 
     ndpi_global_init();
 
-    ndInterface::UpdateAddrs(interfaces);
-
     if (ndGC_USE_DHC) {
         dns_hint_cache = new ndDNSHintCache(ndGC.max_dhc);
         dns_hint_cache->Load();
@@ -2062,9 +2060,6 @@ void *ndInstance::ndInstance::Entry(void) {
     size_t proc_plugins = 0;
     ndCaptureThreads thread_capture;
 
-    // Process an initial update on start-up
-    ProcessUpdate(thread_capture);
-
 #ifdef _ND_ENABLE_NETLINK
     if (ndGC_USE_NETLINK) netlink->Refresh();
 #endif
@@ -2085,6 +2080,9 @@ void *ndInstance::ndInstance::Entry(void) {
         return nullptr;
 
     ndGC.Close();
+
+    // Process an initial update on start-up
+    ProcessUpdate(thread_capture);
 
     struct itimerspec itspec;
     itspec.it_value.tv_sec = ndGC.update_interval;

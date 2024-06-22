@@ -422,6 +422,48 @@ void nd_json_to_string(const json &j, string &output, bool pretty) {
     }
 }
 
+uint8_t nd_netmask_to_prefix(const struct sockaddr_storage *netmask) {
+    uint8_t p = 0;
+
+    if (netmask->ss_family == AF_INET) {
+        const struct sockaddr_in *addr =
+          reinterpret_cast<const struct sockaddr_in *>(netmask);
+        unsigned n = addr->sin_addr.s_addr;
+        while (n > 0) {
+            n = n << 1;
+            p++;
+        }
+    }
+    else if (netmask->ss_family == AF_INET6) {
+        const struct sockaddr_in6 *addr =
+          reinterpret_cast<const struct sockaddr_in6 *>(netmask);
+        for (int i = 0; i < 4; i++) {
+            unsigned n = addr->sin6_addr.s6_addr32[i];
+            while (n > 0) {
+                n = n << 1;
+                p++;
+            }
+        }
+    }
+
+    return p;
+}
+
+uint8_t nd_netmask_to_prefix(const std::string &netmask) {
+    sockaddr_storage addr;
+    struct sockaddr_in *ipv4 =
+      reinterpret_cast<struct sockaddr_in *>(&addr);
+    struct sockaddr_in6 *ipv6 =
+      reinterpret_cast<struct sockaddr_in6 *>(&addr);
+
+    if (inet_pton(AF_INET, netmask.c_str(), &ipv4->sin_addr) == 1)
+        return nd_netmask_to_prefix(&addr);
+    else if (inet_pton(AF_INET6, netmask.c_str(), &ipv6->sin6_addr) == 1)
+        return nd_netmask_to_prefix(&addr);
+
+    return 0;
+}
+
 bool nd_is_ipaddr(const char *ip) {
     struct in_addr addr4;
     struct in6_addr addr6;
