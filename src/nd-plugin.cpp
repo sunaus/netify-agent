@@ -18,8 +18,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include "nd-util.hpp"
-#include "nlohmann/json.hpp"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -27,9 +25,12 @@
 #include <dlfcn.h>
 #include <iostream>
 
+#include <nlohmann/json.hpp>
+
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-plugin.hpp"
+#include "nd-util.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -765,6 +766,8 @@ void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
               ndTerm::Color::YELLOW, ndTerm::Icon::WARN,
               "No plugins configured to load.",
               ndTerm::Attr::RESET);
+
+            return;
         }
 
         for (auto &it_kvp : plugins->get<json::object_t>()) {

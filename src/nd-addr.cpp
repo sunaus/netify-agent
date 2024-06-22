@@ -27,6 +27,7 @@
 
 #include "nd-addr.hpp"
 #include "nd-flags.hpp"
+#include "nd-instance.hpp"
 
 using namespace std;
 
@@ -458,11 +459,15 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
             string mac = addr.GetString(ndAddr::MakeFlags::PREFIX);
             auto it = ether_reserved.find(mac);
             if (it != ether_reserved.end()) {
+#ifdef _ND_ENABLE_DEBUG_STATS
                 nd_dprintf(
                   "Reserved MAC address exists: %s\n", mac.c_str());
+#endif
                 return false;
             }
             ether_reserved[mac] = type;
+            nd_dprintf("ether_reserved: %u\n",
+              ether_reserved.size());
             return true;
         }
 
@@ -804,6 +809,7 @@ size_t ndInterface::UpdateAddrs(const struct ifaddrs *if_addrs) {
             continue;
 
         ndAddr addr;
+        ndInstance &ndi = ndInstance::GetInstance();
 
         switch (ifa_addr->ifa_addr->sa_family) {
         case AF_LINK:
@@ -818,6 +824,10 @@ size_t ndInterface::UpdateAddrs(const struct ifaddrs *if_addrs) {
             if (mac_addr != nullptr) {
                 ndAddr::Create(addr, mac_addr, ETH_ALEN);
                 if (addrs.Push(addr)) count++;
+                if (ndGC_USE_GETIFADDRS) {
+                    ndi.addr_lookup.AddAddress(
+                      ndAddr::Type::LOCAL, addr, ifname);
+                }
             }
             break;
         case AF_INET:
@@ -825,12 +835,20 @@ size_t ndInterface::UpdateAddrs(const struct ifaddrs *if_addrs) {
               reinterpret_cast<const struct sockaddr_in *>(
                 ifa_addr->ifa_addr));
             if (addrs.Push(addr)) count++;
+            if (ndGC_USE_GETIFADDRS) {
+                ndi.addr_lookup.AddAddress(
+                  ndAddr::Type::LOCAL, addr, ifname);
+            }
             break;
         case AF_INET6:
             ndAddr::Create(addr,
               reinterpret_cast<const struct sockaddr_in6 *>(
                 ifa_addr->ifa_addr));
             if (addrs.Push(addr)) count++;
+            if (ndGC_USE_GETIFADDRS) {
+                ndi.addr_lookup.AddAddress(
+                  ndAddr::Type::LOCAL, addr, ifname);
+            }
             break;
         default: break;
         }

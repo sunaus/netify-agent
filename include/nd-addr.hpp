@@ -257,8 +257,7 @@ public:
                       sizeof(struct sockaddr_ll)) == 0);
 #elif defined(__FreeBSD__)
         case AF_LINK:
-            if (! ndFlagBoolean(compare_flags,
-                  CompareFlags::ADDR))
+            if (! ndFlagBoolean(compare_flags, CompareFlags::ADDR))
                 return true;
             return (memcmp(&addr.dl, &a.addr.dl,
                       sizeof(struct sockaddr_dl)) == 0);

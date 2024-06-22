@@ -90,6 +90,9 @@ ndGlobalConfig::ndGlobalConfig()
     flags |= ndGlobalFlags::USE_NETLINK;
 #endif
     flags |= ndGlobalFlags::SOFT_DISSECTORS;
+#if defined(__FreeBSD__)
+    flags |= ndGlobalFlags::USE_GETIFADDRS;
+#endif
 }
 
 ndGlobalConfig::~ndGlobalConfig() {
@@ -251,6 +254,15 @@ bool ndGlobalConfig::Load(const string &filename) {
 
     fm_buckets = (unsigned)r->GetInteger("netifyd",
       "flow_map_buckets", ND_FLOW_MAP_BUCKETS);
+
+    ndGC_SetFlag(ndGlobalFlags::USE_GETIFADDRS,
+      r->GetBoolean("netifyd", "use_getifaddrs",
+#if defined(__FreeBSD__)
+        true
+#else
+        false
+#endif
+        ));
 
     // Threading section
     ca_capture_base = (int16_t)r->GetInteger("threads",
