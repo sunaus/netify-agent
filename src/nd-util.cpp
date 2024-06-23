@@ -428,7 +428,7 @@ uint8_t nd_netmask_to_prefix(const struct sockaddr_storage *netmask) {
     if (netmask->ss_family == AF_INET) {
         const struct sockaddr_in *addr =
           reinterpret_cast<const struct sockaddr_in *>(netmask);
-        unsigned n = addr->sin_addr.s_addr;
+        unsigned n = ntohl(addr->sin_addr.s_addr);
         while (n > 0) {
             n = n << 1;
             p++;
@@ -438,7 +438,7 @@ uint8_t nd_netmask_to_prefix(const struct sockaddr_storage *netmask) {
         const struct sockaddr_in6 *addr =
           reinterpret_cast<const struct sockaddr_in6 *>(netmask);
         for (int i = 0; i < 4; i++) {
-            unsigned n = addr->sin6_addr.s6_addr32[i];
+            unsigned n = ntohl(addr->sin6_addr.s6_addr32[i]);
             while (n > 0) {
                 n = n << 1;
                 p++;

@@ -719,27 +719,37 @@ void ndPluginManager::Encode(nlohmann::json &output) const {
 
 void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
     auto display_plugin = [this](const json &plugin) {
-        const string plugin_tag = plugin["tag"].get<string>();
+        string tag = "<tag>", version = "<version>", type = "<type>";
+
+	auto i = plugin.find("tag");
+	if (i != plugin.end() && i->is_string())
+            tag = i->get<string>();
+	i = plugin.find("version");
+	if (i != plugin.end() && i->is_string())
+            version = i->get<string>();
+	i = plugin.find("type");
+	if (i != plugin.end() && i->is_string())
+            type = i->get<string>();
 
         fprintf(stdout, "%s%s v%s [%s]%s\n",
-          ndTerm::Attr::UNDERLINE, plugin_tag.c_str(),
-          plugin["version"].get<string>().c_str(),
-          plugin["type"].get<string>().c_str(),
+          ndTerm::Attr::UNDERLINE, tag.c_str(),
+          version.c_str(),
+          type.c_str(),
           ndTerm::Attr::RESET);
 
         ndPluginLoader *pl = nullptr;
 
-        if (plugin["type"].get<string>() == "processor") {
+        if (type == "processor") {
             for (auto &p : processors) {
-                if (p.second->GetTag() != plugin_tag)
+                if (p.second->GetTag() != tag)
                     continue;
                 pl = p.second;
                 break;
             }
         }
-        else if (plugin["type"].get<string>() == "sink") {
+        else if (type == "sink") {
             for (auto &p : sinks) {
-                if (p.second->GetTag() != plugin_tag)
+                if (p.second->GetTag() != tag)
                     continue;
                 pl = p.second;
                 break;
@@ -760,19 +770,9 @@ void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
     };
 
     auto plugins = status.find("plugins");
-    if (plugins != status.end()) {
-        if (plugins->empty()) {
-            fprintf(stdout, "%s%s %s%s\n",
-              ndTerm::Color::YELLOW, ndTerm::Icon::WARN,
-              "No plugins configured to load.",
-              ndTerm::Attr::RESET);
-
-            return;
-        }
-
-        for (auto &it_kvp : plugins->get<json::object_t>()) {
+    if (plugins != status.end() && plugins->is_object()) {
+        for (auto &it_kvp : plugins->get<json::object_t>())
             display_plugin(it_kvp.second);
-        }
     }
     else {
         fprintf(stdout, "%s%s%s %s\n", ndTerm::Color::RED,
