@@ -719,38 +719,35 @@ void ndPluginManager::Encode(nlohmann::json &output) const {
 
 void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
     auto display_plugin = [this](const json &plugin) {
-        string tag = "<tag>", version = "<version>", type = "<type>";
+        string tag = "<tag>", version = "<version>",
+               type = "<type>";
 
-	auto i = plugin.find("tag");
-	if (i != plugin.end() && i->is_string())
+        auto i = plugin.find("tag");
+        if (i != plugin.end() && i->is_string())
             tag = i->get<string>();
-	i = plugin.find("version");
-	if (i != plugin.end() && i->is_string())
+        i = plugin.find("version");
+        if (i != plugin.end() && i->is_string())
             version = i->get<string>();
-	i = plugin.find("type");
-	if (i != plugin.end() && i->is_string())
+        i = plugin.find("type");
+        if (i != plugin.end() && i->is_string())
             type = i->get<string>();
 
         fprintf(stdout, "%s%s v%s [%s]%s\n",
           ndTerm::Attr::UNDERLINE, tag.c_str(),
-          version.c_str(),
-          type.c_str(),
-          ndTerm::Attr::RESET);
+          version.c_str(), type.c_str(), ndTerm::Attr::RESET);
 
         ndPluginLoader *pl = nullptr;
 
         if (type == "processor") {
             for (auto &p : processors) {
-                if (p.second->GetTag() != tag)
-                    continue;
+                if (p.second->GetTag() != tag) continue;
                 pl = p.second;
                 break;
             }
         }
         else if (type == "sink") {
             for (auto &p : sinks) {
-                if (p.second->GetTag() != tag)
-                    continue;
+                if (p.second->GetTag() != tag) continue;
                 pl = p.second;
                 break;
             }
