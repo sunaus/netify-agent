@@ -215,6 +215,8 @@ public:
 
     inline const std::string &
     GetString(ndFlags<MakeFlags> flags = MakeFlags::NONE) const {
+        static std::recursive_mutex lock;
+        std::lock_guard<std::recursive_mutex> lg(lock);
         if (flags != cached_flags || cached_addr.empty()) {
             cached_flags = flags;
             ndAddr::MakeString(*this, cached_addr, cached_flags);
