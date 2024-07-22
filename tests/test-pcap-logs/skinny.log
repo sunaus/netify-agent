@@ -28,13 +28,3 @@ offline0: i4pc----------- UDP [L] 192.168.193.24:9400 <-- [OL] 192.168.195.50:17
         : RTP
         : DP: 3
 
-offline0: i4pc-------r--- TCP [L] 10.16.2.25:2000 <-- [OL] 192.168.195.58:50917
-        : Cisco/Skinny
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------r--- ICMP [L] 192.168.195.50:0 --> [OL] 192.168.195.58:0
-        : ICMP
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-

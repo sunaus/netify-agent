@@ -58,7 +58,7 @@ offline0: i4pc-------r--- UDP [L] 10.1.12.2:1096 --> [OL] 10.5.3.1:88
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- TCP [L] 192.168.10.3:88 <-- [OL] 192.168.10.12:44256
+offline0: i4pc---------F- TCP [L] 192.168.10.3:88 <-- [OL] 192.168.10.12:44256
         : Kerberos
         : DP: 11
 

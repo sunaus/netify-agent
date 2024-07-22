@@ -44,7 +44,7 @@ endif
 bin_PROGRAMS = check-protocols check-risks
 
 check_protocols_SOURCES = check-protocols.cpp
-check_protocols_LDADD = $(top_srcdir)/src/libnetifyd.la $(top_srcdir)/libs/inih/libini.la $(LIBCURL_LIBS) $(ZLIB_LIBS)
+check_protocols_LDADD = $(top_srcdir)/src/libnetifyd.la $(LIBCURL_LIBS) $(ZLIB_LIBS)
 
 if USE_LIBTCMALLOC
 # XXX: Recommended compiler flags
@@ -54,7 +54,7 @@ check_protocols_LDADD += $(LIBTCMALLOC_LIBS)
 endif
 
 check_risks_SOURCES = check-risks.cpp
-check_risks_LDADD = $(top_srcdir)/src/libnetifyd.la $(top_srcdir)/libs/inih/libini.la $(LIBCURL_LIBS) $(ZLIB_LIBS)
+check_risks_LDADD = $(top_srcdir)/src/libnetifyd.la $(LIBCURL_LIBS) $(ZLIB_LIBS)
 
 if USE_LIBTCMALLOC
 # XXX: Recommended compiler flags

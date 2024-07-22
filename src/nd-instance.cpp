@@ -608,7 +608,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         }
     }
 
-    // Test mode enabled?  Disable/set certain config
+    // Test mode enabled?  Override certain config
     // parameters
     if (ndGC.h_flow != stderr) {
         ndGC_SetFlag(ndGlobalFlags::USE_FHC, true);
@@ -1551,7 +1551,7 @@ bool ndInstance::DisplayAgentStatus(void) {
             "disabled",
           ndTerm::Attr::RESET);
 
-        if (! ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
+        if ((! ndGC_USE_NAPI) && (! ndGC_AUTO_INFORMATICS)) {
             fprintf(stdout,
               "  %s Netify API updates can be enabled from "
               "the configuration file:\n    %s\n",
@@ -1682,7 +1682,22 @@ bool ndInstance::DisplayAgentStatus(void) {
           ndTerm::Attr::RESET,
           jstatus["maxrss_kb"].get<unsigned>());
 
-        if (jstatus.find("interfaces") != jstatus.end()) {
+        if (jstatus.find("interfaces") == jstatus.end() ||
+          jstatus["interfaces"].empty())
+        {
+            color = (ndGC_RUN_WITHOUT_SOURCES) ?
+              ndTerm::Color::YELLOW :
+              ndTerm::Color::RED;
+            icon = (ndGC_RUN_WITHOUT_SOURCES) ?
+              ndTerm::Icon::WARN :
+              ndTerm::Icon::FAIL;
+
+            fprintf(stdout,
+              "%s%s No capture sources (interfaces) "
+              "configured.%s\n",
+              color, icon, ndTerm::Attr::RESET);
+        }
+        else {
             for (auto &i : jstatus["interfaces"].items()) {
                 const json &j = i.value();
                 const string &iface = i.key();
@@ -1928,7 +1943,7 @@ int ndInstance::Run(void) {
 
     CheckAgentUUID();
 
-    ndpi_global_init();
+    nd_ndpi_global_init();
 
     if (ndGC_USE_DHC) {
         dns_hint_cache = new ndDNSHintCache(ndGC.max_dhc);
@@ -2182,6 +2197,8 @@ ndInstance_EntryReturn:
 
     // Process a final update on shutdown
     ProcessUpdate(thread_capture);
+
+    nd_ndpi_global_shutdown();
 
     if (exit_code == 0)
         nd_printf("%s: Normal exit.\n", tag.c_str());

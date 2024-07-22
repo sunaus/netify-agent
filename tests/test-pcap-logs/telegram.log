@@ -27,11 +27,10 @@ offline0: i6pc----------- UDP [L] fe80::4ba:91a:7817:e318:5353 --> [OM] ff02::fb
         : MDNS/DN: Gabrieles-iPad.local
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 192.168.1.75:5353 <-- [OL] 192.168.1.77:5353
+offline0: i4pc----------- UDP [L] 192.168.1.75:5353 <-- [OL] 192.168.1.77:5353
         : MDNS.netify.internal-network
         : H: _companion-link._tcp.local
         : MDNS/DN: Luca___s iMac._companion-link._tcp.local
-        : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.77:61631
@@ -47,11 +46,10 @@ offline0: i4pc----------- UDP [L] 192.168.1.77:17500 --> [OL] 192.168.1.255:1750
         : Dropbox
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 192.168.1.53:5353 <-- [OL] 192.168.1.77:5353
+offline0: i4pc----------- UDP [L] 192.168.1.53:5353 <-- [OL] 192.168.1.77:5353
         : MDNS.netify.internal-network
         : H: _companion-link._tcp.local
         : MDNS/DN: Luca___s iMac._companion-link._tcp.local
-        : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.77:52118
@@ -100,12 +98,6 @@ offline0: i4pc-------r--- UDP [OR] 91.108.8.8:538 <-- [L] 192.168.1.77:23174
 
 offline0: i4pc-------r--- UDP [OR] 91.108.16.4:538 <-- [L] 192.168.1.77:23174
         : Telegram.netify.telegram
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------r--- UDP [OR] 87.11.205.195:60723 --> [L] 192.168.1.77:23174
-        : OpenVPN
-        : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -228,6 +220,11 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.77:49533
 offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.77:58615
         : DNS.netify.dropbox
         : H: telemetry.dropbox.com
+        : DP: 2
+
+offline0: i4pc-gx----r--- UDP [OR] 87.11.205.195:60723 --> [L] 192.168.1.77:23174
+        : Unknown
+        : RID 46: Unidirectional Traffic
         : DP: 2
 
 offline0: i6pc--x-------- UDP [L] fe80::18a0:a412:8935:c01b:5353 --> [OM] ff02::fb:5353

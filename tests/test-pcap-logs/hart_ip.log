@@ -1,0 +1,14 @@
+offline0: i4pc-------r--- UDP [L] 192.168.0.10:5094 <-- [OL] 192.168.0.101:49905
+        : Hart/IP
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc-------r--- UDP [L] 192.168.0.10:5095 <-- [OL] 192.168.0.101:49905
+        : Hart/IP
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc----------- TCP [L] 192.168.0.10:5094 <-- [OL] 192.168.0.101:49559
+        : Hart/IP
+        : DP: 4
+

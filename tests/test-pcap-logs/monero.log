@@ -1,10 +1,16 @@
-offline0: i4pc-------r--- TCP [OR] 94.23.199.191:3333 <-- [L] 192.168.2.148:46838
-        : Mining
-        : RID 42: Unsafe Protocol
+offline0: i4pc----------- TCP [OR] 159.69.36.66:18080 <-- [L] 192.168.2.100:48882
+        : Monero
         : DP: 4
 
-offline0: i4pc-------r--- TCP [OR] 116.211.167.195:3333 <-- [L] 192.168.2.148:53846
-        : Mining
-        : RID 42: Unsafe Protocol
+offline0: i4pc----------- TCP [OR] 78.56.22.89:18080 <-- [L] 192.168.2.100:39378
+        : Monero
+        : DP: 4
+
+offline0: i4pc----------- TCP [OR] 62.210.127.86:18080 <-- [L] 192.168.2.100:42810
+        : Monero
+        : DP: 4
+
+offline0: i4pc----------- TCP [OR] 100.42.27.58:18085 <-- [L] 192.168.2.100:38004
+        : Monero
         : DP: 4
 

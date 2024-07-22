@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 
     cout << "Testing Netify Agent Protocols..." << endl;
 
-    ndpi_global_init();
+    nd_ndpi_global_init();
     ndpi_detection_module_struct *ndpi = nd_ndpi_init();
 
     cout << endl

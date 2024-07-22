@@ -4,11 +4,10 @@ offline0: i4pc-------r--- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.1.121:52251
         : RID  8: Error Code
         : DP: 5
 
-offline0: i4pc-------r--- UDP [L] 192.168.1.121:5353 --> [OL] 192.168.1.139:5353
+offline0: i4pc----------- UDP [L] 192.168.1.121:5353 --> [OL] 192.168.1.139:5353
         : MDNS.netify.internal-network
         : H: _companion-link._tcp.local
         : MDNS/DN: MBPro._companion-link._tcp.local
-        : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc----------- IGMP [L] 192.168.1.139:0 --> [OM] 224.0.0.2:0
@@ -79,7 +78,6 @@ offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53912
         : D: e13678.dscb.akamaiedge.net H: www.microsoft.com
         : HTTP/UA: com.apple.trustd/2.0
         : URL: www.microsoft.com/pki/certs/MicRooCerAut2011_2011_03_22.crt
-        : RID  2: Binary Application Transfer
         : RID 12: HTTP Suspicious Header
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
@@ -89,7 +87,6 @@ offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53913
         : D: e13678.dscb.akamaiedge.net H: www.microsoft.com
         : HTTP/UA: com.apple.trustd/2.0
         : URL: www.microsoft.com/pkiops/certs/MicSecSerCA2011_2011-10-18.crt
-        : RID  2: Binary Application Transfer
         : RID 12: HTTP Suspicious Header
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6

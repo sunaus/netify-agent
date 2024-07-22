@@ -404,7 +404,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:3918 <-- [L] 172.16.0.8:36050
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:135 <-- [L] 172.16.0.8:36051
-        : RPC
+        : DCE/RPC
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -1390,7 +1390,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:1719 <-- [L] 172.16.0.8:36050
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:6789 <-- [L] 172.16.0.8:36051
-        : Unknown
+        : CEPH
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -2239,7 +2239,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:5002 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:3300 <-- [L] 172.16.0.8:36051
-        : Unknown
+        : CEPH
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -2493,7 +2493,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:3869 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:4000 <-- [L] 172.16.0.8:36051
-        : Unknown
+        : NX/NoMachine
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -2840,7 +2840,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:10243 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:7000 <-- [L] 172.16.0.8:36050
-        : Unknown
+        : Cassandra
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -3344,7 +3344,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:7496 <-- [L] 172.16.0.8:36050
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:4000 <-- [L] 172.16.0.8:36050
-        : Unknown
+        : NX/NoMachine
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -4797,7 +4797,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:49156 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:2002 <-- [L] 172.16.0.8:36050
-        : Unknown
+        : Roughtime
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -5618,7 +5618,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:25734 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:135 <-- [L] 172.16.0.8:36050
-        : RPC
+        : DCE/RPC
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -5643,7 +5643,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:1030 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:2002 <-- [L] 172.16.0.8:36051
-        : Unknown
+        : Roughtime
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -5803,7 +5803,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:666 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:4899 <-- [L] 172.16.0.8:36050
-        : Unknown
+        : Radmin
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -6238,7 +6238,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:7 <-- [L] 172.16.0.8:36051
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:7000 <-- [L] 172.16.0.8:36051
-        : Unknown
+        : Cassandra
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -6720,7 +6720,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:31337 <-- [L] 172.16.0.8:36050
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:4899 <-- [L] 172.16.0.8:36051
-        : Unknown
+        : Radmin
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -7245,7 +7245,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:1501 <-- [L] 172.16.0.8:36050
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:6789 <-- [L] 172.16.0.8:36050
-        : Unknown
+        : CEPH
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -8725,7 +8725,7 @@ offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:458 <-- [L] 172.16.0.8:36050
         : DP: 1
 
 offline0: i4pc-gx----r--- TCP [OR] 64.13.134.52:3300 <-- [L] 172.16.0.8:36050
-        : Unknown
+        : CEPH
         : RID 46: Unidirectional Traffic
         : DP: 1
 

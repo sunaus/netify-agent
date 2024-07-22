@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 
     cout << "Testing Netify Agent Risks..." << endl;
 
-    ndpi_global_init();
+    nd_ndpi_global_init();
 
     cout << endl
          << "nDPI risks count: " << NDPI_MAX_RISK << endl;

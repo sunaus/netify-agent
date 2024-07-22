@@ -24,7 +24,8 @@
 #include <ndpi_main.h>
 #include <ndpi_typedefs.h>
 
-void ndpi_global_init(void);
+void nd_ndpi_global_init(void);
+void nd_ndpi_global_shutdown(void);
 
 struct ndpi_detection_module_struct *nd_ndpi_init(void);
 

@@ -160,7 +160,7 @@ enum class Id : uint32_t {
     FREE124 = 124,
     DEPR125 = 125,  // Deprecated: Skype
     FREE126 = 126,
-    RPC = 127,  // Renamed: DCERPC -> RPC
+    MS_RPCH = 127,  // Renamed: DCERPC -> RPC -> MS_RPCH
     NETFLOW = 128,
     SFLOW = 129,
     HTTP_CONNECT = 130,
@@ -215,7 +215,7 @@ enum class Id : uint32_t {
     FREE179 = 179,
     FREE180 = 180,
     MEGACO = 181,
-    REDIS = 182,
+    RESP = 182,
     FREE183 = 183,
     VHUA = 184,
     TELEGRAM = 185,
@@ -268,7 +268,7 @@ enum class Id : uint32_t {
     FREE232 = 232,
     FREE233 = 233,
     FREE234 = 234,
-    CSGO = 235,
+    DEPR235 = 235,  // Deprecated by STEAM: CSGO (Counter Strike GO)
     LISP = 236,
     DIAMETER = 237,
     APPLE_PUSH = 238,
@@ -278,7 +278,7 @@ enum class Id : uint32_t {
     FREE242 = 242,
     DOH = 243,
     DTLS = 244,
-    GOOGLE_MEET_DUO = 245,  // TODO: Implement in Agent.
+    GOOGLE_CALL = 245,
     WHATSAPP_CALL = 246,
     SKYPE_TEAMS = 247,  // TODO: Implement in Agent.
     ZOOM = 248,
@@ -386,10 +386,52 @@ enum class Id : uint32_t {
     FACEBOOK_VOIP = 327,  // Facebook VoIP (STUN)
     HAPROXY = 328,  // High availability load balancer and reverse proxy for TCP and HTTP-based applications
     RMCP = 329,  // Remote Management Control Protocol, IPMI component
-    CAN = 330,  // Controller Area Network, ISO 11898-1
+    ISO_11898_1_CAN = 330,  // Controller Area Network, ISO 11898-1
     PROTOBUF = 331,  // Data serialzer: https://en.wikipedia.org/wiki/Protocol_Buffers
     ETHEREUM = 332,  // Ethereum: decentralized block chain
     TELEGRAM_VOIP = 333,  // Telegram VoIP (STUN)
+    APACHE_KAFKA = 334,  // Apache Kafka
+    BECKHOFF_ADS = 335,  // Beckhoff ADS: https://infosys.beckhoff.com/english.php?content=../content/1033/tcinfosys3/11291871243.html&id=
+    BFD = 336,  // Bidirectional Forwarding Detection (BFD)
+    ANSI_C1222 = 337,  // Protocol Specification for Interfacing to Data Communication Networks (ANSI C12.22)
+    CEPH = 338,  // CEPH Network Protocol: https://docs.ceph.com/en/latest/dev/network-protocol/
+    CIP = 339,  // Common Industrial Protocol: https://en.wikipedia.org/wiki/Common_Industrial_Protocol
+    DCERPC = 340,  // Distributed Computing Environment / Remote Procedure Calls
+    DLEP = 341,  // Dynamic Link Exchange Protocol (RFC 8175): https://datatracker.ietf.org/doc/rfc8175/
+    ETHERSBUS = 342,  // Ether-S-Bus protocol: https://wiki.wireshark.org/EtherSBus
+    ETHERSIO = 343,  // Ether-S-IO protocol: https://wiki.wireshark.org/EtherSIO
+    FINS = 344,  // Factory Interface Network Service: https://en.wikipedia.org/wiki/Factory_Interface_Network_Service
+    GAIJIN = 345,  // Online Games Distribution Service: https://gaijin.net/en
+    GEARMAN = 346,  // Gearman Job Server Protocol: https://en.wikipedia.org/wiki/Gearman
+    HART_IP = 347,  // Hart-IP: https://www.fieldcommgroup.org/technologies/HART-IP/explained
+    HISLIP = 348,  // High Speed LAN Instrument Protocol: https://en.wikipedia.org/wiki/High_Speed_LAN_Instrument_Protocol
+    HL7 = 349,  // Health Level 7: https://en.wikipedia.org/wiki/Health_Level_7
+    IEC62056 = 350,  // IEC 62056: https://en.wikipedia.org/wiki/IEC_62056
+    IEEE_C37118 = 351,  // IEEE C37.118: https://wiki.wireshark.org/IEEE%20C37.118
+    ISO_9506_1_MMS = 352,  // ISO 9506.1 Manufacturing Message Specification: https://en.wikipedia.org/wiki/Manufacturing_Message_Specification
+    JSON_RPC = 353,  // JSON-RPC: https://www.jsonrpc.org/specification
+    KCP = 354,  // KCP - A Fast and Reliable ARQ Protocol: https://github.com/skywind3000/kcp/blob/master/README.en.md
+    MONERO = 355,  // Monero Crypto: https://en.wikipedia.org/wiki/Monero
+    MUMBLE = 356,  // Mumble VoIP: https://mumble-protocol.readthedocs.io/en/latest/
+    NETEASE_GAMES = 357,  // NetEase Games: https://www.neteasegames.com/
+    NX_NOMACHINE = 358,  // NX/NoMachine Remote Desktop: https://en.wikipedia.org/wiki/NX_technology
+    OPC_UA = 359,  // OPC Unified Architecture: https://www.softwareag.com/en_corporate/resources/iot/article/opc-ua.html
+    OPENFLOW = 360,  // OpenFlow: https://en.wikipedia.org/wiki/OpenFlow
+    PATH_OF_EXILE = 361,  // Path of Exile - A Free Online Action RPG
+    PROFINET_IO = 362,  // PROFINET IO: https://en.wikipedia.org/wiki/Profinet
+    PTPV2 = 363,  // Precision Time Protocol version 2 (IEEE 1588-2008): https://en.wikipedia.org/wiki/Precision_Time_Protocol
+    RADMIN = 364,  // Radmin Remote Desktop: https://www.radmin.com/
+    RAFT = 365,  // Raft Consensus Algorithm: https://raft.github.io/
+    ROUGHTIME = 366,  // Roughtime secure time synchronisation: https://roughtime.googlesource.com/roughtime
+    RTPS = 367,  // Real-Time Publish-Subscribe: https://wiki.wireshark.org/Protocols/rtps
+    S7COMM_PLUS = 368,  // The S7 Comm Plus protocol is a new version of the original S7 Comm protocol.
+    STOMP = 369,  // Streaming Text Oriented Messaging Protocol: https://en.wikipedia.org/wiki/Streaming_Text_Oriented_Messaging_Protocol
+    TENCENT_GAMES = 370,  // Tencent Mobile Games
+    UFTP = 371,  // UDP-based File Transfer Protocol: https://en.wikipedia.org/wiki/UFTP
+    UMAS = 372,  // Unified Messaging Application Services: https://johnwiltshire.com/umas-protocol-explained/
+    VALVE_SDR = 373,  // Valve Steam Datagram Relay: https://developer.valvesoftware.com/wiki/Steam_Datagram_Relay
+    WEBDAV = 374,  // WebDAV: https://en.wikipedia.org/wiki/WebDAV
+    YOJIMBO = 375,  // Network protocol for client/server games: https://github.com/mas-bandwidth/yojimbo
 
     MAX,
     TODO = 0xffffffff
@@ -397,24 +439,29 @@ enum class Id : uint32_t {
 
 const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::AFP, "AFP" },
-    { Id::AFP, "ApacheThrift" },
     { Id::AJP, "AJP" },
     { Id::ALICLOUD, "Alibaba/Cloud" },
     { Id::AMONG_US, "AmongUs" },
     { Id::AMQP, "AMQP" },
+    { Id::ANSI_C1222, "ANSI/C1222" },
+    { Id::APACHE_KAFKA, "Apache/Kafka" },
+    { Id::APACHE_THRIFT, "Apache/Thrift" },
     { Id::APPLE_PUSH, "Apple/Push" },
     { Id::ARMAGETRON, "Armagetron" },
     { Id::AVAST, "AVAST" },
-    { Id::AVAST_SDNS, "AVASTSecureDNS" },
+    { Id::AVAST_SDNS, "AVAST/SecureDNS" },
     { Id::BACNET, "BACnet" },
+    { Id::BECKHOFF_ADS, "Beckhoff/ADS" },
+    { Id::BFD, "BFD" },
     { Id::BGP, "BGP" },
     { Id::BITCOIN, "Bitcoin" },
     { Id::BITTORRENT, "BitTorrent" },
     { Id::BJNP, "BJNP" },
-    { Id::CAN, "CAN" },
     { Id::CAPWAP, "CAPWAP" },
     { Id::CASSANDRA, "Cassandra" },
+    { Id::CEPH, "CEPH" },
     { Id::CHECKMK, "CHECKMK" },
+    { Id::CIP, "CIP" },
     { Id::CISCO_HSRP, "Cisco/HSRP" },
     { Id::CISCO_SKINNY, "Cisco/Skinny" },
     { Id::CISCO_VPN, "Cisco/VPN" },
@@ -425,10 +472,11 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::CPHA, "CheckPointHA" },
     { Id::CROSSFIRE, "Crossfire" },
     { Id::CRYNET, "CryNetwork" },
-    { Id::CSGO, "CSGO" },
+    { Id::DCERPC, "DCE/RPC" },
     { Id::DHCP, "DHCP" },
     { Id::DHCPV6, "DHCPv6" },
     { Id::DIAMETER, "Diameter" },
+    { Id::DLEP, "DLEP" },
     { Id::DNP3, "DNP3" },
     { Id::DNSCRYPT, "DNSCrypt" },
     { Id::DNS, "DNS" },
@@ -443,16 +491,21 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::ELASTICSEARCH, "ElasticSearch" },
     { Id::ETHEREUM, "Ethereum" },
     { Id::ETHERNET_IP, "EtherNet/IP" },
+    { Id::ETHERSBUS, "Ether/S/Bus" },
+    { Id::ETHERSIO, "Ether/S/IO" },
     { Id::FACEBOOK_VOIP, "Facebook/VoIP" },
     { Id::FASTCGI, "FastCGI" },
+    { Id::FINS, "FINS" },
     { Id::FIX, "FIX" },
     { Id::FTP_CONTROL, "FTP/C" },
     { Id::FTP_DATA, "FTP/D" },
     { Id::FTPS, "FTP/S" },
+    { Id::GAIJIN, "Gaijin" },
+    { Id::GEARMAN, "Gearman" },
     { Id::GENSHIN_IMPACT, "Genshin/Impact" },
     { Id::GIT, "Git" },
     { Id::GNUTELLA, "Gnutella" },
-    { Id::GOOGLE_MEET_DUO, "Google/Meet/Duo" },
+    { Id::GOOGLE_CALL, "Google/Call" },
     { Id::GTP_C, "GTP/C" },
     { Id::GTP, "GTP" },
     { Id::GTP_P, "GTP/P" },
@@ -461,6 +514,9 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::H323, "H323" },
     { Id::HALFLIFE2, "HalfLife2" },
     { Id::HAPROXY, "HAProxy" },
+    { Id::HART_IP, "Hart/IP" },
+    { Id::HISLIP, "HiSLIP" },
+    { Id::HL7, "HealthLevel7" },
     { Id::HOTS, "HerosOfTheStorm" },
     { Id::HP_VIRTGRP, "HP/VirtGrp" },
     { Id::HTTP2, "HTTP/2" },
@@ -471,7 +527,9 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::I3D, "i3D" },
     { Id::IAX, "IAX" },
     { Id::ICECAST, "IceCast" },
-    { Id::IEC60870_5_104, "IEC60870/5/104" },
+    { Id::IEC60870_5_104, "IEC/60870/5/104" },
+    { Id::IEC62056, "IEC/62056" },
+    { Id::IEEE_C37118, "IEEE/C37/118" },
     { Id::IP_EGP, "EGP" },
     { Id::IP_GRE, "GRE" },
     { Id::IP_ICMP, "ICMP" },
@@ -487,7 +545,11 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::IP_VRRP, "VRRP" },
     { Id::IRC, "IRC" },
     { Id::IRCS, "IRC/S" },
+    { Id::ISO_11898_1_CAN, "ISO/11898/1/CAN" },
+    { Id::ISO_9506_1_MMS, "ISO/9506/1/MMS" },
+    { Id::JSON_RPC, "JSON/RPC" },
     { Id::KAKAOTALK_VOICE, "KakaoTalk/Voice" },
+    { Id::KCP, "KCP" },
     { Id::KERBEROS, "Kerberos" },
     { Id::KISMET, "KISMET" },
     { Id::KONTIKI, "Kontiki" },
@@ -510,18 +572,22 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::MGCP, "MGCP" },
     { Id::MINING, "Mining" },
     { Id::MODBUS, "Modbus" },
+    { Id::MONERO, "Monero" },
     { Id::MONGODB, "MongoDB" },
     { Id::MPEGDASH, "MPEG/Dash" },
     { Id::MPEGTS, "MPEGTS" },
     { Id::MQTT, "MQTT" },
     { Id::MQTTS, "MQTT/S" },
+    { Id::MS_RPCH, "MS/RPCH" },
     { Id::MSSQL_TDS, "MSSQL/TDS" },
+    { Id::MUMBLE, "Mumble/VoIP" },
     { Id::MUNIN, "Munin" },
     { Id::MYSQL, "MYSQL" },
     { Id::NATPMP, "NAT/PMP" },
     { Id::NATS, "NATS" },
     { Id::NEST_LOG_SINK, "NestLog" },
     { Id::NETBIOS, "NETBIOS" },
+    { Id::NETEASE_GAMES, "NetEaseGames" },
     { Id::NETFLOW, "NetFlow" },
     { Id::NFS, "NFS" },
     { Id::NINTENDO, "Nintendo" },
@@ -529,32 +595,42 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::NNTPS, "NNTP/S" },
     { Id::NOE, "NOE" },
     { Id::NTP, "NTP" },
+    { Id::NX_NOMACHINE, "NX/NoMachine" },
     { Id::OICQ, "OICQ" },
     { Id::OOKLA, "OOKLA" },
+    { Id::OPC_UA, "OPC/UA" },
+    { Id::OPENFLOW, "OpenFlow" },
     { Id::OPENVPN, "OpenVPN" },
     { Id::ORACLE, "Oracle" },
+    { Id::PATH_OF_EXILE, "PathOfExile" },
     { Id::POSTGRES, "PGSQL" },
     { Id::PPSTREAM, "PPStream" },
     { Id::PPTP, "PPTP" },
+    { Id::PROFINET_IO, "PROFINET/IO" },
     { Id::PROTOBUF, "Protobuf" },
+    { Id::PTPV2, "PTP/2" },
     { Id::QQLIVE, "QQLive" },
     { Id::QQ, "QQ" },
     { Id::QUIC, "QUIC" },
     { Id::RADIUS, "RADIUS" },
+    { Id::RADMIN, "Radmin" },
+    { Id::RAFT, "Raft" },
     { Id::RAKNET, "RakNet" },
     { Id::RDP, "RDP" },
-    { Id::REDIS, "Redis" },
     { Id::REMOTE_SCAN, "RemoteScan" },
+    { Id::RESP, "RESP" },
     { Id::RIOTGAMES, "Riot/Games" },
     { Id::RMCP, "RMCP" },
-    { Id::RPC, "RPC" },
+    { Id::ROUGHTIME, "Roughtime" },
     { Id::RSH, "RSH" },
     { Id::RSYNC, "RSYNC" },
     { Id::RTCP, "RTCP" },
     { Id::RTMP, "RTMP" },
     { Id::RTP, "RTP" },
+    { Id::RTPS, "RTPS" },
     { Id::RTSP, "RTSP" },
     { Id::RX, "RX" },
+    { Id::S7COMM_PLUS, "S7comm/Plus" },
     { Id::S7COMM, "S7comm" },
     { Id::SAP, "SAP" },
     { Id::SD_RTN, "SD/RTN" },
@@ -580,6 +656,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::SSH, "SSH" },
     { Id::STARCRAFT, "Starcraft" },
     { Id::STEAM, "Steam" },
+    { Id::STOMP, "STOMP" },
     { Id::STUN, "STUN" },
     { Id::SYNCTHING, "Syncthing" },
     { Id::SYSLOGS, "SYSLOG/S" },
@@ -591,6 +668,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::TELEGRAM, "Telegram" },
     { Id::TELEGRAM_VOIP, "Telegram/VoIP" },
     { Id::TELNET, "Telnet" },
+    { Id::TENCENT_GAMES, "Tencent/Games" },
     { Id::TEREDO, "Teredo" },
     { Id::TFTP, "TFTP" },
     { Id::THREEMA, "Threema" },
@@ -604,14 +682,18 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::TUYA_LP, "Tuya/LP" },
     { Id::TVUPLAYER, "TVUplayer" },
     { Id::UBNTAC2, "UBNTAC2" },
+    { Id::UFTP, "UFTP" },
     { Id::ULTRASURF, "UltraSurf" },
+    { Id::UMAS, "UMAS" },
     { Id::UNKNOWN, "Unknown" },
+    { Id::VALVE_SDR, "Valve/SDR" },
     { Id::VHUA, "VHUA" },
     { Id::VIBER, "Viber" },
     { Id::VMWARE, "VMWARE" },
     { Id::VNC, "VNC" },
     { Id::VXLAN, "VXLAN" },
     { Id::WARCRAFT3, "Warcraft3" },
+    { Id::WEBDAV, "WebDAV" },
     { Id::WEBSOCKET, "Websocket" },
     { Id::WHATSAPP_CALL, "WhatsApp/Call" },
     { Id::WHATSAPP, "WhatsApp" },
@@ -625,6 +707,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::XIAOMI, "Xiaomi" },
     { Id::XMPPS, "XMPP/S" },
     { Id::XMPP, "XMPP" },
+    { Id::YOJIMBO, "yojimbo" },
     { Id::Z3950, "Z39/50" },
     { Id::ZABBIX, "Zabbix" },
     { Id::ZATTOO, "Zattoo" },
@@ -676,20 +759,26 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_ALICLOUD, Id::ALICLOUD },
     { NDPI_PROTOCOL_AMONG_US, Id::AMONG_US },
     { NDPI_PROTOCOL_AMQP, Id::AMQP },
+    { NDPI_PROTOCOL_APACHE_KAFKA, Id::APACHE_KAFKA },
     { NDPI_PROTOCOL_APACHE_THRIFT, Id::APACHE_THRIFT },
     { NDPI_PROTOCOL_APPLE_PUSH, Id::APPLE_PUSH },
     { NDPI_PROTOCOL_ARMAGETRON, Id::ARMAGETRON },
     { NDPI_PROTOCOL_AVAST, Id::AVAST },
     { NDPI_PROTOCOL_AVAST_SECUREDNS, Id::AVAST_SDNS },
     { NDPI_PROTOCOL_BACNET, Id::BACNET },
+    { NDPI_PROTOCOL_BECKHOFF_ADS, Id::BECKHOFF_ADS },
+    { NDPI_PROTOCOL_BFD, Id::BFD },
     { NDPI_PROTOCOL_BGP, Id::BGP },
     { NDPI_PROTOCOL_BITCOIN, Id::BITCOIN },
     { NDPI_PROTOCOL_BITTORRENT, Id::BITTORRENT },
     { NDPI_PROTOCOL_BJNP, Id::BJNP },
-    { NDPI_PROTOCOL_CAN, Id::CAN },
+    { NDPI_PROTOCOL_C1222, Id::ANSI_C1222 },
+    { NDPI_PROTOCOL_CAN, Id::ISO_11898_1_CAN },
     { NDPI_PROTOCOL_CAPWAP, Id::CAPWAP },
     { NDPI_PROTOCOL_CASSANDRA, Id::CASSANDRA },
+    { NDPI_PROTOCOL_CEPH, Id::CEPH },
     { NDPI_PROTOCOL_CHECKMK, Id::CHECKMK },
+    { NDPI_PROTOCOL_CIP, Id::CIP },
     { NDPI_PROTOCOL_CISCOVPN, Id::CISCO_VPN },
     { NDPI_PROTOCOL_CITRIX, Id::CITRIX },
     { NDPI_PROTOCOL_COAP, Id::COAP },
@@ -698,11 +787,12 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_CPHA, Id::CPHA },
     { NDPI_PROTOCOL_CROSSFIRE, Id::CROSSFIRE },
     { NDPI_PROTOCOL_CRYNET, Id::CRYNET },
-    { NDPI_PROTOCOL_CSGO, Id::CSGO },
     { NDPI_PROTOCOL_DATASAVER, Id::DATASAVER },
+    { NDPI_PROTOCOL_DCERPC, Id::DCERPC },
     { NDPI_PROTOCOL_DHCP, Id::DHCP },
     { NDPI_PROTOCOL_DHCPV6, Id::DHCPV6 },
     { NDPI_PROTOCOL_DIAMETER, Id::DIAMETER },
+    { NDPI_PROTOCOL_DLEP, Id::DLEP },
     { NDPI_PROTOCOL_DNP3, Id::DNP3 },
     { NDPI_PROTOCOL_DNSCRYPT, Id::DNSCRYPT },
     { NDPI_PROTOCOL_DNS, Id::DNS },
@@ -715,15 +805,22 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_ELASTICSEARCH, Id::ELASTICSEARCH },
     { NDPI_PROTOCOL_ETHEREUM, Id::ETHEREUM },
     { NDPI_PROTOCOL_ETHERNET_IP, Id::ETHERNET_IP },
+    { NDPI_PROTOCOL_ETHERSBUS, Id::ETHERSBUS },
+    { NDPI_PROTOCOL_ETHERSBUS, Id::ETHERSBUS },
+    { NDPI_PROTOCOL_ETHERSIO, Id::ETHERSIO },
     { NDPI_PROTOCOL_FACEBOOK_VOIP, Id::FACEBOOK_VOIP },
     { NDPI_PROTOCOL_FASTCGI, Id::FASTCGI },
+    { NDPI_PROTOCOL_FINS, Id::FINS },
     { NDPI_PROTOCOL_FIX, Id::FIX },
     { NDPI_PROTOCOL_FTP_CONTROL, Id::FTP_CONTROL },
     { NDPI_PROTOCOL_FTP_DATA, Id::FTP_DATA },
     { NDPI_PROTOCOL_FTPS, Id::FTPS },
+    { NDPI_PROTOCOL_GAIJIN, Id::GAIJIN },
+    { NDPI_PROTOCOL_GEARMAN, Id::GEARMAN },
     { NDPI_PROTOCOL_GENSHIN_IMPACT, Id::GENSHIN_IMPACT },
     { NDPI_PROTOCOL_GIT, Id::GIT },
     { NDPI_PROTOCOL_GNUTELLA, Id::GNUTELLA },
+    { NDPI_PROTOCOL_GOOGLE_CALL, Id::GOOGLE_CALL },
     { NDPI_PROTOCOL_GTP_C, Id::GTP_C },
     { NDPI_PROTOCOL_GTP, Id::GTP },
     { NDPI_PROTOCOL_GTP_PRIME, Id::GTP_P },
@@ -731,8 +828,10 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_GUILDWARS, Id::GUILDWARS },
     { NDPI_PROTOCOL_H323, Id::H323 },
     { NDPI_PROTOCOL_HALFLIFE2, Id::HALFLIFE2 },
-    { NDPI_PROTOCOL_HANGOUT_DUO, Id::GOOGLE_MEET_DUO },
     { NDPI_PROTOCOL_HAPROXY, Id::HAPROXY },
+    { NDPI_PROTOCOL_HART_IP, Id::HART_IP },
+    { NDPI_PROTOCOL_HISLIP, Id::HISLIP },
+    { NDPI_PROTOCOL_HL7, Id::HL7 },
     { NDPI_PROTOCOL_HOTS, Id::HOTS },
     { NDPI_PROTOCOL_HPVIRTGRP, Id::HP_VIRTGRP },
     { NDPI_PROTOCOL_HSRP, Id::CISCO_HSRP },
@@ -744,6 +843,8 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_IAX, Id::IAX },
     { NDPI_PROTOCOL_ICECAST, Id::ICECAST },
     { NDPI_PROTOCOL_IEC60870, Id::IEC60870_5_104 },
+    { NDPI_PROTOCOL_IEC62056, Id::IEC62056 },
+    { NDPI_PROTOCOL_IEEE_C37118, Id::IEEE_C37118 },
     { NDPI_PROTOCOL_IP_EGP, Id::IP_EGP },
     { NDPI_PROTOCOL_IP_GRE, Id::IP_GRE },
     { NDPI_PROTOCOL_IP_ICMP, Id::IP_ICMP },
@@ -752,14 +853,17 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_IP_IP_IN_IP, Id::IP_IP_IN_IP },
     { NDPI_PROTOCOL_IP_OSPF, Id::IP_OSPF },
     { NDPI_PROTOCOL_IP_PGM, Id::IP_PGM },
-    { NDPI_PROTOCOL_IP_PIM, Id::IP_PIM },
     { NDPI_PROTOCOL_IPP, Id::IPP },
+    { NDPI_PROTOCOL_IP_PIM, Id::IP_PIM },
     { NDPI_PROTOCOL_IP_SCTP, Id::IP_SCTP },
     { NDPI_PROTOCOL_IPSEC, Id::IPSEC },
     { NDPI_PROTOCOL_IP_VRRP, Id::IP_VRRP },
     { NDPI_PROTOCOL_IRC, Id::IRC },
+    { NDPI_PROTOCOL_ISO9506_1_MMS, Id::ISO_9506_1_MMS },
     { NDPI_PROTOCOL_JABBER, Id::XMPP },
+    { NDPI_PROTOCOL_JSON_RPC, Id::JSON_RPC },
     { NDPI_PROTOCOL_KAKAOTALK_VOICE, Id::KAKAOTALK_VOICE },
+    { NDPI_PROTOCOL_KCP, Id::KCP },
     { NDPI_PROTOCOL_KERBEROS, Id::KERBEROS },
     { NDPI_PROTOCOL_KISMET, Id::KISMET },
     { NDPI_PROTOCOL_KONTIKI, Id::KONTIKI },
@@ -782,47 +886,61 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_MGCP, Id::MGCP },
     { NDPI_PROTOCOL_MINING, Id::MINING },
     { NDPI_PROTOCOL_MODBUS, Id::MODBUS },
+    { NDPI_PROTOCOL_MONERO, Id::MONERO },
     { NDPI_PROTOCOL_MONGODB, Id::MONGODB },
     { NDPI_PROTOCOL_MPEGDASH, Id::MPEGDASH },
     { NDPI_PROTOCOL_MPEGTS, Id::MPEGTS },
     { NDPI_PROTOCOL_MQTT, Id::MQTT },
+    { NDPI_PROTOCOL_MS_RPCH, Id::MS_RPCH },
     { NDPI_PROTOCOL_MSSQL_TDS, Id::MSSQL_TDS },
+    { NDPI_PROTOCOL_MUMBLE, Id::MUMBLE },
     { NDPI_PROTOCOL_MUNIN, Id::MUNIN },
     { NDPI_PROTOCOL_MYSQL, Id::MYSQL },
     { NDPI_PROTOCOL_NATPMP, Id::NATPMP },
     { NDPI_PROTOCOL_NATS, Id::NATS },
     { NDPI_PROTOCOL_NEST_LOG_SINK, Id::NEST_LOG_SINK },
     { NDPI_PROTOCOL_NETBIOS, Id::NETBIOS },
+    { NDPI_PROTOCOL_NETEASE_GAMES, Id::NETEASE_GAMES },
     { NDPI_PROTOCOL_NETFLOW, Id::NETFLOW },
     { NDPI_PROTOCOL_NFS, Id::NFS },
     { NDPI_PROTOCOL_NINTENDO, Id::NINTENDO },
     { NDPI_PROTOCOL_NOE, Id::NOE },
+    { NDPI_PROTOCOL_NOMACHINE, Id::NX_NOMACHINE },
     { NDPI_PROTOCOL_NTP, Id::NTP },
     { NDPI_PROTOCOL_OICQ, Id::OICQ },
     { NDPI_PROTOCOL_OOKLA, Id::OOKLA },
+    { NDPI_PROTOCOL_OPC_UA, Id::OPC_UA },
+    { NDPI_PROTOCOL_OPENFLOW, Id::OPENFLOW },
     { NDPI_PROTOCOL_OPENVPN, Id::OPENVPN },
     { NDPI_PROTOCOL_ORACLE, Id::ORACLE },
+    { NDPI_PROTOCOL_PATHOFEXILE, Id::PATH_OF_EXILE },
     { NDPI_PROTOCOL_POSTGRES, Id::POSTGRES },
     { NDPI_PROTOCOL_PPSTREAM, Id::PPSTREAM },
     { NDPI_PROTOCOL_PPTP, Id::PPTP },
+    { NDPI_PROTOCOL_PROFINET_IO, Id::PROFINET_IO },
     { NDPI_PROTOCOL_PROTOBUF, Id::PROTOBUF },
+    { NDPI_PROTOCOL_PTPV2, Id::PTPV2 },
     { NDPI_PROTOCOL_QQ, Id::QQ },
     { NDPI_PROTOCOL_QUIC, Id::QUIC },
     { NDPI_PROTOCOL_RADIUS, Id::RADIUS },
+    { NDPI_PROTOCOL_RADMIN, Id::RADMIN },
+    { NDPI_PROTOCOL_RAFT, Id::RAFT },
     { NDPI_PROTOCOL_RAKNET, Id::RAKNET },
     { NDPI_PROTOCOL_RDP, Id::RDP },
-    { NDPI_PROTOCOL_REDIS, Id::REDIS },
+    { NDPI_PROTOCOL_RESP, Id::RESP },
     { NDPI_PROTOCOL_RIOTGAMES, Id::RIOTGAMES },
     { NDPI_PROTOCOL_RMCP, Id::RMCP },
-    { NDPI_PROTOCOL_RPC, Id::RPC },
+    { NDPI_PROTOCOL_ROUGHTIME, Id::ROUGHTIME },
     { NDPI_PROTOCOL_RSH, Id::RSH },
     { NDPI_PROTOCOL_RSYNC, Id::RSYNC },
     { NDPI_PROTOCOL_RTCP, Id::RTCP },
     { NDPI_PROTOCOL_RTMP, Id::RTMP },
     { NDPI_PROTOCOL_RTP, Id::RTP },
+    { NDPI_PROTOCOL_RTPS, Id::RTPS },
     { NDPI_PROTOCOL_RTSP, Id::RTSP },
     { NDPI_PROTOCOL_RX, Id::RX },
     { NDPI_PROTOCOL_S7COMM, Id::S7COMM },
+    { NDPI_PROTOCOL_S7COMM_PLUS, Id::S7COMM_PLUS },
     { NDPI_PROTOCOL_SAP, Id::SAP },
     { NDPI_PROTOCOL_SD_RTN, Id::SD_RTN },
     { NDPI_PROTOCOL_SERVICE_LOCATION, Id::SLP },
@@ -847,6 +965,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_SSH, Id::SSH },
     { NDPI_PROTOCOL_STARCRAFT, Id::STARCRAFT },
     { NDPI_PROTOCOL_STEAM, Id::STEAM },
+    { NDPI_PROTOCOL_STOMP, Id::STOMP },
     { NDPI_PROTOCOL_STUN, Id::STUN },
     { NDPI_PROTOCOL_SYNCTHING, Id::SYNCTHING },
     { NDPI_PROTOCOL_SYSLOG, Id::SYSLOG },
@@ -857,6 +976,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_TELEGRAM, Id::TELEGRAM },
     { NDPI_PROTOCOL_TELEGRAM_VOIP, Id::TELEGRAM_VOIP },
     { NDPI_PROTOCOL_TELNET, Id::TELNET },
+    { NDPI_PROTOCOL_TENCENTGAMES, Id::TENCENT_GAMES },
     { NDPI_PROTOCOL_TEREDO, Id::TEREDO },
     { NDPI_PROTOCOL_TFTP, Id::TFTP },
     { NDPI_PROTOCOL_THREEMA, Id::THREEMA },
@@ -870,15 +990,19 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_TUYA_LP, Id::TUYA_LP },
     { NDPI_PROTOCOL_TVUPLAYER, Id::TVUPLAYER },
     { NDPI_PROTOCOL_UBNTAC2, Id::UBNTAC2 },
+    { NDPI_PROTOCOL_UFTP, Id::UFTP },
     { NDPI_PROTOCOL_ULTRASURF, Id::ULTRASURF },
+    { NDPI_PROTOCOL_UMAS, Id::UMAS },
     { NDPI_PROTOCOL_UNKNOWN, Id::UNKNOWN },
     { NDPI_PROTOCOL_USENET, Id::NNTP },
+    { NDPI_PROTOCOL_VALVE_SDR, Id::VALVE_SDR },
     { NDPI_PROTOCOL_VHUA, Id::VHUA },
     { NDPI_PROTOCOL_VIBER, Id::VIBER },
     { NDPI_PROTOCOL_VMWARE, Id::VMWARE },
     { NDPI_PROTOCOL_VNC, Id::VNC },
     { NDPI_PROTOCOL_VXLAN, Id::VXLAN },
     { NDPI_PROTOCOL_WARCRAFT3, Id::WARCRAFT3 },
+    { NDPI_PROTOCOL_WEBDAV, Id::WEBDAV },
     { NDPI_PROTOCOL_WEBSOCKET, Id::WEBSOCKET },
     { NDPI_PROTOCOL_WHATSAPP_CALL, Id::WHATSAPP_CALL },
     { NDPI_PROTOCOL_WHATSAPP, Id::WHATSAPP },
@@ -890,6 +1014,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_XBOX, Id::XBOX },
     { NDPI_PROTOCOL_XDMCP, Id::XDMCP },
     { NDPI_PROTOCOL_XIAOMI, Id::XIAOMI },
+    { NDPI_PROTOCOL_YOJIMBO, Id::YOJIMBO },
     { NDPI_PROTOCOL_Z3950, Id::Z3950 },
     { NDPI_PROTOCOL_ZABBIX, Id::ZABBIX },
     { NDPI_PROTOCOL_ZATTOO, Id::ZATTOO },
@@ -1002,8 +1127,6 @@ const std::vector<uint16_t> Disabled = {
     // (GoogleDrive)
     NDPI_PROTOCOL_GOOGLE_MAPS,  // Not a protocol: ID# 123
     // (GoogleMaps)
-    NDPI_PROTOCOL_GOOGLE_PLUS,  // Not a protocol: ID# 72
-    // (GooglePlus)
     NDPI_PROTOCOL_GOOGLE_SERVICES,  // Not a protocol: ID#
     // 239 (GoogleServices)
     NDPI_PROTOCOL_GOTO,  // Not a protocol: ID# 293 (GoTo)
@@ -1163,6 +1286,14 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_ROBLOX,  // Not a protocol: ID# 346 (Roblox)
     NDPI_PROTOCOL_MULLVAD,  // Not a protocol: ID# 348 (Mullvad)
     NDPI_PROTOCOL_SINA_WEIBO,  // Not a protocol: ID# 356 (SinaWeibo)
+    NDPI_PROTOCOL_DOTA2,  // Not a protocol: ID# 386 (DOTA 2)
+    NDPI_PROTOCOL_ELECTRONICARTS,  // Not a protocol: ID# 389
+    NDPI_PROTOCOL_GOOGLE_CHAT,  // Not a protocol: ID# 382
+    NDPI_PROTOCOL_GOOGLE_MEET,  // Not a protocol: ID# 201
+    NDPI_PROTOCOL_HUAWEI,  // Not a protocol: ID# 398
+    NDPI_PROTOCOL_HUAWEI_CLOUD,  // Not a protocol: ID# 399
+    NDPI_PROTOCOL_PIA,  // Not a protocol: ID# 384
+    NDPI_PROTOCOL_TESLA_SERVICES,  // Not a protocol: ID# 357
 };
 
 const std::vector<uint16_t> Free = {};

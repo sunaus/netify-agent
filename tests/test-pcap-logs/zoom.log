@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.117:54863
+offline0: i4pcu------r-F- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.117:54863
         : TLS
         : H: dati.ntop.org
         : V: 0x0303 CS: 0xc030
@@ -165,23 +165,24 @@ offline0: i4pcu------r--- TCP [OR] 109.94.160.99:443 <-- [L] 192.168.1.117:54871
         : RID 47: TLS ALPN Not Found
         : DP: 11
 
-offline0: i4pc-------r--- UDP [OR] 109.94.160.99:8801 <-- [L] 192.168.1.117:58327
+offline0: i4pc----------- UDP [OR] 109.94.160.99:8801 <-- [L] 192.168.1.117:58327
         : ZOOM.netify.zoom
         : D: zoomfrn99mmr.zoom.us
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 5
 
-offline0: i4pc-------r--- UDP [OR] 109.94.160.99:8801 <-- [L] 192.168.1.117:60620
+offline0: i4pc----------- UDP [OR] 109.94.160.99:8801 <-- [L] 192.168.1.117:60620
         : ZOOM.netify.zoom
         : D: zoomfrn99mmr.zoom.us
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 5
 
-offline0: i4pc-------r--- UDP [OR] 109.94.160.99:8801 <-- [L] 192.168.1.117:61731
+offline0: i4pc----------- UDP [OR] 109.94.160.99:8801 <-- [L] 192.168.1.117:61731
         : ZOOM.netify.zoom
         : D: zoomfrn99mmr.zoom.us
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 5
+
+offline0: i4pc----------- UDP [L] 10.140.117.35:45634 --> [OR] 193.122.35.237:8801
+        : ZOOM.netify.zoom
+        : DP: 5
 
 offline0: i4pc--x----r--- TCP [OR] 62.149.152.153:993 <-- [L] 192.168.1.117:54341
         : IMAP/S

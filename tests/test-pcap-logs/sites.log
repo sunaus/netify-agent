@@ -333,6 +333,89 @@ offline0: i4pcu------r--- TCP [L] 192.168.1.128:53978 --> [OR] 208.85.40.158:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
+offline0: i4pcu------r--- TCP [OR] 185.5.161.203:443 <-- [L] 192.168.88.231:33920
+        : HTTP/S.netify.akamai
+        : H: origin-a.akamaihd.net
+        : V: 0x0303 CS: 0x1302
+        : TLS/SNI: origin-a.akamaihd.net
+        : RID 47: TLS ALPN Not Found
+        : DP: 6
+
+offline0: i4pcu------r--- TCP [OR] 159.153.191.240:443 <-- [L] 192.168.88.231:49950
+        : HTTP/S.netify.ea-games
+        : H: accounts.ea.com
+        : V: 0x0303 CS: 0x0035
+        : TLS/SNI: accounts.ea.com TLS/CN: accounts.ea.com
+        : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=CALIFORNIA, L=Redwood City, O=Electronic Arts, Inc., CN=accounts.ea.com
+        : RID 30: TLS Certificate Expired
+        : RID 41: Weak TLS Cipher
+        : RID 47: TLS ALPN Not Found
+        : DP: 10
+
+offline0: i4pcu------r--- TCP [OR] 160.44.196.198:443 <-- [L] 192.168.1.245:54690
+        : HTTP/S.netify.huawei
+        : H: cloud.huawei.com
+        : V: 0x0303 CS: 0xc030
+        : TLS/SNI: cloud.huawei.com TLS/CN: cloud.huawei.asia
+        : TLS/IDN: C=BE, O=GlobalSign nv-sa, CN=GlobalSign RSA OV SSL CA 2018 TLS/SDN: C=CN, ST=Jiangsu, L=Nanjing, O=Huawei Software Technologies Co., Ltd., CN=cloud.huawei.asia
+        : RID 30: TLS Certificate Expired
+        : DP: 6
+
+offline0: i4pcu------r-F- TCP [OR] 80.158.42.215:443 <-- [L] 192.168.1.245:49558
+        : HTTP/S.netify.huawei
+        : H: id7.cloud.huawei.com
+        : V: 0x0303 CS: 0xc030
+        : TLS/SNI: id7.cloud.huawei.com TLS/CN: avatar.id.huawei.com
+        : TLS/IDN: C=BE, O=GlobalSign nv-sa, CN=GlobalSign RSA OV SSL CA 2018 TLS/SDN: C=CN, ST=Jiangsu, L=Nanjing, O=Huawei Software Technologies Co., Ltd., CN=avatar.id.huawei.com
+        : RID 30: TLS Certificate Expired
+        : DP: 6
+
+offline0: i6pcu---------- TCP [OR] 2001:b07:a3d:c112:c044:a6d4:80d:5d55:39970 --> [L] 2600:9000:25ea:1200:1:12d8:5a00:93a1:443
+        : HTTP/S.netify.huawei
+        : H: contentcenter-dre.dbankcdn.com
+        : V: 0x0303 CS: 0x1301
+        : TLS/SNI: contentcenter-dre.dbankcdn.com
+        : DP: 6
+
+offline0: i6pc--------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48594
+        : Telegram.netify.telegram
+        : H: web.telegram.org
+        : DP: 4
+
+offline0: i6pc--------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48594
+        : Telegram.netify.telegram
+        : H: web.telegram.org
+        : DP: 4
+
+offline0: i6pc--------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48616
+        : Telegram.netify.telegram
+        : H: t.me
+        : DP: 4
+
+offline0: i6pc--------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48616
+        : Telegram.netify.telegram
+        : H: t.me
+        : DP: 4
+
+offline0: i6pc--------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48624
+        : Telegram.netify.telegram
+        : H: telegram.me
+        : DP: 4
+
+offline0: i6pc--------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48624
+        : Telegram.netify.telegram
+        : H: telegram.me
+        : DP: 4
+
+offline0: i4pcu------r-F- TCP [OR] 5.61.23.30:443 <-- [L] 192.168.1.245:46174
+        : HTTP/S
+        : H: 732231.ms.ok.ru
+        : V: 0x0303 CS: 0xc02f
+        : TLS/SNI: 732231.ms.ok.ru
+        : TLS/IDN: C=BE, O=GlobalSign nv-sa, CN=GlobalSign RSA OV SSL CA 2018 TLS/SDN: C=RU, ST=Moscow, L=Moscow, O=VK LLC, CN=*.ok.ru
+        : RID 30: TLS Certificate Expired
+        : DP: 6
+
 offline0: i4pc-gx-------- TCP [L] 192.168.1.128:45936 --> [OR] 208.85.40.158:80
         : HTTP.netify.pandora
         : DP: 2

@@ -3,12 +3,12 @@ offline0: i4pc----------- TCP [L] 10.77.110.51:41588 --> [OL] 10.206.50.239:4200
         : DP: 3
 
 offline0: i4pc-------rs-- UDP [OR] 74.125.247.128:3478 <-- [L] 192.168.12.169:43016
-        : Google/Meet/Duo.netify.google-hangouts
+        : Google/Call.netify.google-hangouts
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------rs-- UDP [OR] 74.125.247.128:3478 <-- [L] 192.168.12.169:43016
-        : Google/Meet/Duo.netify.google-hangouts
+        : Google/Call.netify.google-hangouts
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -31,12 +31,24 @@ offline0: i4pc----------- TCP [OR] 54.1.57.155:37257 --> [L] 87.47.100.17:3478
         : DP: 6
 
 offline0: i4pc-------rs-- UDP [OR] 142.250.82.99:3478 <-- [L] 192.168.12.169:49153
-        : Google/Meet/Duo.netify.google-hangouts
+        : Google/Call.netify.google-hangouts
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------rs-- UDP [OR] 142.250.82.99:3478 <-- [L] 192.168.12.169:49153
-        : Google/Meet/Duo.netify.google-hangouts
+        : Google/Call.netify.google-hangouts
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc-------rs-- UDP [OR] 134.224.90.111:8801 <-- [L] 192.168.43.169:48854
+        : ZOOM.netify.zoom
+        : RID 16: Known Protocol on Non-standard Port
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc-------rs-- UDP [OR] 134.224.90.111:8801 <-- [L] 192.168.43.169:48854
+        : ZOOM.netify.zoom
+        : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 

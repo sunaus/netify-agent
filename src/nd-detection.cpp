@@ -1192,7 +1192,7 @@ void ndDetectionThread::SetGuessedProtocol(
   ndDetectionQueueEntry *entry) {
     uint8_t guessed = 0;
     ndpi_protocol ndpi_rc = ndpi_detection_giveup(ndpi,
-      ndEFNF, 1, &guessed);
+      ndEFNF, &guessed);
 
     if (guessed) {
         ndEF->detected_protocol = ProtocolLookup(

@@ -49,9 +49,10 @@ offline0: i4pc-------r--- UDP [OR] 1.60.78.64:59491 --> [L] 192.168.2.12:53688
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 91.252.56.51:32641 <-- [L] 192.168.2.12:53688
-        : STUN
+        : WhatsApp/Call.netify.whatsapp
         : RID 16: Known Protocol on Non-standard Port
-        : DP: 5
+        : RID 46: Unidirectional Traffic
+        : DP: 1
 
 offline0: i4pc----------- UDP [L] 192.168.2.1:17500 --> [OL] 192.168.2.255:17500
         : Dropbox

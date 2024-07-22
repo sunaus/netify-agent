@@ -31,12 +31,14 @@
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
-static ndpi_init_prefs nd_ndpi_prefs = ndpi_no_prefs;
+static ndpi_global_context *ndpi_ctx = nullptr;
 static NDPI_PROTOCOL_BITMASK ndpi_protos;
 
-void ndpi_global_init(void) {
+void nd_ndpi_global_init(void) {
     nd_dprintf("Initializing nDPI v%s, API v%u...\n",
       ndpi_revision(), NDPI_API_VERSION);
+
+    if (ndpi_ctx == nullptr) ndpi_ctx = ndpi_global_init();
 
     if (ndpi_get_api_version() != NDPI_API_VERSION) {
         throw ndException(
@@ -45,33 +47,6 @@ void ndpi_global_init(void) {
 
     set_ndpi_malloc(nd_mem_alloc);
     set_ndpi_free(nd_mem_free);
-
-    nd_ndpi_prefs = ndpi_no_prefs;
-
-    nd_ndpi_prefs |= ndpi_dont_init_risk_ptree;
-    nd_ndpi_prefs |= ndpi_dont_load_amazon_aws_list;
-    nd_ndpi_prefs |= ndpi_dont_load_asn_lists;
-    nd_ndpi_prefs |= ndpi_dont_load_azure_list;
-    nd_ndpi_prefs |= ndpi_dont_load_cachefly_list;
-    nd_ndpi_prefs |= ndpi_dont_load_cloudflare_list;
-    nd_ndpi_prefs |= ndpi_dont_load_crawlers_list;
-    nd_ndpi_prefs |= ndpi_dont_load_ethereum_list;
-    nd_ndpi_prefs |= ndpi_dont_load_google_cloud_list;
-    nd_ndpi_prefs |= ndpi_dont_load_google_list;
-    nd_ndpi_prefs |= ndpi_dont_load_icloud_private_relay_list;
-    nd_ndpi_prefs |= ndpi_dont_load_microsoft_list;
-    nd_ndpi_prefs |= ndpi_dont_load_mullvad_list;
-    nd_ndpi_prefs |= ndpi_dont_load_protonvpn_exit_nodes_list;
-    nd_ndpi_prefs |= ndpi_dont_load_protonvpn_list;
-    nd_ndpi_prefs |= ndpi_dont_load_tor_list;
-    nd_ndpi_prefs |= ndpi_dont_load_whatsapp_list;
-    nd_ndpi_prefs |= ndpi_dont_load_zoom_list;
-    nd_ndpi_prefs |= ndpi_enable_ja3_plus;
-
-    // ndpi_disable_fully_encrypted_heuristic
-    // ndpi_dont_init_libgcrypt
-    // ndpi_enable_tcp_ack_payload_heuristic;
-    // ndpi_track_flow_payload;
 
     NDPI_BITMASK_RESET(ndpi_protos);
 
@@ -137,15 +112,31 @@ void ndpi_global_init(void) {
     }
 }
 
+void nd_ndpi_global_shutdown(void) {
+    if (ndpi_ctx != nullptr) {
+        ndpi_global_deinit(ndpi_ctx);
+        ndpi_ctx = nullptr;
+    }
+}
+
 struct ndpi_detection_module_struct *nd_ndpi_init(void) {
 
+    if (ndpi_ctx == nullptr) {
+        throw ndException("%s: %s", __PRETTY_FUNCTION__,
+          "ndpi_ctx == nullptr");
+    }
+
     struct ndpi_detection_module_struct *ndpi = nullptr;
-    ndpi = ndpi_init_detection_module(nd_ndpi_prefs);
+    ndpi = ndpi_init_detection_module(ndpi_ctx);
 
     if (ndpi == nullptr) {
         throw ndException("%s: %s", __PRETTY_FUNCTION__,
           "ndpi_init_detection_module");
     }
+
+    ndpi_set_config(ndpi, "any", "ip_list.load", "0");
+    ndpi_set_config(ndpi, nullptr, "flow_risk_lists.load",
+      "0");
 
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
     if (ndGC_DEBUG) {
@@ -157,13 +148,6 @@ struct ndpi_detection_module_struct *nd_ndpi_init(void) {
         set_ndpi_debug_function(ndpi, nd_ndpi_debug_printf);
     }
 #endif
-
-    ndpi_set_detection_preferences(ndpi,
-      ndpi_pref_enable_tls_block_dissection, 1);
-    ndpi_set_detection_preferences(ndpi,
-      ndpi_pref_direction_detect_disable, 0);
-
-    ndpi_set_protocol_detection_bitmask2(ndpi, &ndpi_protos);
 
     ndpi_finalize_initialization(ndpi);
 

@@ -1,4 +1,4 @@
-offline0: i4pc-------r-F- TCP [OR] 109.70.240.130:80 <-- [L] 192.168.1.227:49813
+offline0: i4pc-------r--- TCP [OR] 109.70.240.130:80 <-- [L] 192.168.1.227:49813
         : HTTP
         : H: ocsp07.actalis.it
         : HTTP/UA: Microsoft-CryptoAPI/10.0

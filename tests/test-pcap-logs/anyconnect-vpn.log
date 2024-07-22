@@ -79,11 +79,10 @@ offline0: i4pc----------- IGMP [L] 10.0.0.213:0 --> [OM] 224.0.0.251:0
         : IGMP
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 10.0.0.213:5353 <-- [OL] 10.0.0.227:5353
+offline0: i4pc----------- UDP [L] 10.0.0.213:5353 <-- [OL] 10.0.0.227:5353
         : MDNS.netify.internal-network
         : H: _companion-link._tcp.local
         : MDNS/DN: LP-RKERUR-OSX (9)._companion-link._tcp.local
-        : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc----------- TCP [L] 10.0.0.227:56914 --> [OR] 52.37.243.173:443
@@ -332,11 +331,10 @@ offline0: i4pc----------- UDP [L] 10.0.0.227:137 --> [OL] 10.0.0.255:137
         : H: lp-rkerur-osx
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 10.0.0.149:5353 --> [OM] 224.0.0.251:5353
+offline0: i4pc----------- UDP [L] 10.0.0.149:5353 --> [OM] 224.0.0.251:5353
         : MDNS.netify.internal-network
         : H: _googlezone._tcp.local
         : MDNS/DN: 79d88e83-725c-b71b-bad0-5862d5b22386._googlezone._tcp.local
-        : RID  7: Suspicious DNS Traffic
         : DP: 3
 
 offline0: i4pc----------- ICMP [L] 10.0.0.1:0 --> [OM] 224.0.0.1:0

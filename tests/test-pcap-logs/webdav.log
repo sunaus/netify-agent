@@ -1,0 +1,9 @@
+offline0: i4pc-------r-F- TCP [L] 10.24.8.189:50652 --> [OR] 104.156.149.6:80
+        : HTTP
+        : H: 104.156.149.6
+        : HTTP/UA: Microsoft-WebDAV-MiniRedir/10.0.19045
+        : URL: 104.156.149.6/webdav
+        : RID 10: Numeric IP Address
+        : RID 14: HTTP Suspicious User-Agent
+        : DP: 6
+

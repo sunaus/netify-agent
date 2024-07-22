@@ -22,9 +22,11 @@ offline0: i4pc-------r--- UDP [OR] 35.158.74.61:33335 <-- [L] 192.168.12.114:521
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- UDP [L] 192.168.12.1:53 <-- [OL] 192.168.12.114:18874
+offline0: i4pc-------r--- UDP [L] 192.168.12.1:53 <-- [OL] 192.168.12.114:18874
         : DNS.netify.nintendo
         : H: e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com
+        : RID 23: Risky Domain Name
+        : RID 27: Suspicious DGA Domain name
         : DP: 2
 
 offline0: i4pcu------r-F- TCP [OR] 54.192.27.217:443 <-- [L] 192.168.12.114:41517
@@ -33,6 +35,7 @@ offline0: i4pcu------r-F- TCP [OR] 54.192.27.217:443 <-- [L] 192.168.12.114:4151
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=JP, ST=Kyoto, L=Minami-ku, O=Nintendo Co., Ltd., CN=*.baas.nintendo.com
+        : RID 27: Suspicious DGA Domain name
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
         : DP: 7
@@ -42,9 +45,11 @@ offline0: i4pc----------- UDP [L] 192.168.12.1:53 <-- [OL] 192.168.12.114:10184
         : H: g2df33d01-lp1.p.srv.nintendo.net
         : DP: 4
 
-offline0: i4pc----------- UDP [L] 192.168.12.1:53 <-- [OL] 192.168.12.114:51035
+offline0: i4pc-------r--- UDP [L] 192.168.12.1:53 <-- [OL] 192.168.12.114:51035
         : DNS.netify.nintendo
         : H: e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com
+        : RID 23: Risky Domain Name
+        : RID 27: Suspicious DGA Domain name
         : DP: 2
 
 offline0: i4pcu------r-F- TCP [OR] 54.192.27.8:443 <-- [L] 192.168.12.114:31329
@@ -53,6 +58,7 @@ offline0: i4pcu------r-F- TCP [OR] 54.192.27.8:443 <-- [L] 192.168.12.114:31329
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=JP, ST=Kyoto, L=Minami-ku, O=Nintendo Co., Ltd., CN=*.baas.nintendo.com
+        : RID 27: Suspicious DGA Domain name
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
         : DP: 7

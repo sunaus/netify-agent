@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [OR] 91.143.93.242:443 <-- [L] 192.168.1.252:51110
+offline0: i4pcu------r-F- TCP [OR] 91.143.93.242:443 <-- [L] 192.168.1.252:51110
         : HTTP/S
         : H: www.ct7ctrgb6cr7.com
         : V: 0x0301 CS: 0xc013

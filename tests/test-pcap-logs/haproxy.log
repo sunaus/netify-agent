@@ -1,0 +1,5 @@
+offline0: i4pc-------r--- TCP [OR] 1.1.1.1:48502 --> [L] 2.2.2.2:443
+        : HAProxy
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+

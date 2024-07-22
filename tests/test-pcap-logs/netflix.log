@@ -17,7 +17,7 @@ offline0: i4pcu------r--- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53105
         : RID 30: TLS Certificate Expired
         : DP: 7
 
-offline0: i4pcu------r-F- TCP [OR] 54.191.17.51:443 <-- [L] 192.168.1.7:53114
+offline0: i4pcu------r--- TCP [OR] 54.191.17.51:443 <-- [L] 192.168.1.7:53114
         : HTTP/S.netify.netflix
         : D: ios.nccp.us-west-2.prodaa.netflix.com H: ios.nccp.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -27,7 +27,7 @@ offline0: i4pcu------r-F- TCP [OR] 54.191.17.51:443 <-- [L] 192.168.1.7:53114
         : RID 47: TLS ALPN Not Found
         : DP: 7
 
-offline0: i4pcu------r-F- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53115
+offline0: i4pcu------r--- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53115
         : HTTP/S.netify.netflix
         : H: api-global.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -45,7 +45,7 @@ offline0: i4pcu------r--- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53116
         : RID 30: TLS Certificate Expired
         : DP: 7
 
-offline0: i4pcu------r-F- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53117
+offline0: i4pcu------r--- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53117
         : HTTP/S.netify.netflix
         : H: api-global.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -53,7 +53,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.32.196.36:443 <-- [L] 192.168.1.7:53117
         : RID 47: TLS ALPN Not Found
         : DP: 6
 
-offline0: i4pcu------r-F- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53118
+offline0: i4pcu------r--- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53118
         : HTTP/S.netify.netflix
         : D: ichnaea.us-west-2.prodaa.netflix.com H: ichnaea.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -67,7 +67,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.7:53776 --> [OM] 239.255.255.250:190
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pcu------r-F- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53119
+offline0: i4pcu------r--- TCP [OR] 54.69.204.241:443 <-- [L] 192.168.1.7:53119
         : HTTP/S.netify.netflix
         : D: ichnaea.us-west-2.prodaa.netflix.com H: ichnaea.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -85,7 +85,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.7:51949
         : H: api-global.latency.prodaa.netflix.com
         : DP: 2
 
-offline0: i4pcu------r-F- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53132
+offline0: i4pcu------r--- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53132
         : HTTP/S.netify.netflix
         : D: api-global.latency.prodaa.netflix.com H: api-global.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -95,7 +95,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53132
         : RID 47: TLS ALPN Not Found
         : DP: 7
 
-offline0: i4pcu------r-F- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53133
+offline0: i4pcu------r--- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53133
         : HTTP/S.netify.netflix
         : D: api-global.latency.prodaa.netflix.com H: api-global.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -105,7 +105,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53133
         : RID 47: TLS ALPN Not Found
         : DP: 7
 
-offline0: i4pcu------r-F- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53134
+offline0: i4pcu------r--- TCP [OR] 52.89.39.139:443 <-- [L] 192.168.1.7:53134
         : HTTP/S.netify.netflix
         : D: api-global.latency.prodaa.netflix.com H: api-global.netflix.com
         : V: 0x0303 CS: 0xc02f
@@ -132,7 +132,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.7:59180
         : H: artwork.akam.nflximg.net
         : DP: 2
 
-offline0: i4pc-------r-F- TCP [OR] 184.25.204.25:80 <-- [L] 192.168.1.7:53148
+offline0: i4pc-------r--- TCP [OR] 184.25.204.25:80 <-- [L] 192.168.1.7:53148
         : HTTP.netify.netflix
         : D: a1907.dscg.akamai.net H: art-2.nflximg.net
         : HTTP/UA: Argo/9.1.0 (iPhone; iOS 10.2; Scale/2.00)
@@ -148,7 +148,7 @@ offline0: i4pc-------r--- TCP [OR] 184.25.204.25:80 <-- [L] 192.168.1.7:53149
         : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 184.25.204.25:80 <-- [L] 192.168.1.7:53150
+offline0: i4pc-------r--- TCP [OR] 184.25.204.25:80 <-- [L] 192.168.1.7:53150
         : HTTP.netify.netflix
         : D: a1907.dscg.akamai.net H: art-2.nflximg.net
         : HTTP/UA: Argo/9.1.0 (iPhone; iOS 10.2; Scale/2.00)
@@ -161,7 +161,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.7:58102
         : H: appboot.netflix.com
         : DP: 2
 
-offline0: i4pc-------r-F- TCP [OR] 54.201.191.132:80 <-- [L] 192.168.1.7:53151
+offline0: i4pc-------r--- TCP [OR] 54.201.191.132:80 <-- [L] 192.168.1.7:53151
         : HTTP.netify.netflix
         : D: appboot.us-west-2.prodaa.netflix.com H: appboot.netflix.com
         : HTTP/UA: Argo/900 CFNetwork/808.2.16 Darwin/16.3.0
@@ -169,7 +169,7 @@ offline0: i4pc-------r-F- TCP [OR] 54.201.191.132:80 <-- [L] 192.168.1.7:53151
         : RID 14: HTTP Suspicious User-Agent
         : DP: 10
 
-offline0: i4pc---------F- TCP [OR] 52.89.39.139:80 <-- [L] 192.168.1.7:53152
+offline0: i4pc----------- TCP [OR] 52.89.39.139:80 <-- [L] 192.168.1.7:53152
         : HTTP.netify.netflix
         : D: api-global.latency.prodaa.netflix.com H: api-global.netflix.com
         : HTTP/UA: Argo/900 CFNetwork/808.2.16 Darwin/16.3.0

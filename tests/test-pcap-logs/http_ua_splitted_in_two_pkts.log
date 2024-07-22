@@ -1,0 +1,6 @@
+offline0: i4pc-------r-F- TCP [OR] 66.152.103.45:80 <-- [L] 254.125.135.128:21359
+        : HTTP
+        : HTTP/UA: Mozil
+        : RID 14: HTTP Suspicious User-Agent
+        : DP: 5
+
