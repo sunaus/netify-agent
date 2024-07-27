@@ -134,6 +134,8 @@ struct ndpi_detection_module_struct *nd_ndpi_init(void) {
           "ndpi_init_detection_module");
     }
 
+    ndpi_set_protocol_detection_bitmask2(ndpi, &ndpi_protos);
+
     ndpi_set_config(ndpi, "any", "ip_list.load", "0");
     ndpi_set_config(ndpi, nullptr, "flow_risk_lists.load",
       "0");
