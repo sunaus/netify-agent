@@ -62,10 +62,8 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/ndpi/ndpi_main.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_patricia_typedefs.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_protocol_ids.h
-%%DEVEL%%include/netifyd/ndpi/ndpi_protocols.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_typedefs.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_unix.h
-%%DEVEL%%include/netifyd/ndpi/ndpi_utils.h
 %%DEVEL%%include/netifyd/ndpi/ndpi_win32.h
 %%DEVEL%%include/netifyd/nlohmann/json.hpp
 %%DEVEL%%include/netifyd/pcap-compat/sll.h
