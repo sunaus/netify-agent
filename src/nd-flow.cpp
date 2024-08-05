@@ -201,11 +201,11 @@ ndProto::Id ndFlow::GetMasterProtocol(void) const {
     case ndProto::Id::MQTTS:
     case ndProto::Id::NNTPS:
     case ndProto::Id::SIPS: return ndProto::Id::TLS;
+    case ndProto::Id::HLS:
     case ndProto::Id::HTTP:
     case ndProto::Id::HTTP_CONNECT:
     case ndProto::Id::HTTP_PROXY:
     case ndProto::Id::OOKLA:
-    case ndProto::Id::PPSTREAM:
     case ndProto::Id::QQ:
     case ndProto::Id::RTSP:
     case ndProto::Id::STEAM:
