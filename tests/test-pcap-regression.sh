@@ -11,7 +11,7 @@ VALGRIND=/usr/loca/bin/valgrind
 
 ND_PCAPS=$(find "${TESTDIR}/pcap/" -name '*.cap.gz' | sort)
 NDPI_PCAPS=$(sort "${TESTDIR}/ndpi-pcap-files.txt" | egrep -v '^#' |\
-    xargs -I{} find "${TESTDIR}/../libs/ndpi/tests/cfgs/default/pcap" -name '{}*cap*' |\
+    xargs -I{} find "${TESTDIR}/../libs/ndpi/tests/pcap/" -name '{}*cap*' |\
     egrep -v -- '-test.cap$')
 
 PCAPS="$(echo ${ND_PCAPS} ${NDPI_PCAPS} | sort)"
