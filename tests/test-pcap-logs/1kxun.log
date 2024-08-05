@@ -671,8 +671,8 @@ offline0: i4pc-------r--- TCP [OR] 161.117.13.29:80 <-- [L] 192.168.2.126:47230
         : H: kankan.1kxun.mobi
         : HTTP/UA: okhttp/3.10.0
         : URL: kankan.1kxun.mobi/api.domain.conf
-        : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
+        : RID 55: Binary File/Data Transfer
         : DP: 2
 
 offline0: i4pc-------r--- TCP [OR] 129.226.107.77:80 <-- [L] 192.168.2.126:41134
@@ -1155,8 +1155,9 @@ offline0: i6pc-gx-------- UDP [L] 2001:b020:6:0:c2a0:bbff:fe73:eb57:62976 --> [O
         : Unknown
         : DP: 2
 
-offline0: i4pc-gx-------- UDP [L] 192.168.119.2:43786 --> [OB] 255.255.255.255:5678
+offline0: i4pc-gx----r--- UDP [L] 192.168.119.2:43786 --> [OB] 255.255.255.255:5678
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 1
 
 offline0: i4pc-gx-------- UDP [L] 192.168.2.186:32768 --> [OB] 255.255.255.255:1947
@@ -1166,14 +1167,17 @@ offline0: i4pc-gx-------- UDP [L] 192.168.2.186:32768 --> [OB] 255.255.255.255:1
 offline0: i4pc-gx----r-F- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.16:53613
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 3
 
-offline0: i4pc-gx-------- UDP [L] 192.168.0.100:50925 --> [OB] 255.255.255.255:5678
+offline0: i4pc-gx----r--- UDP [L] 192.168.0.100:50925 --> [OB] 255.255.255.255:5678
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 1
 
-offline0: i4pc-gx-------- UDP [L] 192.168.119.1:56861 --> [OB] 255.255.255.255:5678
+offline0: i4pc-gx----r--- UDP [L] 192.168.119.1:56861 --> [OB] 255.255.255.255:5678
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 1
 
 offline0: i4pc--x----r--- TCP [OR] 18.66.2.90:80 <-- [L] 192.168.2.126:35666
@@ -1184,8 +1188,9 @@ offline0: i4pc--x----r--- TCP [OR] 18.66.2.90:80 <-- [L] 192.168.2.126:35666
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- TCP [L] 192.168.115.8:49596 --> [OR] 203.66.182.87:443
+offline0: i4pc-gx----r--- TCP [L] 192.168.115.8:49596 --> [OR] 203.66.182.87:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 6
 
 offline0: i4pc--x----r--- TCP [OR] 18.64.79.58:80 <-- [L] 192.168.2.126:43266
@@ -1200,8 +1205,9 @@ offline0: i4pc-gx-------- UDP [L] 192.168.10.110:60480 <-- [OB] 255.255.255.255:
         : Unknown
         : DP: 5
 
-offline0: i6pc-gx-------- UDP [L] fe80::4e5e:cff:fe9a:ec54:5678 --> [OM] ff02::1:5678
+offline0: i6pc-gx----r--- UDP [L] fe80::4e5e:cff:fe9a:ec54:5678 --> [OM] ff02::1:5678
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 1
 
 offline0: i4pc--x-------- TCP [OR] 18.64.103.30:80 <-- [L] 192.168.2.126:36660
@@ -1222,10 +1228,12 @@ offline0: i4pc-gx-------- TCP [OR] 119.235.235.84:443 <-- [L] 192.168.5.16:53406
 offline0: i4pc-gx----r-F- TCP [OR] 68.233.253.133:80 <-- [L] 192.168.5.16:53605
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i4pc-gx-------- TCP [OR] 64.233.189.128:80 <-- [L] 192.168.115.8:49581
+offline0: i4pc-gx----r--- TCP [OR] 64.233.189.128:80 <-- [L] 192.168.115.8:49581
         : HTTP.netify.google
+        : RID 56: Probing Attempt
         : DP: 3
 
 offline0: i4pc-gx-------- UDP [L] 59.120.208.212:32768 --> [OB] 255.255.255.255:1947
@@ -1240,8 +1248,9 @@ offline0: i6pc-gx-------- UDP [L] 2001:b030:214:100:c2a0:bbff:fe73:eb47:62976 --
         : Unknown
         : DP: 2
 
-offline0: i6pc-gx-------- UDP [L] fe80::4e5e:cff:feea:365:5678 --> [OM] ff02::1:5678
+offline0: i6pc-gx----r--- UDP [L] fe80::4e5e:cff:feea:365:5678 --> [OM] ff02::1:5678
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 1
 
 offline0: i4pc--x-------- UDP [L] 192.168.5.64:5353 --> [OM] 224.0.0.251:5353
@@ -1253,8 +1262,9 @@ offline0: i4pc-gx-------- UDP [L] 59.120.208.218:50151 --> [OB] 255.255.255.255:
         : Unknown
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [L] 192.168.5.16:53622 --> [OL] 192.168.115.75:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.5.16:53622 --> [OL] 192.168.115.75:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc-gx-------- UDP [L] 192.168.140.140:62976 --> [OB] 255.255.255.255:62976

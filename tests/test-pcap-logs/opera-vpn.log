@@ -5,7 +5,7 @@ offline0: i4pcu---------- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51398
         : TLS/SNI: eu0.sec-tunnel.com
         : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51399
+offline0: i4pcu--------F- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51399
         : HTTP/S.netify.opera
         : H: eu0.sec-tunnel.com
         : V: 0x0303 CS: 0x1301
@@ -19,7 +19,7 @@ offline0: i4pcu---------- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51400
         : TLS/SNI: eu0.sec-tunnel.com
         : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51401
+offline0: i4pcu--------F- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51401
         : HTTP/S.netify.opera
         : H: eu0.sec-tunnel.com
         : V: 0x0303 CS: 0x1301
@@ -40,7 +40,7 @@ offline0: i4pcu--------F- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51404
         : TLS/SNI: eu0.sec-tunnel.com
         : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51405
+offline0: i4pcu--------F- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51405
         : HTTP/S.netify.opera
         : H: eu0.sec-tunnel.com
         : V: 0x0303 CS: 0x1301
@@ -429,5 +429,6 @@ offline0: i4pcu---------- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51466
 offline0: i4pc-gx----r--- TCP [OR] 77.111.247.69:443 <-- [L] 192.168.1.29:51457
         : HTTP/S.netify.opera
         : RID 51: TCP Connection Issues
+        : RID 56: Probing Attempt
         : DP: 3
 

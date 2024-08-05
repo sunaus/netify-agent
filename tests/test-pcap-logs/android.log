@@ -346,9 +346,10 @@ offline0: i4pc--x-------- UDP [L] 192.168.2.1:5353 --> [OM] 224.0.0.251:5353
         : H: _spotify-connect._tcp.local
         : DP: 1
 
-offline0: i4pc-gx-------- TCP [OR] 173.194.79.114:80 <-- [L] 192.168.2.16:36850
+offline0: i4pc-gx----r--- TCP [OR] 173.194.79.114:80 <-- [L] 192.168.2.16:36850
         : HTTP.netify.google
         : D: check.googlezip.net
+        : RID 56: Probing Attempt
         : DP: 3
 
 offline0: i4pc--x-------- TCP [OR] 172.217.20.74:443 <-- [L] 192.168.2.16:52514
@@ -362,12 +363,14 @@ offline0: i4pc-gx----rs-- TCP [L] 192.168.2.16:49510 --> [OR] 216.239.38.120:522
         : XMPP.netify.google-chat
         : D: www.google.com
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [OR] 172.217.20.76:443 <-- [L] 192.168.2.16:43652
         : HTTP/S.netify.google
         : D: proxy.googlezip.net
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 1
 
 offline0: i4pc--x-------- UDP [L] 169.254.225.216:5353 --> [OM] 224.0.0.251:5353

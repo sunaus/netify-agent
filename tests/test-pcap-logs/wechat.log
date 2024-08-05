@@ -420,21 +420,25 @@ offline0: i4pc----------- IGMP [L] 192.168.1.108:0 --> [OM] 224.0.0.22:0
 offline0: i4pc-gx----r--- TCP [OR] 64.233.167.188:443 <-- [L] 192.168.1.103:54205
         : HTTP/S.netify.google
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54112 --> [OR] 203.205.151.162:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54112 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 9
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54085 --> [OR] 203.205.151.162:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54085 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 3
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:34981
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 9
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:56367 --> [OL] 192.168.1.254:53
@@ -443,9 +447,10 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:56367 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:58039 --> [OR] 203.205.147.171:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:58039 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 17
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:42856 --> [OL] 192.168.1.254:53
@@ -454,19 +459,22 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:42856 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:40741 --> [OR] 203.205.151.211:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:40741 --> [OR] 203.205.151.211:443
         : HTTP/S.netify.qq
         : D: ssd.tcdn.qq.com
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:58037 --> [OR] 203.205.147.171:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:58037 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 8
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54109 --> [OR] 203.205.151.162:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54109 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:58165 --> [OL] 192.168.1.254:53
@@ -478,6 +486,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:58165 --> [OL] 192.168.1.254:53
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.34:80 <-- [L] 192.168.1.103:39207
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 9
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:43705 --> [OL] 192.168.1.254:53
@@ -490,16 +499,19 @@ offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54106 --> [OR] 203.205.151.162:4
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.34:80 <-- [L] 192.168.1.103:39195
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 8
 
-offline0: i4pc-gx-------- TCP [L] 192.168.1.103:58043 --> [OR] 203.205.147.171:443
+offline0: i4pc-gx----r--- TCP [L] 192.168.1.103:58043 --> [OR] 203.205.147.171:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 5
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:43317 --> [OL] 192.168.1.254:53
@@ -511,21 +523,25 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:43317 --> [OL] 192.168.1.254:53
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:34996
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 9
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54110 --> [OR] 203.205.151.162:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54110 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54114 --> [OR] 203.205.151.162:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54114 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 9
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54093 --> [OR] 203.205.151.162:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54093 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 8
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:53515 --> [OL] 192.168.1.254:53
@@ -534,9 +550,10 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:53515 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:54084 --> [OR] 203.205.151.162:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54084 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
+        : RID 56: Probing Attempt
         : DP: 6
 
 offline0: i4pc--x------F- TCP [L] 192.168.1.103:47627 --> [OR] 216.58.205.78:443
@@ -553,8 +570,9 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:59567 --> [OL] 192.168.1.254:53
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-----s-- TCP [OR] 64.233.167.188:5228 <-- [L] 192.168.1.103:36017
+offline0: i4pc-gx----rs-- TCP [OR] 64.233.167.188:5228 <-- [L] 192.168.1.103:36017
         : XMPP.netify.google-chat
+        : RID 56: Probing Attempt
         : DP: 20
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:41759 --> [OL] 192.168.1.254:53
@@ -591,21 +609,25 @@ offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:58226 --> [OR] 203.205.147.171:4
         : HTTP/S.netify.wechat
         : D: web1.wechat.com
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 6
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.34:80 <-- [L] 192.168.1.103:39231
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 9
 
-offline0: i4pc-gx------F- TCP [L] 192.168.1.103:43851 --> [OR] 203.205.158.34:443
+offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:43851 --> [OR] 203.205.158.34:443
         : HTTP/S.netify.qq
         : D: ssd.tcdn.qq.com
+        : RID 56: Probing Attempt
         : DP: 9
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:35000
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 9
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:42589 --> [OL] 192.168.1.254:53
@@ -628,15 +650,18 @@ offline0: i4pc--x----r-F- TCP [L] 192.168.1.103:58143 --> [OR] 216.58.205.131:44
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.180.179:80 <-- [L] 192.168.1.103:52020
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 8
 
-offline0: i4pc-gx-------- TCP [L] 192.168.1.103:49787 --> [OR] 216.58.205.142:443
+offline0: i4pc-gx----r--- TCP [L] 192.168.1.103:49787 --> [OR] 216.58.205.142:443
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 6
 
 offline0: i4pc-gx----r-F- TCP [OR] 95.101.34.33:80 <-- [L] 192.168.1.103:34999
         : HTTP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 9
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.103:33915 --> [OL] 192.168.1.254:53

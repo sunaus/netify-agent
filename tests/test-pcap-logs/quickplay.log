@@ -51,9 +51,10 @@ offline0: i4pc-------r--- TCP [L] 10.54.169.250:42761 --> [OR] 203.205.129.101:8
         : H: hkextshort.weixin.qq.com
         : HTTP/UA: MicroMessenger Client
         : URL: http://hkextshort.weixin.qq.com/cgi-bin/micromsg-bin/mmbatchemojidownload
-        : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
+        : RID 28: Suspicious Entropy
+        : RID 55: Binary File/Data Transfer
         : DP: 2
 
 offline0: i4pc-------r-F- TCP [L] 10.54.169.250:54885 --> [OR] 203.205.151.160:80
@@ -61,9 +62,10 @@ offline0: i4pc-------r-F- TCP [L] 10.54.169.250:54885 --> [OR] 203.205.151.160:8
         : H: hkextshort.weixin.qq.com
         : HTTP/UA: MicroMessenger Client
         : URL: http://hkextshort.weixin.qq.com/cgi-bin/micromsg-bin/getcontactlabellist
-        : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
+        : RID 28: Suspicious Entropy
+        : RID 55: Binary File/Data Transfer
         : DP: 2
 
 offline0: i4pc-------r--- TCP [L] 10.54.169.250:42762 --> [OR] 203.205.129.101:80
@@ -71,9 +73,10 @@ offline0: i4pc-------r--- TCP [L] 10.54.169.250:42762 --> [OR] 203.205.129.101:8
         : H: hkextshort.weixin.qq.com
         : HTTP/UA: MicroMessenger Client
         : URL: http://hkextshort.weixin.qq.com/cgi-bin/micromsg-bin/androidgcmreg
-        : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
+        : RID 28: Suspicious Entropy
+        : RID 55: Binary File/Data Transfer
         : DP: 2
 
 offline0: i4pc----------- TCP [L] 10.54.169.250:52009 --> [OR] 120.28.35.40:80
@@ -88,9 +91,10 @@ offline0: i4pc-------r--- TCP [L] 10.54.169.250:35670 --> [OR] 203.205.147.215:8
         : H: hkminorshort.weixin.qq.com
         : HTTP/UA: MicroMessenger Client
         : URL: http://hkminorshort.weixin.qq.com/cgi-bin/micromsg-bin/rtkvreport
-        : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
+        : RID 28: Suspicious Entropy
+        : RID 55: Binary File/Data Transfer
         : DP: 2
 
 offline0: i4pc-------r--- TCP [L] 10.54.169.250:56381 --> [OR] 54.179.140.65:80
@@ -121,6 +125,7 @@ offline0: i4pc--x----r--- TCP [L] 10.54.169.250:54883 --> [OR] 203.205.151.160:8
         : HTTP/UA: MicroMessenger Client
         : URL: http://hkextshort.weixin.qq.com/cgi-bin/micromsg-bin/mmsnssync
         : RID 16: Known Protocol on Non-standard Port
+        : RID 28: Suspicious Entropy
         : DP: 3
 
 offline0: i4pc--x-------- TCP [L] 10.54.169.250:44256 --> [OR] 120.28.5.41:80

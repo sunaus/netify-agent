@@ -107,8 +107,9 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.77:47127
         : RID 50: Minor Issues
         : DP: 2
 
-offline0: i4pc-g--------- UDP [L] 192.168.1.52:31480 --> [OL] 192.168.1.77:23174
+offline0: i4pc-g-----r--- UDP [L] 192.168.1.52:31480 --> [OL] 192.168.1.77:23174
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 32
 
 offline0: i4pc----------- UDP [L] 0.0.0.0:68 --> [OB] 255.255.255.255:67
@@ -224,6 +225,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.77:58615
 
 offline0: i4pc-gx----r--- UDP [OR] 87.11.205.195:60723 --> [L] 192.168.1.77:23174
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 2
 
@@ -234,6 +236,7 @@ offline0: i6pc--x-------- UDP [L] fe80::18a0:a412:8935:c01b:5353 --> [OM] ff02::
 
 offline0: i4pc-gx----r--- UDP [OR] 87.11.205.195:59772 --> [L] 192.168.1.77:28150
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 3
 

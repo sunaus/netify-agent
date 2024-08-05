@@ -1,4 +1,5 @@
-offline0: i4pc-gx------F- TCP [OR] 135.192.214.240:7551 <-- [L] 201.15.177.227:1754
+offline0: i4pc-gx----r-F- TCP [OR] 135.192.214.240:7551 <-- [L] 201.15.177.227:1754
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 17
 

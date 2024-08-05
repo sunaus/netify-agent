@@ -53,8 +53,8 @@ offline0: i4pc-------r-F- TCP [L] 10.8.0.1:54915 --> [OR] 65.39.128.135:80
         : H: xtra1.gpsonextra.net
         : HTTP/UA: Android
         : URL: xtra1.gpsonextra.net/xtra2.bin
-        : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
+        : RID 55: Binary File/Data Transfer
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 10.8.0.1:45540 --> [OR] 54.230.227.172:80
@@ -72,6 +72,12 @@ offline0: i4pc-------r-F- TCP [L] 10.8.0.1:45538 --> [OR] 54.230.227.172:80
         : URL: cres.waze.com/lang_tts/lang.portuguese_br_tts?rtserver-id=15
         : RID 14: HTTP Suspicious User-Agent
         : DP: 8
+
+offline0: i4pc-gx----r--- TCP [L] 10.8.0.1:51051 --> [OR] 176.34.103.105:443
+        : HTTP/S
+        : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
+        : DP: 1
 
 offline0: i4pc-------r-F- TCP [L] 10.8.0.1:45546 --> [OR] 54.230.227.172:80
         : HTTP.netify.waze
@@ -103,14 +109,6 @@ offline0: i4pc-------r-F- TCP [L] 10.8.0.1:45554 --> [OR] 54.230.227.172:80
         : HTTP/UA: /3.9.4.0
         : URL: cres.waze.com/newVconfig/1.0/3/lang.conf?rtserver-id=15
         : RID 14: HTTP Suspicious User-Agent
-        : DP: 8
-
-offline0: i4pcu------r--- TCP [L] 10.8.0.1:51051 --> [OR] 176.34.103.105:443
-        : HTTP/S
-        : V: 0x0301 CS: 0xc013
-        : TLS/IDN: C=US, O=Google Inc, CN=Google Internet Authority G2 TLS/SDN: C=US, ST=California, L=Mountain View, O=Google Inc, CN=*.waze.com
-        : RID 30: TLS Certificate Expired
-        : RID 36: Obsolete TLS (v1.1 or older)
         : DP: 8
 
 offline0: i4pcu------r--- TCP [L] 10.8.0.1:51050 --> [OR] 176.34.103.105:443
@@ -183,43 +181,53 @@ offline0: i4pcu------r-F- TCP [L] 10.8.0.1:36137 --> [OR] 46.51.173.182:443
         : RID 41: Weak TLS Cipher
         : DP: 8
 
-offline0: i4pc-gx------F- TCP [L] 10.16.37.157:52746 --> [OR] 200.160.4.49:80
+offline0: i4pc-gx----r-F- TCP [L] 10.16.37.157:52746 --> [OR] 200.160.4.49:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.8.0.1:45169 --> [OR] 200.160.4.198:80
+offline0: i4pc-gx----r-F- TCP [L] 10.8.0.1:45169 --> [OR] 200.160.4.198:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.16.37.157:41823 --> [OR] 200.160.4.49:80
+offline0: i4pc-gx----r-F- TCP [L] 10.16.37.157:41823 --> [OR] 200.160.4.49:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.16.37.157:46473 --> [OR] 200.160.4.49:80
+offline0: i4pc-gx----r-F- TCP [L] 10.16.37.157:46473 --> [OR] 200.160.4.49:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.16.37.157:42256 --> [OR] 174.37.231.81:5222
+offline0: i4pc-gx----r-F- TCP [L] 10.16.37.157:42256 --> [OR] 174.37.231.81:5222
         : Unknown
+        : RID 56: Probing Attempt
         : DP: 10
 
-offline0: i4pc-gx------F- TCP [L] 10.16.37.157:52953 --> [OR] 200.160.4.49:80
+offline0: i4pc-gx----r-F- TCP [L] 10.16.37.157:52953 --> [OR] 200.160.4.49:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.8.0.1:43089 --> [OR] 200.160.4.198:443
+offline0: i4pc-gx----r-F- TCP [L] 10.8.0.1:43089 --> [OR] 200.160.4.198:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.16.37.157:43991 --> [OR] 200.160.4.31:80
+offline0: i4pc-gx----r-F- TCP [L] 10.16.37.157:43991 --> [OR] 200.160.4.31:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.8.0.1:60479 --> [OR] 200.160.4.49:443
+offline0: i4pc-gx----r-F- TCP [L] 10.8.0.1:60479 --> [OR] 200.160.4.49:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 4
 
-offline0: i4pc-gx------F- TCP [L] 10.8.0.1:60574 --> [OR] 200.160.4.49:80
+offline0: i4pc-gx----r-F- TCP [L] 10.8.0.1:60574 --> [OR] 200.160.4.49:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 4
 

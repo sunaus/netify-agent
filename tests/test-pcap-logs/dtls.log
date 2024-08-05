@@ -1,3 +1,23 @@
+offline0: i4pc-------rs-- UDP [L] 10.191.227.13:54162 --> [OR] 157.240.16.128:3478
+        : STUN.netify.meta-messaging
+        : RID 35: TLS SNI Extension Not Found
+        : RID 46: Unidirectional Traffic
+        : RID 47: TLS ALPN Not Found
+        : DP: 1
+
+offline0: i4pc-------rs-- UDP [L] 10.191.227.13:54162 --> [OR] 157.240.16.128:3478
+        : STUN.netify.meta-messaging
+        : RID 35: TLS SNI Extension Not Found
+        : RID 46: Unidirectional Traffic
+        : RID 47: TLS ALPN Not Found
+        : DP: 1
+
+offline0: i4pc-------r--- UDP [L] 127.0.0.1:40983 --> [OL] 127.0.0.1:11111
+        : DTLS
+        : RID 35: TLS SNI Extension Not Found
+        : RID 47: TLS ALPN Not Found
+        : DP: 2
+
 offline0: i4pc--x----r--- UDP [L] 192.168.13.57:56515 --> [OL] 192.168.13.203:40739
         : DTLS
         : RID 35: TLS SNI Extension Not Found

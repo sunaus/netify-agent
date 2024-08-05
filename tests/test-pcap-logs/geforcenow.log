@@ -12,6 +12,5 @@ offline0: i4pc-------r--- UDP [OR] 80.84.167.206:18452 <-- [L] 192.168.1.245:524
         : STUN.netify.nvidia
         : RID 30: TLS Certificate Expired
         : RID 32: TLS Certificate Validity Too Long
-        : RID 37: Self-signed Certificate
-        : DP: 15
+        : DP: 17
 

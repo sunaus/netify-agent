@@ -347,9 +347,10 @@ offline0: i4pc--x----r--- UDP [L] 10.0.0.227:61613 --> [OR] 75.75.75.75:53
         : RID  8: Error Code
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [OR] 8.37.103.196:443 <-- [L] 10.0.0.227:56871
+offline0: i4pc-gx----r-F- TCP [OR] 8.37.103.196:443 <-- [L] 10.0.0.227:56871
         : HTTP/S.netify.viasat
         : D: mail.viasat.com
+        : RID 56: Probing Attempt
         : DP: 6
 
 offline0: i4pc-gx----r--- UDP [L] 10.0.0.1:192 <-- [OL] 10.0.0.227:52595
@@ -357,8 +358,9 @@ offline0: i4pc-gx----r--- UDP [L] 10.0.0.1:192 <-- [OL] 10.0.0.227:52595
         : RID 46: Unidirectional Traffic
         : DP: 10
 
-offline0: i4pc-gx------F- TCP [L] 10.0.0.227:56885 --> [OR] 184.25.56.53:80
+offline0: i4pc-gx----r-F- TCP [L] 10.0.0.227:56885 --> [OR] 184.25.56.53:80
         : HTTP
+        : RID 56: Probing Attempt
         : DP: 3
 
 offline0: i4pc--x----r--- UDP [L] 10.0.0.227:64972 --> [OR] 75.75.75.75:53
@@ -367,25 +369,30 @@ offline0: i4pc--x----r--- UDP [L] 10.0.0.227:64972 --> [OR] 75.75.75.75:53
         : RID  8: Error Code
         : DP: 2
 
-offline0: i4pc-gx------F- TCP [L] 10.0.0.149:8008 <-- [OL] 10.0.0.227:56865
+offline0: i4pc-gx----r-F- TCP [L] 10.0.0.149:8008 <-- [OL] 10.0.0.227:56865
         : Cisco/VPN
+        : RID 56: Probing Attempt
         : DP: 3
 
 offline0: i4pc-gx----r-F- TCP [L] 10.0.0.151:8060 <-- [OL] 10.0.0.227:56866
         : Unknown
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 9
 
-offline0: i4pc-gx-------- TCP [L] 10.0.0.227:56881 --> [OR] 162.222.43.153:443
+offline0: i4pc-gx----r--- TCP [L] 10.0.0.227:56881 --> [OR] 162.222.43.153:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 12
 
-offline0: i4pc-gx------F- TCP [L] 10.0.0.227:56874 --> [OR] 74.125.197.188:443
+offline0: i4pc-gx----r-F- TCP [L] 10.0.0.227:56874 --> [OR] 74.125.197.188:443
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [L] 10.0.0.151:8009 <-- [OL] 10.0.0.227:56916
         : AJP
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 5
 

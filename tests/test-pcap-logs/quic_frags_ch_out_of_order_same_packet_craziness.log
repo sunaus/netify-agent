@@ -426,7 +426,7 @@ offline0: i4pc-------r--- UDP [OR] 22.12.150.194:443 <-- [L] 168.144.64.5:59965
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:64693
+offline0: i4pc--x----r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:64693
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304

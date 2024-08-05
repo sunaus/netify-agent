@@ -28,13 +28,20 @@ offline0: i4pcu------r--- TCP [L] 10.8.0.1:45610 --> [OR] 104.18.47.234:443
         : RID 30: TLS Certificate Expired
         : DP: 6
 
-offline0: i4pc-gx-----s-- TCP [L] 10.8.0.1:43600 --> [OR] 172.217.194.188:5228
+offline0: i4pc-gx----rs-- TCP [L] 10.8.0.1:43600 --> [OR] 172.217.194.188:5228
         : XMPP.netify.google-chat
+        : RID 56: Probing Attempt
         : DP: 3
+
+offline0: i4pc-gx----r--- UDP [OR] 162.159.192.7:2408 <-- [L] 192.168.1.84:60555
+        : Unknown
+        : RID 28: Suspicious Entropy
+        : DP: 15
 
 offline0: i4pc-gx----r--- TCP [L] 10.158.134.93:55512 --> [OR] 142.251.42.106:443
         : HTTP/S.netify.google
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 1
 
 offline0: i4pc--x-------- TCP [L] 10.8.0.1:51296 --> [OR] 142.250.183.163:443
@@ -44,7 +51,8 @@ offline0: i4pc--x-------- TCP [L] 10.8.0.1:51296 --> [OR] 142.250.183.163:443
         : TLS/SNI: crashlyticsreports-pa.googleapis.com
         : DP: 5
 
-offline0: i4pc-gx------F- TCP [L] 10.158.134.93:40454 --> [OR] 216.58.196.68:443
+offline0: i4pc-gx----r-F- TCP [L] 10.158.134.93:40454 --> [OR] 216.58.196.68:443
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 4
 

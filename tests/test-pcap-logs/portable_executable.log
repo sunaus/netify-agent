@@ -1,0 +1,15 @@
+offline0: i4pc-gx----r--- TCP [OR] 64.227.107.71:4444 <-- [L] 172.16.99.201:1732
+        : Unknown
+        : RID  2: Binary Application Transfer
+        : RID 28: Suspicious Entropy
+        : RID 56: Probing Attempt
+        : DP: 15
+
+offline0: i4pc-gx----r--- TCP [OR] 64.227.107.71:53 <-- [L] 172.16.99.10:49652
+        : DNS
+        : RID  2: Binary Application Transfer
+        : RID 17: Malformed Packet
+        : RID 28: Suspicious Entropy
+        : RID 56: Probing Attempt
+        : DP: 15
+

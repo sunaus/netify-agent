@@ -53,31 +53,6 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:50384 --> [OM] 239.255.255.250:190
         : H: 239.255.255.250_1900
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 31.13.86.48:3478 <-- [L] 192.168.2.12:56328
-        : WhatsApp/Call.netify.whatsapp
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------r--- UDP [OR] 185.60.216.51:3478 <-- [L] 192.168.2.12:56328
-        : WhatsApp/Call.netify.whatsapp
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------r--- UDP [OR] 157.240.193.48:3478 <-- [L] 192.168.2.12:56328
-        : WhatsApp/Call.netify.whatsapp
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------r--- UDP [OR] 179.60.192.48:3478 <-- [L] 192.168.2.12:56328
-        : WhatsApp/Call.netify.whatsapp
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------r--- UDP [OR] 157.240.196.62:3478 <-- [L] 192.168.2.12:56328
-        : WhatsApp/Call.netify.whatsapp
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
 offline0: i4pc----------- UDP [L] 192.168.2.12:64716 --> [OM] 239.255.255.250:1900
         : SSDP
         : H: 239.255.255.250_1900
@@ -95,6 +70,26 @@ offline0: i4pcu--------F- TCP [OR] 157.240.20.52:443 <-- [L] 192.168.2.12:50504
         : TLS/SNI: pps.whatsapp.net
         : DP: 6
 
+offline0: i4pc----------- UDP [OR] 31.13.86.48:3478 <-- [L] 192.168.2.12:56328
+        : WhatsApp/Call.netify.whatsapp
+        : DP: 7
+
+offline0: i4pc----------- UDP [OR] 157.240.196.62:3478 <-- [L] 192.168.2.12:56328
+        : WhatsApp/Call.netify.whatsapp
+        : DP: 7
+
+offline0: i4pc----------- UDP [OR] 179.60.192.48:3478 <-- [L] 192.168.2.12:56328
+        : WhatsApp/Call.netify.whatsapp
+        : DP: 7
+
+offline0: i4pc----------- UDP [OR] 157.240.193.48:3478 <-- [L] 192.168.2.12:56328
+        : WhatsApp/Call.netify.whatsapp
+        : DP: 7
+
+offline0: i4pc----------- UDP [OR] 185.60.216.51:3478 <-- [L] 192.168.2.12:56328
+        : WhatsApp/Call.netify.whatsapp
+        : DP: 7
+
 offline0: i4pc----------- UDP [L] 0.0.0.0:68 --> [OB] 255.255.255.255:67
         : DHCP
         : H: lucas-imac
@@ -104,14 +99,13 @@ offline0: i4pc----------- UDP [L] 0.0.0.0:68 --> [OB] 255.255.255.255:67
 offline0: i4pc-------r--- UDP [OR] 91.252.56.51:32704 <-- [L] 192.168.2.12:56328
         : WhatsApp/Call.netify.whatsapp
         : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 7
 
 offline0: i4pc-------r--- UDP [OR] 1.60.78.64:64282 --> [L] 192.168.2.12:56328
         : STUN
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
-        : DP: 5
+        : DP: 7
 
 offline0: i4pc----------- UDP [L] 192.168.2.12:50191 --> [OM] 239.255.255.250:1900
         : SSDP
@@ -128,8 +122,9 @@ offline0: i4pc-------r--- ICMP [OR] 91.252.56.51:0 <-- [L] 192.168.2.12:0
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- TCP [OR] 169.254.162.244:49159 <-- [L] 192.168.2.12:49352
+offline0: i4pc-gx----r--- TCP [OR] 169.254.162.244:49159 <-- [L] 192.168.2.12:49352
         : Unknown
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc--x-------- UDP [L] 192.168.2.12:5353 --> [OM] 224.0.0.251:5353

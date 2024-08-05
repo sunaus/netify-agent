@@ -80,6 +80,7 @@ offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53912
         : URL: www.microsoft.com/pki/certs/MicRooCerAut2011_2011_03_22.crt
         : RID 12: HTTP Suspicious Header
         : RID 14: HTTP Suspicious User-Agent
+        : RID 55: Binary File/Data Transfer
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53913
@@ -89,6 +90,7 @@ offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53913
         : URL: www.microsoft.com/pkiops/certs/MicSecSerCA2011_2011-10-18.crt
         : RID 12: HTTP Suspicious Header
         : RID 14: HTTP Suspicious User-Agent
+        : RID 55: Binary File/Data Transfer
         : DP: 6
 
 offline0: i4pc----------- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.1.121:65213
@@ -211,11 +213,13 @@ offline0: i6pc--x-------- UDP [L] fe80::1059:a858:f9e7:cf94:5353 --> [OM] ff02::
         : H: _companion-link._tcp.local
         : DP: 2
 
-offline0: i4pc-gx-------- TCP [OR] 52.149.21.60:443 <-- [L] 192.168.1.121:52746
+offline0: i4pc-gx----r--- TCP [OR] 52.149.21.60:443 <-- [L] 192.168.1.121:52746
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i4pc-gx-------- TCP [L] 192.168.1.121:52721 <-- [OL] 192.168.1.139:55367
+offline0: i4pc-gx----r--- TCP [L] 192.168.1.121:52721 <-- [OL] 192.168.1.139:55367
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 13
 

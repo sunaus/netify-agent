@@ -68,7 +68,6 @@ offline0: i4pc-------rs-- UDP [OR] 142.250.82.76:3478 <-- [L] 192.168.12.156:454
 
 offline0: i6pc-------r--- UDP [OR] 2001:b07:a3d:c112:48a1:1094:1227:281e:45572 --> [L] 2001:4860:4864:6::81:19305
         : Google/Call.netify.google
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : RID 30: TLS Certificate Expired
+        : DP: 17
 

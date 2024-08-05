@@ -36,6 +36,7 @@ offline0: i4pc-------r--- UDP [OR] 109.237.187.225:500 <-- [L] 192.168.2.100:105
 offline0: i4pc-------r--- UDP [OR] 109.237.187.225:4500 <-- [L] 192.168.2.100:14500
         : IPSEC
         : RID 17: Malformed Packet
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 

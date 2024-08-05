@@ -1,4 +1,5 @@
-offline0: i4pc----------- TCP [L] 192.168.1.103:1044 --> [OL] 192.168.1.146:80
+offline0: i4pc-------r-F- TCP [L] 192.168.1.103:1044 --> [OL] 192.168.1.146:80
         : HTTP
+        : RID 28: Suspicious Entropy
         : DP: 7
 

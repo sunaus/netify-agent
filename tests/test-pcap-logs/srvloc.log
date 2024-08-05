@@ -423,7 +423,7 @@ offline0: i4pc-------r--- UDP [OR] 58.218.184.177:54059 --> [L] 90.111.212.50:42
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 31.0.154.114:40383 --> [L] 90.145.180.58:427
+offline0: i4pc--xX---r--- UDP [OR] 31.0.154.114:40383 --> [L] 90.145.180.58:427
         : SLP
         : RID 46: Unidirectional Traffic
         : DP: 1

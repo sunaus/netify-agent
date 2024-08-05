@@ -18,6 +18,7 @@ offline0: i4pc-------r--- TCP [L] 10.4.20.102:54319 --> [OR] 107.161.178.210:80
         : URL: gandhitoday.org/video/6JvA8/
         : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
+        : RID 55: Binary File/Data Transfer
         : DP: 5
 
 offline0: i4pc-------r--- TCP [L] 10.4.25.101:49797 --> [OR] 77.105.36.156:80
@@ -27,6 +28,7 @@ offline0: i4pc-------r--- TCP [L] 10.4.25.101:49797 --> [OR] 77.105.36.156:80
         : URL: filmmogzivota.rs/SpryAssets/gDR/
         : RID  2: Binary Application Transfer
         : RID 14: HTTP Suspicious User-Agent
+        : RID 55: Binary File/Data Transfer
         : DP: 6
 
 offline0: i4pcu------r--- TCP [L] 10.4.25.101:49803 --> [OR] 138.197.147.101:443
@@ -40,7 +42,7 @@ offline0: i4pcu------r--- TCP [L] 10.4.25.101:49803 --> [OR] 138.197.147.101:443
         : RID 47: TLS ALPN Not Found
         : DP: 6
 
-offline0: i4pcu------r--- TCP [L] 10.4.25.101:49804 --> [OR] 138.197.147.101:443
+offline0: i4pcu------r-F- TCP [L] 10.4.25.101:49804 --> [OR] 138.197.147.101:443
         : HTTP/S
         : V: 0x0303 CS: 0xc030
         : RID 35: TLS SNI Extension Not Found

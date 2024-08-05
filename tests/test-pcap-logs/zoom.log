@@ -182,7 +182,7 @@ offline0: i4pc----------- UDP [OR] 109.94.160.99:8801 <-- [L] 192.168.1.117:6173
 
 offline0: i4pc----------- UDP [L] 10.140.117.35:45634 --> [OR] 193.122.35.237:8801
         : ZOOM.netify.zoom
-        : DP: 5
+        : DP: 8
 
 offline0: i4pc--x----r--- TCP [OR] 62.149.152.153:993 <-- [L] 192.168.1.117:54341
         : IMAP/S
@@ -192,6 +192,7 @@ offline0: i4pc--x----r--- TCP [OR] 62.149.152.153:993 <-- [L] 192.168.1.117:5434
 offline0: i4pc-gx----r--- TCP [OR] 13.225.84.182:443 <-- [L] 192.168.1.117:54798
         : HTTP/S
         : RID 51: TCP Connection Issues
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc--x-------- UDP [L] 192.168.1.117:5353 --> [OM] 224.0.0.251:5353

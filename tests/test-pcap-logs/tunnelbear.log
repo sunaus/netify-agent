@@ -1,3 +1,7 @@
+offline0: i4pc----------- UDP [L] 10.0.2.15:57636 --> [OR] 142.93.78.79:51820
+        : WireGuard
+        : DP: 2
+
 offline0: i4pcu------r-F- TCP [L] 10.8.0.1:45104 --> [OR] 104.17.115.40:443
         : HTTP/S.netify.tunnelbear
         : H: api.polargrizzly.com
@@ -166,7 +170,8 @@ offline0: i4pc--x----r--- TCP [L] 10.158.132.91:38398 --> [OR] 104.17.114.40:443
         : RID 46: Unidirectional Traffic
         : DP: 5
 
-offline0: i4pc-gx------F- TCP [OR] 8.8.8.8:53 <-- [L] 10.158.132.91:51120
+offline0: i4pc-gx----r-F- TCP [OR] 8.8.8.8:53 <-- [L] 10.158.132.91:51120
         : DNS.netify.google
+        : RID 56: Probing Attempt
         : DP: 5
 

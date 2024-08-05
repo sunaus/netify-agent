@@ -1,16 +1,20 @@
-offline0: i4pc----------- UDP [OR] 18.157.15.184:15011 <-- [L] 192.168.12.156:47446
-        : RTP
-        : DP: 3
-
-offline0: i4pc-gx-------- UDP [OR] 18.157.15.184:15011 <-- [L] 192.168.12.156:37989
+offline0: i4pc-gx----r--- UDP [OR] 18.157.15.184:15011 <-- [L] 192.168.12.156:37989
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 24
 
-offline0: i4pc-gx-------- UDP [OR] 18.157.15.184:9011 <-- [L] 192.168.12.156:39322
+offline0: i4pc-gx----r--- UDP [OR] 18.157.15.184:15011 <-- [L] 192.168.12.156:47446
         : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 19
 
-offline0: i4pc-gx-------- UDP [OR] 18.157.15.184:15011 <-- [L] 192.168.12.156:49693
+offline0: i4pc-gx----r--- UDP [OR] 18.157.15.184:9011 <-- [L] 192.168.12.156:39322
         : Unknown
+        : RID 28: Suspicious Entropy
+        : DP: 19
+
+offline0: i4pc-gx----r--- UDP [OR] 18.157.15.184:15011 <-- [L] 192.168.12.156:49693
+        : Unknown
+        : RID 28: Suspicious Entropy
         : DP: 19
 

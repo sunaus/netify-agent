@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [L] 192.168.17.53:49640 --> [OR] 212.227.17.186:143
+offline0: i4pcu------r-F- TCP [L] 192.168.17.53:49640 --> [OR] 212.227.17.186:143
         : IMAP/S.netify.gmx-mail
         : V: 0x0000 CS: 0xc030
         : TLS/CN: imap.gmx.net

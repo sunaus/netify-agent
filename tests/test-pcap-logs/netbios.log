@@ -75,7 +75,13 @@ offline0: i4pc-------r--- UDP [L] 10.0.1.87:57921 --> [OL] 10.0.4.24:137
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- TCP [L] 10.0.4.24:139 <-- [OL] 10.0.4.131:1398
+offline0: i4pc-------r--- TCP [L] 10.17.113.129:139 <-- [OL] 10.19.71.184:55489
         : NETBIOS
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc-gx----r--- TCP [L] 10.0.4.24:139 <-- [OL] 10.0.4.131:1398
+        : NETBIOS
+        : RID 56: Probing Attempt
         : DP: 2
 

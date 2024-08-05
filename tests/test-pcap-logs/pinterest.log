@@ -164,67 +164,83 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:7a6e:443 <-- [L] 2a01:cb01:2049
         : RID 30: TLS Certificate Expired
         : DP: 12
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:807::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40876
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:807::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40876
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:33164
+offline0: i6pc-gx----r--- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:33164
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56940 --> [L] 2a04:4e42:1d::720:443
+offline0: i6pc-gx----r--- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56940 --> [L] 2a04:4e42:1d::720:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:80c::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:57130
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:80c::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:57130
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2600:1901:0:7a0b:::443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46918
+offline0: i6pc-gx----r--- TCP [OR] 2600:1901:0:7a0b:::443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46918
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:33156
+offline0: i6pc-gx----r--- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:33156
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 64:ff9b::acd9:13e2:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:34626
+offline0: i6pc-gx----r--- TCP [OR] 64:ff9b::acd9:13e2:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:34626
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47682
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:816::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47682
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:80b::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:58726
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:80b::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:58726
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:815::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:48890
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:815::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:48890
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::2004:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40560
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:816::2004:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40560
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:806::200e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:54308
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:806::200e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:54308
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38402 --> [L] 2a04:4e42:1d::84:443
+offline0: i6pc-gx----r--- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38402 --> [L] 2a04:4e42:1d::84:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51472
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:816::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51472
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a00:1450:4007:816::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51446
+offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:816::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51446
         : HTTP/S.netify.google
+        : RID 56: Probing Attempt
         : DP: 2
 
-offline0: i6pc-gx-------- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38406 --> [L] 2a04:4e42:1d::84:443
+offline0: i6pc-gx----r--- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38406 --> [L] 2a04:4e42:1d::84:443
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 

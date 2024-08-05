@@ -84,6 +84,7 @@ offline0: i4pc--x----r--- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.180.2:24245
 offline0: i4pc-gx----r--- TCP [OR] 137.135.131.52:5122 <-- [L] 192.168.180.2:46166
         : Unknown
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 6
 
 offline0: i4pc--x----r--- TCP [OR] 178.248.208.54:80 <-- [L] 192.168.180.2:48250
@@ -103,6 +104,7 @@ offline0: i4pc--x----r--- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.180.2:1291
 offline0: i4pc-gx----rs-- TCP [OR] 64.233.184.188:5228 <-- [L] 192.168.180.2:47699
         : XMPP.netify.google-chat
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc--x----r--- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.180.2:3621

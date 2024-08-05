@@ -1,0 +1,12 @@
+offline0: i4pc-gx----r--- UDP [L] 127.0.0.1:33333 <-- [OL] 127.0.0.1:60150
+        : Unknown
+        : RID  2: Binary Application Transfer
+        : RID 46: Unidirectional Traffic
+        : DP: 2
+
+offline0: i4pc-gx----r-F- TCP [L] 127.0.0.1:33333 <-- [OL] 127.0.0.1:41150
+        : Unknown
+        : RID  2: Binary Application Transfer
+        : RID 56: Probing Attempt
+        : DP: 10
+

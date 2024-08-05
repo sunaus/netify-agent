@@ -83,6 +83,7 @@ offline0: i4pc----------- UDP [L] 10.94.80.60:39438 --> [OL] 10.94.150.22:514
 offline0: i4pc-gx----r--- TCP [L] 10.186.117.194:49948 --> [OR] 169.46.82.162:52173
         : Unknown
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 1
 
 offline0: i4pc-gx----r--- IPv6 [OR] 193.24.227.12:0 <-- [L] 216.66.80.30:0

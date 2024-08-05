@@ -17,5 +17,6 @@ offline0: i4pcu------r--- TCP [L] 10.17.34.139:64016 --> [OL] 10.17.51.8:4343
 offline0: i4pc-gx----r-F- TCP [L] 10.160.63.128:53217 --> [OR] 192.30.45.30:43
         : Whois/DAS
         : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
         : DP: 5
 

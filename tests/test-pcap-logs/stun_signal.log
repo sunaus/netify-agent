@@ -24,28 +24,29 @@ offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:
 
 offline0: i4pc-------r--- ICMP [OR] 35.158.183.167:0 --> [L] 192.168.12.169:0
         : ICMP
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
-
-offline0: i4pc----------- UDP [OR] 35.158.183.167:3478 <-- [L] 192.168.12.169:39518
-        : STUN
-        : DP: 4
-
-offline0: i4pc----------- UDP [OR] 35.158.183.167:3478 <-- [L] 192.168.12.169:47204
-        : STUN
-        : DP: 3
 
 offline0: i4pc-------r--- UDP [OR] 35.158.183.167:443 <-- [L] 192.168.12.169:47204
         : STUN
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
-        : DP: 3
+        : DP: 7
 
 offline0: i4pc-------r--- UDP [OR] 35.158.183.167:443 <-- [L] 192.168.12.169:39518
         : STUN
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
-        : DP: 3
+        : DP: 7
+
+offline0: i4pc----------- UDP [OR] 35.158.183.167:3478 <-- [L] 192.168.12.169:39518
+        : STUN
+        : DP: 7
+
+offline0: i4pc----------- UDP [OR] 35.158.183.167:3478 <-- [L] 192.168.12.169:47204
+        : STUN
+        : DP: 7
 
 offline0: i4pc-------rs-- UDP [OR] 35.158.183.167:3478 <-- [L] 192.168.12.169:43068
         : SignalCall.netify.signal
@@ -57,26 +58,26 @@ offline0: i4pc-------rs-- UDP [OR] 35.158.183.167:3478 <-- [L] 192.168.12.169:43
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 35.158.183.167:443 <-- [L] 192.168.12.169:43068
-        : SignalCall.netify.signal
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:43068
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:43068
-        : SignalCall.netify.signal
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:43068
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:39950
-        : SignalCall.netify.signal
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:39950
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 35.158.183.167:443 <-- [L] 192.168.12.169:39950
-        : SignalCall.netify.signal
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:39950
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -94,66 +95,77 @@ offline0: i4pc-------rs-- UDP [OR] 35.158.183.167:3478 <-- [L] 192.168.12.169:39
 offline0: i4pc-------r--- UDP [OR] 18.195.131.143:61156 --> [L] 192.168.12.169:43068
         : STUN
         : RID 16: Known Protocol on Non-standard Port
-        : DP: 5
+        : DP: 7
 
-offline0: i4pc-------r--- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:47767
-        : SignalCall.netify.signal
+offline0: i4pc-------r--- UDP [OR] 35.158.183.167:443 <-- [L] 192.168.12.169:43068
+        : STUN
+        : RID 16: Known Protocol on Non-standard Port
+        : RID 46: Unidirectional Traffic
+        : DP: 7
+
+offline0: i4pc-------r--- UDP [OR] 35.158.183.167:443 <-- [L] 192.168.12.169:39950
+        : STUN
+        : RID 16: Known Protocol on Non-standard Port
+        : RID 46: Unidirectional Traffic
+        : DP: 7
+
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:47767
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:37970
-        : SignalCall.netify.signal
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:47767
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 35.158.122.211:443 <-- [L] 192.168.12.169:47767
-        : SignalCall.netify.signal
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:37970
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 35.158.122.211:443 <-- [L] 192.168.12.169:37970
-        : SignalCall.netify.signal
+offline0: i4pc-------rs-- UDP [OR] 172.253.121.127:19302 <-- [L] 192.168.12.169:37970
+        : Google/Call.netify.google-hangouts
         : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- UDP [OR] 35.158.122.211:3478 <-- [L] 192.168.12.169:47767
-        : SignalCall.netify.signal
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- UDP [OR] 35.158.122.211:3478 <-- [L] 192.168.12.169:47767
-        : SignalCall.netify.signal
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- UDP [OR] 35.158.122.211:3478 <-- [L] 192.168.12.169:37970
-        : SignalCall.netify.signal
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- UDP [OR] 35.158.122.211:3478 <-- [L] 192.168.12.169:37970
-        : SignalCall.netify.signal
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------r--- ICMP [OR] 35.158.122.211:0 --> [L] 192.168.12.169:0
         : ICMP
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 18.195.131.143:54054 --> [L] 192.168.12.169:47767
-        : SignalCall.netify.signal
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+offline0: i4pc----------- UDP [OR] 35.158.122.211:3478 <-- [L] 192.168.12.169:37970
+        : STUN
+        : DP: 7
+
+offline0: i4pc----------- UDP [OR] 35.158.122.211:3478 <-- [L] 192.168.12.169:47767
+        : STUN
+        : DP: 7
 
 offline0: i4pc-------r--- UDP [OR] 18.195.131.143:61498 --> [L] 192.168.12.169:47767
-        : SignalCall.netify.signal
+        : STUN
+        : RID 16: Known Protocol on Non-standard Port
+        : DP: 7
+
+offline0: i4pc-------r--- UDP [OR] 35.158.122.211:443 <-- [L] 192.168.12.169:47767
+        : STUN
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 7
+
+offline0: i4pc-------r--- UDP [OR] 35.158.122.211:443 <-- [L] 192.168.12.169:37970
+        : STUN
+        : RID 16: Known Protocol on Non-standard Port
+        : RID 46: Unidirectional Traffic
+        : DP: 7
+
+offline0: i4pc--x----r--- UDP [OR] 18.195.131.143:54054 --> [L] 192.168.12.169:47767
+        : STUN
+        : RID 16: Known Protocol on Non-standard Port
+        : DP: 6
 

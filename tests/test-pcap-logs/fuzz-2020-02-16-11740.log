@@ -263,6 +263,7 @@ offline0: i4pc-------r--- UDP [L] 10.8.64.30:29200 --> [OR] 198.226.25.53:1812
 
 offline0: i4pc-gx----r--- UDP [OR] 14.12.64.30:29200 --> [L] 198.226.25.53:3860
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -283,6 +284,7 @@ offline0: i4pc-gx----r--- 85 [L] 10.12.64.30:0 <-- [OR] 198.226.25.62:0
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 --> [OR] 198.226.25.53:1965
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -298,6 +300,7 @@ offline0: i4pc-gx----r--- DDP [L] 10.12.64.30:0 <-- [OR] 198.226.25.53:0
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 --> [OR] 198.226.25.53:1814
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -308,11 +311,13 @@ offline0: i4pc-gx----r--- IP [L] 10.12.64.30:0 --> [OR] 198.226.25.53:0
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 <-- [OR] 198.226.25.53:43028
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 --> [OR] 198.162.25.53:1810
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -328,6 +333,7 @@ offline0: i4pc-gx----r--- UDP [OR] 57.12.64.30:29200 --> [L] 198.226.25.53:28948
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 --> [OR] 198.226.25.53:1895
         : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 

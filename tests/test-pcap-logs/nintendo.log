@@ -29,7 +29,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.12.1:53 <-- [OL] 192.168.12.114:18874
         : RID 27: Suspicious DGA Domain name
         : DP: 2
 
-offline0: i4pcu------r-F- TCP [OR] 54.192.27.217:443 <-- [L] 192.168.12.114:41517
+offline0: i4pcu------r--- TCP [OR] 54.192.27.217:443 <-- [L] 192.168.12.114:41517
         : HTTP/S.netify.nintendo
         : D: d3fthpvv7fzx00.cloudfront.net H: e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com
         : V: 0x0303 CS: 0xc02f
@@ -88,13 +88,15 @@ offline0: i4pc-------r--- ICMP [OR] 151.6.184.98:0 --> [L] 192.168.12.114:0
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-gx-------- TCP [OR] 54.146.242.74:443 <-- [L] 192.168.12.114:11534
+offline0: i4pc-gx----r--- TCP [OR] 54.146.242.74:443 <-- [L] 192.168.12.114:11534
         : HTTP/S
+        : RID 56: Probing Attempt
         : DP: 2
 
 offline0: i4pc-gx----r--- UDP [OR] 52.10.205.177:34343 <-- [L] 192.168.12.114:52119
         : Unknown.netify.nintendo
         : D: g2df33d01-lp1.p.srv.nintendo.net
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -110,6 +112,7 @@ offline0: i4pc-gx-------- UDP [OR] 35.158.74.61:10025 <-- [L] 192.168.12.114:559
 offline0: i4pc-gx----r--- UDP [OR] 52.10.205.177:34343 <-- [L] 192.168.12.114:55915
         : Unknown.netify.nintendo
         : D: g2df33d01-lp1.p.srv.nintendo.net
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 
