@@ -22,14 +22,19 @@
 #include "config.h"
 #endif
 
+#include <map>
+
 #include <ndpi_protocol_ids.h>
 
+#include "nd-category.hpp"
 #include "nd-config.hpp"
-#include "nd-flow.hpp"
+#include "nd-instance.hpp"
 #include "nd-ndpi.hpp"
 #include "nd-protos.hpp"
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
+
+using namespace std;
 
 static ndpi_global_context *ndpi_ctx = nullptr;
 static NDPI_PROTOCOL_BITMASK ndpi_protos;
@@ -69,13 +74,21 @@ void nd_ndpi_global_init(void) {
     }
 
     for (auto it : ndGC.protocols) {
-        signed action = -1;
+        enum class Action : int8_t {
+            NONE = -1,
+            INCLUDE = 0,
+            EXCLUDE = 1,
+        };
+
+        Action action = Action::NONE;
+
         if (strcasecmp(it.second.c_str(), "include") == 0)
-            action = 0;
+            action = Action::INCLUDE;
         else if (strcasecmp(it.second.c_str(), "exclude") == 0)
-            action = 1;
+            action = Action::EXCLUDE;
         else continue;
 
+        map<const string, uint16_t> ids;
         uint16_t id = NDPI_PROTOCOL_UNKNOWN;
         ndProto::Id proto = ndProto::GetId(it.first);
 
@@ -85,18 +98,58 @@ void nd_ndpi_global_init(void) {
         }
         else id = ndProto::nDPI::Find(proto);
 
-        if (id == NDPI_PROTOCOL_UNKNOWN) continue;
+        if (id != NDPI_PROTOCOL_UNKNOWN)
+            ids.insert(make_pair(it.first, id));
+        else {
+            const ndInstance &ndi = ndInstance::GetInstance();
+            nd_cat_id_t cat_id = ndi.categories.LookupTag(
+              ndCategories::Type::PROTO, it.first);
+            if (cat_id == ND_CAT_UNKNOWN) continue;
 
-        switch (action) {
-        case 0:
-            NDPI_ADD_PROTOCOL_TO_BITMASK(ndpi_protos, id);
-            nd_dprintf("Enabled protocol: %s\n", it.first.c_str());
-            break;
+            for (auto &p : ndProto::Tags) {
+                if (ndi.categories.Lookup(ndCategories::Type::PROTO,
+                      static_cast<unsigned>(p.first)) == cat_id)
+                {
+                    id = ndProto::nDPI::Find(p.first);
+                    if (id == NDPI_PROTOCOL_UNKNOWN)
+                        continue;
+                    ids.insert(make_pair(
+                      it.first + ": " + p.second, id));
+                }
+            }
+        }
 
-        case 1:
-            NDPI_DEL_PROTOCOL_FROM_BITMASK(ndpi_protos, id);
-            nd_dprintf("Disabled protocol: %s\n", it.first.c_str());
-            break;
+        for (auto &i : ids) {
+            switch (action) {
+            case Action::INCLUDE:
+                NDPI_ADD_PROTOCOL_TO_BITMASK(ndpi_protos, i.second);
+                nd_dprintf(
+                  "Enabled protocol: %s (ID# %hu)\n",
+                  i.first.c_str(), i.second);
+                break;
+
+            case Action::EXCLUDE:
+                NDPI_DEL_PROTOCOL_FROM_BITMASK(ndpi_protos, i.second);
+                nd_dprintf(
+                  "Disabled protocol: %s (ID# %hu)\n",
+                  i.first.c_str(), i.second);
+                break;
+            default: break;
+            }
+        }
+
+        if (ndGC.verbosity > 4) {
+            for (auto &p : ndProto::Tags) {
+                id = ndProto::nDPI::Find(p.first);
+                if (id == NDPI_PROTOCOL_UNKNOWN) continue;
+                if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_protos, id))
+                {
+                    nd_dprintf(
+                      "Enabled dissector: %s (ID# "
+                      "%hu/%hu)\n",
+                      p.second, p.first, id);
+                }
+            }
         }
     }
 

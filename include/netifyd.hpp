@@ -59,12 +59,8 @@
 #undef HAVE_WORKING_REGEX
 #endif
 
-#define ND_MAX_HOSTNAME 256
-
 #define ND_STATS_INTERVAL \
     15  // Collect stats every N seconds
-#define ND_MAX_BACKLOG_KB \
-    2048  // Maximum upload queue size in kB
 #define ND_DETECTION_TICKS \
     1000  // Ticks-per-second (1000 = milliseconds)
 #define ND_TTL_IDLE_FLOW \
@@ -80,16 +76,9 @@
     1000  // Maximum number of DNS hint cache entries.
 #define ND_MAX_FHC_ENTRIES \
     1000  // Maximum number of flow hash cache entries.
-#define ND_FHC_PURGE_DIVISOR \
-    10  // Divisor of FHC_ENTRIES to delete on purge.
 
 #define ND_FLOW_MAP_BUCKETS \
     128  // Default number of flow map buckets.
-
-#define ND_MAX_PKT_QUEUE_KB \
-    8192  // Maximum packet queue size in kB
-#define ND_PKTQ_FLUSH_DIVISOR \
-    10  // Divisor of PKT_QUEUE_KB packets to flush.
 
 #define ND_MAX_DETECTION_PKTS \
     32  // Maximum number of packets to process.
@@ -151,8 +140,6 @@
 #define ND_AGENT_STATUS_BASE    "status.json"
 #define ND_AGENT_STATUS_PATH \
     ND_VOLATILE_STATEDIR "/" ND_AGENT_STATUS_BASE
-
-#define ND_COOKIE_JAR      ND_VOLATILE_STATEDIR "/cookie.jar"
 
 #define ND_AGENT_UUID_BASE "agent.uuid"
 #define ND_AGENT_UUID_PATH \

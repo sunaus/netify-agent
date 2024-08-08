@@ -66,12 +66,10 @@ ndGlobalConfig::ndGlobalConfig()
     capture_read_timeout(ND_CAPTURE_READ_TIMEOUT),
     h_flow(stderr), ca_capture_base(0), ca_conntrack(-1),
     ca_detection_base(0), ca_detection_cores(-1),
-    max_packet_queue(ND_MAX_PKT_QUEUE_KB * 1024),
     max_capture_length(ND_PCAP_SNAPLEN),
     flags(ndGlobalFlags::NONE), digest_app_config{ 0 },
     digest_legacy_config{ 0 }, verbosity(0),
     verbosity_flags(ndVerbosityFlags::EVENT_DPI_COMPLETE),
-    fhc_purge_divisor(ND_FHC_PURGE_DIVISOR),
     fm_buckets(ND_FLOW_MAP_BUCKETS),
     max_detection_pkts(ND_MAX_DETECTION_PKTS),
     max_dhc(ND_MAX_DHC_ENTRIES),
@@ -217,11 +215,6 @@ bool ndGlobalConfig::Load(const string &filename) {
     update_interval = (unsigned)r->GetInteger("netifyd",
       "update_interval", ND_STATS_INTERVAL);
 
-    max_packet_queue =
-      r->GetInteger("netifyd", "max_packet_queue_kb",
-        ND_MAX_PKT_QUEUE_KB) *
-      1024;
-
     ndGC_SetFlag(ndGlobalFlags::SSL_VERIFY,
       r->GetBoolean("netifyd", "ssl_verify", true));
 
@@ -317,8 +310,6 @@ bool ndGlobalConfig::Load(const string &filename) {
 
     max_fhc = (size_t)r->GetInteger("flow-hash-cache",
       "cache_size", ND_MAX_FHC_ENTRIES);
-    fhc_purge_divisor = (size_t)r->GetInteger(
-      "flow-hash-cache", "purge_divisor", ND_FHC_PURGE_DIVISOR);
 
     // DNS Cache section
     ndGC_SetFlag(ndGlobalFlags::USE_DHC,

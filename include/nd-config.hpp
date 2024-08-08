@@ -298,14 +298,12 @@ public:
     int16_t ca_conntrack;
     int16_t ca_detection_base;
     int16_t ca_detection_cores;
-    size_t max_packet_queue;
     uint16_t max_capture_length;
     ndFlags<ndGlobalFlags> flags;
     uint8_t digest_app_config[SHA1_DIGEST_LENGTH];
     uint8_t digest_legacy_config[SHA1_DIGEST_LENGTH];
     uint8_t verbosity;
     ndFlags<ndVerbosityFlags> verbosity_flags;
-    unsigned fhc_purge_divisor;
     unsigned fm_buckets;
     unsigned max_detection_pkts;
     unsigned max_dhc;
