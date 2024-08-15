@@ -339,7 +339,7 @@ OpenSUSE/15.5/x86-64:
       expand: true
     OS_REPOS:
     CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
+      --disable-nfqueue
 
 # FreeBSD Targets
 

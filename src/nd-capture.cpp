@@ -593,7 +593,7 @@ nd_process_ip:
 #endif
             return packet;
         }
-
+#if 0
         if ((frag_off & 0x3FFF) != 0) {
             // XXX: fragmented packets are not supported
             stats.pkt.frags++;
@@ -605,7 +605,7 @@ nd_process_ip:
 #endif
             return packet;
         }
-
+#endif
         if ((frag_off & 0x1FFF) != 0) {
             // XXX: fragmented packets are not supported
             stats.pkt.frags++;
