@@ -281,6 +281,7 @@ public:
     std::string path_pid_file;
     std::string path_plugins;
     std::string path_plugin_libdir;
+    std::string path_profile;
     std::string path_shared_data;
     std::string path_state_persistent;
     std::string path_state_volatile;
@@ -374,7 +375,7 @@ public:
     bool Open(const std::string &filename);
     void Close(void);
 
-    bool Load(const std::string &filename);
+    bool Load(const std::string &filename, bool profile = false);
 
     bool LoadUUID(ndUUID which, std::string &uuid);
     bool SaveUUID(ndUUID which, const std::string &uuid);

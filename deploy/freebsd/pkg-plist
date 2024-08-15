@@ -11,6 +11,7 @@
 @dir /var/run/netifyd
 @dir %%ETCDIR%%/categories.d
 @dir %%ETCDIR%%/plugins.d
+%%ETCDIR%%/profiles.d/00-default.conf
 %%ETCDIR%%/interfaces.d/10-example-pcap.conf
 lib/libnetifyd.so
 lib/libnetifyd.so.4

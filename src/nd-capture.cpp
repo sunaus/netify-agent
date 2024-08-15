@@ -129,7 +129,7 @@
 using namespace std;
 
 // Enable to log discarded packets
-// #define _ND_LOG_PKT_DISCARD 1
+#define _ND_LOG_PKT_DISCARD 1
 
 // Enable to log discarded TCP packets
 // #define _ND_LOG_PKT_DISCARD_TCP 1

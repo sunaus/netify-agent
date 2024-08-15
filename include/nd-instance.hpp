@@ -215,7 +215,7 @@ public:
 
     void CommandLineHelp(bool version_only = false);
 
-    bool AddInterface(const std::string &ifname,
+    bool AddInterface(std::string &ifname,
       ndInterfaceRole role, ndFlags<ndCaptureType> type) const;
 
     bool CheckAgentUUID(void) const;

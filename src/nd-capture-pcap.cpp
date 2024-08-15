@@ -256,6 +256,8 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
             {
                 nd_printf("%s: pcap_compile: %s\n",
                   tag.c_str(), pcap_geterr(pcap_new));
+                nd_dprintf("%s: expression: %s\n",
+                  tag.c_str(), i->second.c_str());
                 pcap_close(pcap_new);
                 return nullptr;
             }

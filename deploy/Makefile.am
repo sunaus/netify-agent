@@ -5,8 +5,8 @@
 
 SUBDIRS = debian systemd
 
-TEMPLATEFILES = functions.sh netifyd.conf netifyd.init
-TEMPLATEFILES_IN = functions.sh.in netifyd.conf.in netifyd.init.in
+TEMPLATEFILES = functions.sh netifyd.conf netifyd.init profiles.d/00-default.conf
+TEMPLATEFILES_IN = functions.sh.in netifyd.conf.in netifyd.init.in profiles.d/00-default.conf.in
 
 sharedatadir = $(datadir)/netifyd
 sharedata_DATA = functions.sh netify-apps.conf netify-proc-core-auto.json \
@@ -19,6 +19,9 @@ persistentstate_DATA = netify-apps.conf netify-categories.json
 interfacesdir = $(persistentstatedir)/interfaces.d
 interfaces_DATA = ./interfaces.d/10-example-nfq.conf \
 	./interfaces.d/10-example-tpv3.conf ./interfaces.d/10-example-pcap.conf
+
+profilesdir = $(persistentstatedir)/profiles.d
+profiles_DATA = ./profiles.d/00-default.conf
 
 autopluginsdir = $(datadir)/netifyd/plugins.d
 autoplugins_DATA = ./plugins.d/99-netify-proc-core-auto.conf \

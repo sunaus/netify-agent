@@ -164,6 +164,8 @@ exit 0
 %dir %{_localstatedir}/run/%{name}
 %dir %attr(750,root,root) %{statedir_pdata}
 %dir %attr(750,root,root) %{statedir_pdata}/categories.d
+%dir %attr(750,root,root) %{statedir_pdata}/profiles.d
+%{statedir_pdata}/profiles.d/*
 %dir %attr(750,root,root) %{statedir_pdata}/interfaces.d
 %{statedir_pdata}/interfaces.d/*
 %dir %attr(750,root,root) %{statedir_pdata}/plugins.d

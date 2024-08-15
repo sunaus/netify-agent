@@ -322,6 +322,25 @@ AlmaLinux/9/x86-64:
     CONFIGURE_EXTRA_FLAGS: >
       --enable-nfqueue
 
+OpenSUSE/15.5/x86-64:
+  extends: .opensuse_build
+  tags:
+    - docker
+  only:
+    - tags
+    - web
+  variables:
+    OS_NAME: opensuse
+    OS_VERSION: 15.5
+    OS_IMAGE: "opensuse/leap:15.5"
+    OS_ARCH: x86_64
+    OS_ARCH_PATH:
+      value: $OS_ARCH
+      expand: true
+    OS_REPOS:
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-nfqueue
+
 # FreeBSD Targets
 
 FreeBSD/13.2/x86-64:

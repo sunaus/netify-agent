@@ -118,14 +118,14 @@ void ndGlobalConfig::Close(void) {
     }
 }
 
-bool ndGlobalConfig::Load(const string &filename) {
+bool ndGlobalConfig::Load(const string &filename, bool profile) {
     struct stat extern_config_stat;
     if (stat(filename.c_str(), &extern_config_stat) < 0) {
         if (errno == ENOENT) {
             fprintf(stderr,
               "Configuration file not found: %s\n",
               filename.c_str());
-            return true;
+            return false;
         }
         fprintf(stderr,
           "Can not stat configuration file: %s: %s\n",
@@ -158,7 +158,8 @@ bool ndGlobalConfig::Load(const string &filename) {
 
     // Netify section
     ndGC_SetFlag(ndGlobalFlags::AUTO_INFORMATICS,
-      r->GetBoolean("netifyd", "auto_informatics", false));
+      r->GetBoolean("netifyd", "auto_informatics",
+        (! profile) ? false : ndGC_AUTO_INFORMATICS));
 
     if (uuid.empty())
         uuid = r->Get("netifyd", "uuid", ND_AGENT_UUID_NULL);
@@ -170,90 +171,110 @@ bool ndGlobalConfig::Load(const string &filename) {
     if (uuid_site.empty())
         uuid_site = r->Get("netifyd", "uuid_site", ND_SITE_UUID_NULL);
 
-    path_state_persistent = r->Get("netifyd",
-      "path_state_persistent", ND_PERSISTENT_STATEDIR);
+    if (! profile) {
+        path_state_persistent = r->Get("netifyd",
+          "path_state_persistent", ND_PERSISTENT_STATEDIR);
 
-    path_state_volatile = r->Get("netifyd",
-      "path_state_volatile", ND_VOLATILE_STATEDIR);
+        path_profile = r->Get("netifyd", "profile", "");
 
-    path_shared_data = r->Get("netifyd", "path_shared_data",
-      ND_SHARED_DATADIR);
+        path_state_volatile = r->Get("netifyd",
+          "path_state_volatile", ND_VOLATILE_STATEDIR);
 
-    UpdatePaths();
-    UpdateConfigVars();
+        path_shared_data = r->Get("netifyd",
+          "path_shared_data", ND_SHARED_DATADIR);
 
-    value = r->Get("netifyd", "path_pid_file",
-      path_state_volatile + "/" + ND_PID_FILE_BASE);
-    nd_expand_variables(value, path_pid_file, conf_vars);
+        UpdatePaths();
+        UpdateConfigVars();
 
-    value = r->Get("netifyd", "path_plugins",
-      path_state_persistent + "/" + ND_PLUGINS_BASE);
-    nd_expand_variables(value, path_plugins, conf_vars);
+        value = r->Get("netifyd", "path_pid_file",
+          path_state_volatile + "/" + ND_PID_FILE_BASE);
+        nd_expand_variables(value, path_pid_file, conf_vars);
 
-    value = r->Get("netifyd", "path_plugin_libdir", ND_PLUGIN_LIBDIR),
-    nd_expand_variables(value, path_plugin_libdir, conf_vars);
+        value = r->Get("netifyd", "path_plugins",
+          path_state_persistent + "/" + ND_PLUGINS_BASE);
+        nd_expand_variables(value, path_plugins, conf_vars);
 
-    value = r->Get("netifyd", "path_categories",
-      path_state_persistent + "/" + ND_CATEGORIES_BASE);
-    nd_expand_variables(value, path_categories, conf_vars);
+        value = r->Get("netifyd", "path_plugin_libdir",
+          ND_PLUGIN_LIBDIR),
+        nd_expand_variables(value, path_plugin_libdir, conf_vars);
 
-    value = r->Get("netifyd", "path_interfaces",
-      path_state_persistent + "/" + ND_INTERFACES_BASE);
-    nd_expand_variables(value, path_interfaces, conf_vars);
+        value = r->Get("netifyd", "path_categories",
+          path_state_persistent + "/" + ND_CATEGORIES_BASE);
+        nd_expand_variables(value, path_categories, conf_vars);
 
-    path_uuid = r->Get("netifyd", "path_uuid",
-      path_state_persistent + "/" + ND_AGENT_UUID_BASE);
+        value = r->Get("netifyd", "path_interfaces",
+          path_state_persistent + "/" + ND_INTERFACES_BASE);
+        nd_expand_variables(value, path_interfaces, conf_vars);
 
-    path_uuid_serial = r->Get("netifyd", "path_uuid_serial",
-      path_state_persistent + "/" + ND_AGENT_SERIAL_BASE);
+        path_uuid = r->Get("netifyd", "path_uuid",
+          path_state_persistent + "/" + ND_AGENT_UUID_BASE);
 
-    path_uuid_site = r->Get("netifyd", "path_uuid_site",
-      path_state_persistent + "/" + ND_SITE_UUID_BASE);
+        path_uuid_serial = r->Get("netifyd",
+          "path_uuid_serial",
+          path_state_persistent + "/" + ND_AGENT_SERIAL_BASE);
 
-    UpdateConfigVars();
+        path_uuid_site = r->Get("netifyd", "path_uuid_site",
+          path_state_persistent + "/" + ND_SITE_UUID_BASE);
+
+        UpdateConfigVars();
+    }
+    else path_profile.clear();
 
     update_interval = (unsigned)r->GetInteger("netifyd",
-      "update_interval", ND_STATS_INTERVAL);
+      "update_interval",
+      (! profile) ? ND_STATS_INTERVAL : update_interval);
 
     ndGC_SetFlag(ndGlobalFlags::SSL_VERIFY,
-      r->GetBoolean("netifyd", "ssl_verify", true));
+      r->GetBoolean("netifyd", "ssl_verify",
+        (! profile) ? true : ndGC_SSL_VERIFY));
 
     ndGC_SetFlag(ndGlobalFlags::SSL_USE_TLSv1,
-      r->GetBoolean("netifyd", "ssl_use_tlsv1", false));
+      r->GetBoolean("netifyd", "ssl_use_tlsv1",
+        (! profile) ? false : ndGC_SSL_USE_TLSv1));
 
     max_capture_length = (uint16_t)r->GetInteger("netifyd",
-      "max_capture_length", ND_PCAP_SNAPLEN);
+      "max_capture_length",
+      (! profile) ? ND_PCAP_SNAPLEN : max_capture_length);
 
     max_detection_pkts = (unsigned)r->GetInteger("netifyd",
-      "max_detection_pkts", ND_MAX_DETECTION_PKTS);
+      "max_detection_pkts",
+      (! profile) ? ND_MAX_DETECTION_PKTS : max_detection_pkts);
 
     ndGC_SetFlag(ndGlobalFlags::SYN_SCAN_PROTECTION,
-      r->GetBoolean("netifyd", "syn_scan_protection", false));
+      r->GetBoolean("netifyd", "syn_scan_protection",
+        (! profile) ? false : ndGC_SYN_SCAN_PROTECTION));
     ndGC_SetFlag(ndGlobalFlags::AUTO_FLOW_EXPIRY,
-      r->GetBoolean("netifyd", "auto_flow_expiry", true));
+      r->GetBoolean("netifyd", "auto_flow_expiry",
+        (! profile) ? true : ndGC_AUTO_FLOW_EXPIRY));
 
     ttl_idle_flow = (unsigned)r->GetInteger("netifyd",
-      "ttl_idle_flow", ND_TTL_IDLE_FLOW);
+      "ttl_idle_flow",
+      (! profile) ? ND_TTL_IDLE_FLOW : ttl_idle_flow);
     ttl_idle_tcp_flow = (unsigned)r->GetInteger("netifyd",
-      "ttl_idle_tcp_flow", ND_TTL_IDLE_TCP_FLOW);
+      "ttl_idle_tcp_flow",
+      (! profile) ? ND_TTL_IDLE_TCP_FLOW : ttl_idle_flow);
 
-    max_flows = (size_t)r->GetInteger("netifyd", "max_flows", 0);
+    max_flows = (size_t)r->GetInteger("netifyd",
+      "max_flows", (! profile) ? 0 : max_flows);
 
     ndGC_SetFlag(ndGlobalFlags::SOFT_DISSECTORS,
-      r->GetBoolean("netifyd", "soft_dissectors", true));
+      r->GetBoolean("netifyd", "soft_dissectors",
+        (! profile) ? true : ndGC_SOFT_DISSECTORS));
 
     ndGC_SetFlag(ndGlobalFlags::DOTD_CATEGORIES,
-      r->GetBoolean("netifyd", "dotd_categories", true));
+      r->GetBoolean("netifyd", "dotd_categories",
+        (! profile) ? true : ndGC_DOTD_CATEGORIES));
 
     fm_buckets = (unsigned)r->GetInteger("netifyd",
-      "flow_map_buckets", ND_FLOW_MAP_BUCKETS);
+      "flow_map_buckets",
+      (! profile) ? ND_FLOW_MAP_BUCKETS : fm_buckets);
 
     ndGC_SetFlag(ndGlobalFlags::USE_GETIFADDRS,
       r->GetBoolean("netifyd", "use_getifaddrs",
 #if defined(__FreeBSD__)
-        true
+        (! profile) ? true : ndGC_USE_GETIFADDRS
 #else
-        false
+        (! profile) ? false : ndGC_USE_GETIFADDRS
 #endif
         ));
 
@@ -269,7 +290,8 @@ bool ndGlobalConfig::Load(const string &filename) {
 
     // Capture defaults section
     capture_read_timeout = (unsigned)r->GetInteger(
-      "capture-defaults", "read_timeout", ND_CAPTURE_READ_TIMEOUT);
+      "capture-defaults", "read_timeout",
+      (! profile) ? ND_CAPTURE_READ_TIMEOUT : capture_read_timeout);
     capture_type = LoadCaptureType(reader,
       "capture-defaults", "capture_type");
 
@@ -338,7 +360,7 @@ bool ndGlobalConfig::Load(const string &filename) {
         string mac_addr = r->Get("privacy-filter", os.str(),
           "");
 
-        if (mac_addr.size() == 0) break;
+        if (mac_addr.empty()) break;
 
         uint8_t mac[ETH_ALEN];
         if (nd_string_to_mac(mac_addr, mac)) {
@@ -354,7 +376,7 @@ bool ndGlobalConfig::Load(const string &filename) {
         string host_addr = r->Get("privacy-filter",
           os.str(), "");
 
-        if (host_addr.size() == 0) break;
+        if (host_addr.empty()) break;
 
         struct addrinfo hints;
         struct addrinfo *result, *rp;
@@ -392,8 +414,7 @@ bool ndGlobalConfig::Load(const string &filename) {
         string replace = r->Get("privacy-filter", os.str(),
           "");
 
-        if (search.size() == 0 || replace.size() == 0)
-            break;
+        if (search.empty() || replace.empty()) break;
 
         try {
             regex *rx_search = new regex(search,
@@ -419,7 +440,7 @@ bool ndGlobalConfig::Load(const string &filename) {
     ndGC_SetFlag(ndGlobalFlags::USE_NAPI,
       r->GetBoolean("netify-api", "enable", false));
     ttl_napi_tick = r->GetInteger("netify-api",
-      "tick_interval", ND_TTL_API_TICK);
+      "update_tick", ND_TTL_API_TICK);
     ttl_napi_update = r->GetInteger("netify-api",
       "update_interval", ND_TTL_API_UPDATE);
     url_napi_bootstrap = r->Get("netify-api",
@@ -438,6 +459,11 @@ bool ndGlobalConfig::Load(const string &filename) {
             if (! AddPlugin(path_plugins + "/" + f))
                 return false;
         }
+    }
+
+    if (! path_profile.empty()) {
+        Close();
+        return Load(path_profile, true);
     }
 
     return true;
@@ -587,7 +613,7 @@ bool ndGlobalConfig::ForceReset(void) {
           "be completed.\n");
     }
 
-    if (result.size())
+    if (! result.empty())
         fprintf(stdout, "%s", result.c_str());
 
     if (rc == 0) fprintf(stdout, "Reset successful.\n");
@@ -851,18 +877,18 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
             os << "address[" << i << "]";
             string addr = r->Get(s, os.str(), "");
 
-            if (addr.size() == 0) break;
+            if (addr.empty()) break;
 
             AddInterfaceAddress(iface, addr);
         }
 
         string peer = r->Get(s, "peer", "");
 
-        if (peer.size()) AddInterfacePeer(iface, peer);
+        if (! peer.empty()) AddInterfacePeer(iface, peer);
 
         string filter = r->Get(s, "filter", "");
 
-        if (filter.size())
+        if (! filter.empty())
             AddInterfaceFilter(iface, filter);
     }
 
@@ -872,7 +898,7 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
 void ndGlobalConfig::ClearInterfaces(bool cmdline_entries) {
     list<string> clear_list;
 
-    if (interfaces.size()) {
+    if (! interfaces.empty()) {
         for (auto &r : interfaces) {
             for (auto &i : r.second) {
                 if (((i.second.first & ndCaptureType::CMDLINE) ==

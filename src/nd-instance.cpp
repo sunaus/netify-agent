@@ -430,10 +430,10 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             ndGC.AddInterfaceAddress(last_iface, optarg);
             break;
         case 'E':
-            if (! AddInterface(optarg, ndInterfaceRole::WAN,
+            last_iface = optarg;
+            if (! AddInterface(last_iface, ndInterfaceRole::WAN,
                   ndCaptureType::PCAP | ndCaptureType::CMDLINE))
                 return ndEnumCast(ConfigResult, INVALID_INTERFACE);
-            last_iface = optarg;
             break;
         case 'F':
             if (last_iface.size() == 0) {
@@ -444,10 +444,10 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             ndGC.AddInterfaceFilter(last_iface, optarg);
             break;
         case 'I':
-            if (! AddInterface(optarg, ndInterfaceRole::LAN,
+            last_iface = optarg;
+            if (! AddInterface(last_iface, ndInterfaceRole::LAN,
                   ndCaptureType::PCAP | ndCaptureType::CMDLINE))
                 return ndEnumCast(ConfigResult, INVALID_INTERFACE);
-            last_iface = optarg;
             break;
         case 'i':
             ndGC.update_interval = atoi(optarg);
@@ -1236,7 +1236,7 @@ void ndInstance::CommandLineHelp(bool version_only) {
     }
 }
 
-bool ndInstance::AddInterface(const string &ifname,
+bool ndInstance::AddInterface(string &ifname,
   ndInterfaceRole role, ndFlags<ndCaptureType> type) const {
     static unsigned pcap_id = 0;
 
@@ -1247,10 +1247,10 @@ bool ndInstance::AddInterface(const string &ifname,
         nd_config_pcap *pcap = new nd_config_pcap;
 
         pcap->capture_filename = ifname;
-        string iface("offline");
-        iface.append(to_string(pcap_id++));
+        ifname = "offline";
+        ifname.append(to_string(pcap_id++));
 
-        return ndGC.AddInterface(iface, role,
+        return ndGC.AddInterface(ifname, role,
           ndCaptureType::PCAP_OFFLINE | ndCaptureType::CMDLINE,
           static_cast<void *>(pcap));
     }

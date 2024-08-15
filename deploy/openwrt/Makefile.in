@@ -113,6 +113,8 @@ define Package/@PACKAGE_TARNAME@/install
 	$(if $(CONFIG_NETIFYD_BUILD_SHARED_LIBRARY),$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib@PACKAGE_TARNAME@.so* $(1)/usr/lib,)
 	$(INSTALL_DIR) $(1)/etc/netifyd
 	$(INSTALL_DIR) $(1)/etc/netifyd/categories.d
+	$(INSTALL_DIR) $(1)/etc/netifyd/profiles.d
+	$(CP) $(PKG_INSTALL_DIR)/etc/netifyd/profiles.d/* $(1)/etc/netifyd/profiles.d
 	$(INSTALL_DIR) $(1)/etc/netifyd/interfaces.d
 	$(CP) $(PKG_INSTALL_DIR)/etc/netifyd/interfaces.d/* $(1)/etc/netifyd/interfaces.d
 	$(INSTALL_DIR) $(1)/etc/netifyd/plugins.d
