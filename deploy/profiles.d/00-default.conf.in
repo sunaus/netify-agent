@@ -1,0 +1,74 @@
+# Default Netify Agent Configuration Profile
+#
+# Copy this file to @persistentstatedir@/profiles.d/NN-NAME.conf to create
+# a custom configuration profile.
+############################################################################
+
+[netifyd]
+auto_flow_expiry = yes
+flow_map_buckets = 128
+load_domains = yes
+max_capture_length = 65535
+max_detection_pkts = 32
+max_flows = 0
+soft_dissectors = yes
+ssl_use_tlsv1 = no
+ssl_verify = yes
+
+# Don't track TCP flows until a SYN+ACK has been captured.
+syn_scan_protection = no
+ttl_idle_flow = 30
+ttl_idle_tcp_flow = 300
+update_interval = 15
+use_getifaddrs = false
+
+# Capture Defaults
+############################################################################
+
+[capture-defaults]
+# Default capture method for -I and -E command-line options.
+# Valid types include: pcap, tpv3
+capture_type = pcap
+read_timeout = 500
+
+# Flow Hash Cache
+############################################################################
+
+[flow-hash-cache]
+enable = yes
+save = persistent
+cache_size = 1000
+
+# DNS Hint Cache
+############################################################################
+
+[dns-hint-cache]
+enable = yes
+partial_lookups = no
+save = persistent
+cache_size = 1000
+
+# Privacy Filter
+############################################################################
+
+[privacy-filter]
+private_external_addresses = no
+
+# Netify Informatics/API Integration
+# https://www.netify.ai/products/netify-informatics
+############################################################################
+
+[netify-api]
+# Enable/disable API integration with Netify Informatics
+enable = no
+update_tick = 30
+update_interval = 86400
+
+# Protocol Dissector Options
+############################################################################
+
+[protocols]
+# Enable all DPI protocol dissectors
+all=include
+
+# vim: set ft=dosini :
