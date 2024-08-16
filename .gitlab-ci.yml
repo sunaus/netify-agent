@@ -338,7 +338,7 @@ OpenSUSE/15.5/x86-64:
       value: $OS_ARCH
       expand: true
     OS_REPOS:
-    OS_EXTRA_PACKAGES: gperftools-devel
+    OS_EXTRA_PACKAGES: systemd gperftools-devel
     CONFIGURE_EXTRA_FLAGS: >
       --disable-nfqueue
 
