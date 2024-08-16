@@ -16,6 +16,7 @@ include:
       - /gitlab/agent/debian-variables.yml
       - /gitlab/agent/freebsd-variables.yml
       - /gitlab/agent/rhel-variables.yml
+      - /gitlab/agent/opensuse-variables.yml
       - /gitlab/agent/build-templates.yml
       - /gitlab/agent/test-templates.yml
       - /gitlab/agent/variants-templates.yml
