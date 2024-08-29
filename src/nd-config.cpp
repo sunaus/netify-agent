@@ -289,69 +289,78 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
       "detection_cores", this->ca_detection_cores);
 
     // Capture defaults section
-    capture_read_timeout = (unsigned)r->GetInteger(
-      "capture-defaults", "read_timeout",
-      (! profile) ? ND_CAPTURE_READ_TIMEOUT : capture_read_timeout);
-    capture_type = LoadCaptureType(reader,
-      "capture-defaults", "capture_type");
+    if (! profile) {
+        capture_read_timeout = (unsigned)r->GetInteger(
+          "capture-defaults", "read_timeout", ND_CAPTURE_READ_TIMEOUT);
+        capture_type = LoadCaptureType(reader,
+          "capture-defaults", "capture_type");
 
-    if (capture_type == ndCaptureType::NONE) {
+        if (capture_type == ndCaptureType::NONE) {
 #if defined(_ND_ENABLE_LIBPCAP)
-        capture_type = ndCaptureType::PCAP;
+            capture_type = ndCaptureType::PCAP;
 #elif defined(_ND_ENABLE_TPACKETV3)
-        capture_type = ndCaptureType::TPV3;
+            capture_type = ndCaptureType::TPV3;
 #elif defined(_ND_ENABLE_NFQUEUE)
-        capture_type = ndCaptureType::TPV3;
+            capture_type = ndCaptureType::TPV3;
 #else
-        fprintf(stderr,
-          "Not default capture type could be "
-          "determined.\n");
-        return false;
+            fprintf(stderr,
+              "Not default capture type could be "
+              "determined.\n");
+            return false;
 #endif
-    }
+        }
 
-    // TPv3 capture defaults section
-    ndFlags<ndCaptureType> ct = ndCaptureType::TPV3;
-    if (
-      ! LoadCaptureSettings(reader, "capture-defaults-tpv3",
-        ct, static_cast<void *>(&tpv3_defaults)))
-        return false;
+        // TPv3 capture defaults section
+        ndFlags<ndCaptureType> ct = ndCaptureType::TPV3;
+        if (! LoadCaptureSettings(reader,
+              "capture-defaults-tpv3", ct,
+              static_cast<void *>(&tpv3_defaults)))
+            return false;
+    }
 
     // Flow Hash Cache section
     ndGC_SetFlag(ndGlobalFlags::USE_FHC,
-      r->GetBoolean("flow-hash-cache", "enable", true));
+      r->GetBoolean("flow-hash-cache", "enable",
+        (! profile) ? true : ndGC_USE_FHC));
 
-    string fhc_storage_mode = r->Get("flow-hash-cache",
-      "save", "persistent");
+    if (! profile) {
+        string fhc_storage_mode = r->Get("flow-hash-cache",
+          "save", "persistent");
 
-    if (fhc_storage_mode == "persistent")
-        fhc_storage = ndFHCStorage::PERSISTENT;
-    else if (fhc_storage_mode == "volatile")
-        fhc_storage = ndFHCStorage::VOLATILE;
-    else fhc_storage = ndFHCStorage::DISABLED;
+        if (fhc_storage_mode == "persistent")
+            fhc_storage = ndFHCStorage::PERSISTENT;
+        else if (fhc_storage_mode == "volatile")
+            fhc_storage = ndFHCStorage::VOLATILE;
+        else fhc_storage = ndFHCStorage::DISABLED;
+    }
 
     max_fhc = (size_t)r->GetInteger("flow-hash-cache",
-      "cache_size", ND_MAX_FHC_ENTRIES);
+      "cache_size", (! profile) ? ND_MAX_FHC_ENTRIES : max_fhc);
 
     // DNS Cache section
     ndGC_SetFlag(ndGlobalFlags::USE_DHC,
-      r->GetBoolean("dns-hint-cache", "enable", true));
+      r->GetBoolean("dns-hint-cache", "enable",
+        (! profile) ? true : ndGC_USE_DHC));
     ndGC_SetFlag(ndGlobalFlags::DHC_PARTIAL_LOOKUPS,
-      r->GetBoolean("dns-hint-cache", "partial_lookups", false));
+      r->GetBoolean("dns-hint-cache", "partial_lookups",
+        (! profile) ? false : ndGC_DHC_PARTIAL_LOOKUPS));
 
-    string dhc_storage_mode = r->Get("dns-hint-cache",
-      "save", "persistent");
+    if (! profile) {
+        string dhc_storage_mode = r->Get("dns-hint-cache",
+          "save", "persistent");
 
-    if (dhc_storage_mode == "persistent" ||
-      dhc_storage_mode == "1" || dhc_storage_mode == "yes" ||
-      dhc_storage_mode == "true")
-        dhc_storage = ndDHCStorage::PERSISTENT;
-    else if (dhc_storage_mode == "volatile")
-        dhc_storage = ndDHCStorage::VOLATILE;
-    else dhc_storage = ndDHCStorage::DISABLED;
+        if (dhc_storage_mode == "persistent" ||
+          dhc_storage_mode == "1" ||
+          dhc_storage_mode == "yes" ||
+          dhc_storage_mode == "true")
+            dhc_storage = ndDHCStorage::PERSISTENT;
+        else if (dhc_storage_mode == "volatile")
+            dhc_storage = ndDHCStorage::VOLATILE;
+        else dhc_storage = ndDHCStorage::DISABLED;
+    }
 
     max_dhc = (unsigned)r->GetInteger("dns-hint-cache",
-      "cache-size", ND_MAX_DHC_ENTRIES);
+      "cache-size", (! profile) ? ND_MAX_DHC_ENTRIES : max_dhc);
 
     // Privacy filter section
     for (int i = 0;; i++) {
@@ -434,36 +443,50 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 
     ndGC_SetFlag(ndGlobalFlags::PRIVATE_EXTADDR,
       r->GetBoolean("privacy-filter",
-        "private_external_addresses", false));
+        "private_external_addresses",
+        (! profile) ? false : ndGC_PRIVATE_EXTADDR));
 
     // Netify API section
     ndGC_SetFlag(ndGlobalFlags::USE_NAPI,
-      r->GetBoolean("netify-api", "enable", false));
+      r->GetBoolean("netify-api", "enable",
+        (! profile) ? false : ndGC_USE_NAPI));
     ttl_napi_tick = r->GetInteger("netify-api",
-      "update_tick", ND_TTL_API_TICK);
+      "update_tick", (! profile) ? ND_TTL_API_TICK : ttl_napi_tick);
     ttl_napi_update = r->GetInteger("netify-api",
-      "update_interval", ND_TTL_API_UPDATE);
+      "update_interval",
+      (! profile) ? ND_TTL_API_UPDATE : ttl_napi_update);
     url_napi_bootstrap = r->Get("netify-api",
-      "bootstrap_url", ND_URL_API_BOOTSTRAP);
+      "bootstrap_url",
+      (! profile) ? ND_URL_API_BOOTSTRAP : url_napi_bootstrap);
     napi_vendor = r->Get("netify-api", "vendor", ND_API_VENDOR);
     napi_tls_verify = r->GetBoolean("netify-api",
-      "tls_verify", true);
+      "tls_verify", (! profile) ? true : napi_tls_verify);
 
     // Protocols section
-    r->GetSection("protocols", protocols);
+    Protocols p;
+    r->GetSection("protocols", p);
 
-    // Add plugins
-    vector<string> files;
-    if (nd_scan_dotd(path_plugins, files)) {
-        for (auto &f : files) {
-            if (! AddPlugin(path_plugins + "/" + f))
-                return false;
-        }
+    for (auto &i : p) {
+        auto r = protocols.insert(i);
+        if (r.second) continue;
+        protocols[i.first] = i.second;
     }
 
-    if (! path_profile.empty()) {
-        Close();
-        return Load(path_profile, true);
+    if (! profile) {
+        // Add plugins
+        vector<string> files;
+        if (nd_scan_dotd(path_plugins, files)) {
+            for (auto &f : files) {
+                if (! AddPlugin(path_plugins + "/" + f))
+                    return false;
+            }
+        }
+
+        // Optionally, load profile configuration...
+        if (! path_profile.empty()) {
+            Close();
+            return Load(path_profile, true);
+        }
     }
 
     return true;
