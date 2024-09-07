@@ -157,119 +157,121 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 
     // Netify section
     ndGC_SetFlag(ndGlobalFlags::AUTO_INFORMATICS,
-      r->GetBoolean("netifyd", "auto_informatics",
+      r->GetBoolean(ND_NAME_SHORT, "auto_informatics",
         (! profile) ? false : ndGC_AUTO_INFORMATICS));
 
     if (uuid.empty())
-        uuid = r->Get("netifyd", "uuid", ND_AGENT_UUID_NULL);
+        uuid = r->Get(ND_NAME_SHORT, "uuid", ND_AGENT_UUID_NULL);
 
     if (uuid_serial.empty())
-        uuid_serial = r->Get("netifyd", "uuid_serial",
+        uuid_serial = r->Get(ND_NAME_SHORT, "uuid_serial",
           ND_AGENT_SERIAL_NULL);
 
     if (uuid_site.empty())
-        uuid_site = r->Get("netifyd", "uuid_site", ND_SITE_UUID_NULL);
+        uuid_site = r->Get(ND_NAME_SHORT, "uuid_site",
+          ND_SITE_UUID_NULL);
 
     if (! profile) {
-        path_state_persistent = r->Get("netifyd",
+        path_state_persistent = r->Get(ND_NAME_SHORT,
           "path_state_persistent", ND_PERSISTENT_STATEDIR);
 
-        path_profile = r->Get("netifyd", "profile", "");
+        path_profile = r->Get(ND_NAME_SHORT, "profile", "");
 
-        path_state_volatile = r->Get("netifyd",
+        path_state_volatile = r->Get(ND_NAME_SHORT,
           "path_state_volatile", ND_VOLATILE_STATEDIR);
 
-        path_shared_data = r->Get("netifyd",
+        path_shared_data = r->Get(ND_NAME_SHORT,
           "path_shared_data", ND_SHARED_DATADIR);
 
         UpdatePaths();
         UpdateConfigVars();
 
-        value = r->Get("netifyd", "path_pid_file",
+        value = r->Get(ND_NAME_SHORT, "path_pid_file",
           path_state_volatile + "/" + ND_PID_FILE_BASE);
         nd_expand_variables(value, path_pid_file, conf_vars);
 
-        value = r->Get("netifyd", "path_plugins",
+        value = r->Get(ND_NAME_SHORT, "path_plugins",
           path_state_persistent + "/" + ND_PLUGINS_BASE);
         nd_expand_variables(value, path_plugins, conf_vars);
 
-        value = r->Get("netifyd", "path_plugin_libdir",
+        value = r->Get(ND_NAME_SHORT, "path_plugin_libdir",
           ND_PLUGIN_LIBDIR),
         nd_expand_variables(value, path_plugin_libdir, conf_vars);
 
-        value = r->Get("netifyd", "path_categories",
+        value = r->Get(ND_NAME_SHORT, "path_categories",
           path_state_persistent + "/" + ND_CATEGORIES_BASE);
         nd_expand_variables(value, path_categories, conf_vars);
 
-        value = r->Get("netifyd", "path_interfaces",
+        value = r->Get(ND_NAME_SHORT, "path_interfaces",
           path_state_persistent + "/" + ND_INTERFACES_BASE);
         nd_expand_variables(value, path_interfaces, conf_vars);
 
-        path_uuid = r->Get("netifyd", "path_uuid",
+        path_uuid = r->Get(ND_NAME_SHORT, "path_uuid",
           path_state_persistent + "/" + ND_AGENT_UUID_BASE);
 
-        path_uuid_serial = r->Get("netifyd",
+        path_uuid_serial = r->Get(ND_NAME_SHORT,
           "path_uuid_serial",
           path_state_persistent + "/" + ND_AGENT_SERIAL_BASE);
 
-        path_uuid_site = r->Get("netifyd", "path_uuid_site",
+        path_uuid_site = r->Get(ND_NAME_SHORT,
+          "path_uuid_site",
           path_state_persistent + "/" + ND_SITE_UUID_BASE);
 
         UpdateConfigVars();
     }
     else path_profile.clear();
 
-    update_interval = (unsigned)r->GetInteger("netifyd",
+    update_interval = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "update_interval",
       (! profile) ? ND_STATS_INTERVAL : update_interval);
 
     ndGC_SetFlag(ndGlobalFlags::SSL_VERIFY,
-      r->GetBoolean("netifyd", "ssl_verify",
+      r->GetBoolean(ND_NAME_SHORT, "ssl_verify",
         (! profile) ? true : ndGC_SSL_VERIFY));
 
     ndGC_SetFlag(ndGlobalFlags::SSL_USE_TLSv1,
-      r->GetBoolean("netifyd", "ssl_use_tlsv1",
+      r->GetBoolean(ND_NAME_SHORT, "ssl_use_tlsv1",
         (! profile) ? false : ndGC_SSL_USE_TLSv1));
 
-    max_capture_length = (uint16_t)r->GetInteger("netifyd",
+    max_capture_length = (uint16_t)r->GetInteger(ND_NAME_SHORT,
       "max_capture_length",
       (! profile) ? ND_PCAP_SNAPLEN : max_capture_length);
 
-    max_detection_pkts = (unsigned)r->GetInteger("netifyd",
+    max_detection_pkts = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "max_detection_pkts",
       (! profile) ? ND_MAX_DETECTION_PKTS : max_detection_pkts);
 
     ndGC_SetFlag(ndGlobalFlags::SYN_SCAN_PROTECTION,
-      r->GetBoolean("netifyd", "syn_scan_protection",
+      r->GetBoolean(ND_NAME_SHORT, "syn_scan_protection",
         (! profile) ? false : ndGC_SYN_SCAN_PROTECTION));
     ndGC_SetFlag(ndGlobalFlags::AUTO_FLOW_EXPIRY,
-      r->GetBoolean("netifyd", "auto_flow_expiry",
+      r->GetBoolean(ND_NAME_SHORT, "auto_flow_expiry",
         (! profile) ? true : ndGC_AUTO_FLOW_EXPIRY));
 
-    ttl_idle_flow = (unsigned)r->GetInteger("netifyd",
+    ttl_idle_flow = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "ttl_idle_flow",
       (! profile) ? ND_TTL_IDLE_FLOW : ttl_idle_flow);
-    ttl_idle_tcp_flow = (unsigned)r->GetInteger("netifyd",
+    ttl_idle_tcp_flow = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "ttl_idle_tcp_flow",
       (! profile) ? ND_TTL_IDLE_TCP_FLOW : ttl_idle_flow);
 
-    max_flows = (size_t)r->GetInteger("netifyd",
+    max_flows = (size_t)r->GetInteger(ND_NAME_SHORT,
       "max_flows", (! profile) ? 0 : max_flows);
 
     ndGC_SetFlag(ndGlobalFlags::SOFT_DISSECTORS,
-      r->GetBoolean("netifyd", "soft_dissectors",
+      r->GetBoolean(ND_NAME_SHORT, "soft_dissectors",
         (! profile) ? true : ndGC_SOFT_DISSECTORS));
 
     ndGC_SetFlag(ndGlobalFlags::DOTD_CATEGORIES,
-      r->GetBoolean("netifyd", "dotd_categories",
+      r->GetBoolean(ND_NAME_SHORT, "dotd_categories",
         (! profile) ? true : ndGC_DOTD_CATEGORIES));
 
-    fm_buckets = (unsigned)r->GetInteger("netifyd",
+    fm_buckets = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "flow_map_buckets",
       (! profile) ? ND_FLOW_MAP_BUCKETS : fm_buckets);
 
     ndGC_SetFlag(ndGlobalFlags::USE_GETIFADDRS,
-      r->GetBoolean("netifyd", "use_getifaddrs",
+      r->GetBoolean(ND_NAME_SHORT, "use_getifaddrs",
 #if defined(__FreeBSD__)
         (! profile) ? true : ndGC_USE_GETIFADDRS
 #else

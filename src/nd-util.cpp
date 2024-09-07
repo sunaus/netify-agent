@@ -669,7 +669,7 @@ void nd_generate_uuid(string &uuid) {
 }
 
 const char *nd_get_version(void) {
-    return PACKAGE_VERSION;
+    return ND_VERSION_STR;
 }
 
 const string &nd_get_version_and_features(void) {
@@ -683,7 +683,7 @@ const string &nd_get_version_and_features(void) {
         nd_os_detect(os);
 
         ostringstream ident;
-        ident << PACKAGE_NAME << "/" << GIT_RELEASE << " (" << os
+        ident << ND_NAME << "/" << GIT_RELEASE << " (" << os
               << "; " << _ND_HOST_OS << "; " << _ND_HOST_CPU;
 
         if (ndGC_USE_CONNTRACK) ident << "; conntrack";

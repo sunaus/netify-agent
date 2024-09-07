@@ -72,8 +72,8 @@ ndInstanceStatus::ndInstanceStatus()
 
 ndInstance::ndInstance(const string &tag)
   : ndThread(tag, -1, true),
-    tag(tag.empty() ? PACKAGE_TARNAME : tag),
-    self(PACKAGE_TARNAME), conf_filename(ND_CONF_FILE_NAME) {
+    tag(tag.empty() ? ND_NAME_SHORT : tag),
+    self(ND_NAME_SHORT), conf_filename(ND_CONF_FILE_NAME) {
 }
 
 ndInstance::~ndInstance() {
@@ -1226,10 +1226,11 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "the number of detection (DPI) threads to "
           "start.\n"
 
-          "\nSee netifyd(8) and netifyd.conf(5) for "
+          "\nSee %s(8) and %s.conf(5) for "
           "further options.\n",
           ND_CONF_FILE_NAME, ND_CONF_LEGACY_PATH,
-          ndGC.path_uuid.c_str(), ndGC.path_uuid_site.c_str());
+          ndGC.path_uuid.c_str(), ndGC.path_uuid_site.c_str(),
+          ND_NAME_SHORT, ND_NAME_SHORT);
     }
 }
 
@@ -1279,7 +1280,7 @@ bool ndInstance::SaveAgentStatus(const ndCaptureThreads &threads,
 
     try {
         jstatus["type"] = "agent_status";
-        jstatus["agent_version"] = PACKAGE_VERSION;
+        jstatus["agent_version"] = ND_VERSION;
 
         apps.Encode(jstatus);
         plugins.Encode(jstatus);
@@ -1497,8 +1498,8 @@ bool ndInstance::DisplayAgentStatus(void) {
               "  %s To generate a new one, run the "
               "following command:\n",
               ndTerm::Icon::NOTE);
-            fprintf(stdout, "  %s # netifyd --provision\n",
-              ndTerm::Icon::NOTE);
+            fprintf(stdout, "  %s # %s --provision\n",
+              ND_NAME_SHORT, ndTerm::Icon::NOTE);
         }
         else {
             fprintf(stdout, "%s%s%s agent UUID: %s\n",

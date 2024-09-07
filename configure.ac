@@ -6,7 +6,7 @@ m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
 
 AC_PREREQ([2.69])
-AC_INIT([Netify Agent], [5.1.2],
+AC_INIT([Netify Agent], [m4_esyscmd_s([head -n 1 VERSION])],
     [https://gitlab.com/netify.ai/public/netify-agent/issues],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
@@ -418,6 +418,9 @@ AC_SUBST([GIT_SOURCE_URL], [https://gitlab.com/netify.ai/public/netify-agent.git
 
 # Defines substitution for pkg-config
 AC_SUBST([ND_DEFINES], [$ND_DEFINES])
+
+# Define hex version
+AC_SUBST([ND_VERSION], [m4_esyscmd_s([tail -n 1 VERSION])]])
 
 # Output files
 AC_CONFIG_FILES([deploy/openwrt/Makefile deploy/openwrt/files/netifyd.init \
