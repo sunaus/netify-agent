@@ -16,6 +16,7 @@ include:
       - /gitlab/agent/debian-variables.yml
       - /gitlab/agent/freebsd-variables.yml
       - /gitlab/agent/rhel-variables.yml
+      - /gitlab/agent/opensuse-variables.yml
       - /gitlab/agent/build-templates.yml
       - /gitlab/agent/test-templates.yml
       - /gitlab/agent/variants-templates.yml
@@ -321,6 +322,26 @@ AlmaLinux/9/x86-64:
     OS_REPOS: --enablerepo=crb
     CONFIGURE_EXTRA_FLAGS: >
       --enable-nfqueue
+
+OpenSUSE/15.5/x86-64:
+  extends: .opensuse_build
+  tags:
+    - docker
+  only:
+    - tags
+    - web
+  variables:
+    OS_NAME: opensuse
+    OS_VERSION: 15.5
+    OS_IMAGE: "opensuse/leap:15.5"
+    OS_ARCH: x86_64
+    OS_ARCH_PATH:
+      value: $OS_ARCH
+      expand: true
+    OS_REPOS:
+    OS_EXTRA_PACKAGES: systemd gperftools-devel flex bison
+    CONFIGURE_EXTRA_FLAGS: >
+      --disable-nfqueue
 
 # FreeBSD Targets
 

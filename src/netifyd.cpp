@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Exception while setting locale.\n");
     }
 
-    openlog(PACKAGE_TARNAME,
+    openlog(ND_NAME_SHORT,
       LOG_NDELAY | LOG_PID | LOG_PERROR, LOG_DAEMON);
 
     nd_seed_rng();

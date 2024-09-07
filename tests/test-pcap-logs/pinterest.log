@@ -2,7 +2,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.pinterest
         : H: www.pinterest.fr
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: www.pinterest.fr
+        : TLS/SNI: www.pinterest.fr TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 13
@@ -11,7 +11,7 @@ offline0: i6pcu------r--- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38512
         : HTTP/S.netify.pinterest
         : H: s.pinimg.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: s.pinimg.com
+        : TLS/SNI: s.pinimg.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -20,7 +20,7 @@ offline0: i6pcu------r-F- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38518
         : HTTP/S.netify.pinterest
         : H: s.pinimg.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: s.pinimg.com
+        : TLS/SNI: s.pinimg.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -29,7 +29,7 @@ offline0: i6pcu------r-F- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38522
         : HTTP/S.netify.pinterest
         : H: s.pinimg.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: s.pinimg.com
+        : TLS/SNI: s.pinimg.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -38,7 +38,7 @@ offline0: i6pcu------r-F- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38516
         : HTTP/S.netify.pinterest
         : H: s.pinimg.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: s.pinimg.com
+        : TLS/SNI: s.pinimg.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 13
@@ -47,7 +47,7 @@ offline0: i6pcu------r-F- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38514
         : HTTP/S.netify.pinterest
         : H: s.pinimg.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: s.pinimg.com
+        : TLS/SNI: s.pinimg.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 11
@@ -56,7 +56,7 @@ offline0: i6pcu------r-F- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38520
         : HTTP/S.netify.pinterest
         : H: s.pinimg.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: s.pinimg.com
+        : TLS/SNI: s.pinimg.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -79,7 +79,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:7854:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.pinterest
         : H: accounts.pinterest.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: accounts.pinterest.com
+        : TLS/SNI: accounts.pinterest.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 14
@@ -130,7 +130,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:816::200a:443 <-- [L] 2a01:cb0
 
 offline0: i6pc----------- TCP [OR] 2a00:1450:4007:805::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:43562
         : HTTP/S.netify.google
-        : DP: 5
+        : DP: 15
 
 offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:816::200d:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40894
         : HTTP/S.netify.google-authentication
@@ -143,7 +143,7 @@ offline0: i6pcu------r--- TCP [OR] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38546
         : HTTP/S.netify.pinterest
         : H: assets.pinterest.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: assets.pinterest.com
+        : TLS/SNI: assets.pinterest.com TLS/CN: pinterest.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Pinterest, Inc., CN=*.pinterest.com
         : RID 30: TLS Certificate Expired
         : DP: 11

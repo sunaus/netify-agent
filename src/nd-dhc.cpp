@@ -217,8 +217,11 @@ void ndDNSHintCache::Save(void) const {
 
     for (auto &i : kvmap) {
         string digest;
-        nd_sha1_to_string((const uint8_t *)i.first.c_str(), digest);
+        ndDigestDynamic digest_bin(i.first.begin(), i.first.end());
+        nd_sha1_to_string(digest_bin, digest);
+
         ofs << "\"" << i.second.first << "\"," << digest << endl;
+
         if (ofs.good()) saved++;
         else {
             nd_dprintf(

@@ -3,12 +3,11 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.105:54988
         : H: weibo.com
         : DP: 2
 
-offline0: i4pc-------r-F- TCP [OR] 114.134.80.162:80 <-- [L] 192.168.1.105:59119
+offline0: i4pc---------F- TCP [OR] 114.134.80.162:80 <-- [L] 192.168.1.105:59119
         : HTTP.netify.weibo
         : D: weibo.com
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
         : URL: weibo.com/login.php?lang=en-us
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.105:7148
@@ -29,28 +28,25 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.105:53543
         : RID 50: Minor Issues
         : DP: 2
 
-offline0: i4pc-------r--- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35805
+offline0: i4pc----------- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35805
         : HTTP.netify.sina
         : D: n4cswhk3.gccdn.net H: img.t.sinajs.cn
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
         : URL: img.t.sinajs.cn/t6/skin/default/skin.css?version=201605130537
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35804
+offline0: i4pc----------- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35804
         : HTTP.netify.sina
         : D: n4cswhk3.gccdn.net H: img.t.sinajs.cn
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
         : URL: img.t.sinajs.cn/t6/style/css/module/combination/comb_login.css?version=201605130537
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35803
+offline0: i4pc----------- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35803
         : HTTP.netify.sina
         : D: n4cswhk3.gccdn.net H: img.t.sinajs.cn
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
         : URL: img.t.sinajs.cn/t6/style/css/module/base/frame.css?version=201605130537
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.105:18035
@@ -73,28 +69,25 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.105:53466
         : H: log.mmstat.com
         : DP: 2
 
-offline0: i4pc-------r--- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35806
+offline0: i4pc----------- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35806
         : HTTP.netify.sina
         : D: n4cswhk3.gccdn.net H: img.t.sinajs.cn
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
         : URL: img.t.sinajs.cn/t6/style/images/global_nav/WB_logo_b.png
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35807
+offline0: i4pc----------- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35807
         : HTTP.netify.sina
         : D: n4cswhk3.gccdn.net H: img.t.sinajs.cn
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
         : URL: img.t.sinajs.cn/t6/style/images/growth/login/sprite_login.png?13434210384389
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35809
+offline0: i4pc----------- TCP [OR] 93.188.134.246:80 <-- [L] 192.168.1.105:35809
         : HTTP.netify.sina
         : D: n4cswhk3.gccdn.net H: img.t.sinajs.cn
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
         : URL: img.t.sinajs.cn/t6/style/images/common/font/wbficon.woff?id=201605111746
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.105:50640
@@ -132,7 +125,7 @@ offline0: i4pc-gx-------- TCP [L] 192.168.1.105:34699 --> [OR] 216.58.212.65:443
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [L] 192.168.1.105:42280 --> [OR] 222.73.28.96:80
-        : HTTP
+        : HTTP.netify.sina
         : D: weibo.grid.sinaedge.com
         : RID 46: Unidirectional Traffic
         : DP: 1

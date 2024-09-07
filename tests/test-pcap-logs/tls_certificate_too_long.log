@@ -34,7 +34,7 @@ offline0: i4pc----------- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.1.121:65492
         : H: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com
         : DP: 2
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53910
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53910
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -49,7 +49,7 @@ offline0: i4pc----------- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.1.121:51364
         : H: www.microsoft.com
         : DP: 2
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53911
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53911
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -81,7 +81,6 @@ offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53912
         : URL: www.microsoft.com/pki/certs/MicRooCerAut2011_2011_03_22.crt
         : RID  2: Binary Application Transfer
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53913
@@ -91,7 +90,6 @@ offline0: i4pc-------r-F- TCP [OR] 2.22.33.235:80 <-- [L] 192.168.1.121:53913
         : URL: www.microsoft.com/pkiops/certs/MicSecSerCA2011_2011-10-18.crt
         : RID  2: Binary Application Transfer
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc----------- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.1.121:65213
@@ -106,7 +104,7 @@ offline0: i4pc-------r--- UDP [OR] 17.253.54.251:123 <-- [L] 192.168.1.121:49216
         : DP: 1
 
 offline0: i4pc---------F- TCP [OR] 140.82.113.26:443 <-- [L] 192.168.1.121:53905
-        : HTTP/S
+        : HTTP/S.netify.github
         : DP: 2
 
 offline0: i4pc----------- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.1.121:51998
@@ -114,15 +112,15 @@ offline0: i4pc----------- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.1.121:51998
         : H: 235.33.22.2.in-addr.arpa
         : DP: 3
 
-offline0: i4pc----------- TCP [OR] 52.98.163.18:443 <-- [L] 192.168.1.121:53428
-        : HTTP/S
-        : DP: 6
-
 offline0: i4pc----------- TCP [OR] 52.98.163.18:443 <-- [L] 192.168.1.121:53429
-        : HTTP/S
-        : DP: 8
+        : HTTP/S.netify.outlook
+        : DP: 15
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53914
+offline0: i4pc----------- TCP [OR] 52.98.163.18:443 <-- [L] 192.168.1.121:53428
+        : HTTP/S.netify.outlook
+        : DP: 17
+
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53914
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -132,7 +130,7 @@ offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53914
         : RID 32: TLS Certificate Validity Too Long
         : DP: 7
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53915
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53915
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -148,7 +146,7 @@ offline0: i4pc-------r--- UDP [OR] 17.253.54.251:123 <-- [L] 192.168.1.121:50288
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53916
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53916
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -158,7 +156,7 @@ offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53916
         : RID 32: TLS Certificate Validity Too Long
         : DP: 9
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53917
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53917
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -174,7 +172,7 @@ offline0: i4pc-------r--- UDP [OR] 17.253.54.251:123 <-- [L] 192.168.1.121:65099
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53918
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53918
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -184,7 +182,7 @@ offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53918
         : RID 32: TLS Certificate Validity Too Long
         : DP: 7
 
-offline0: i4pcu------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53919
+offline0: i4pc-------r-F- TCP [OR] 40.113.10.47:443 <-- [L] 192.168.1.121:53919
         : HTTP/S.netify.microsoft
         : D: wd-prod-cp-eu-north-2-fe.northeurope.cloudapp.azure.com H: wdcp.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -200,14 +198,14 @@ offline0: i4pc-------r--- UDP [OR] 17.253.54.251:123 <-- [L] 192.168.1.121:56865
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- TCP [OR] 130.211.33.145:443 <-- [L] 192.168.1.121:53432
-        : HTTP/S
-        : DP: 3
-
 offline0: i4pc--x-------- UDP [L] 192.168.1.139:5353 --> [OM] 224.0.0.251:5353
         : MDNS.netify.internal-network
         : H: _companion-link._tcp.local
         : DP: 2
+
+offline0: i4pc--x-------- TCP [OR] 130.211.33.145:443 <-- [L] 192.168.1.121:53432
+        : HTTP/S
+        : DP: 4
 
 offline0: i6pc--x-------- UDP [L] fe80::1059:a858:f9e7:cf94:5353 --> [OM] ff02::fb:5353
         : MDNS.netify.internal-network

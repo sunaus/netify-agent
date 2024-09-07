@@ -72,8 +72,8 @@ ndInstanceStatus::ndInstanceStatus()
 
 ndInstance::ndInstance(const string &tag)
   : ndThread(tag, -1, true),
-    tag(tag.empty() ? PACKAGE_TARNAME : tag),
-    self(PACKAGE_TARNAME), conf_filename(ND_CONF_FILE_NAME) {
+    tag(tag.empty() ? ND_NAME_SHORT : tag),
+    self(ND_NAME_SHORT), conf_filename(ND_CONF_FILE_NAME) {
 }
 
 ndInstance::~ndInstance() {
@@ -483,7 +483,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case 'S':
 #ifndef _ND_LEAN_AND_MEAN
         {
-            uint8_t digest[SHA1_DIGEST_LENGTH];
+            ndDigest digest;
 
             if ((rc = nd_sha1_file(optarg, digest)) == 0) {
                 string sha1;
@@ -649,15 +649,6 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         cerr << tag << ": Unable to initialize libCURL: " << cc
              << endl;
         return ndEnumCast(ConfigResult, LIBCURL_FAILURE);
-    }
-
-    // Hash config file
-    if (nd_file_exists(ndGC.path_app_config)) {
-        nd_sha1_file(ndGC.path_app_config, ndGC.digest_app_config);
-    }
-    else if (nd_file_exists(ndGC.path_legacy_config)) {
-        nd_sha1_file(ndGC.path_legacy_config,
-          ndGC.digest_legacy_config);
     }
 
     // Configuration is valid when version is set
@@ -1064,7 +1055,8 @@ void ndInstance::CommandLineHelp(bool version_only) {
     }
 
     fprintf(stdout, "%s\n%s\n",
-      nd_get_version_and_features().c_str(), PACKAGE_URL);
+      nd_get_version_and_features(true).c_str(), PACKAGE_URL);
+
     if (version_only) {
         fprintf(stdout,
           "\nThis application uses nDPI v%s\n"
@@ -1130,6 +1122,12 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "  -v, --verbose\n    In debug mode, display "
           "real-time flow detections.  Specify multiple "
           "times to increase verbosity.\n"
+          "  --verbose-flag "
+          "[no-]event-dpi-new|[no-]event-dpi-update|[no-]"
+          "event-dpi-complete\n    In debug mode, display "
+          "or hide specified flow event types.  Can be "
+          "specify multiple "
+          "times to select multiple events.\n"
           "  -R, --remain-in-foreground\n    Remain in "
           "foreground, don't daemonize (OpenWrt).\n"
           "  --allow-unprivileged\n    Allow executing the "
@@ -1229,10 +1227,11 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "the number of detection (DPI) threads to "
           "start.\n"
 
-          "\nSee netifyd(8) and netifyd.conf(5) for "
+          "\nSee %s(8) and %s.conf(5) for "
           "further options.\n",
           ND_CONF_FILE_NAME, ND_CONF_LEGACY_PATH,
-          ndGC.path_uuid.c_str(), ndGC.path_uuid_site.c_str());
+          ndGC.path_uuid.c_str(), ndGC.path_uuid_site.c_str(),
+          ND_NAME_SHORT, ND_NAME_SHORT);
     }
 }
 
@@ -1282,7 +1281,7 @@ bool ndInstance::SaveAgentStatus(const ndCaptureThreads &threads,
 
     try {
         jstatus["type"] = "agent_status";
-        jstatus["agent_version"] = PACKAGE_VERSION;
+        jstatus["agent_version"] = ND_VERSION;
 
         apps.Encode(jstatus);
         plugins.Encode(jstatus);
@@ -1414,7 +1413,8 @@ bool ndInstance::DisplayAgentStatus(void) {
     const char *icon = ndTerm::Icon::INFO;
     const char *color = ndTerm::Attr::RESET;
 
-    fprintf(stdout, "%s\n", nd_get_version_and_features().c_str());
+    fprintf(stdout, "%s\n",
+      nd_get_version_and_features(true).c_str());
 
     if (geteuid() != 0) {
         fprintf(stderr,
@@ -1500,8 +1500,8 @@ bool ndInstance::DisplayAgentStatus(void) {
               "  %s To generate a new one, run the "
               "following command:\n",
               ndTerm::Icon::NOTE);
-            fprintf(stdout, "  %s # netifyd --provision\n",
-              ndTerm::Icon::NOTE);
+            fprintf(stdout, "  %s # %s --provision\n",
+              ND_NAME_SHORT, ndTerm::Icon::NOTE);
         }
         else {
             fprintf(stdout, "%s%s%s agent UUID: %s\n",
@@ -2831,7 +2831,8 @@ void ndInstance::ProcessFlows(void) {
 
     nd_dprintf(
       "%s: new: %lu, pre-dpi: %lu, in-use: %lu, purged "
-      "%lu, active: %lu, idle: %lu, expiring: %lu, "
+      "%lu, active: %lu, idle: %lu, expiring: "
+      "%lu, "
       "expired: %lu, total: %lu\n",
       tag.c_str(),
 

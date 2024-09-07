@@ -732,9 +732,9 @@ void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
         if (i != plugin.end() && i->is_string())
             type = i->get<string>();
 
-        fprintf(stdout, "%s%s v%s [%s]%s\n",
-          ndTerm::Attr::UNDERLINE, tag.c_str(),
-          version.c_str(), type.c_str(), ndTerm::Attr::RESET);
+        fprintf(stdout, "%s%s/%s%s (%s)\n",
+          ndTerm::Attr::BOLD, tag.c_str(), version.c_str(),
+          ndTerm::Attr::RESET, type.c_str());
 
         ndPluginLoader *pl = nullptr;
 
@@ -803,7 +803,8 @@ void ndPluginManager::DumpVersions(ndPlugin::Type type) {
                 version = "Error loading plugin!";
 
             cerr
-              << " " << p.second->GetTag() << ": " << version << endl
+              << " " << ndTerm::Attr::BOLD << p.second->GetTag()
+              << "/" << version << ndTerm::Attr::RESET << endl
               << "    "
               << p.second->GetPlugin()->GetConfiguration() << endl
               << "    " << p.second->GetObjectName() << endl;

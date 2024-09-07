@@ -117,11 +117,6 @@ offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57026
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=textsecure-service.whispersystems.org
         : DP: 7
 
-offline0: i4pc---------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57016
-        : HTTP/S.netify.apple-itunes
-        : D: e673.dsce9.akamaiedge.net
-        : DP: 7
-
 offline0: i4pcu---------- TCP [OR] 13.35.253.42:443 <-- [L] 192.168.2.17:57027
         : HTTP/S.netify.signal
         : H: cdn.signal.org
@@ -129,4 +124,9 @@ offline0: i4pcu---------- TCP [OR] 13.35.253.42:443 <-- [L] 192.168.2.17:57027
         : TLS/SNI: cdn.signal.org TLS/CN: cdn.signal.org
         : TLS/IDN: C=US, ST=California, L=San Francisco, O=Open Whisper Systems, OU=Open Whisper Systems, CN=TextSecure TLS/SDN: C=US, ST=California, O=Open Whisper Systems, OU=Open Whisper Systems, CN=cdn.signal.org
         : DP: 7
+
+offline0: i4pc--x------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57016
+        : HTTP/S.netify.apple-itunes
+        : D: e673.dsce9.akamaiedge.net
+        : DP: 12
 

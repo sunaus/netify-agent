@@ -68,8 +68,7 @@ ndGlobalConfig::ndGlobalConfig()
     ca_detection_base(0), ca_detection_cores(-1),
     max_packet_queue(ND_MAX_PKT_QUEUE_KB * 1024),
     max_capture_length(ND_PCAP_SNAPLEN),
-    flags(ndGlobalFlags::NONE), digest_app_config{ 0 },
-    digest_legacy_config{ 0 }, verbosity(0),
+    flags(ndGlobalFlags::NONE), verbosity(0),
     verbosity_flags(ndVerbosityFlags::EVENT_DPI_COMPLETE),
     fhc_purge_divisor(ND_FHC_PURGE_DIVISOR),
     fm_buckets(ND_FLOW_MAP_BUCKETS),
@@ -163,14 +162,15 @@ bool ndGlobalConfig::Load(const string &filename) {
       r->GetBoolean("netifyd", "auto_informatics", false));
 
     if (uuid.empty())
-        uuid = r->Get("netifyd", "uuid", ND_AGENT_UUID_NULL);
+        uuid = r->Get(ND_NAME_SHORT, "uuid", ND_AGENT_UUID_NULL);
 
     if (uuid_serial.empty())
-        uuid_serial = r->Get("netifyd", "uuid_serial",
+        uuid_serial = r->Get(ND_NAME_SHORT, "uuid_serial",
           ND_AGENT_SERIAL_NULL);
 
     if (uuid_site.empty())
-        uuid_site = r->Get("netifyd", "uuid_site", ND_SITE_UUID_NULL);
+        uuid_site = r->Get(ND_NAME_SHORT, "uuid_site",
+          ND_SITE_UUID_NULL);
 
     path_state_persistent = r->Get("netifyd",
       "path_state_persistent", ND_PERSISTENT_STATEDIR);
@@ -256,7 +256,7 @@ bool ndGlobalConfig::Load(const string &filename) {
       "flow_map_buckets", ND_FLOW_MAP_BUCKETS);
 
     ndGC_SetFlag(ndGlobalFlags::USE_GETIFADDRS,
-      r->GetBoolean("netifyd", "use_getifaddrs",
+      r->GetBoolean(ND_NAME_SHORT, "use_getifaddrs",
 #if defined(__FreeBSD__)
         true
 #else

@@ -49,7 +49,7 @@ offline0: i4pc-------r--- UDP [OR] 185.60.216.51:3478 <-- [L] 192.168.12.156:495
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 93.33.118.87:41107 <-- [L] 192.168.12.156:49526
-        : STUN
+        : RTP
         : RID 16: Known Protocol on Non-standard Port
         : DP: 5
 

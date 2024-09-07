@@ -59,7 +59,7 @@
 #undef HAVE_WORKING_REGEX
 #endif
 
-#define ND_MAX_HOSTNAME 256
+#include "nd-version.hpp"
 
 #define ND_STATS_INTERVAL \
     15  // Collect stats every N seconds

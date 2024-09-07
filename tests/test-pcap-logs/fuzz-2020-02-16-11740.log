@@ -126,7 +126,17 @@ offline0: i4pc-------r--- UDP [L] 10.12.64.30:29200 --> [OR] 37.0.25.62:1812
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [L] 10.12.64.30:29295 --> [OR] 198.226.25.62:1812
+offline0: i4pc--x----r--- UDP [L] 10.12.64.30:29295 --> [OR] 198.226.25.62:1812
+        : RADIUS
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc--x----r--- UDP [L] 10.12.64.30:29295 --> [OR] 198.226.25.62:1812
+        : RADIUS
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc--x----r--- UDP [L] 10.12.64.30:29295 --> [OR] 198.226.25.62:1812
         : RADIUS
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -182,7 +192,7 @@ offline0: i4pc-------r--- UDP [L] 10.12.64.30:29204 --> [OR] 198.226.25.53:1812
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 65.12.64.30:29200 --> [L] 198.226.25.53:1812
-        : RADIUS.netify.audible
+        : RADIUS
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -342,7 +352,7 @@ offline0: i4pc-gx----r--- UDP [L] 10.12.64.66:29200 --> [OR] 198.226.25.53:1812
         : DP: 1
 
 offline0: i4pc-gx----r--- UDP [L] 10.12.64.30:29200 --> [OR] 198.119.25.53:1812
-        : RADIUS
+        : RADIUS.netify.nasa
         : RID 46: Unidirectional Traffic
         : DP: 1
 

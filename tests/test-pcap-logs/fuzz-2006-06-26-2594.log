@@ -469,13 +469,13 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.2:2738 --> [OL] 192.168.84.1:53
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2760
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _sip.eudp.sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 3
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2754
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _sip._udp.sip.cyberciwy.dk
         : RID 46: Unidirectional Traffic
         : DP: 2
 
@@ -495,7 +495,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2787
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2716
         : DNS.netify.reverse-dns
-        : H: _sip._udp.sip.cybercity.dk
+        : H: 1.0.0.127.in-addr.arpa
         : RID 46: Unidirectional Traffic
         : DP: 2
 
@@ -541,7 +541,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2712
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2816
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _sip._udp.shp.cybercity.dk
         : RID 15: Text With Non-Printable Characters
         : RID 46: Unidirectional Traffic
         : DP: 4
@@ -567,7 +567,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2736
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2762
         : DNS
-        : H: _sip._udp.sip.cybercity.sk
+        : H: _sip._udp.sip.cybercity.dk
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
         : DP: 3
@@ -624,7 +624,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.2:2794 --> [OL] 192.168.108.1:53
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2810
         : DNS
-        : H: _sip._udp.sip.nybercity.dk
+        : H: _sip._udq.sip.mybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 3
 
@@ -641,7 +641,7 @@ offline0: i4pc-gx----r--- UDP [L] 192.168.1.6:5060 --> [OR] 212.242.33.35:5060
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2750
         : DNS
-        : H: _sip._udp.vo_s
+        : H: _sip._udp.voip.brujula.net
         : RID 15: Text With Non-Printable Characters
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
@@ -736,8 +736,8 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.2:2724 --> [OL] 192.168.17.1:53
         : DP: 1
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2722
-        : DNS.netify.reverse-dns
-        : H: 1.0.0.127.in-addr.arpa
+        : DNS
+        : H: _sip._udp.sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 4
 
@@ -787,13 +787,13 @@ offline0: i4pc-gx----r--- TCP [OR] 147.234.1.253:21 <-- [L] 192.168.1.66:2720
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2758
         : DNS
-        : H: _sip._udp.sip.gybercity.dk
+        : H: _sip._udp.sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 2
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2796
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _sip._udp.sip.cybercity.ak
         : RID 15: Text With Non-Printable Characters
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
@@ -805,7 +805,7 @@ offline0: i4pc-gx-------- UDP [L] 192.168.1.2:137 <-- [OL] 192.168.1.255:35721
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2785
         : DNS
-        : H: _sip._udp.sip.cybevcity.dk
+        : H: _sip._tdp.sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 2
 
@@ -865,7 +865,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.2:202 --> [OL] 192.168.37.115:53
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2827
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _sip._udp.sip.cybercimy.v_
         : RID 15: Text With Non-Printable Characters
         : RID 46: Unidirectional Traffic
         : DP: 2
@@ -887,7 +887,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OR] 192.170.1.2:2810
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2766
         : DNS
-        : H: _sip._udp.sip.cybe0city.dk
+        : H: _sip._udp.sip.cybercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 2
 
@@ -1007,7 +1007,7 @@ offline0: i4pc-gx----r--- TCP [OR] 147.137.21.122:139 <-- [L] 192.168.1.71:2718
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2740
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _sip._udp.sip.cyberci_s
         : RID 15: Text With Non-Printable Characters
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
@@ -1015,14 +1015,14 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2740
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2814
         : DNS
-        : H: _sib._udp.sip.cybercity.dk
+        : H: dsip._udp.sip.cybercity.dk
         : RID 17: Malformed Packet
         : RID 46: Unidirectional Traffic
         : DP: 3
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2715
         : DNS
-        : H: _sip._udp.sip.cyber_ity.dk
+        : H: _sip._udp.sip.cybercity.dk
         : RID 15: Text With Non-Printable Characters
         : RID 46: Unidirectional Traffic
         : DP: 2
@@ -1053,7 +1053,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.2:2796 --> [OL] 192.168.1.129:53
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2806
         : DNS
-        : H: _sip._udp.sip.cybercity.qk
+        : H: _sim._udp.sip.c_ber_itm.dk
         : RID 15: Text With Non-Printable Characters
         : RID 46: Unidirectional Traffic
         : DP: 5
@@ -1113,7 +1113,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2788
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2812
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _sip._udp.sip.cyaercity.dk
         : RID 46: Unidirectional Traffic
         : DP: 4
 
@@ -1146,7 +1146,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2756
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2804
         : DNS
-        : H: _sip.oudp.sip.cybercity._k
+        : H: _sip._udp.sip.cybercity.dk
         : RID 15: Text With Non-Printable Characters
         : RID 46: Unidirectional Traffic
         : DP: 4
@@ -1315,7 +1315,7 @@ offline0: i4pc-gx----r--- UDP [L] 192.168.1.1:51 <-- [OL] 192.168.1.2:2805
 
 offline0: i4pc--x----r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.2:2800
         : DNS
-        : H: _sip._udp.sip.cybercity.dk
+        : H: _s_p._udp.sip.cybercity.dk
         : RID 15: Text With Non-Printable Characters
         : RID 46: Unidirectional Traffic
         : DP: 2

@@ -143,7 +143,7 @@ void ndFlowHashCache::Load(void) {
             return;
         }
 
-        vector<uint8_t> digest;
+        ndDigest digest;
         if (! nd_string_to_sha1(digest_lower, digest)) {
             nd_printf("%s: parse error at line #%u\n",
               filename.c_str(), ln);
@@ -187,8 +187,11 @@ void ndFlowHashCache::Save(void) const {
 
     for (auto &i : kvmap) {
         string digest;
-        nd_sha1_to_string((const uint8_t *)i.first.c_str(), digest);
+        ndDigestDynamic digest_bin(i.first.begin(), i.first.end());
+        nd_sha1_to_string(digest_bin, digest);
+
         ofs << digest << "," << i.second.first << endl;
+
         if (ofs.good()) saved++;
         else {
             nd_dprintf(

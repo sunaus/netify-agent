@@ -8,8 +8,9 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.34:57694
         : DP: 2
 
 offline0: i4pcu------r--- TCP [OR] 157.56.126.211:443 <-- [L] 192.168.1.34:51230
-        : HTTP/S
+        : HTTP/S.netify.msn
         : V: 0x0301 CS: 0xc014
+        : TLS/CN: gateway.messenger.live.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2 TLS/SDN: CN=*.gateway.messenger.live.com
         : RID 30: TLS Certificate Expired
         : RID 36: Obsolete TLS (v1.1 or older)
@@ -20,21 +21,9 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.34:63661
         : H: e4593.g.akamaiedge.net
         : DP: 2
 
-offline0: i4pc-------rs-- TCP [OR] 17.143.160.149:5223 <-- [L] 192.168.1.34:50407
-        : Apple/Push.netify.apple-push
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- TCP [OR] 17.143.160.149:5223 <-- [L] 192.168.1.34:50407
-        : Apple/Push.netify.apple-push
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc---------F- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:51227
+offline0: i4pc----------- TCP [OR] 17.172.100.36:443 <-- [L] 192.168.1.34:51227
         : HTTP/S.netify.apple
-        : DP: 5
+        : DP: 18
 
 offline0: i4pc----------- UDP [L] 192.168.1.34:137 --> [OL] 192.168.1.255:137
         : NETBIOS
@@ -565,10 +554,6 @@ offline0: i4pc-------r--- UDP [OR] 157.55.130.146:40033 --> [L] 192.168.1.34:130
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc----------- TCP [OR] 108.160.163.108:443 <-- [L] 192.168.1.34:51222
-        : HTTP/S.netify.dropbox
-        : DP: 3
-
 offline0: i4pc-------r--- UDP [OR] 111.221.74.24:40032 --> [L] 192.168.1.34:13021
         : Skype/Teams
         : RID 46: Unidirectional Traffic
@@ -995,22 +980,12 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.34:60413
 offline0: i4pc-------r-F- TCP [OR] 149.13.32.15:13392 <-- [L] 192.168.1.34:51307
         : TLS
         : RID 16: Known Protocol on Non-standard Port
-        : DP: 16
+        : DP: 17
 
 offline0: i4pc-------r-F- TCP [OR] 149.13.32.15:13392 <-- [L] 192.168.1.34:51312
         : TLS
         : RID 16: Known Protocol on Non-standard Port
-        : DP: 16
-
-offline0: i4pc-------r-F- TCP [L] 192.168.1.34:51315 --> [OR] 212.161.8.36:13392
-        : TLS
-        : RID 16: Known Protocol on Non-standard Port
-        : DP: 16
-
-offline0: i4pc-------r-F- TCP [OR] 149.13.32.15:13392 <-- [L] 192.168.1.34:51317
-        : TLS
-        : RID 16: Known Protocol on Non-standard Port
-        : DP: 16
+        : DP: 17
 
 offline0: i4pc-------r--- UDP [OR] 133.236.67.25:49195 --> [L] 192.168.1.34:13021
         : Skype/Teams
@@ -1035,6 +1010,15 @@ offline0: i4pc-gx----r--- TCP [OR] 71.238.7.203:18767 <-- [L] 192.168.1.34:51292
         : Unknown
         : RID 52: Fully Encrypted Flow
         : DP: 30
+
+offline0: i4pc--x-------- TCP [OR] 108.160.163.108:443 <-- [L] 192.168.1.34:51222
+        : HTTP/S.netify.dropbox
+        : DP: 8
+
+offline0: i4pc--x----rs-- TCP [OR] 17.143.160.149:5223 <-- [L] 192.168.1.34:50407
+        : Apple/Push.netify.apple-push
+        : RID 16: Known Protocol on Non-standard Port
+        : DP: 8
 
 offline0: i4pc-gx------F- TCP [OR] 157.55.235.146:443 <-- [L] 192.168.1.34:51280
         : HTTP/S
@@ -1210,6 +1194,11 @@ offline0: i4pc-gx----r--- TCP [OR] 80.121.84.93:62381 <-- [L] 192.168.1.34:51303
         : RID 46: Unidirectional Traffic
         : DP: 7
 
+offline0: i4pc--x----r-F- TCP [OR] 149.13.32.15:13392 <-- [L] 192.168.1.34:51317
+        : TLS
+        : RID 16: Known Protocol on Non-standard Port
+        : DP: 20
+
 offline0: i4pc-gx------F- TCP [OR] 157.55.235.156:443 <-- [L] 192.168.1.34:51281
         : HTTP/S
         : DP: 15
@@ -1217,6 +1206,11 @@ offline0: i4pc-gx------F- TCP [OR] 157.55.235.156:443 <-- [L] 192.168.1.34:51281
 offline0: i4pc-gx------F- TCP [OR] 65.55.223.45:443 <-- [L] 192.168.1.34:51239
         : HTTP/S
         : DP: 15
+
+offline0: i4pc--x----r-F- TCP [L] 192.168.1.34:51315 --> [OR] 212.161.8.36:13392
+        : TLS
+        : RID 16: Known Protocol on Non-standard Port
+        : DP: 23
 
 offline0: i4pc-gx----r--- TCP [OR] 93.79.224.176:14506 <-- [L] 192.168.1.34:51314
         : Unknown

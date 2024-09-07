@@ -301,8 +301,6 @@ public:
     size_t max_packet_queue;
     uint16_t max_capture_length;
     ndFlags<ndGlobalFlags> flags;
-    uint8_t digest_app_config[SHA1_DIGEST_LENGTH];
-    uint8_t digest_legacy_config[SHA1_DIGEST_LENGTH];
     uint8_t verbosity;
     ndFlags<ndVerbosityFlags> verbosity_flags;
     unsigned fhc_purge_divisor;

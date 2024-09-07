@@ -944,7 +944,7 @@ offline0: i4pc-------r--- UDP [L] 10.0.2.15:28681 --> [OR] 51.68.153.214:26253
         : DP: 1
 
 offline0: i4pc-------r--- UDP [L] 10.0.2.15:28681 <-- [OR] 185.203.218.92:56962
-        : Gnutella
+        : Gnutella.netify.nordvpn
         : RID 42: Unsafe Protocol
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -1116,7 +1116,7 @@ offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50295 --> [OR] 38.142.119.234:49732
 offline0: i4pcu------r-F- TCP [L] 10.0.2.15:50314 --> [OR] 80.7.252.192:6888
         : TLS
         : V: 0x0303 CS: 0xc02f
-        : TLS/CN: gtk-gnutella
+        : TLS/CN: gtk-gnutella1.2.1
         : TLS/IDN: CN=gtk-gnutella/1.2.1 TLS/SDN: CN=gtk-gnutella/1.2.1
         : RID 16: Known Protocol on Non-standard Port
         : RID 32: TLS Certificate Validity Too Long
@@ -1359,7 +1359,6 @@ offline0: i4pc-------r--- TCP [L] 10.0.2.15:50327 --> [OR] 69.118.162.229:46906
         : HTTP/UA: gtk-gnutella/1.2.2 (2022-02-25; GTK2; Windows x64)
         : URL: 69.118.162.229:46906/uri-res/N2R?urn:sha1:LXIP2A72T5H3BU3GRUMZFYNU3OYDK6FI
         : RID 10: Numeric IP Address
-        : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
         : RID 42: Unsafe Protocol
         : DP: 6
@@ -1370,7 +1369,6 @@ offline0: i4pc-------r--- TCP [L] 10.0.2.15:50328 --> [OR] 189.147.72.83:26108
         : HTTP/UA: gtk-gnutella/1.2.2 (2022-02-25; GTK2; Windows x64)
         : URL: 189.147.72.83:26108/uri-res/N2R?urn:sha1:LXIP2A72T5H3BU3GRUMZFYNU3OYDK6FI
         : RID 10: Numeric IP Address
-        : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
         : RID 42: Unsafe Protocol
         : DP: 6
@@ -1435,7 +1433,6 @@ offline0: i4pc-------r-F- TCP [L] 10.0.2.15:50330 --> [OR] 69.118.162.229:46906
         : HTTP/UA: gtk-gnutella/1.2.2 (2022-02-25; GTK2; Windows x64)
         : URL: 69.118.162.229:46906/gnutella/thex/v1?urn:tree:tiger/:3WMUS6WM2ZC7XIPRQDKXWHHJRV4IKYC4OX4ELCA&depth=9&ed2k=1
         : RID 10: Numeric IP Address
-        : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
         : RID 42: Unsafe Protocol
         : DP: 6

@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "nd-apps.hpp"
+#include "nd-except.hpp"
 #include "nd-flow.hpp"
 #include "nd-protos.hpp"
 #include "nd-util.hpp"
@@ -35,10 +36,14 @@ public:
     ndFlowHashCacheEntry()
       : app_id(ND_APP_UNKNOWN), proto_id(ndProto::Id::UNKNOWN) { }
     ndFlowHashCacheEntry(const nd_flow_ptr &flow)
-      : digest(flow->digest_mdata.begin(),
-          flow->digest_mdata.end()),
-        app_id(flow->detected_application),
-        proto_id(flow->detected_protocol) { }
+      : app_id(flow->detected_application),
+        proto_id(flow->detected_protocol) {
+        if (flow->digest_mdata.empty())
+            throw ndExceptionSystemError(
+              "FlowHashCacheEntry",
+              "flow metadata vector can not be empty");
+        digest = flow->digest_mdata.back();
+    }
 
     friend std::ostream &operator<<(std::ostream &stream,
       const ndFlowHashCacheEntry &entry) {
@@ -49,7 +54,7 @@ public:
         return stream;
     }
 
-    std::vector<uint8_t> digest;
+    ndDigest digest;
     nd_app_id_t app_id;
     ndProto::Id proto_id;
 };
@@ -66,14 +71,21 @@ public:
         CacheInsert(key, ndFlowHashCacheEntry(flow));
     }
 
-    inline void Insert(const std::vector<uint8_t> &digest_lower,
+    inline void Insert(const ndDigest &digest_lower,
       const ndFlowHashCacheEntry &entry) {
         const std::string key(digest_lower.begin(),
           digest_lower.end());
         CacheInsert(key, entry);
     }
 
-    inline bool Lookup(const std::vector<uint8_t> &digest_lower,
+    inline void Insert(const ndDigestDynamic &digest_lower,
+      const ndFlowHashCacheEntry &entry) {
+        const std::string key(digest_lower.begin(),
+          digest_lower.end());
+        CacheInsert(key, entry);
+    }
+
+    inline bool Lookup(const ndDigest &digest_lower,
       ndFlowHashCacheEntry &entry) {
         const std::string key(digest_lower.begin(),
           digest_lower.end());

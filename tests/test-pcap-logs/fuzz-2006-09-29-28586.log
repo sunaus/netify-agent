@@ -17,14 +17,12 @@ offline0: i4pc-------r-F- TCP [L] 172.20.3.5:2604 --> [OL] 172.20.3.13:80
         : HTTP/UA: SonyEricssonT68/R201A
         : URL: 172.20.3.13/servlets/mms?message-id=189001
         : RID 10: Numeric IP Address
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 172.20.3.5:80 <-- [OL] 172.20.3.13:53136
+offline0: i4pc---------F- TCP [L] 172.20.3.5:80 <-- [OL] 172.20.3.13:53136
         : HTTP
         : H: 172.20.3.5
         : HTTP/UA: MMS-Relay-DeliveryInitiator
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 4
 
 offline0: i4pc-------r-F- TCP [L] 172.20.3.5:2606 --> [OL] 172.20.3.13:80

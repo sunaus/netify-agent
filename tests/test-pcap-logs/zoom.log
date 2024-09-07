@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.117:54863
+offline0: i4pcu------r-F- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.117:54863
         : TLS
         : H: dati.ntop.org
         : V: 0x0303 CS: 0xc030
@@ -42,7 +42,7 @@ offline0: i4pcu------r--- TCP [OR] 52.202.62.238:443 <-- [L] 192.168.1.117:54864
         : HTTP/S.netify.zoom
         : D: log.zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: log.zoom.us
+        : TLS/SNI: log.zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -60,7 +60,7 @@ offline0: i4pc-------r--- UDP [OR] 162.255.38.14:3479 <-- [L] 192.168.1.117:2390
 
 offline0: i4pc----------- TCP [OR] 35.186.224.53:443 <-- [L] 192.168.1.117:53872
         : HTTP/S
-        : DP: 5
+        : DP: 15
 
 offline0: i4pc-------r--- ICMP [OR] 162.255.38.14:0 <-- [L] 192.168.1.117:0
         : ICMP.netify.zoom
@@ -82,7 +82,7 @@ offline0: i4pcu------r--- TCP [OR] 52.202.62.196:443 <-- [L] 192.168.1.117:54865
         : HTTP/S.netify.zoom
         : H: zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: zoom.us
+        : TLS/SNI: zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -91,7 +91,7 @@ offline0: i4pcu------r--- TCP [OR] 52.202.62.236:443 <-- [L] 192.168.1.117:54866
         : HTTP/S.netify.zoom
         : D: www3.zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: www3.zoom.us
+        : TLS/SNI: www3.zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -114,7 +114,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.1.117:54867 --> [OR] 213.19.144.105:44
         : HTTP/S.netify.zoom
         : H: zoomam105zc.zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: zoomam105zc.zoom.us
+        : TLS/SNI: zoomam105zc.zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -124,7 +124,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.1.117:54869 --> [OR] 213.244.140.85:44
         : HTTP/S.netify.zoom
         : D: zoomfr85zc.zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: zoomfr85zc.zoom.us
+        : TLS/SNI: zoomfr85zc.zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -134,7 +134,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.1.117:54868 --> [OR] 213.19.144.104:44
         : HTTP/S.netify.zoom
         : H: zoomam104zc.zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: zoomam104zc.zoom.us
+        : TLS/SNI: zoomam104zc.zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -144,7 +144,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.1.117:54870 --> [OR] 213.244.140.84:44
         : HTTP/S.netify.zoom
         : D: zoomfr84zc.zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: zoomfr84zc.zoom.us
+        : TLS/SNI: zoomfr84zc.zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -159,7 +159,7 @@ offline0: i4pcu------r--- TCP [OR] 109.94.160.99:443 <-- [L] 192.168.1.117:54871
         : HTTP/S.netify.zoom
         : D: zoomfrn99mmr.zoom.us
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: zoomfrn99mmr.zoom.us
+        : TLS/SNI: zoomfrn99mmr.zoom.us TLS/CN: zoom.us
         : TLS/IDN: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., OU=http://certs.godaddy.com/repository/, CN=Go Daddy Secure Certificate Authority - G2 TLS/SDN: OU=Domain Control Validated, CN=*.zoom.us
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found

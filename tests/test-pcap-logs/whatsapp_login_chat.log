@@ -7,14 +7,14 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.4:61697
         : H: e12.whatsapp.net
         : DP: 2
 
-offline0: i4pc---------F- TCP [OR] 158.85.58.15:5222 <-- [L] 192.168.2.4:49206
+offline0: i4pc----------- TCP [OR] 158.85.58.15:5222 <-- [L] 192.168.2.4:49206
         : WhatsApp.netify.whatsapp
         : D: e12.whatsapp.net
         : DP: 5
 
 offline0: i4pc----------- TCP [OR] 17.173.66.102:443 <-- [L] 192.168.2.4:49205
         : HTTP/S.netify.apple
-        : DP: 6
+        : DP: 21
 
 offline0: i4pc----------- UDP [L] 192.168.2.1:17500 --> [OL] 192.168.2.255:17500
         : Dropbox
@@ -30,13 +30,7 @@ offline0: i4pc-------rsF- TCP [OR] 17.110.229.14:5223 <-- [L] 192.168.2.4:49193
         : Apple/Push.netify.apple-push
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rsF- TCP [OR] 17.110.229.14:5223 <-- [L] 192.168.2.4:49193
-        : Apple/Push.netify.apple-push
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 6
 
 offline0: i6pc--x-------- UDP [L] fe80::189c:c31b:1298:224:5353 --> [OM] ff02::fb:5353
         : MDNS.netify.internal-network

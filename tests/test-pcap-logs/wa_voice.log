@@ -134,11 +134,11 @@ offline0: i4pc-gx-------- TCP [OR] 169.254.162.244:49159 <-- [L] 192.168.2.12:49
 
 offline0: i4pc--x-------- UDP [L] 192.168.2.12:5353 --> [OM] 224.0.0.251:5353
         : MDNS.netify.internal-network
-        : H: _homekit._tcp.local
+        : H: _raop._tcp.local
         : DP: 5
 
 offline0: i6pc--x-------- UDP [L] fe80::414:409d:8afd:9f05:5353 --> [OM] ff02::fb:5353
         : MDNS.netify.internal-network
-        : H: _homekit._tcp.local
+        : H: _raop._tcp.local
         : DP: 5
 

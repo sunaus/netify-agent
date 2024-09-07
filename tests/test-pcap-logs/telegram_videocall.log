@@ -23,7 +23,8 @@ offline0: i4pc-------r--- UDP [L] 10.46.103.200:42554 --> [OL] 192.168.12.169:40
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 91.108.9.35:1400 <-- [L] 192.168.12.169:40643
-        : STUN.netify.telegram
+        : Telegram/VoIP.netify.telegram
+        : H: telegram.org
         : RID 16: Known Protocol on Non-standard Port
         : DP: 11
 
@@ -48,12 +49,14 @@ offline0: i4pc-g-----rsF- TCP [OR] 149.154.167.222:443 <-- [L] 192.168.12.169:40
         : DP: 32
 
 offline0: i4pc-------r--- UDP [OR] 91.108.13.23:1400 <-- [L] 192.168.12.169:49667
-        : STUN.netify.telegram
+        : Telegram/VoIP.netify.telegram
+        : H: telegram.org
         : RID 16: Known Protocol on Non-standard Port
         : DP: 11
 
 offline0: i4pc-------r--- UDP [OR] 91.108.17.2:1400 <-- [L] 192.168.12.169:49780
-        : STUN.netify.telegram
+        : Telegram/VoIP.netify.telegram
+        : H: telegram.org
         : RID 16: Known Protocol on Non-standard Port
         : DP: 11
 

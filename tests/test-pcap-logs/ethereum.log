@@ -107,7 +107,7 @@ offline0: i4pc---------F- TCP [OR] 191.234.162.198:30303 <-- [L] 192.168.1.184:5
         : DP: 4
 
 offline0: i4pc---------F- TCP [OR] 82.145.220.249:30303 <-- [L] 192.168.1.184:56633
-        : Ethereum.netify.opera
+        : Ethereum
         : DP: 4
 
 offline0: i4pc---------F- TCP [OR] 40.67.144.128:30303 <-- [L] 192.168.1.184:56630
@@ -227,7 +227,7 @@ offline0: i4pc---------F- TCP [OR] 138.75.171.190:30303 <-- [L] 192.168.1.184:56
         : DP: 4
 
 offline0: i4pc-------r--- UDP [OR] 106.12.39.168:30333 --> [L] 192.168.1.184:30303
-        : Ethereum.netify.baidu
+        : Ethereum
         : RID 46: Unidirectional Traffic
         : DP: 1
 

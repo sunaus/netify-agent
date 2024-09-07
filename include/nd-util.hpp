@@ -23,6 +23,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 
+#include <array>
 #include <atomic>
 #include <cstddef>
 #include <ctime>
@@ -40,8 +41,11 @@
 #include <nlohmann/json.hpp>
 
 #include "nd-except.hpp"
+#include "nd-sha1.h"
 
 constexpr unsigned ND_SHA1_BUFFER = 4096;
+typedef std::array<uint8_t, SHA1_DIGEST_LENGTH> ndDigest;
+typedef std::vector<uint8_t> ndDigestDynamic;
 
 namespace ndTerm {
 
@@ -52,6 +56,7 @@ public:
     static const char *CURSOR_HIDE;
     static const char *CURSOR_SHOW;
     static const char *CLEAR_EOL;
+    static const char *BOLD;
     static const char *UNDERLINE;
 };
 
@@ -264,15 +269,17 @@ void nd_ltrim(std::string &s, unsigned char c = 0);
 void nd_rtrim(std::string &s, unsigned char c = 0);
 void nd_trim(std::string &s, unsigned char c = 0);
 
-int nd_sha1_file(const std::string &filename, uint8_t *digest);
+int nd_sha1_file(const std::string &filename, ndDigest &digest);
 
-void nd_sha1_to_string(const uint8_t *digest_bin,
+void nd_sha1_to_string(const ndDigest &digest,
   std::string &digest_str);
-void nd_sha1_to_string(const std::vector<uint8_t> &digest_bin,
+void nd_sha1_to_string(const ndDigestDynamic &digest,
   std::string &digest_str);
 
 bool nd_string_to_sha1(const std::string &digest_str,
-  std::vector<uint8_t> &digest_bin);
+  ndDigest &digest);
+bool nd_string_to_sha1(const std::string &digest_str,
+  ndDigestDynamic &digest);
 
 bool nd_string_to_mac(const std::string &src, uint8_t *mac);
 sa_family_t
@@ -301,7 +308,7 @@ void nd_seed_rng(void);
 void nd_generate_uuid(std::string &uuid);
 
 const char *nd_get_version(void);
-const std::string &nd_get_version_and_features(void);
+const std::string &nd_get_version_and_features(bool fancy = false);
 
 bool nd_parse_app_tag(const std::string &tag, unsigned &id,
   std::string &name);

@@ -141,17 +141,23 @@ using namespace std;
     nd_dprintf("%s: discard: %s\n", tag, reason);
 
 #define _ND_LOG_DISCARD_ETHER(tag, reason, eth_hdr) \
-    nd_dprintf( \
-      "%s: discard: %s: src: " \
-      "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx, dst: " \
-      "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n", \
-      tag, reason, eth_hdr->ether_shost[0], \
-      eth_hdr->ether_shost[1], eth_hdr->ether_shost[2], \
-      eth_hdr->ether_shost[3], eth_hdr->ether_shost[4], \
-      eth_hdr->ether_shost[5], eth_hdr->ether_dhost[0], \
-      eth_hdr->ether_dhost[1], eth_hdr->ether_dhost[2], \
-      eth_hdr->ether_dhost[3], eth_hdr->ether_dhost[4], \
-      eth_hdr->ether_dhost[5]);
+    if (eth_hdr == nullptr) { \
+        _ND_LOG_DISCARD(tag, reason) \
+    } \
+    else { \
+        nd_dprintf( \
+          "%s: discard: %s: src: " \
+          "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx, " \
+          "dst: " \
+          "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n", \
+          tag, reason, eth_hdr->ether_shost[0], \
+          eth_hdr->ether_shost[1], eth_hdr->ether_shost[2], \
+          eth_hdr->ether_shost[3], eth_hdr->ether_shost[4], \
+          eth_hdr->ether_shost[5], eth_hdr->ether_dhost[0], \
+          eth_hdr->ether_dhost[1], eth_hdr->ether_dhost[2], \
+          eth_hdr->ether_dhost[3], eth_hdr->ether_dhost[4], \
+          eth_hdr->ether_dhost[5]); \
+    }
 
 // Enable to log TCP flags
 // #define _ND_LOG_PKT_TCP_FLAGS 1
@@ -1148,35 +1154,25 @@ nd_process_ip:
       pkt_len > sizeof(struct nd_dns_header_t) &&
       packet->caplen == packet->length)
     {
-        uint16_t lport = nf->lower_addr.GetPort(),
-                 uport = nf->upper_addr.GetPort();
         ndProto::Id proto = ndProto::Id::UNKNOWN;
 
-        // DNS, MDNS, or LLMNR?
-        if (lport == 53 || uport == 53)
-            proto = ndProto::Id::DNS;
-        else if (lport == 5353 || uport == 5353)
-            proto = ndProto::Id::MDNS;
-        else if (lport == 5355 || uport == 5355)
-            proto = ndProto::Id::LLMNR;
+        if (nf->GetMasterProtocol() == ndProto::Id::DNS)
+            proto = nf->detected_protocol;
+        else {
+            uint16_t lport = nf->lower_addr.GetPort(),
+                     uport = nf->upper_addr.GetPort();
 
-        if (proto != ndProto::Id::UNKNOWN) {
-            bool is_query = ProcessDNSPacket(nf, pkt, pkt_len, proto);
-
-            if (is_query && nf->flags.detection_complete.load())
-            {
-                // Reset flow in case we have another query from the
-                // same client and server, using the same local and
-                // remote ports.
-                lock_guard<recursive_mutex> lg(nf->lock);
-
-                nf->Reset(true);
-                nf->stats = flow.stats;
-#ifdef _ND_LOG_DHC
-                nd_dprintf("%s: Reset DNS flow.\n", tag.c_str());
-#endif
-            }
+            // DNS, MDNS, or LLMNR?
+            if (lport == 53 || uport == 53)
+                proto = ndProto::Id::DNS;
+            else if (lport == 5353 || uport == 5353)
+                proto = ndProto::Id::MDNS;
+            else if (lport == 5355 || uport == 5355)
+                proto = ndProto::Id::LLMNR;
         }
+
+        if (proto != ndProto::Id::UNKNOWN)
+            ProcessDNSPacket(nf, pkt, pkt_len, proto);
     }
 
     if (nf->flags.detection_complete.load() == false &&

@@ -5,6 +5,5 @@ offline0: i4pc-------r-F- TCP [L] 192.168.0.4:54337 --> [OR] 192.254.189.169:80
         : URL: browserspy.dk/password-ok.php
         : RID  3: Clear-Text Credentials
         : RID  8: Error Code
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 

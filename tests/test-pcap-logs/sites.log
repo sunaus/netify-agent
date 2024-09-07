@@ -16,7 +16,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.73.71.226:443 <-- [L] 192.168.1.227:50071
         : HTTP/S
         : H: presence.fuze.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: presence.fuze.com
+        : TLS/SNI: presence.fuze.com TLS/CN: presence.fuze.com
         : TLS/IDN: C=US, O=Amazon, OU=Server CA 1B, CN=Amazon TLS/SDN: CN=*.presence.fuze.com
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -28,19 +28,18 @@ offline0: i4pcu--------F- TCP [OR] 91.198.174.208:443 <-- [L] 192.168.1.128:5062
         : TLS/SNI: upload.wikimedia.org
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
+offline0: i4pc---------F- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
         : HTTP.netify.likee
         : H: videosnap.like.video
         : HTTP/UA: Like-Android
         : URL: videosnap.like.video/eu_live/5uz/1YOmxT.webp?type=8&resize=1&dw=360
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pcu------r-F- TCP [L] 192.168.1.128:46724 --> [OR] 199.232.82.109:443
         : HTTP/S.netify.vimeo
         : H: f.vimeocdn.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: f.vimeocdn.com
+        : TLS/SNI: f.vimeocdn.com TLS/CN: vimeocdn.com
         : TLS/IDN: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Atlas R3 DV TLS CA 2020 TLS/SDN: CN=*.vimeocdn.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -108,7 +107,7 @@ offline0: i4pcu------r--- TCP [OR] 151.101.192.92:443 <-- [L] 192.168.1.128:5646
         : HTTP/S.netify.vevo
         : H: vevo.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: vevo.com
+        : TLS/SNI: vevo.com TLS/CN: cache.vevo.com
         : TLS/IDN: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Atlas R3 DV TLS CA 2020 TLS/SDN: CN=*.cache.vevo.com
         : RID 30: TLS Certificate Expired
         : DP: 6
@@ -138,7 +137,7 @@ offline0: i4pcu------r--- TCP [OR] 95.131.169.91:443 <-- [L] 192.168.1.128:51248
         : HTTP/S.netify.tuenti
         : H: tuenti.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: tuenti.com
+        : TLS/SNI: tuenti.com TLS/CN: tuenti.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1 TLS/SDN: C=ES, L=Madrid, O=Tuenti Technologies S.L., CN=*.tuenti.com
         : RID 30: TLS Certificate Expired
         : DP: 6
@@ -147,7 +146,7 @@ offline0: i4pcu------r--- TCP [OR] 95.131.170.91:443 <-- [L] 192.168.1.128:39302
         : HTTP/S.netify.tuenti
         : H: static.tuenti.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: static.tuenti.com
+        : TLS/SNI: static.tuenti.com TLS/CN: tuenti.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1 TLS/SDN: C=ES, L=Madrid, O=Tuenti Technologies S.L., CN=*.tuenti.com
         : RID 30: TLS Certificate Expired
         : DP: 6
@@ -182,7 +181,7 @@ offline0: i4pcu---------- TCP [OR] 108.139.210.102:443 <-- [L] 192.168.1.128:570
         : TLS/SNI: sourcepointcmp.bloomberg.com
         : DP: 4
 
-offline0: i4pcu------r--- TCP [OR] 13.107.42.14:443 <-- [L] 192.168.1.128:48654
+offline0: i4pc-------r--- TCP [OR] 13.107.42.14:443 <-- [L] 192.168.1.128:48654
         : HTTP/S.netify.linkedin
         : H: www.linkedin.com
         : V: 0x0303 CS: 0xc030
@@ -251,7 +250,7 @@ offline0: i4pcu---------- TCP [OR] 15.160.39.187:443 <-- [L] 192.168.1.128:45898
         : TLS/SNI: guzzoni.apple.com
         : DP: 4
 
-offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.128:57878
+offline0: i4pc-------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.128:57878
         : HTTP/S.netify.teams
         : H: teams.office.com
         : V: 0x0303 CS: 0xc030
@@ -274,7 +273,7 @@ offline0: i4pcu---------- TCP [OR] 142.250.185.142:443 <-- [L] 192.168.1.128:564
         : TLS/SNI: drive.google.com
         : DP: 4
 
-offline0: i4pcu------r--- TCP [OR] 13.81.118.91:443 <-- [L] 192.168.1.128:33102
+offline0: i4pc-------r--- TCP [OR] 13.81.118.91:443 <-- [L] 192.168.1.128:33102
         : HTTP/S.netify.microsoft-onedrive
         : H: onedrive.com
         : V: 0x0303 CS: 0xc030
@@ -283,7 +282,7 @@ offline0: i4pcu------r--- TCP [OR] 13.81.118.91:443 <-- [L] 192.168.1.128:33102
         : RID 30: TLS Certificate Expired
         : DP: 7
 
-offline0: i4pcu------r--- TCP [OR] 13.107.42.13:443 <-- [L] 192.168.1.128:56836
+offline0: i4pc-------r--- TCP [OR] 13.107.42.13:443 <-- [L] 192.168.1.128:56836
         : HTTP/S.netify.microsoft-onedrive
         : H: onedrive.live.com
         : V: 0x0303 CS: 0xc030
@@ -328,7 +327,7 @@ offline0: i4pcu------r--- TCP [L] 192.168.1.128:53978 --> [OR] 208.85.40.158:443
         : HTTP/S.netify.pandora
         : H: pandora.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: pandora.com
+        : TLS/SNI: pandora.com TLS/CN: pandora.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1 TLS/SDN: C=US, ST=California, L=Oakland, O=Pandora Media, LLC, CN=*.pandora.com
         : RID 30: TLS Certificate Expired
         : DP: 6
