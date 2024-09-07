@@ -7,7 +7,7 @@ offline0: i4pcu------r--- TCP [OR] 172.217.22.14:443 <-- [L] 192.168.1.103:38657
         : HTTP/S.netify.google
         : D: sb.l.google.com H: safebrowsing.googleusercontent.com
         : V: 0x0303 CS: 0xcca9
-        : TLS/SNI: safebrowsing.googleusercontent.com
+        : TLS/SNI: safebrowsing.googleusercontent.com TLS/CN: googleusercontent.com
         : TLS/IDN: C=US, O=Google Inc, CN=Google Internet Authority G2 TLS/SDN: C=US, ST=California, L=Mountain View, O=Google Inc, CN=*.googleusercontent.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -38,7 +38,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.103:57591 --> [OR] 216.58.198.46:443
 
 offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54089 --> [OR] 203.205.151.162:443
         : HTTP/S.netify.wechat
-        : D: web1.wechat.com H: web.wechat.com
+        : H: web.wechat.com
         : V: 0x0303 CS: 0xc02f
         : TLS/SNI: web.wechat.com TLS/CN: web.wechat.com
         : TLS/IDN: C=US, O=GeoTrust Inc., CN=GeoTrust SSL CA - G3 TLS/SDN: C=HK, ST=HongKong, L=Wan Chai, O=Tencent Mobility Limited, CN=web.wechat.com
@@ -46,8 +46,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54089 --> [OR] 203.205.151.162:4
         : DP: 8
 
 offline0: i4pc----------- TCP [L] 192.168.1.103:54058 --> [OR] 203.205.151.162:443
-        : HTTP/S.netify.wechat
-        : D: web1.wechat.com
+        : HTTP/S
         : DP: 3
 
 offline0: i4pcu------r-F- TCP [L] 192.168.1.103:54090 --> [OR] 203.205.151.162:443
@@ -408,11 +407,6 @@ offline0: i4pc-------rs-- UDP [L] 192.168.1.103:37578 --> [OR] 193.204.114.233:1
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------rs-- UDP [L] 192.168.1.103:37578 --> [OR] 193.204.114.233:123
-        : NTP.netify.ntp
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
 offline0: i4pc----------- IGMP [L] 192.168.1.108:0 --> [OM] 224.0.0.22:0
         : IGMP
         : DP: 1
@@ -430,8 +424,7 @@ offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54112 --> [OR] 203.205.151.162:4
         : DP: 9
 
 offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54085 --> [OR] 203.205.151.162:443
-        : HTTP/S.netify.wechat
-        : D: web1.wechat.com
+        : HTTP/S
         : RID 56: Probing Attempt
         : DP: 3
 
@@ -551,8 +544,7 @@ offline0: i4pc--x----r--- UDP [L] 192.168.1.103:53515 --> [OL] 192.168.1.254:53
         : DP: 1
 
 offline0: i4pc-gx----r-F- TCP [L] 192.168.1.103:54084 --> [OR] 203.205.151.162:443
-        : HTTP/S.netify.wechat
-        : D: web1.wechat.com
+        : HTTP/S
         : RID 56: Probing Attempt
         : DP: 6
 

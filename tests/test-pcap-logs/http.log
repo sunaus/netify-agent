@@ -1,8 +1,7 @@
-offline0: i4pc-------r-F- TCP [L] 192.168.1.128:42170 --> [OR] 216.58.208.142:80
+offline0: i4pc---------F- TCP [L] 192.168.1.128:42170 --> [OR] 216.58.208.142:80
         : HTTP.netify.google
         : H: google.com
         : HTTP/UA: curl/7.68.0
         : URL: google.com/
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 

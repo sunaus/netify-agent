@@ -259,7 +259,23 @@ offline0: i4pc-------r--- UDP [OR] 168.144.64.5:55637 --> [L] 169.81.163.225:443
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53127
+offline0: i4pc--x----r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53127
+        : QUIC.netify.google
+        : H: b1.nel.goog
+        : V: 0x0304
+        : TLS/SNI: b1.nel.goog
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc--x----r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53127
+        : QUIC.netify.google
+        : H: b1.nel.goog
+        : V: 0x0304
+        : TLS/SNI: b1.nel.goog
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc--x----r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:53127
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304
@@ -307,7 +323,7 @@ offline0: i4pc-------r--- UDP [OR] 98.251.203.81:443 <-- [L] 192.168.254.11:4342
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 171.182.169.23:443 <-- [L] 192.168.254.11:54692
-        : QUIC.netify.bank-of-america
+        : QUIC
         : H: www.freearabianporn.com
         : V: 0x0304
         : TLS/SNI: www.freearabianporn.com
@@ -426,7 +442,7 @@ offline0: i4pc-------r--- UDP [OR] 22.12.150.194:443 <-- [L] 168.144.64.5:59965
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc--x----r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:64693
+offline0: i4pc-------r--- UDP [OR] 113.250.137.243:443 <-- [L] 168.144.64.5:64693
         : QUIC.netify.google
         : H: b1.nel.goog
         : V: 0x0304

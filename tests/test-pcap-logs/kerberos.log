@@ -26,6 +26,12 @@ offline0: i4pc----------- TCP [L] 172.16.8.8:88 <-- [OL] 172.16.8.201:49187
         : Kerberos
         : DP: 2
 
+offline0: i4pc-gx----r--- TCP [L] 172.16.8.8:88 <-- [OL] 172.16.8.201:49189
+        : Kerberos
+        : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
+        : DP: 1
+
 offline0: i4pc--x-------- TCP [L] 172.16.8.8:88 <-- [OL] 172.16.8.201:49182
         : Kerberos
         : DP: 2
@@ -61,11 +67,6 @@ offline0: i4pc-gx----r--- TCP [L] 172.16.8.8:88 <-- [OL] 172.16.8.201:49159
         : DP: 2
 
 offline0: i4pc-gx----r--- TCP [L] 172.16.8.8:88 <-- [OL] 172.16.8.201:49183
-        : Kerberos
-        : RID 28: Suspicious Entropy
-        : DP: 2
-
-offline0: i4pc-gx----r--- TCP [L] 172.16.8.8:88 <-- [OL] 172.16.8.201:49189
         : Kerberos
         : RID 28: Suspicious Entropy
         : DP: 2

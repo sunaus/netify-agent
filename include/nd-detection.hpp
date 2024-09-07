@@ -29,16 +29,19 @@ public:
       const ndPacket *packet,
       const uint8_t *data,
       uint16_t length)
-      : packet(packet), flow(flow), data(data), length(length) { }
+      : flow(flow), packet(packet), data(data), length(length) { }
+
+    ndDetectionQueueEntry(nd_flow_ptr &flow)
+      : flow(flow) { }
 
     virtual ~ndDetectionQueueEntry() {
         if (packet != nullptr) delete packet;
     }
 
-    const ndPacket *packet;
     nd_flow_ptr flow;
-    const uint8_t *data;
-    uint16_t length;
+    const ndPacket *packet = { nullptr };
+    const uint8_t *data = { nullptr };
+    uint16_t length = { 0 };
 };
 
 class ndDetectionThread : public ndThread, public ndInstanceClient
@@ -94,22 +97,26 @@ protected:
 
     ndProto::Id
     ProtocolLookup(uint16_t id, ndDetectionQueueEntry *entry);
-    void HashCacheLookup(ndDetectionQueueEntry *entry,
-      bool insert = false);
 
     void ProcessPacketQueue(void);
     void ProcessPacket(ndDetectionQueueEntry *entry);
+    void ProcessFlow(ndDetectionQueueEntry *entry);
     bool ProcessALPN(ndDetectionQueueEntry *entry,
       bool client = true);
-    void ProcessFlow(ndDetectionQueueEntry *entry);
     void ProcessRisks(ndDetectionQueueEntry *entry);
 
+    void SetHostServerName(ndDetectionQueueEntry *entry,
+      const char *host_serer_name);
+    void SetDetectedProtocol(ndDetectionQueueEntry *entry,
+      ndProto::Id id);
     void SetDetectedApplication(ndDetectionQueueEntry *entry,
-      nd_app_id_t app_id);
-    void SetGuessedProtocol(ndDetectionQueueEntry *entry);
-    void SetDetectionComplete(ndDetectionQueueEntry *entry);
+      nd_app_id_t id);
 
-    void FlowUpdate(ndDetectionQueueEntry *entry);
+    void DispatchEvent(ndDetectionQueueEntry *entry);
+
+    void DetectionUpdate(ndDetectionQueueEntry *entry);
+    void DetectionGuess(ndDetectionQueueEntry *entry);
+    void DetectionComplete(ndDetectionQueueEntry *entry);
 
 #ifdef _ND_ENABLE_DEBUG_STATS
     uint64_t flows = { 0 };

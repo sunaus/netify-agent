@@ -121,12 +121,11 @@ offline0: i4pcu--------F- TCP [OR] 17.253.105.202:443 <-- [L] 192.168.2.17:50579
         : TLS/SNI: mesu.apple.com
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 17.253.105.202:80 <-- [L] 192.168.2.17:49152
+offline0: i4pc---------F- TCP [OR] 17.253.105.202:80 <-- [L] 192.168.2.17:49152
         : HTTP.netify.apple
         : D: mesu.g.aaplimg.com H: captive.apple.com
         : HTTP/UA: CaptiveNetworkSupport-390.60.1 wispr
         : URL: captive.apple.com/hotspot-detect.html
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pcu--------F- TCP [OR] 17.253.105.202:443 <-- [L] 192.168.2.17:50578
@@ -140,7 +139,7 @@ offline0: i4pcu------r--- TCP [OR] 17.130.2.46:443 <-- [L] 192.168.2.17:50577
         : HTTP/S.netify.apple
         : D: gsp85-ssl.ls2-apple.com.akadns.net H: gsp85-ssl.ls.apple.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: gsp85-ssl.ls.apple.com
+        : TLS/SNI: gsp85-ssl.ls.apple.com TLS/CN: ls.apple.com
         : TLS/IDN: CN=Apple IST CA 2 - G1, OU=Certification Authority, O=Apple Inc., C=US TLS/SDN: CN=*.ls.apple.com, OU=management:idms.group.576486, O=Apple Inc., ST=California, C=US
         : RID 30: TLS Certificate Expired
         : DP: 8

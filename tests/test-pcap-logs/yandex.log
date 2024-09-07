@@ -2,7 +2,7 @@ offline0: i4pcu------r--- TCP [L] 192.168.1.249:40218 --> [OR] 213.180.204.186:4
         : HTTP/S.netify.yandex
         : H: music.yandex.kz
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: music.yandex.kz
+        : TLS/SNI: music.yandex.kz TLS/CN: music.yandex.ru
         : TLS/IDN: C=BE, O=GlobalSign nv-sa, CN=GlobalSign RSA OV SSL CA 2018 TLS/SDN: C=RU, ST=Moscow, L=Moscow, O=Yandex LLC, CN=*.music.yandex.ru
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -25,7 +25,7 @@ offline0: i4pcu------r--- TCP [OR] 77.88.21.127:443 <-- [L] 192.168.1.249:42954
         : HTTP/S.netify.yandex
         : H: 1.downloader.disk.yandex.kz
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: 1.downloader.disk.yandex.kz
+        : TLS/SNI: 1.downloader.disk.yandex.kz TLS/CN: downloader.disk.yandex.uz
         : TLS/IDN: C=BE, O=GlobalSign nv-sa, CN=GlobalSign RSA OV SSL CA 2018 TLS/SDN: C=RU, ST=Moscow, L=Moscow, O=Yandex LLC, CN=*.downloader.disk.yandex.uz
         : RID 30: TLS Certificate Expired
         : DP: 8

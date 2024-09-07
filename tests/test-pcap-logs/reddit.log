@@ -9,7 +9,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: www.reddit.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: www.reddit.com
+        : TLS/SNI: www.reddit.com TLS/CN: reddit.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.reddit.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -25,7 +25,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: www.reddit.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: www.reddit.com
+        : TLS/SNI: www.reddit.com TLS/CN: reddit.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.reddit.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -88,7 +88,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: styles.redditmedia.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: styles.redditmedia.com
+        : TLS/SNI: styles.redditmedia.com TLS/CN: redditmedia.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redditmedia.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -97,7 +97,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: styles.redditmedia.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: styles.redditmedia.com
+        : TLS/SNI: styles.redditmedia.com TLS/CN: redditmedia.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redditmedia.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -106,7 +106,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: styles.redditmedia.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: styles.redditmedia.com
+        : TLS/SNI: styles.redditmedia.com TLS/CN: redditmedia.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redditmedia.com
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -115,7 +115,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: preview.redd.it
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: preview.redd.it
+        : TLS/SNI: preview.redd.it TLS/CN: redd.it
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redd.it
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -124,7 +124,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: styles.redditmedia.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: styles.redditmedia.com
+        : TLS/SNI: styles.redditmedia.com TLS/CN: redditmedia.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redditmedia.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -133,7 +133,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: preview.redd.it
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: preview.redd.it
+        : TLS/SNI: preview.redd.it TLS/CN: redd.it
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redd.it
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -142,7 +142,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: preview.redd.it
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: preview.redd.it
+        : TLS/SNI: preview.redd.it TLS/CN: redd.it
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redd.it
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -151,7 +151,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: preview.redd.it
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: preview.redd.it
+        : TLS/SNI: preview.redd.it TLS/CN: redd.it
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redd.it
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -160,7 +160,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: emoji.redditmedia.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: emoji.redditmedia.com
+        : TLS/SNI: emoji.redditmedia.com TLS/CN: redditmedia.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redditmedia.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -169,7 +169,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: emoji.redditmedia.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: emoji.redditmedia.com
+        : TLS/SNI: emoji.redditmedia.com TLS/CN: redditmedia.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.redditmedia.com
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -178,7 +178,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: b.thumbs.redditmedia.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: b.thumbs.redditmedia.com
+        : TLS/SNI: b.thumbs.redditmedia.com TLS/CN: thumbs.redditmedia.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.thumbs.redditmedia.com
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -259,7 +259,7 @@ offline0: i6pcu------r--- TCP [OR] 2620:116:800d:21:f916:5049:f87f:108e:443 <-- 
         : HTTP/S.netify.quantcast
         : H: secure.quantserve.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: secure.quantserve.com
+        : TLS/SNI: secure.quantserve.com TLS/CN: quantserve.com
         : TLS/IDN: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert SHA2 High Assurance Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Quantcast Corporation, CN=*.quantserve.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -347,7 +347,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.reddit
         : H: gateway.reddit.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: gateway.reddit.com
+        : TLS/SNI: gateway.reddit.com TLS/CN: reddit.com
         : TLS/IDN: C=US, O=DigiCert Inc, CN=DigiCert SHA2 Secure Server CA TLS/SDN: C=US, ST=California, L=San Francisco, O=Reddit Inc., CN=*.reddit.com
         : RID 30: TLS Certificate Expired
         : DP: 10

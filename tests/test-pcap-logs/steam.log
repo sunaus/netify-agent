@@ -2,12 +2,11 @@ offline0: i4pc----------- UDP [L] 192.168.88.231:27036 --> [OL] 192.168.88.255:2
         : Steam.netify.steam
         : DP: 1
 
-offline0: i4pc-------r-F- TCP [OR] 2.20.254.25:80 <-- [L] 192.168.88.231:59739
+offline0: i4pc---------F- TCP [OR] 2.20.254.25:80 <-- [L] 192.168.88.231:59739
         : HTTP.netify.steam
         : H: test.steampowered.com
         : HTTP/UA: Valve/Steam HTTP Client 1.0
         : URL: test.steampowered.com/204
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pcu---------- TCP [OR] 188.114.98.224:443 <-- [L] 192.168.88.231:54243
@@ -18,7 +17,7 @@ offline0: i4pcu---------- TCP [OR] 188.114.98.224:443 <-- [L] 192.168.88.231:542
         : DP: 6
 
 offline0: i4pc-------r--- UDP [OR] 155.133.252.86:27045 <-- [L] 192.168.88.231:46604
-        : Valve/SDR.netify.valve
+        : Valve/SDR
         : RID 46: Unidirectional Traffic
         : DP: 1
 

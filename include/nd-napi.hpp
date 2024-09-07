@@ -106,7 +106,7 @@ protected:
     std::string tag;
     std::string token;
     std::string url;
-    uint8_t *digest;
+    ndDigest digest = { 0 };
 };
 
 class ndNetifyApiManager

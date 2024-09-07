@@ -63,7 +63,6 @@
 
 #include "nd-config.hpp"
 #include "nd-except.hpp"
-#include "nd-sha1.h"
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
@@ -259,10 +258,10 @@ void nd_trim(string &s, unsigned char c) {
     nd_rtrim(s, c);
 }
 
-int nd_sha1_file(const string &filename, uint8_t *digest) {
+int nd_sha1_file(const string &filename, ndDigest &digest) {
     sha1 ctx;
     int fd = open(filename.c_str(), O_RDONLY);
-    uint8_t buffer[ND_SHA1_BUFFER], _digest[SHA1_DIGEST_LENGTH];
+    uint8_t buffer[ND_SHA1_BUFFER];
     ssize_t bytes;
 
     sha1_init(&ctx);
@@ -288,38 +287,47 @@ int nd_sha1_file(const string &filename, uint8_t *digest) {
     while (bytes != 0);
 
     close(fd);
-    memcpy(digest, sha1_result(&ctx, _digest), SHA1_DIGEST_LENGTH);
+    sha1_result(&ctx, digest.data());
 
     return 0;
 }
 
-void nd_sha1_to_string(const uint8_t *digest_bin, string &digest_str) {
-    char _digest[SHA1_DIGEST_LENGTH * 2 + 1];
-    char *p = _digest;
+void nd_sha1_to_string(const ndDigest &digest, string &digest_str) {
+    array<char, SHA1_DIGEST_LENGTH * 2> _digest;
+    char *p = _digest.data();
 
     for (int i = 0; i < SHA1_DIGEST_LENGTH; i++, p += 2)
-        sprintf(p, "%02hhx", digest_bin[i]);
+        sprintf(p, "%02hhx", digest[i]);
 
-    digest_str.assign(_digest);
+    digest_str.assign(_digest.begin(), _digest.end());
 }
 
-void nd_sha1_to_string(const vector<uint8_t> &digest_bin,
+void nd_sha1_to_string(const ndDigestDynamic &digest,
   string &digest_str) {
-    nd_sha1_to_string((const uint8_t *)&digest_bin[0], digest_str);
+    if (digest.size() != SHA1_DIGEST_LENGTH) {
+        throw ndException(
+          "%s: invalid digest length: %lu != %u",
+          __PRETTY_FUNCTION__, digest.size(), SHA1_DIGEST_LENGTH);
+    }
+
+    ndDigest _digest;
+    memcpy(_digest.data(), digest.data(), SHA1_DIGEST_LENGTH);
+
+    return nd_sha1_to_string(_digest, digest_str);
 }
 
-bool nd_string_to_sha1(const string &digest_str,
-  vector<uint8_t> &digest_bin) {
-    digest_bin.clear();
+bool nd_string_to_sha1(const string &digest_str, ndDigest &digest) {
+    digest.fill('\0');
 
+    size_t i = 0;
     istringstream is(digest_str);
-    while (is.good()) {
+    while (i < SHA1_DIGEST_LENGTH && is.good()) {
         string octet;
         is >> setw(2) >> octet;
         if (octet.size() == 2) {
             try {
                 uint8_t byte = (uint8_t)stoul(octet, nullptr, 16);
-                digest_bin.push_back(byte);
+                digest[i++] = byte;
             }
             catch (invalid_argument &e) {
                 nd_dprintf(
@@ -338,7 +346,18 @@ bool nd_string_to_sha1(const string &digest_str,
         }
     }
 
-    return (digest_bin.size() == SHA1_DIGEST_LENGTH);
+    return (i == SHA1_DIGEST_LENGTH);
+}
+
+bool nd_string_to_sha1(const string &digest_str,
+  ndDigestDynamic &digest) {
+    ndDigest _digest;
+    if (! nd_string_to_sha1(digest_str, _digest))
+        return false;
+
+    digest.assign(_digest.begin(), _digest.end());
+
+    return true;
 }
 
 bool nd_string_to_mac(const string &src, uint8_t *mac) {
@@ -1314,6 +1333,8 @@ void nd_set_hostname(string &dst, bool strict) {
         }
         return (unsigned char)'_';
     });
+
+    nd_trim(dst, '.');
 }
 
 void nd_set_hostname(string &dst, const char *src,
@@ -1325,25 +1346,23 @@ void nd_set_hostname(string &dst, const char *src,
     // SSDP.
     if (strict) {
         for (size_t i = 0; i < length; i++) {
+            if (src[i] == '\0') break;
             if (isalnum(src[i]) || src[i] == '-' ||
               src[i] == '_' || src[i] == '.')
                 dst += (char)tolower(src[i]);
-            else break;
         }
     }
     else {
         for (size_t i = 0; i < length; i++) {
+            if (src[i] == '\0') break;
             if (isalnum(src[i]) || ispunct(src[i]) ||
               src[i] == ' ' || src[i] == '\0')
-            {
                 dst += src[i];
-                if (src[i] == '\0') break;
-            }
             else dst += '_';
         }
     }
 
-    nd_rtrim(dst, '.');
+    nd_trim(dst, '.');
 }
 
 void nd_set_hostname(char *dst, const char *src,

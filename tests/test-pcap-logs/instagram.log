@@ -10,23 +10,21 @@ offline0: i4pcu------r--- TCP [OR] 173.252.107.4:443 <-- [L] 192.168.0.103:56382
         : RID 36: Obsolete TLS (v1.1 or older)
         : DP: 6
 
-offline0: i4pc-------r--- TCP [OR] 46.33.70.160:80 <-- [L] 192.168.0.103:38816
+offline0: i4pc----------- TCP [OR] 46.33.70.160:80 <-- [L] 192.168.0.103:38816
         : HTTP.netify.instagram
-        : H: photos-h.ak.instagram.com
+        : D: a1408.dspw43.akamai.net H: photos-h.ak.instagram.com
         : HTTP/UA: Instagram 7.1.1 Android (19/4.4.2; 480dpi; 1080x1920; samsung; GT-I9505; jflte; qcom; it_IT)
         : URL: photos-h.ak.instagram.com/hphotos-ak-xap1/t51.2885-15/e35/10859994_1009433792434447_1627646062_n.jpg?se=7
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc-------r--- TCP [OR] 82.85.26.162:80 <-- [L] 192.168.0.103:57936
+offline0: i4pc----------- TCP [OR] 82.85.26.162:80 <-- [L] 192.168.0.103:57936
         : HTTP.netify.instagram
         : H: photos-g.ak.instagram.com
         : HTTP/UA: Instagram 7.1.1 Android (19/4.4.2; 480dpi; 1080x1920; samsung; GT-I9505; jflte; qcom; it_IT)
         : URL: photos-g.ak.instagram.com/hphotos-ak-xaf1/t51.2885-15/e15/11386524_110257619317430_379513654_n.jpg
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
-offline0: i4pc----------- TCP [OR] 82.85.26.186:80 <-- [L] 192.168.0.103:44379
+offline0: i4pc---------F- TCP [OR] 82.85.26.186:80 <-- [L] 192.168.0.103:44379
         : HTTP.netify.instagram
         : H: photos-e.ak.instagram.com
         : HTTP/UA: Instagram 7.1.1 Android (19/4.4.2; 480dpi; 1080x1920; samsung; GT-I9505; jflte; qcom; it_IT)
@@ -119,12 +117,11 @@ offline0: i4pc----------- TCP [OR] 31.13.93.52:443 <-- [L] 192.168.0.103:33763
         : HTTP/S.netify.meta
         : DP: 5
 
-offline0: i4pc-------r--- TCP [OR] 82.85.26.162:80 <-- [L] 192.168.0.103:58052
+offline0: i4pc----------- TCP [OR] 82.85.26.162:80 <-- [L] 192.168.0.103:58052
         : HTTP.netify.instagram
         : H: photos-g.ak.instagram.com
         : HTTP/UA: Instagram 7.1.1 Android (19/4.4.2; 480dpi; 1080x1920; samsung; GT-I9505; jflte; qcom; it_IT)
         : URL: photos-g.ak.instagram.com/hphotos-ak-xaf1/t51.2885-15/e35/11417349_1610424452559638_1559096152_n.jpg?se=7
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 2
 
 offline0: i4pc-g-----r--- TCP [OR] 31.13.86.52:80 <-- [L] 192.168.0.103:58216
@@ -149,6 +146,20 @@ offline0: i4pcu---------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49355
         : TLS/SNI: scontent-mxp1-1.cdninstagram.com
         : DP: 6
 
+offline0: i4pc----------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49358
+        : HTTP/S.netify.instagram
+        : H: scontent-mxp1-1.cdninstagram.com
+        : V: 0x0303
+        : TLS/SNI: scontent-mxp1-1.cdninstagram.com
+        : DP: 4
+
+offline0: i4pc----------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49359
+        : HTTP/S.netify.instagram
+        : H: scontent-mxp1-1.cdninstagram.com
+        : V: 0x0303
+        : TLS/SNI: scontent-mxp1-1.cdninstagram.com
+        : DP: 4
+
 offline0: i4pcu--------F- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49357
         : HTTP/S.netify.instagram
         : H: scontent-mxp1-1.cdninstagram.com
@@ -156,33 +167,19 @@ offline0: i4pcu--------F- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49357
         : TLS/SNI: scontent-mxp1-1.cdninstagram.com
         : DP: 8
 
-offline0: i4pcu---------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49358
+offline0: i4pc----------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49360
         : HTTP/S.netify.instagram
         : H: scontent-mxp1-1.cdninstagram.com
-        : V: 0x0303 CS: 0x1301
+        : V: 0x0303
         : TLS/SNI: scontent-mxp1-1.cdninstagram.com
-        : DP: 8
+        : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49359
+offline0: i4pc----------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49361
         : HTTP/S.netify.instagram
         : H: scontent-mxp1-1.cdninstagram.com
-        : V: 0x0303 CS: 0x1301
+        : V: 0x0303
         : TLS/SNI: scontent-mxp1-1.cdninstagram.com
-        : DP: 8
-
-offline0: i4pcu---------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49360
-        : HTTP/S.netify.instagram
-        : H: scontent-mxp1-1.cdninstagram.com
-        : V: 0x0303 CS: 0x1301
-        : TLS/SNI: scontent-mxp1-1.cdninstagram.com
-        : DP: 8
-
-offline0: i4pcu---------- TCP [OR] 31.13.86.52:443 <-- [L] 192.168.2.17:49361
-        : HTTP/S.netify.instagram
-        : H: scontent-mxp1-1.cdninstagram.com
-        : V: 0x0303 CS: 0x1301
-        : TLS/SNI: scontent-mxp1-1.cdninstagram.com
-        : DP: 8
+        : DP: 4
 
 offline0: i4pc--x----r--- UDP [OR] 8.8.8.8:53 <-- [L] 192.168.0.103:27124
         : DNS.netify.instagram

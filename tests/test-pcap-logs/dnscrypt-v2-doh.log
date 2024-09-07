@@ -48,7 +48,7 @@ offline0: i4pcu------r--- TCP [L] 10.0.0.1:37530 --> [OR] 167.114.220.125:453
         : RID 16: Known Protocol on Non-standard Port
         : DP: 2
 
-offline0: i4pcu------r--- TCP [L] 10.0.0.1:38186 --> [OR] 185.43.135.1:443
+offline0: i4pc-------r--- TCP [L] 10.0.0.1:38186 --> [OR] 185.43.135.1:443
         : HTTP/S
         : H: odvr.nic.cz
         : V: 0x0303 CS: 0xc02f

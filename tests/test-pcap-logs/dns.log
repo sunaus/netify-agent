@@ -9,8 +9,3 @@ offline0: i4pc----------- UDP [OR] 82.178.113.245:47255 --> [L] 82.178.158.181:5
         : H: e7.whatsapp.net
         : DP: 2
 
-offline0: i4pc--x-------- UDP [L] 192.168.170.8:32795 --> [OL] 192.168.170.20:53
-        : DNS.netify.google
-        : H: www.example.com
-        : DP: 2
-

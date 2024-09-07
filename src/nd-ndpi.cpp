@@ -189,9 +189,12 @@ struct ndpi_detection_module_struct *nd_ndpi_init(void) {
 
     ndpi_set_protocol_detection_bitmask2(ndpi, &ndpi_protos);
 
-    ndpi_set_config(ndpi, "any", "ip_list.load", "0");
     ndpi_set_config(ndpi, nullptr, "flow_risk_lists.load",
       "0");
+
+    ndpi_set_config(ndpi, "any", "ip_list.load", "0");
+
+    ndpi_set_config(ndpi, "dns", "process_response", "1");
 
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
     if (ndGC_DEBUG) {

@@ -362,25 +362,14 @@ void *ndNetifyApiBootstrap::Entry(void) {
 ndNetifyApiDownload::ndNetifyApiDownload(const string &token,
   const string &url, const string &filename)
   : ndNetifyApiThread(), tag("api-download"), token(token),
-    url(url), digest(nullptr) {
+    url(url) {
     if (! filename.empty()) {
-        digest = new uint8_t[SHA1_DIGEST_LENGTH];
-
-        if (nd_sha1_file(filename, digest) < 0) {
-            delete[] digest;
-            digest = nullptr;
-        }
-
+        nd_sha1_file(filename, digest);
         nd_basename(filename, tag);
     }
 }
 
 ndNetifyApiDownload::~ndNetifyApiDownload() {
-    if (digest != nullptr) {
-        delete[] digest;
-        digest = nullptr;
-    }
-
     if (! content_filename.empty())
         unlink(content_filename.c_str());
 }
@@ -397,7 +386,7 @@ void *ndNetifyApiDownload::Entry(void) {
     try {
         Perform(ndNetifyApiThread::Method::HEAD, url, headers);
 
-        if (digest != nullptr && http_rc == 200) {
+        if (http_rc == 200) {
             auto hdr_sha1 = headers_rx.find("x-sha1-hash");
             if (hdr_sha1 == headers_rx.end()) {
                 nd_dprintf(

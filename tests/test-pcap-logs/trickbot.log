@@ -5,7 +5,6 @@ offline0: i4pc-------r-F- TCP [L] 10.12.29.101:61318 --> [OR] 82.118.225.196:708
         : URL: 82.118.225.196:7080/OK21pqJAtyyGBEo00sk
         : RID 10: Numeric IP Address
         : RID 11: HTTP Suspicious Content
-        : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
         : DP: 8
 

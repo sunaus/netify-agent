@@ -3,12 +3,11 @@ offline0: i4pc----------- TCP [L] 10.2.25.102:57309 --> [OR] 193.252.22.84:587
         : H: opmta1mto02nd1
         : DP: 19
 
-offline0: i4pc-------r--- TCP [L] 10.3.29.101:56309 --> [OR] 104.161.127.22:80
+offline0: i4pc----------- TCP [L] 10.3.29.101:56309 --> [OR] 104.161.127.22:80
         : HTTP
         : H: fkl.co.ke
         : HTTP/UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36 Edg/99.0.1150.55
         : URL: fkl.co.ke/wp-content/Elw3kPvOsZxM5/
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 10.4.20.102:54319 --> [OR] 107.161.178.210:80
@@ -17,7 +16,6 @@ offline0: i4pc-------r--- TCP [L] 10.4.20.102:54319 --> [OR] 107.161.178.210:80
         : HTTP/UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; rv:11.0) like Gecko
         : URL: gandhitoday.org/video/6JvA8/
         : RID  2: Binary Application Transfer
-        : RID 14: HTTP Suspicious User-Agent
         : RID 55: Binary File/Data Transfer
         : DP: 5
 

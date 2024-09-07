@@ -2,15 +2,10 @@ offline0: i4pc----------- TCP [L] 10.77.110.51:41588 --> [OL] 10.206.50.239:4200
         : Skype/Teams/Call.netify.teams
         : DP: 9
 
-offline0: i4pc-------rs-- UDP [OR] 74.125.247.128:3478 <-- [L] 192.168.12.169:43016
+offline0: i4pc--------s-- UDP [OR] 74.125.247.128:3478 <-- [L] 192.168.12.169:43016
         : Google/Call.netify.google-hangouts
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- UDP [OR] 74.125.247.128:3478 <-- [L] 192.168.12.169:43016
-        : Google/Call.netify.google-hangouts
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : H: turn.l.google.com
+        : DP: 7
 
 offline0: i4pc-------r--- ICMP [OR] 74.125.247.128:0 <-- [L] 192.168.12.169:0
         : ICMP.netify.google
@@ -23,35 +18,24 @@ offline0: i6pc----------- UDP [OR] 2a38:e156:8167:a333:face:b00c:0:24d9:3478 <--
         : DP: 7
 
 offline0: i4pc-------r--- UDP [OR] 31.13.86.54:40003 --> [L] 192.168.12.169:38123
-        : STUN.netify.meta
+        : Facebook/VoIP.netify.meta
+        : H: turner.facebook
         : RID 16: Known Protocol on Non-standard Port
         : DP: 7
 
 offline0: i4pc----------- TCP [OR] 54.1.57.155:37257 --> [L] 87.47.100.17:3478
         : STUN
+        : H: apps-host.com
         : DP: 8
 
 offline0: i4pc-------rs-- UDP [OR] 142.250.82.99:3478 <-- [L] 192.168.12.169:49153
         : Google/Call.netify.google-hangouts
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : RID 30: TLS Certificate Expired
+        : DP: 17
 
-offline0: i4pc-------rs-- UDP [OR] 142.250.82.99:3478 <-- [L] 192.168.12.169:49153
-        : Google/Call.netify.google-hangouts
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- UDP [OR] 134.224.90.111:8801 <-- [L] 192.168.43.169:48854
+offline0: i4pc--x-----s-- UDP [OR] 134.224.90.111:8801 <-- [L] 192.168.43.169:48854
         : ZOOM.netify.zoom
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rs-- UDP [OR] 134.224.90.111:8801 <-- [L] 192.168.43.169:48854
-        : ZOOM.netify.zoom
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 4
 
 offline0: i6pc--x----r--- UDP [OR] 2001:b07:a3d:c112:48a1:1094:1227:281e:48094 --> [L] 2600:1900:4160:5999:0:19:::3478
         : STUN

@@ -274,17 +274,17 @@ offline0: i4pc-------r--- UDP [L] 10.0.0.1:33071 --> [OR] 142.4.204.111:443
         : DP: 1
 
 offline0: i4pc-------r--- UDP [L] 10.0.0.1:50035 --> [OR] 149.112.112.10:8443
-        : DNSCrypt
+        : DNSCrypt.netify.quad9
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------r--- UDP [L] 10.0.0.1:57465 --> [OR] 149.112.112.10:8443
-        : DNSCrypt
+        : DNSCrypt.netify.quad9
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------r--- UDP [L] 10.0.0.1:55482 --> [OR] 149.112.112.10:8443
-        : DNSCrypt
+        : DNSCrypt.netify.quad9
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -299,17 +299,17 @@ offline0: i4pc-------r--- UDP [L] 10.0.0.1:46856 --> [OR] 142.4.204.111:443
         : DP: 1
 
 offline0: i4pc-------r--- UDP [L] 10.0.0.1:40009 --> [OR] 149.112.112.10:8443
-        : DNSCrypt
+        : DNSCrypt.netify.quad9
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------r--- UDP [L] 10.0.0.1:42570 --> [OR] 149.112.112.10:8443
-        : DNSCrypt
+        : DNSCrypt.netify.quad9
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------r--- UDP [L] 10.0.0.1:56022 --> [OR] 149.112.112.10:8443
-        : DNSCrypt
+        : DNSCrypt.netify.quad9
         : RID 46: Unidirectional Traffic
         : DP: 1
 

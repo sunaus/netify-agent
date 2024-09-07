@@ -1,4 +1,4 @@
-offline0: i4pc-------r--- TCP [L] 192.168.137.20:60797 --> [OL] 192.168.137.189:4060
+offline0: i4pc-------r-F- TCP [L] 192.168.137.20:60797 --> [OL] 192.168.137.189:4060
         : IEC/62056
         : RID 16: Known Protocol on Non-standard Port
         : DP: 4

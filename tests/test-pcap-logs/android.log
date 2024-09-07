@@ -72,12 +72,11 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.16:52953
         : H: captive.apple.com
         : DP: 2
 
-offline0: i4pc-------r-F- TCP [OR] 17.253.53.201:80 <-- [L] 192.168.2.16:58338
+offline0: i4pc---------F- TCP [OR] 17.253.53.201:80 <-- [L] 192.168.2.16:58338
         : HTTP.netify.apple
         : D: captive.g.aaplimg.com H: captive.apple.com
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.32 Safari/537.36
         : URL: captive.apple.com/
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.16:35825
@@ -105,7 +104,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.2.16:32974 --> [OR] 216.239.38.120:443
         : HTTP/S.netify.google
         : D: www.google.com H: clients1.google.com
         : V: 0x0303 CS: 0xc02b
-        : TLS/SNI: clients1.google.com
+        : TLS/SNI: clients1.google.com TLS/CN: google.com
         : TLS/IDN: C=US, O=Google Trust Services, CN=GTS CA 1O1 TLS/SDN: C=US, ST=California, L=Mountain View, O=Google LLC, CN=*.google.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -115,7 +114,7 @@ offline0: i4pcu------r--- TCP [OR] 172.217.20.74:443 <-- [L] 192.168.2.16:52486
         : HTTP/S.netify.google-play
         : D: semanticlocation-pa.googleapis.com H: play.googleapis.com
         : V: 0x0303 CS: 0xc02b
-        : TLS/SNI: play.googleapis.com
+        : TLS/SNI: play.googleapis.com TLS/CN: storage.googleapis.com
         : TLS/IDN: C=US, O=Google Trust Services, CN=GTS CA 1O1 TLS/SDN: C=US, ST=California, L=Mountain View, O=Google LLC, CN=*.storage.googleapis.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -134,7 +133,7 @@ offline0: i4pcu------r--- TCP [OR] 172.217.18.3:443 <-- [L] 192.168.2.16:36890
         : HTTP/S.netify.google
         : D: connectivitycheck.gstatic.com
         : V: 0x0303 CS: 0xc02b
-        : TLS/SNI: connectivitycheck.gstatic.com
+        : TLS/SNI: connectivitycheck.gstatic.com TLS/CN: google.com
         : TLS/IDN: C=US, O=Google Trust Services, CN=GTS CA 1O1 TLS/SDN: C=US, ST=California, L=Mountain View, O=Google LLC, CN=*.google.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -155,7 +154,7 @@ offline0: i4pcu------r--- TCP [OR] 172.217.168.206:443 <-- [L] 192.168.2.16:5038
         : HTTP/S.netify.google-ads
         : D: app-measurement.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: app-measurement.com
+        : TLS/SNI: app-measurement.com TLS/CN: google-analytics.com
         : TLS/IDN: C=US, O=Google Trust Services, CN=GTS CA 1O1 TLS/SDN: C=US, ST=California, L=Mountain View, O=Google LLC, CN=*.google-analytics.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -196,12 +195,11 @@ offline0: i4pcu------r--- TCP [L] 192.168.2.16:32986 --> [OR] 216.239.38.120:443
         : RID 47: TLS ALPN Not Found
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 173.194.79.114:80 <-- [L] 192.168.2.16:36834
+offline0: i4pc---------F- TCP [OR] 173.194.79.114:80 <-- [L] 192.168.2.16:36834
         : HTTP.netify.google
         : D: check.googlezip.net
         : HTTP/UA: Mozilla/5.0 (Linux; Android 9; Nokia 2.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.93 Mobile Safari/537.36
         : URL: check.googlezip.net/connect
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pcu---------- TCP [OR] 172.217.21.202:443 <-- [L] 192.168.2.16:51928
@@ -289,12 +287,11 @@ offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.16:32832
         : H: www.google.com
         : DP: 2
 
-offline0: i4pc-------r--- TCP [OR] 173.194.79.114:80 <-- [L] 192.168.2.16:36848
+offline0: i4pc----------- TCP [OR] 173.194.79.114:80 <-- [L] 192.168.2.16:36848
         : HTTP.netify.google
         : D: check.googlezip.net
         : HTTP/UA: Mozilla/5.0 (Linux; Android 9; Nokia 2.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.93 Mobile Safari/537.36
         : URL: check.googlezip.net/connect
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pcu---------- TCP [L] 192.168.2.16:33014 --> [OR] 216.239.38.120:443

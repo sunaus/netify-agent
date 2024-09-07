@@ -9,33 +9,33 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:60813
         : H: skypedataprdcolneu04.cloudapp.net
         : DP: 2
 
-offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60533
+offline0: i4pc-------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60533
         : HTTP/S.netify.teams
-        : H: teams.microsoft.com
+        : D: s-0005.s-msedge.net H: teams.microsoft.com
         : V: 0x0303 CS: 0xc030
         : TLS/SNI: teams.microsoft.com TLS/CN: teams.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=teams.microsoft.com
         : RID 30: TLS Certificate Expired
         : DP: 12
 
-offline0: i4pcu------r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60532
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60532
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: mobile.pipe.aria.microsoft.com
+        : TLS/SNI: mobile.pipe.aria.microsoft.com TLS/CN: events.data.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=*.events.data.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
         : DP: 8
 
-offline0: i4pc----------- TCP [OR] 40.126.9.5:443 <-- [L] 192.168.1.6:60534
+offline0: i4pc---------F- TCP [OR] 40.126.9.5:443 <-- [L] 192.168.1.6:60534
         : HTTP/S.netify.microsoft-authentication
         : H: login.microsoftonline.com
         : V: 0x0303
         : TLS/SNI: login.microsoftonline.com
         : DP: 5
 
-offline0: i4pc-------r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60535
+offline0: i4pc-------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60535
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303
@@ -43,20 +43,20 @@ offline0: i4pc-------r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60535
         : RID 47: TLS ALPN Not Found
         : DP: 10
 
-offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60536
+offline0: i4pc-------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60536
         : HTTP/S.netify.teams
-        : H: teams.microsoft.com
+        : D: s-0005.s-msedge.net H: teams.microsoft.com
         : V: 0x0303 CS: 0xc030
         : TLS/SNI: teams.microsoft.com TLS/CN: teams.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=teams.microsoft.com
         : RID 30: TLS Certificate Expired
         : DP: 12
 
-offline0: i4pcu------r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60537
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60537
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: mobile.pipe.aria.microsoft.com
+        : TLS/SNI: mobile.pipe.aria.microsoft.com TLS/CN: events.data.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=*.events.data.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -120,7 +120,7 @@ offline0: i4pcu------r--- TCP [OR] 52.114.75.69:443 <-- [L] 192.168.1.6:60541
         : HTTP/S.netify.skype
         : D: weu1-api-skype.cloudapp.net H: eu-api.asm.skype.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: eu-api.asm.skype.com
+        : TLS/SNI: eu-api.asm.skype.com TLS/CN: asm.skype.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 1 TLS/SDN: CN=*.asm.skype.com
         : RID 30: TLS Certificate Expired
         : DP: 10
@@ -130,7 +130,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:49514
         : H: config.teams.microsoft.com
         : DP: 2
 
-offline0: i4pcu------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60542
+offline0: i4pc-------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.6:60542
         : HTTP/S.netify.teams
         : D: s-0005.s-msedge.net H: config.teams.microsoft.com
         : V: 0x0303 CS: 0xc030
@@ -151,11 +151,11 @@ offline0: i4pc----------- TCP [OR] 52.114.76.48:443 <-- [L] 192.168.1.6:60544
         : TLS/SNI: northeurope.notifications.teams.microsoft.com
         : DP: 5
 
-offline0: i4pcu------r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60543
+offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60543
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: mobile.pipe.aria.microsoft.com
+        : TLS/SNI: mobile.pipe.aria.microsoft.com TLS/CN: events.data.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=*.events.data.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -177,7 +177,7 @@ offline0: i4pc----------- TCP [OR] 52.114.77.58:443 <-- [L] 192.168.1.6:60545
         : TLS/SNI: presence.teams.microsoft.com
         : DP: 5
 
-offline0: i4pcu------r--- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.6:60546
+offline0: i4pc-------r-F- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.6:60546
         : TLS
         : H: dati.ntop.org
         : V: 0x0303 CS: 0xc030
@@ -201,7 +201,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60548
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: mobile.pipe.aria.microsoft.com
+        : TLS/SNI: mobile.pipe.aria.microsoft.com TLS/CN: events.data.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=*.events.data.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -212,7 +212,7 @@ offline0: i4pc----------- UDP [L] 192.168.1.1:53 <-- [OL] 192.168.1.6:59403
         : H: substrate.office.com
         : DP: 2
 
-offline0: i4pcu------r--- TCP [OR] 13.107.18.11:443 <-- [L] 192.168.1.6:60549
+offline0: i4pc-------r--- TCP [OR] 13.107.18.11:443 <-- [L] 192.168.1.6:60549
         : HTTP/S.netify.outlook
         : D: k-0002.k-msedge.net H: substrate.office.com
         : V: 0x0303 CS: 0xc030
@@ -273,7 +273,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60552
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: mobile.pipe.aria.microsoft.com
+        : TLS/SNI: mobile.pipe.aria.microsoft.com TLS/CN: events.data.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=*.events.data.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -283,7 +283,7 @@ offline0: i4pcu------r--- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60555
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: mobile.pipe.aria.microsoft.com
+        : TLS/SNI: mobile.pipe.aria.microsoft.com TLS/CN: events.data.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=*.events.data.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -293,7 +293,7 @@ offline0: i4pcu------r--- TCP [OR] 52.114.15.45:443 <-- [L] 192.168.1.6:60551
         : HTTP/S.netify.teams
         : D: trouter2-asse-a.cloudapp.net H: trouter2-asse-a.trouter.teams.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: trouter2-asse-a.trouter.teams.microsoft.com
+        : TLS/SNI: trouter2-asse-a.trouter.teams.microsoft.com TLS/CN: trouter.teams.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 2 TLS/SDN: CN=*.trouter.teams.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -346,7 +346,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.114.77.33:443 <-- [L] 192.168.1.6:60561
         : HTTP/S.netify.microsoft
         : D: skypedataprdcolneu04.cloudapp.net H: mobile.pipe.aria.microsoft.com
         : V: 0x0303 CS: 0xc030
-        : TLS/SNI: mobile.pipe.aria.microsoft.com
+        : TLS/SNI: mobile.pipe.aria.microsoft.com TLS/CN: events.data.microsoft.com
         : TLS/IDN: C=US, ST=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4 TLS/SDN: CN=*.events.data.microsoft.com
         : RID 30: TLS Certificate Expired
         : RID 47: TLS ALPN Not Found
@@ -388,7 +388,7 @@ offline0: i4pc----------- TCP [OR] 52.114.108.8:443 <-- [L] 192.168.1.6:60565
         : TLS/SNI: emea.ng.msg.teams.microsoft.com
         : DP: 5
 
-offline0: i4pcu------r--- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.6:60566
+offline0: i4pc-------r--- TCP [OR] 167.99.215.164:4434 <-- [L] 192.168.1.6:60566
         : TLS
         : H: dati.ntop.org
         : V: 0x0303 CS: 0xc030

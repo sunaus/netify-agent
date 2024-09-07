@@ -5,7 +5,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52098 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52200 --> [OL] 192.168.10.50:80
@@ -15,7 +14,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52200 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52298 --> [OL] 192.168.10.50:80
@@ -25,7 +23,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52298 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52300 --> [OL] 192.168.10.50:80
@@ -35,7 +32,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52300 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/dvwa/js/dvwaPage.js
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52318 --> [OL] 192.168.10.50:80
@@ -45,7 +41,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52318 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/favicon.ico
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52910 --> [OL] 192.168.10.50:80
@@ -55,17 +50,15 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:52910 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27AQ80NQUS4TAQLQVWHMAGXB11KUBK34NZA8RUUD143IFKQDS3P5%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r-F- TCP [L] 172.16.0.1:53584 --> [OL] 192.168.10.50:80
+offline0: i4pc-------r--- TCP [L] 172.16.0.1:53584 --> [OL] 192.168.10.50:80
         : HTTP
         : H: 205.174.165.68
         : HTTP/UA: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:54268 --> [OL] 192.168.10.50:80
@@ -75,7 +68,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:54268 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%270XVM4C1CNSWY8VF443GGZ6W527WBY4H29E2XQNGG2QUPQEKW0U%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:54956 --> [OL] 192.168.10.50:80
@@ -85,7 +77,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:54956 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:55632 --> [OL] 192.168.10.50:80
@@ -95,7 +86,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:55632 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27JUL2D3WXHEGWRAFJE2PI7OS71Z4Z8RFUHXGNFLUFYVP6M3OL55%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:56306 --> [OL] 192.168.10.50:80
@@ -105,7 +95,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:56306 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:56994 --> [OL] 192.168.10.50:80
@@ -115,7 +104,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:56994 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27AA0U7VCIO18AUKPZNB0ZXFCDF9PVHM0BRGOWM22EICNEPXK5UC%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:57684 --> [OL] 192.168.10.50:80
@@ -125,7 +113,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:57684 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:58360 --> [OL] 192.168.10.50:80
@@ -135,7 +122,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:58360 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27MRVS1VO9FLO4CFA5FLJ13I9GULOFH69WHOJQ0PH0OKE2FMG3MQ%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:59042 --> [OL] 192.168.10.50:80
@@ -145,7 +131,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:59042 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:59732 --> [OL] 192.168.10.50:80
@@ -155,7 +140,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:59732 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27SZGGJRXX6DR9VWKN864H8LTBEZ6QC3GJPC8TUUNAED3BBL4L8P%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:60464 --> [OL] 192.168.10.50:80
@@ -165,7 +149,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:60464 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:32906 --> [OL] 192.168.10.50:80
@@ -175,7 +158,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:32906 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27UQE70NGV80W4ZBVWQELDMRMBY9BF6W552ZBHL3F4W4MIP7R7K6%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:33580 --> [OL] 192.168.10.50:80
@@ -185,7 +167,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:33580 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:34278 --> [OL] 192.168.10.50:80
@@ -195,7 +176,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:34278 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27TNRH0PFRPCFVXECFZU2OUYBTDZQVIWB8HBZ1VC7EXA9PGMGBWA%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:34940 --> [OL] 192.168.10.50:80
@@ -205,7 +185,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:34940 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r--- TCP [L] 172.16.0.1:35626 --> [OL] 192.168.10.50:80
@@ -215,7 +194,6 @@ offline0: i4pc-------r--- TCP [L] 172.16.0.1:35626 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27KGE8ES9SCQ7FORY5VSPTYY4R4UHJNRQTPTAY6L9JR1OU40RPDA%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-gx----r-F- TCP [L] 172.16.0.1:60288 --> [OL] 192.168.10.50:80

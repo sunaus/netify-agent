@@ -403,7 +403,17 @@ offline0: i4pc-------r--- UDP [OR] 47.123.177.154:35950 --> [L] 85.111.52.57:427
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 44.49.31.2:51197 --> [L] 90.147.171.51:427
+offline0: i4pc--x----r--- UDP [OR] 44.49.31.2:51197 --> [L] 90.147.171.51:427
+        : SLP
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc--x----r--- UDP [OR] 44.49.31.2:51197 --> [L] 90.147.171.51:427
+        : SLP
+        : RID 46: Unidirectional Traffic
+        : DP: 1
+
+offline0: i4pc--x----r--- UDP [OR] 44.49.31.2:51197 --> [L] 90.147.171.51:427
         : SLP
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -423,7 +433,7 @@ offline0: i4pc-------r--- UDP [OR] 58.218.184.177:54059 --> [L] 90.111.212.50:42
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc--xX---r--- UDP [OR] 31.0.154.114:40383 --> [L] 90.145.180.58:427
+offline0: i4pc-------r--- UDP [OR] 31.0.154.114:40383 --> [L] 90.145.180.58:427
         : SLP
         : RID 46: Unidirectional Traffic
         : DP: 1
@@ -969,7 +979,7 @@ offline0: i4pc-------r--- UDP [OR] 80.16.0.251:49389 --> [L] 165.144.84.62:427
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 69.109.187.54:427 <-- [L] 165.37.39.94:49159
-        : SLP.netify.bank-of-america
+        : SLP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
@@ -2489,12 +2499,12 @@ offline0: i4pc-------r--- UDP [OR] 85.47.224.171:16312 --> [L] 90.111.212.50:427
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 165.114.202.61:427 <-- [L] 170.243.40.186:35528
-        : SLP.netify.bank-of-america
+        : SLP
         : RID 46: Unidirectional Traffic
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 74.239.16.156:46464 --> [L] 90.145.180.58:427
-        : SLP.netify.audible
+        : SLP
         : RID 46: Unidirectional Traffic
         : DP: 1
 

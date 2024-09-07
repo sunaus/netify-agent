@@ -1,4 +1,4 @@
-offline0: i4pc-g-----r--- TCP [OR] 52.18.127.189:443 <-- [L] 194.226.199.21:58155
+offline0: i4pc-g-----r-F- TCP [OR] 52.18.127.189:443 <-- [L] 194.226.199.21:58155
         : HTTP/S
         : RID 28: Suspicious Entropy
         : DP: 32

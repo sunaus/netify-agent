@@ -62,9 +62,9 @@ offline0: i6pc--x----r--- UDP [OR] 3297:a1af:5121:cfc:360b:2e07:872f:1ea0:43865 
         : RID 46: Unidirectional Traffic
         : DP: 2
 
-offline0: i6pc--x----r--- UDP [OR] 2c7f:d7a0:44a9:49e9:e586:fb7f:5b85:9c83:1 <-- [L] 3991:72d:336e:65ec:c5bf:a5fa:83ad:23de:6881
-        : BitTorrent
-        : RID 16: Known Protocol on Non-standard Port
+offline0: i6pc-gx----r--- UDP [OR] 2c7f:d7a0:44a9:49e9:e586:fb7f:5b85:9c83:1 <-- [L] 3991:72d:336e:65ec:c5bf:a5fa:83ad:23de:6881
+        : Unknown
+        : RID 28: Suspicious Entropy
         : RID 46: Unidirectional Traffic
         : DP: 1
 

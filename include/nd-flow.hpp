@@ -24,6 +24,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "nd-addr.hpp"
 #include "nd-apps.hpp"
@@ -32,6 +33,8 @@
 #include "nd-flags.hpp"
 #include "nd-protos.hpp"
 #include "nd-serializer.hpp"
+#include "nd-sha1.h"
+#include "nd-util.hpp"
 
 // TLS SNI hostname/common-name length. Reference: RFC 4366
 constexpr size_t ND_FLOW_TLS_CNLEN = 256;
@@ -92,7 +95,7 @@ public:
         return *this;
     };
 
-    inline void Reset(bool full_reset = false) {
+    inline void Reset(void) {
         lower_bytes = 0;
         upper_bytes = 0;
         lower_packets = 0;
@@ -104,11 +107,6 @@ public:
         tcp_resets = 0;
         tcp_retrans = 0;
 #endif
-        if (full_reset) {
-            detection_packets = 0;
-#ifdef _ND_ENABLE_EXTENDED_STATS
-#endif
-        }
     }
 
     std::atomic<uint64_t> lower_bytes;
@@ -197,8 +195,10 @@ public:
 
     ndFlags<PrivacyMask> privacy_mask = { PrivacyMask::NONE };
 
-    std::vector<uint8_t> digest_lower;
-    std::vector<uint8_t> digest_mdata;
+    ndDigest digest_lower;
+
+    typedef std::vector<ndDigest> DigestVec;
+    DigestVec digest_mdata;
 
     struct {
         std::atomic<bool> detection_complete;
@@ -278,7 +278,6 @@ public:
         std::string subject_dn;
         std::string issuer_dn;
         std::string server_cn;
-        std::string client_sni;
         std::string client_ja3;
         std::string server_ja3;
         std::vector<uint8_t> cert_fingerprint;
@@ -292,6 +291,9 @@ public:
             uint16_t cipher_suite = { 0 };
             std::string esni;
         } esni;
+
+        std::atomic<bool> proc_hello;
+        std::atomic<bool> proc_certificate;
     } tls;
 
     struct {
@@ -299,7 +301,7 @@ public:
     } smtp;
 
     struct {
-        std::vector<uint8_t> info_hash;
+        ndDigestDynamic info_hash;
     } bt;
 
     struct {
@@ -331,7 +333,7 @@ public:
     void Hash(const std::string &device, bool hash_mdata = false,
       const uint8_t *key = nullptr, size_t key_length = 0);
 
-    void Reset(bool full_reset = false);
+    inline void Reset(void) { stats.Reset(); }
 
     void Release(void);
 
@@ -406,14 +408,19 @@ public:
         std::string _upper_rate = "other_rate";
 #endif
         std::string digest;
+        std::vector<std::string> digests;
+
         if (! digest_mdata.empty()) {
-            nd_sha1_to_string(digest_mdata, digest);
+            auto i = digest_mdata.rbegin();
+            nd_sha1_to_string((*i), digest);
             serialize(output, { "digest" }, digest);
+
+            for (++i; i != digest_mdata.rend(); i++) {
+                nd_sha1_to_string((*i), digest);
+                digests.push_back(digest);
+            }
         }
-        else {
-            nd_sha1_to_string(digest_lower, digest);
-            serialize(output, { "digest" }, digest);
-        }
+        serialize(output, { "digest_prev" }, digests);
 
         serialize(output, { "last_seen_at" }, ts_last_seen.load());
 
@@ -631,7 +638,7 @@ public:
 
                 if (HasTLSClientSNI())
                     serialize(output,
-                      { "ssl", "client_sni" }, tls.client_sni);
+                      { "ssl", "client_sni" }, host_server_name);
 
                 if (HasTLSEncryptedCH())
                     serialize(output,

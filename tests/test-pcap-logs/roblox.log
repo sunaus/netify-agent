@@ -3,7 +3,7 @@ offline0: i4pc-------r--- UDP [OR] 128.116.89.113:63862 --> [L] 192.168.12.156:4
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pcu---------- TCP [OR] 128.116.122.4:443 <-- [L] 192.168.12.156:39034
+offline0: i4pcu--------F- TCP [OR] 128.116.122.4:443 <-- [L] 192.168.12.156:39034
         : HTTP/S.netify.roblox
         : H: assetgame.roblox.com
         : V: 0x0303 CS: 0x1301

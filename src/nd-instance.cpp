@@ -483,7 +483,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case 'S':
 #ifndef _ND_LEAN_AND_MEAN
         {
-            uint8_t digest[SHA1_DIGEST_LENGTH];
+            ndDigest digest;
 
             if ((rc = nd_sha1_file(optarg, digest)) == 0) {
                 string sha1;
@@ -649,15 +649,6 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         cerr << tag << ": Unable to initialize libCURL: " << cc
              << endl;
         return ndEnumCast(ConfigResult, LIBCURL_FAILURE);
-    }
-
-    // Hash config file
-    if (nd_file_exists(ndGC.path_app_config)) {
-        nd_sha1_file(ndGC.path_app_config, ndGC.digest_app_config);
-    }
-    else if (nd_file_exists(ndGC.path_legacy_config)) {
-        nd_sha1_file(ndGC.path_legacy_config,
-          ndGC.digest_legacy_config);
     }
 
     // Configuration is valid when version is set
@@ -1130,6 +1121,12 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "  -v, --verbose\n    In debug mode, display "
           "real-time flow detections.  Specify multiple "
           "times to increase verbosity.\n"
+          "  --verbose-flag "
+          "[no-]event-dpi-new|[no-]event-dpi-update|[no-]"
+          "event-dpi-complete\n    In debug mode, display "
+          "or hide specified flow event types.  Can be "
+          "specify multiple "
+          "times to select multiple events.\n"
           "  -R, --remain-in-foreground\n    Remain in "
           "foreground, don't daemonize (OpenWrt).\n"
           "  --allow-unprivileged\n    Allow executing the "
@@ -2833,7 +2830,8 @@ void ndInstance::ProcessFlows(void) {
 
     nd_dprintf(
       "%s: new: %lu, pre-dpi: %lu, in-use: %lu, purged "
-      "%lu, active: %lu, idle: %lu, expiring: %lu, "
+      "%lu, active: %lu, idle: %lu, expiring: "
+      "%lu, "
       "expired: %lu, total: %lu\n",
       tag.c_str(),
 

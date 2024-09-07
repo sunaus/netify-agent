@@ -26,11 +26,13 @@
 #include <locale>
 #include <mutex>
 
+#include "nd-apps.hpp"
 #include "nd-category.hpp"
 #include "nd-flags.hpp"
 #include "nd-flow.hpp"
 #include "nd-risks.hpp"
 #include "nd-sha1.h"
+#include "nd-util.hpp"
 
 using namespace std;
 
@@ -62,8 +64,7 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
 }
 
 ndFlow::ndFlow(nd_iface_ptr &iface)
-  : iface(iface), digest_lower(SHA1_DIGEST_LENGTH, 0),
-    digest_mdata(SHA1_DIGEST_LENGTH, 0), flags{}, tcp{},
+  : iface(iface), digest_lower{ 0 }, flags{}, tcp{},
     detected_protocol_name("Unknown") {
 }
 
@@ -74,15 +75,14 @@ ndFlow::ndFlow(const ndFlow &flow)
     ip_version(flow.ip_version), ip_protocol(flow.ip_protocol),
     vlan_id(flow.vlan_id), ts_first_seen(flow.ts_first_seen),
     ts_last_seen(flow.ts_last_seen.load()),
-    tunnel_type(flow.tunnel_type),
-    digest_lower(flow.digest_lower.begin(),
-      flow.digest_lower.end()),
-    digest_mdata(SHA1_DIGEST_LENGTH, 0), flags{}, tcp{},
+    tunnel_type(flow.tunnel_type), origin(flow.origin),
+    digest_lower(flow.digest_lower), flags{}, tcp{},
 #if defined(_ND_ENABLE_CONNTRACK) && \
   defined(_ND_ENABLE_CONNTRACK_MDATA)
     conntrack(flow.conntrack),
 #endif
     gtp(flow.gtp), detected_protocol_name("Unknown") {
+    digest_mdata.push_back(digest_lower);
     tcp.last_seq = flow.tcp.last_seq.load();
     tcp.fin_ack = flow.tcp.fin_ack.load();
 }
@@ -147,42 +147,40 @@ void ndFlow::Hash(const string &device, bool hash_mdata,
 
     if (hash_mdata) {
         sha1_write(&ctx, (const char *)&detected_protocol,
-          sizeof(ndpi_protocol));
+          sizeof(ndProto::Id));
+        sha1_write(&ctx, (const char *)&detected_application,
+          sizeof(nd_app_id_t));
 
         if (! host_server_name.empty()) {
             sha1_write(&ctx, host_server_name.c_str(),
               host_server_name.size());
         }
+
         if (HasBTInfoHash()) {
-            sha1_write(&ctx, &bt.info_hash[0], SHA1_DIGEST_LENGTH);
+            sha1_write(&ctx, bt.info_hash.data(),
+              bt.info_hash.size());
         }
     }
 
     if (key != nullptr && key_length > 0)
         sha1_write(&ctx, (const char *)key, key_length);
 
-    if (! hash_mdata) sha1_result(&ctx, &digest_lower[0]);
-    else sha1_result(&ctx, &digest_mdata[0]);
-}
+    if (! hash_mdata)
+        sha1_result(&ctx, digest_lower.data());
+    else {
+        ndDigest mdata;
+        sha1_result(&ctx, mdata.data());
 
-void ndFlow::Reset(bool full_reset) {
-    stats.Reset(full_reset);
-
-    if (full_reset) {
-        flags.detection_complete = false;
-        flags.detection_guessed = false;
-        flags.detection_init = false;
-        flags.detection_updated = false;
-        flags.dhc_hit = false;
-        flags.expired = false;
-        flags.expiring = false;
-        flags.soft_dissector = false;
-
-        risk.risks.clear();
+        if (! digest_mdata.empty() && mdata != digest_mdata.back())
+        {
+            digest_mdata.push_back(mdata);
+        }
     }
 }
 
 void ndFlow::Release(void) {
+    lock_guard<recursive_mutex> lg(lock);
+
     if (ndpi_flow != nullptr) {
         ndpi_free_flow(ndpi_flow);
         ndpi_flow = nullptr;
@@ -252,47 +250,55 @@ bool ndFlow::HasSSHServerAgent(void) const {
 
 bool ndFlow::HasTLSClientSNI(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS ||
               detected_protocol == ndProto::Id::QUIC) &&
-      tls.client_sni.empty() == false);
+      host_server_name.empty() == false);
 }
 
 bool ndFlow::HasTLSEncryptedCH(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS ||
               detected_protocol == ndProto::Id::QUIC) &&
       tls.ech.version != 0);
 }
 
 bool ndFlow::HasTLSEncryptedSNI(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS ||
               detected_protocol == ndProto::Id::QUIC) &&
       tls.esni.esni.empty() == false);
 }
 
 bool ndFlow::HasTLSServerCN(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS ||
               detected_protocol == ndProto::Id::QUIC) &&
       ! tls.server_cn.empty());
 }
 
 bool ndFlow::HasTLSIssuerDN(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS ||
               detected_protocol == ndProto::Id::QUIC) &&
       ! tls.issuer_dn.empty());
 }
 
 bool ndFlow::HasTLSSubjectDN(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS ||
               detected_protocol == ndProto::Id::QUIC) &&
       ! tls.subject_dn.empty());
 }
 
 bool ndFlow::HasTLSClientJA3(void) const {
-    return (GetMasterProtocol() == ndProto::Id::TLS &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS) &&
       ! tls.client_ja3.empty());
 }
 
 bool ndFlow::HasTLSServerJA3(void) const {
-    return (GetMasterProtocol() == ndProto::Id::TLS &&
+    return ((GetMasterProtocol() == ndProto::Id::TLS ||
+              detected_protocol == ndProto::Id::DTLS) &&
       ! tls.server_ja3.empty());
 }
 
@@ -331,10 +337,24 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                 dls << setw(2) << setfill('0') << hex
                     << (int)digest_lower[i];
             }
+            dls << ": ";
+            auto mdata = digest_mdata.rbegin();
+
+            for (unsigned i = 0; i < 5; i++) {
+                dls << setw(2) << setfill('0') << hex
+                    << (int)((mdata == digest_mdata.rend()) ?
+                           0x00 :
+                           (*mdata)[i]);
+            }
+
+            if (mdata != digest_mdata.rend()) mdata++;
+
             dls << ":";
             for (unsigned i = 0; i < 5; i++) {
                 dls << setw(2) << setfill('0') << hex
-                    << (int)digest_mdata[i];
+                    << (int)((mdata == digest_mdata.rend()) ?
+                           0x00 :
+                           (*mdata)[i]);
             }
             dls << " ";
         }
@@ -501,6 +521,7 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
             }
 
             if ((GetMasterProtocol() == ndProto::Id::TLS ||
+                  detected_protocol == ndProto::Id::DTLS ||
                   detected_protocol == ndProto::Id::QUIC) &&
               (tls.version || tls.cipher_suite))
             {
@@ -523,7 +544,7 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                     << setw(plen) << " "
                     << ":";
                 if (HasTLSClientSNI())
-                    dls << " TLS/SNI: " << tls.client_sni;
+                    dls << " TLS/SNI: " << host_server_name;
                 if (HasTLSServerCN())
                     dls << " TLS/CN: " << tls.server_cn;
             }

@@ -5,7 +5,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36196 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36198 --> [OL] 192.168.10.50:80
@@ -15,7 +14,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36198 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27+and+1%3D1%23&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36200 --> [OL] 192.168.10.50:80
@@ -25,7 +23,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36200 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27+and+1%3D1+union+select+database%28%29%2C+user%28%29%23&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36202 --> [OL] 192.168.10.50:80
@@ -35,7 +32,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36202 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27+and+1%3D1+union+select+null%2C+table_name+from+information_schema.tables%23&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36204 --> [OL] 192.168.10.50:80
@@ -45,7 +41,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36204 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27+and+1%3D1+union+select+user%2C+password+from+users%23&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36206 --> [OL] 192.168.10.50:80
@@ -55,7 +50,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36206 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36208 --> [OL] 192.168.10.50:80
@@ -65,7 +59,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36208 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27+and+1%3D1%23&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36210 --> [OL] 192.168.10.50:80
@@ -75,7 +68,6 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36210 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27+and+1%3D1+union+select+database%28%29%2C+user%28%29%23&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36212 --> [OL] 192.168.10.50:80
@@ -85,6 +77,5 @@ offline0: i4pc-------r-F- TCP [L] 172.16.0.1:36212 --> [OL] 192.168.10.50:80
         : URL: 205.174.165.68/dv/vulnerabilities/sqli/?id=1%27+and+1%3D1+union+select+null%2C+table_name+from+information_schema.tables%23&Submit=Submit
         : RID 10: Numeric IP Address
         : RID 12: HTTP Suspicious Header
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 

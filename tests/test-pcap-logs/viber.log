@@ -17,17 +17,17 @@ offline0: i4pcu------r-F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36986
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: mapi.apptimize.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: mapi.apptimize.com
+        : TLS/SNI: mapi.apptimize.com TLS/CN: apptimize.com
         : TLS/IDN: C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO RSA Organization Validation Secure Server CA TLS/SDN: C=US, ST=CA, L=Mountain View, O=Apptimize, Inc, OU=PremiumSSL Wildcard, CN=*.apptimize.com
         : RID 30: TLS Certificate Expired
         : DP: 9
 
-offline0: i4pc---------F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36988
+offline0: i4pc-gx----r-F- TCP [OR] 54.69.166.226:443 <-- [L] 192.168.0.17:36988
         : HTTP/S.netify.urban-airship
-        : D: apptimize.com H: mapi.apptimize.com
-        : V: 0x0303
-        : TLS/SNI: mapi.apptimize.com
-        : DP: 6
+        : D: apptimize.com
+        : RID 46: Unidirectional Traffic
+        : RID 56: Probing Attempt
+        : DP: 1
 
 offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:37418
         : DNS.netify.viber
@@ -38,7 +38,7 @@ offline0: i4pcu------r--- TCP [OR] 54.230.93.96:443 <-- [L] 192.168.0.17:57520
         : HTTP/S.netify.viber
         : D: do2gy2kwak9k2.cloudfront.net H: media.cdn.viber.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: media.cdn.viber.com
+        : TLS/SNI: media.cdn.viber.com TLS/CN: cdn.viber.com
         : TLS/IDN: C=US, O=thawte, Inc., CN=thawte SSL CA - G2 TLS/SDN: C=LU, ST=Luxembourg, L=Luxembourg, O=Viber Media Sarl, OU=IT, CN=*.cdn.viber.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -52,7 +52,7 @@ offline0: i4pcu------r--- TCP [OR] 54.230.93.53:443 <-- [L] 192.168.0.17:53934
         : HTTP/S.netify.viber
         : D: d1fje9gm3d05t8.cloudfront.net H: dl-media.viber.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: dl-media.viber.com
+        : TLS/SNI: dl-media.viber.com TLS/CN: viber.com
         : TLS/IDN: C=US, O=thawte, Inc., CN=thawte SSL CA - G2 TLS/SDN: C=LU, ST=Luxembourg, L=Luxembourg, O=Viber Media Sarl, OU=IT, CN=*.viber.com
         : RID 30: TLS Certificate Expired
         : DP: 8
@@ -62,7 +62,7 @@ offline0: i4pc----------- UDP [L] 192.168.0.15:53 <-- [OL] 192.168.0.17:35331
         : H: app-measurement.com
         : DP: 2
 
-offline0: i4pcu---------- TCP [OR] 172.217.23.78:443 <-- [L] 192.168.0.17:43702
+offline0: i4pc----------- TCP [OR] 172.217.23.78:443 <-- [L] 192.168.0.17:43702
         : HTTP/S.netify.google-ads
         : D: app-measurement.com
         : V: 0x0303 CS: 0xc02f
@@ -104,7 +104,7 @@ offline0: i4pcu------r-F- TCP [OR] 54.187.91.182:443 <-- [L] 192.168.0.17:49048
         : HTTP/S.netify.urban-airship
         : D: apptimize.com H: brahe.apptimize.com
         : V: 0x0303 CS: 0xc02f
-        : TLS/SNI: brahe.apptimize.com
+        : TLS/SNI: brahe.apptimize.com TLS/CN: apptimize.com
         : TLS/IDN: C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO RSA Organization Validation Secure Server CA TLS/SDN: C=US, ST=CA, L=Mountain View, O=Apptimize, Inc, OU=PremiumSSL Wildcard, CN=*.apptimize.com
         : RID 30: TLS Certificate Expired
         : DP: 9
@@ -144,7 +144,8 @@ offline0: i4pc-------r--- TCP [OR] 44.192.202.74:4244 <-- [L] 192.168.2.100:4290
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 18.195.4.121:443 <-- [L] 192.168.12.156:40482
-        : STUN
+        : Unknown.netify.viber
+        : H: viber.com
         : RID 16: Known Protocol on Non-standard Port
         : DP: 7
 

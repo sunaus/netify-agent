@@ -42,6 +42,7 @@ offline0: i4pcu------r-F- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56918
         : HTTP/S.netify.viasat
         : D: vco.pandion.viasat.com
         : V: 0x0303 CS: 0x0035
+        : TLS/CN: pandion.viasat.com
         : TLS/IDN: C=US, O=Entrust, Inc., OU=See www.entrust.net/legal-terms, OU=(c) 2012 Entrust, Inc. - for authorized use only, CN=Entrust Certification Authority - L1K TLS/SDN: C=US, ST=California, L=Carlsbad, O=Viasat Inc., CN=*.pandion.viasat.com
         : RID 30: TLS Certificate Expired
         : RID 35: TLS SNI Extension Not Found
@@ -53,6 +54,7 @@ offline0: i4pcu------r-F- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56919
         : HTTP/S.netify.viasat
         : D: vco.pandion.viasat.com
         : V: 0x0303 CS: 0x0035
+        : TLS/CN: pandion.viasat.com
         : TLS/IDN: C=US, O=Entrust, Inc., OU=See www.entrust.net/legal-terms, OU=(c) 2012 Entrust, Inc. - for authorized use only, CN=Entrust Certification Authority - L1K TLS/SDN: C=US, ST=California, L=Carlsbad, O=Viasat Inc., CN=*.pandion.viasat.com
         : RID 30: TLS Certificate Expired
         : RID 35: TLS SNI Extension Not Found
@@ -108,7 +110,7 @@ offline0: i4pc----------- UDP [L] 10.0.0.227:58155 --> [OR] 75.75.76.76:53
         : H: slack.com
         : DP: 2
 
-offline0: i4pcu--------F- TCP [L] 10.0.0.227:56920 --> [OR] 99.86.34.156:443
+offline0: i4pc---------F- TCP [L] 10.0.0.227:56920 --> [OR] 99.86.34.156:443
         : HTTP/S.netify.slack
         : D: slack.com
         : V: 0x0303 CS: 0xc02f
@@ -169,6 +171,7 @@ offline0: i4pcu------r--- TCP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:56929
         : HTTP/S.netify.viasat
         : D: vco.pandion.viasat.com
         : V: 0x0303 CS: 0x0035
+        : TLS/CN: pandion.viasat.com
         : TLS/IDN: C=US, O=Entrust, Inc., OU=See www.entrust.net/legal-terms, OU=(c) 2012 Entrust, Inc. - for authorized use only, CN=Entrust Certification Authority - L1K TLS/SDN: C=US, ST=California, L=Carlsbad, O=Viasat Inc., CN=*.pandion.viasat.com
         : RID 30: TLS Certificate Expired
         : RID 35: TLS SNI Extension Not Found
@@ -186,20 +189,18 @@ offline0: i4pc----------- UDP [L] 10.0.0.227:62427 --> [OR] 75.75.75.75:53
         : H: detectportal.firefox.com
         : DP: 2
 
-offline0: i4pc-------r--- TCP [L] 10.0.0.227:56884 --> [OR] 184.25.56.77:80
+offline0: i4pc----------- TCP [L] 10.0.0.227:56884 --> [OR] 184.25.56.77:80
         : HTTP.netify.firefox
         : H: detectportal.firefox.com
         : HTTP/UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:69.0) Gecko/20100101 Firefox/69.0
         : URL: detectportal.firefox.com/success.txt?ipv4
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
-offline0: i4pc-------r--- TCP [L] 10.0.0.227:56917 --> [OR] 184.25.56.77:80
+offline0: i4pc----------- TCP [L] 10.0.0.227:56917 --> [OR] 184.25.56.77:80
         : HTTP.netify.firefox
         : H: detectportal.firefox.com
         : HTTP/UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:69.0) Gecko/20100101 Firefox/69.0
         : URL: detectportal.firefox.com/success.txt
-        : RID 14: HTTP Suspicious User-Agent
         : DP: 6
 
 offline0: i4pc----------- TCP [L] 10.0.0.227:56879 --> [OR] 52.10.115.210:443
@@ -219,12 +220,6 @@ offline0: i4pc----------- UDP [L] 10.0.0.227:59582 --> [OR] 75.75.75.75:53
 offline0: i4pc----------- UDP [L] 10.0.0.227:51060 --> [OR] 75.75.75.75:53
         : DNS.netify.apple-push
         : H: 1-courier.push.apple.com
-        : DP: 2
-
-offline0: i4pc-------rsF- TCP [L] 10.0.0.227:56886 --> [OR] 17.57.144.116:5223
-        : Apple/Push.netify.apple-push
-        : D: us-sw-courier-4.push-apple.com.akadns.net
-        : RID 16: Known Protocol on Non-standard Port
         : DP: 2
 
 offline0: i4pc-------rsF- TCP [L] 10.0.0.227:56886 --> [OR] 17.57.144.116:5223
@@ -280,9 +275,10 @@ offline0: i4pc-------r--- UDP [L] 10.0.0.149:50081 <-- [OL] 10.0.0.227:57547
         : RID 46: Unidirectional Traffic
         : DP: 1
 
-offline0: i4pc-------r--- UDP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:54107
+offline0: i4pcu------r--- UDP [OR] 8.37.102.91:443 <-- [L] 10.0.0.227:54107
         : DTLS.netify.viasat
         : D: vco.pandion.viasat.com
+        : V: 0x0100 CS: 0x0039
         : RID 36: Obsolete TLS (v1.1 or older)
         : DP: 4
 
@@ -297,7 +293,6 @@ offline0: i4pc-------r--- TCP [L] 10.0.0.149:8008 <-- [OL] 10.0.0.227:56954
         : HTTP/UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36
         : URL: 10.0.0.149:8008/ssdp/device-desc.xml
         : RID 10: Numeric IP Address
-        : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
         : DP: 6
 
@@ -307,7 +302,6 @@ offline0: i4pc-------r-F- TCP [L] 10.0.0.151:8060 <-- [OL] 10.0.0.227:56955
         : HTTP/UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36
         : URL: 10.0.0.151:8060/dial/dd.xml
         : RID 10: Numeric IP Address
-        : RID 14: HTTP Suspicious User-Agent
         : RID 16: Known Protocol on Non-standard Port
         : DP: 6
 

@@ -30,13 +30,7 @@ offline0: i4pc-------rsF- TCP [OR] 17.110.229.14:5223 <-- [L] 192.168.2.4:49193
         : Apple/Push.netify.apple-push
         : RID 16: Known Protocol on Non-standard Port
         : RID 46: Unidirectional Traffic
-        : DP: 1
-
-offline0: i4pc-------rsF- TCP [OR] 17.110.229.14:5223 <-- [L] 192.168.2.4:49193
-        : Apple/Push.netify.apple-push
-        : RID 16: Known Protocol on Non-standard Port
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+        : DP: 6
 
 offline0: i6pc--x-------- UDP [L] fe80::189c:c31b:1298:224:5353 --> [OM] ff02::fb:5353
         : MDNS.netify.internal-network

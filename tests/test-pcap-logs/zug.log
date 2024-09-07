@@ -24,7 +24,7 @@ offline0: i4pc-------r--- UDP [OR] 17.218.251.92:19000 <-- [L] 74.90.102.55:4437
         : DP: 1
 
 offline0: i4pc-------r--- UDP [OR] 52.104.45.69:44174 --> [L] 53.52.158.15:19000
-        : ZUG.netify.mercedes-benz
+        : ZUG.netify.sharepoint
         : RID 46: Unidirectional Traffic
         : DP: 1
 

@@ -65,7 +65,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::4a72:9a16:443 <-- [L] 2a01:cb01:2049
         : HTTP/S.netify.tumblr
         : H: catasters.tumblr.com
         : V: 0x0303 CS: 0xcca8
-        : TLS/SNI: catasters.tumblr.com
+        : TLS/SNI: catasters.tumblr.com TLS/CN: tumblr.com
         : TLS/IDN: C=GB, ST=Greater Manchester, L=Salford, O=Sectigo Limited, CN=Sectigo RSA Domain Validation Secure Server CA TLS/SDN: CN=*.tumblr.com
         : RID 30: TLS Certificate Expired
         : DP: 12
@@ -96,12 +96,12 @@ offline0: i6pc----------- TCP [OR] 64:ff9b::68f4:2ac8:443 <-- [L] 2a01:cb01:2049
         : HTTP/S
         : DP: 7
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::6006:749:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39164
+offline0: i6pc----------- TCP [OR] 64:ff9b::6006:749:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39164
         : HTTP/S.netify.comscore
         : H: sb.scorecardresearch.com
-        : V: 0x0303 CS: 0x1302
+        : V: 0x0303
         : TLS/SNI: sb.scorecardresearch.com
-        : DP: 6
+        : DP: 4
 
 offline0: i6pc-gx----r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56558
         : HTTP/S

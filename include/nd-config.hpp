@@ -301,8 +301,6 @@ public:
     int16_t ca_detection_cores;
     uint16_t max_capture_length;
     ndFlags<ndGlobalFlags> flags;
-    uint8_t digest_app_config[SHA1_DIGEST_LENGTH];
-    uint8_t digest_legacy_config[SHA1_DIGEST_LENGTH];
     uint8_t verbosity;
     ndFlags<ndVerbosityFlags> verbosity_flags;
     unsigned fm_buckets;
