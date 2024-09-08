@@ -191,6 +191,17 @@ struct ndpi_detection_module_struct *nd_ndpi_init(void) {
 
     ndpi_set_config(ndpi, nullptr, "flow_risk_lists.load",
       "0");
+    ndpi_set_config(ndpi, nullptr, "fpc", "0");
+
+    ndpi_set_config(ndpi, nullptr,
+      "flow_risk.anonymous_subscriber.list."
+      "icloudprivaterelay.load",
+      "0");
+    ndpi_set_config(ndpi, nullptr,
+      "flow_risk.anonymous_subscriber.list.protonvpn.load",
+      "1");
+    ndpi_set_config(ndpi, nullptr,
+      "flow_risk.crawler_bot.list.load", "0");
 
     ndpi_set_config(ndpi, "any", "ip_list.load", "0");
 
