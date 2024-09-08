@@ -1055,7 +1055,8 @@ void ndInstance::CommandLineHelp(bool version_only) {
     }
 
     fprintf(stdout, "%s\n%s\n",
-      nd_get_version_and_features().c_str(), PACKAGE_URL);
+      nd_get_version_and_features(true).c_str(), PACKAGE_URL);
+
     if (version_only) {
         fprintf(stdout,
           "\nThis application uses nDPI v%s\n"
@@ -1412,7 +1413,7 @@ bool ndInstance::DisplayAgentStatus(void) {
     const char *icon = ndTerm::Icon::INFO;
     const char *color = ndTerm::Attr::RESET;
 
-    fprintf(stdout, "%s\n", nd_get_version_and_features().c_str());
+    fprintf(stdout, "%s\n", nd_get_version_and_features(true).c_str());
 
     if (geteuid() != 0) {
         fprintf(stderr,

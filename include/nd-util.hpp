@@ -56,6 +56,7 @@ public:
     static const char *CURSOR_HIDE;
     static const char *CURSOR_SHOW;
     static const char *CLEAR_EOL;
+    static const char *BOLD;
     static const char *UNDERLINE;
 };
 
@@ -307,7 +308,7 @@ void nd_seed_rng(void);
 void nd_generate_uuid(std::string &uuid);
 
 const char *nd_get_version(void);
-const std::string &nd_get_version_and_features(void);
+const std::string &nd_get_version_and_features(bool fancy = false);
 
 bool nd_parse_app_tag(const std::string &tag, unsigned &id,
   std::string &name);
