@@ -1413,7 +1413,8 @@ bool ndInstance::DisplayAgentStatus(void) {
     const char *icon = ndTerm::Icon::INFO;
     const char *color = ndTerm::Attr::RESET;
 
-    fprintf(stdout, "%s\n", nd_get_version_and_features(true).c_str());
+    fprintf(stdout, "%s\n",
+      nd_get_version_and_features(true).c_str());
 
     if (geteuid() != 0) {
         fprintf(stderr,

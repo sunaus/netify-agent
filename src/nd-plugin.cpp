@@ -733,8 +733,8 @@ void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
             type = i->get<string>();
 
         fprintf(stdout, "%s%s/%s%s (%s)\n",
-          ndTerm::Attr::BOLD, tag.c_str(),
-          version.c_str(), ndTerm::Attr::RESET, type.c_str());
+          ndTerm::Attr::BOLD, tag.c_str(), version.c_str(),
+          ndTerm::Attr::RESET, type.c_str());
 
         ndPluginLoader *pl = nullptr;
 
