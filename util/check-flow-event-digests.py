@@ -22,6 +22,7 @@ MAGENTA = '\x1b[35m'
 CYAN = '\x1b[36m'
 WHITE = '\x1b[37m'
 RESET = '\x1b[0m'
+BOLD = '\x1b[1m'
 
 flow_set = set()
 
@@ -129,7 +130,7 @@ try:
         check = (n_complete - n_dup) - (n_purge - n_orphan)
         xtra = n_complete - n_purge
 
-        print(f'NEW={GREEN}{n_new}{RESET} UPDATE={CYAN}{n_update}{RESET} ' \
+        print(f'{BOLD}>>>{RESET} NEW={GREEN}{n_new}{RESET} UPDATE={CYAN}{n_update}{RESET} ' \
             f'COMPLETE={MAGENTA}{n_complete}{RESET} PURGE={YELLOW}{n_purge}{RESET} ' \
             f'| ACTIVE={n_active} DUP={RED}{n_dup}{RESET} ' \
             f'ORPHAN={RED}{n_orphan}{RESET} | XTRA={xtra} ' \

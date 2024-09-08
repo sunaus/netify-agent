@@ -433,6 +433,30 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
     if (ndEF->detected_protocol != ndProto::Id::UNKNOWN)
         DetectionUpdate(entry);
 
+    if (ndEF->GetMasterProtocol() == ndProto::Id::DNS) {
+#ifdef _ND_LOG_FLOW_DEBUG
+        nd_dprintf(
+          "%s: DNS: extra_packets_func: %p, "
+          "detection_packets: %hhu, "
+          "num_extra_packets_checked: %hhu, "
+          "max_extra_packets_to_check: %hhu: %s\n",
+          tag.c_str(),
+          ndEFNF->extra_packets_func,
+          ndEF->stats.detection_packets.load(),
+          ndEFNF->num_extra_packets_checked,
+          ndEFNF->max_extra_packets_to_check,
+          (ndEFNF->host_server_name[0] != '\0') ?
+            ndEFNF->host_server_name :
+            "(null)");
+#endif
+        if (ndEFNF->extra_packets_func == nullptr) {
+            ndEF->stats.detection_packets = 0;
+            ndEF->Release();
+        }
+
+        return;
+    }
+
     if ((ndEF->flags.detection_init.load() &&
           ndEFNF->extra_packets_func == nullptr) ||
       ndEFNF->num_extra_packets_checked > ndEFNF->max_extra_packets_to_check ||
@@ -842,6 +866,32 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
         bool updated = false;
 
         switch (ndEF->GetMasterProtocol()) {
+        case ndProto::Id::DNS:
+            if (ndEFNF->host_server_name[0] != '\0') {
+                if (ndEF->host_server_name.empty()) {
+                    updated = true;
+                    SetHostServerName(entry, ndEFNF->host_server_name);
+                }
+                else {
+                    string hostname;
+                    hostname.assign(ndEFNF->host_server_name);
+                    nd_set_hostname(hostname);
+                    if (hostname != ndEF->host_server_name) {
+                        updated = true;
+                        ndEF->host_server_name = hostname;
+                    }
+                }
+
+                if (updated) {
+                    ndEF->detected_application = ND_APP_UNKNOWN;
+                    ndEF->detected_application_name =
+                      "Unknown";
+                    SetDetectedApplication(entry,
+                      ndi.apps.Find(ndEF->host_server_name));
+                }
+            }
+            break;
+
         case ndProto::Id::TLS:
         case ndProto::Id::DTLS:
         case ndProto::Id::QUIC:
