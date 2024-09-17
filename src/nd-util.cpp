@@ -295,13 +295,13 @@ int nd_sha1_file(const string &filename, ndDigest &digest) {
 }
 
 void nd_sha1_to_string(const ndDigest &digest, string &digest_str) {
-    array<char, SHA1_DIGEST_LENGTH * 2> _digest;
+    array<char, SHA1_DIGEST_LENGTH * 2 + 1> _digest;
     char *p = _digest.data();
 
     for (int i = 0; i < SHA1_DIGEST_LENGTH; i++, p += 2)
         sprintf(p, "%02hhx", digest[i]);
 
-    digest_str.assign(_digest.begin(), _digest.end());
+    digest_str.assign(_digest.begin(), _digest.end() - 1);
 }
 
 void nd_sha1_to_string(const ndDigestDynamic &digest,

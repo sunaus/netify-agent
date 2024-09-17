@@ -195,28 +195,28 @@ public:
 
     ndFlags<PrivacyMask> privacy_mask = { PrivacyMask::NONE };
 
-    ndDigest digest_lower;
+    ndDigest digest_lower = { 0 };
 
     typedef std::vector<ndDigest> DigestVec;
     DigestVec digest_mdata;
 
     struct {
-        std::atomic<bool> detection_complete;
-        std::atomic<bool> detection_guessed;
-        std::atomic<bool> detection_init;
-        std::atomic<bool> detection_updated;
-        std::atomic<bool> dhc_hit;
-        std::atomic<bool> fhc_hit;
-        std::atomic<bool> expiring;
-        std::atomic<bool> expiry_broadcast;
-        std::atomic<bool> expired;
-        std::atomic<bool> ip_nat;
-        std::atomic<bool> soft_dissector;
+        std::atomic<bool> detection_complete = { false };
+        std::atomic<bool> detection_guessed = { false };
+        std::atomic<bool> detection_init = { false };
+        std::atomic<bool> detection_updated = { false };
+        std::atomic<bool> dhc_hit = { false };
+        std::atomic<bool> fhc_hit = { false };
+        std::atomic<bool> expiring = { false };
+        std::atomic<bool> expiry_broadcast = { false };
+        std::atomic<bool> expired = { false };
+        std::atomic<bool> ip_nat = { false };
+        std::atomic<bool> soft_dissector = { false };
     } flags;
 
     struct {
-        std::atomic<uint8_t> fin_ack;
-        std::atomic<uint32_t> last_seq;
+        std::atomic<uint8_t> fin_ack = { 0 };
+        std::atomic<uint32_t> last_seq = { 0 };
     } tcp;
 
 #if defined(_ND_ENABLE_CONNTRACK) && \
@@ -232,8 +232,8 @@ public:
         uint8_t ip_version = { 0 };
         uint32_t lower_teid = { 0 };
         uint32_t upper_teid = { 0 };
-        ndAddr::Type lower_type;
-        ndAddr::Type upper_type;
+        ndAddr::Type lower_type = { ndAddr::Type::NONE };
+        ndAddr::Type upper_type = { ndAddr::Type::NONE };
         ndAddr lower_addr;
         ndAddr upper_addr;
         LowerMap lower_map = { LowerMap::UNKNOWN };
@@ -292,8 +292,8 @@ public:
             std::string esni;
         } esni;
 
-        std::atomic<bool> proc_hello;
-        std::atomic<bool> proc_certificate;
+        std::atomic<bool> proc_hello = { false };
+        std::atomic<bool> proc_certificate = { false };
     } tls;
 
     struct {
