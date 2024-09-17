@@ -5,30 +5,80 @@
 ############################################################################
 
 [netifyd]
+# On shutdown, force flows to immediately expire?  Otherwise, on shutdown,
+# the Agent will linger until all flows have expired and have been purged,
+# or a second termination request has been received.
 auto_flow_expiry = yes
-flow_map_buckets = 128
-load_domains = yes
-max_capture_length = 65535
-max_detection_pkts = 32
-max_flows = 0
-soft_dissectors = yes
-ssl_use_tlsv1 = no
-ssl_verify = yes
 
-# Don't track TCP flows until a SYN+ACK has been captured.
+# The number of "buckets" the main flow map will be divided into.  the
+# default is adequate for up to 5,000 flows.  Increasing this value will
+# reduce the chances of flow map lock contention on systems that track a
+# large number of flows.
+flow_map_buckets = 128
+
+# The maxiumum number of bytes to capture (copy) per packet.  Reducing this
+# may be appropriate for embedded systems.  Reducing this value too much
+# will result in less accurate application/protocol detection.  The maximum
+# value is 65535, which is also the default.
+max_capture_length = 65535
+
+# The maxiumum number of packets to inspect per flow.  This is a performace
+# tuning option for embedded systems.  Reducing this value too much will
+# result in less accurate application/protocol detection, specifically TLS.
+# Generally, a safe range for adequate detection accuracy would be between
+# 15 - 25 packets.
+max_detection_pkts = 32
+
+# The maximum number of flows to track at any given moment.  When this value
+# has been reached, new flows will stop being tracked until old flows
+# expire.  This option can be used to conserve memory on embedded systems,
+# or to set an upper safety limit to guard agains DDoS attacks or network
+# scanning tools.
+max_flows = 0
+
+# Soft-dissectors are flow expressions defined in the application signatures
+# configuration file (usually in @persistentstatedir@/netify-apps.conf).
+# For debugging or for embedded systems with very limited resources, it may
+# be helpful to disable Soft-dissectors.
+soft_dissectors = yes
+
+# Don't track TCP flows until a SYN+ACK has been captured.  This option can
+# offer protection agains network scanners and has the alternative benefit
+# of not tracking already established TCP flows when the Agent is first
+# started.
 syn_scan_protection = no
+
+# How long to wait (in seconds) until an idle flow is scheduled for expiry.
+# This time-to-live (TTL) applies to all non-TCP flows.
 ttl_idle_flow = 30
+
+# How long to wait (in seconds) until an idle TCP flow is scheduled for
+# expiry.
 ttl_idle_tcp_flow = 300
+
+# How often (in seconds) to process the global flow maps.  Flow statistics
+# are made available, idle flows are expired, and other house-keeping is
+# performed during this update period.  The default of 15s is appropriate
+# in most cases.
 update_interval = 15
+
+# Periodically call getifaddrs(3) to update the associated IP addresses of
+# each capture source, where applicable.  This option is primarily intended
+# for non-Linux systems where an on-demand system like Netlink is non
+# available.  Should be enabled for FreeBSD and variants.
 use_getifaddrs = false
 
 # Capture Defaults
 ############################################################################
 
 [capture-defaults]
-# Default capture method for -I and -E command-line options.
-# Valid types include: pcap, tpv3
+# Default capture method for -I and -E command-line options.  Valid types
+# include: pcap, tpv3
 capture_type = pcap
+
+# Packet capture timeout value (milliseconds).  How long reads from PCAP or
+# TPv3 capture sources will wait for packet data before being cancelled and
+# retrying.  The default value of 500ms is appropriate in almost all cases.
 read_timeout = 500
 
 # Flow Hash Cache
@@ -63,6 +113,7 @@ private_external_addresses = no
 enable = no
 update_tick = 30
 update_interval = 86400
+tls_verify = yes
 
 # Protocol Dissector Options
 ############################################################################

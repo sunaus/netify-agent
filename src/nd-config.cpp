@@ -78,7 +78,6 @@ ndGlobalConfig::ndGlobalConfig()
     ttl_napi_tick(ND_TTL_API_TICK),
     ttl_napi_update(ND_TTL_API_UPDATE), update_imf(1),
     update_interval(ND_STATS_INTERVAL), reader(nullptr) {
-    flags |= ndGlobalFlags::SSL_VERIFY;
     flags |= ndGlobalFlags::AUTO_FLOW_EXPIRY;
 #ifdef _ND_ENABLE_CONNTRACK
     flags |= ndGlobalFlags::USE_CONNTRACK;
@@ -224,14 +223,6 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     update_interval = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "update_interval",
       (! profile) ? ND_STATS_INTERVAL : update_interval);
-
-    ndGC_SetFlag(ndGlobalFlags::SSL_VERIFY,
-      r->GetBoolean(ND_NAME_SHORT, "ssl_verify",
-        (! profile) ? true : ndGC_SSL_VERIFY));
-
-    ndGC_SetFlag(ndGlobalFlags::SSL_USE_TLSv1,
-      r->GetBoolean(ND_NAME_SHORT, "ssl_use_tlsv1",
-        (! profile) ? false : ndGC_SSL_USE_TLSv1));
 
     max_capture_length = (uint16_t)r->GetInteger(ND_NAME_SHORT,
       "max_capture_length",

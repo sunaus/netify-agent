@@ -108,8 +108,8 @@ enum class ndGlobalFlags : uint32_t {
     QUIET = (1 << 4),
     SYN_SCAN_PROTECTION = (1 << 5),
     PRIVATE_EXTADDR = (1 << 6),
-    SSL_USE_TLSv1 = (1 << 7),
-    SSL_VERIFY = (1 << 8),
+    FREE_BIT8 = (1 << 7),
+    FREE_BIT9 = (1 << 8),
     USE_CONNTRACK = (1 << 9),
     USE_NETLINK = (1 << 10),
     USE_NAPI = (1 << 11),
@@ -153,12 +153,6 @@ enum class ndGlobalFlags : uint32_t {
 #define ndGC_PRIVATE_EXTADDR \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::PRIVATE_EXTADDR)
-#define ndGC_SSL_USE_TLSv1 \
-    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
-      ndGlobalFlags::SSL_USE_TLSv1)
-#define ndGC_SSL_VERIFY \
-    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
-      ndGlobalFlags::SSL_VERIFY)
 #define ndGC_USE_CONNTRACK \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::USE_CONNTRACK)

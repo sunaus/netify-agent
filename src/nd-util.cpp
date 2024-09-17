@@ -88,8 +88,7 @@ const char *ndTerm::Attr::CURSOR_SHOW =
   (nd_isatty) ? "\033[?25h" : "";
 const char *ndTerm::Attr::CLEAR_EOL =
   (nd_isatty) ? "\033[0K" : "";
-const char *ndTerm::Attr::BOLD =
-  (nd_isatty) ? "\033[1m" : "";
+const char *ndTerm::Attr::BOLD = (nd_isatty) ? "\033[1m" : "";
 const char *ndTerm::Attr::UNDERLINE =
   (nd_isatty) ? "\033[4m" : "";
 
@@ -688,8 +687,7 @@ const string &nd_get_version_and_features(bool fancy) {
         if (fancy) ident << ndTerm::Attr::BOLD;
         ident << ND_NAME << "/" << GIT_RELEASE;
         if (fancy) ident << ndTerm::Attr::RESET;
-        ident << " (" << os
-              << "; " << _ND_HOST_OS << "; " << _ND_HOST_CPU;
+        ident << " (" << os << "; " << _ND_HOST_OS << "; " << _ND_HOST_CPU;
 
         if (ndGC_USE_CONNTRACK) ident << "; conntrack";
         if (ndGC_USE_NETLINK) ident << "; netlink";
@@ -703,8 +701,6 @@ const string &nd_get_version_and_features(bool fancy) {
 #ifdef _ND_ENABLE_LIBTCMALLOC
         ident << "; tcmalloc";
 #endif
-        if (ndGC_SSL_USE_TLSv1) ident << "; ssl-tlsv1";
-        if (! ndGC_SSL_VERIFY) ident << "; ssl-no-verify";
 #ifdef HAVE_WORKING_REGEX
         ident << "; regex";
 #endif
