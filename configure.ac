@@ -420,7 +420,7 @@ AC_SUBST([GIT_SOURCE_URL], [https://gitlab.com/netify.ai/public/netify-agent.git
 AC_SUBST([ND_DEFINES], [$ND_DEFINES])
 
 # Define hex version
-AC_SUBST([ND_VERSION], [m4_esyscmd_s([tail -n 1 VERSION])]])
+AC_SUBST([ND_VERSION], [m4_esyscmd_s([tail -n 1 VERSION])])
 
 # Output files
 AC_CONFIG_FILES([deploy/openwrt/Makefile deploy/openwrt/files/netifyd.init \
