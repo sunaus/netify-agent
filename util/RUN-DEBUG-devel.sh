@@ -6,7 +6,8 @@ set -euo pipefail
 : ${OPTION_GDB:=disable}
 : ${OPTION_VALGRIND:=disable}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
-: ${NETIFYD_OPTIONS:=-d --run-without-sources --thread-detection-cores=4}
+: ${NETIFYD_DETECTION_CORES:=4}
+: ${NETIFYD_OPTIONS:=-d --run-without-sources --thread-detection-cores=${NETIFYD_DETECTION_CORES}}
 : ${NETIFYD_CONF:=$(pwd)/netifyd-debug.conf}
 
 if [ -z "${NETIFYD_CONF}" -a -f netifyd-debug.conf ]; then
@@ -58,7 +59,8 @@ else
       gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
   elif [ "${OPTION_VALGRIND}" != "disable" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      valgrind --tool=${OPTION_VALGRIND} --vgdb=yes --track-origins=yes \
+      valgrind --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
+        --track-origins=yes --read-inline-info=yes \
         --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
   else
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
