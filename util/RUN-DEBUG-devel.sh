@@ -4,9 +4,12 @@
 set -euo pipefail
 
 : ${OPTION_GDB:=disable}
+: ${OPTION_LLDB:=disable}
 : ${OPTION_VALGRIND:=disable}
+: ${VALGRIND_EXEC:=valgrind}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
-: ${NETIFYD_OPTIONS:=-d --run-without-sources --thread-detection-cores=4}
+: ${NETIFYD_DETECTION_CORES:=4}
+: ${NETIFYD_OPTIONS:=-d --run-without-sources --thread-detection-cores=${NETIFYD_DETECTION_CORES}}
 : ${NETIFYD_CONF:=$(pwd)/netifyd-debug.conf}
 
 if [ -z "${NETIFYD_CONF}" -a -f netifyd-debug.conf ]; then
@@ -56,14 +59,36 @@ else
     grep -E '^#define' config.h | sed -e 's/#define/macro define/g' > defines.gdb
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
-  elif [ "${OPTION_VALGRIND}" != "disable" ]; then
+  elif [ "${OPTION_LLDB}" == "enable" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      valgrind --tool=${OPTION_VALGRIND} --vgdb=yes --track-origins=yes \
-        --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+      lldb ${NETIFYD_PREFIX}/usr/sbin/netifyd -- $ARGS
+  elif [ "${OPTION_VALGRIND}" != "disable" ]; then
+    case "${OPTION_VALGRIND}" in
+      memcheck)
+        exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+          ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
+            --track-origins=yes --read-inline-info=yes --leak-check=full \
+            --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
+        ;;
+      massif)
+        exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+          ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} \
+            --massif-out-file=/tmp/netifyd-massif.%p.out ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
+        ;;
+      *)
+        echo "Unsupported or invalid valgrind tool: ${OPTION_VALGRIND}"
+        exit 1
+        ;;
+    esac
+  elif [ "${OPTION_VALGRIND}" == "memcheck" ]; then
+    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+      ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
+        --track-origins=yes --read-inline-info=yes \
+        --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
   else
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
   fi
 fi
 
-exit 0
+exit $?

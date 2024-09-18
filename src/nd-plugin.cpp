@@ -27,6 +27,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "nd-config.hpp"
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-plugin.hpp"
@@ -98,27 +99,24 @@ ndPluginSink::~ndPluginSink() {
 #endif
 }
 
-ndPluginSinkPayload *ndPluginSinkPayload::Create(size_t length,
+ndPluginSinkPayload::Ptr ndPluginSinkPayload::Create(size_t length,
   const uint8_t *data, const ndPlugin::Channels &channels,
   ndFlags<ndPlugin::DispatchFlags> flags) {
-    ndPluginSinkPayload *p = nullptr;
-
     if (! ndFlagBoolean(flags, ndPlugin::DispatchFlags::GZ_DEFLATE))
-        p = new ndPluginSinkPayload(length, data, channels, flags);
-    else {
-        vector<uint8_t> buffer;
-        nd_gz_deflate(length, data, buffer);
-        p = new ndPluginSinkPayload(buffer.size(),
-          &buffer[0], channels, flags);
-    }
+        return make_shared<ndPluginSinkPayload>(length,
+          data, channels, flags);
 
-    return p;
+    vector<uint8_t> buffer;
+    nd_gz_deflate(length, data, buffer);
+    return make_shared<ndPluginSinkPayload>(buffer.size(),
+      &buffer[0], channels, flags);
 }
 
-void ndPluginSink::QueuePayload(ndPluginSinkPayload *payload) {
+void ndPluginSink::QueuePayload(
+  const ndPluginSinkPayload::Ptr &payload) {
     Lock();
 
-    plq_public.push(payload);
+    plq_public.push(ndPluginSinkPayload::Ptr(payload));
 
     Unlock();
 
@@ -133,7 +131,7 @@ void ndPluginSink::QueuePayload(ndPluginSinkPayload *payload) {
 size_t ndPluginSink::PullPayloadQueue(void) {
     if (plq_public.size() == 0) return 0;
 
-    ndPluginSinkPayload *p;
+    ndPluginSinkPayload::Ptr p;
 
     do {
         while (plq_private.size() && plq_size > plq_size_max)
@@ -142,7 +140,6 @@ size_t ndPluginSink::PullPayloadQueue(void) {
             plq_private.pop();
 
             plq_size -= p->length;
-            delete p;
         }
 
         p = plq_public.front();
@@ -200,6 +197,16 @@ size_t ndPluginSink::WaitOnPayloadQueue(unsigned timeout) {
     Unlock();
 
     return entries;
+}
+
+bool ndPluginSink::PopPayloadQueue(ndPluginSinkPayload::Ptr &payload) {
+    if (! plq_private.size()) return false;
+
+    payload = plq_private.front();
+    plq_private.pop();
+    plq_size -= payload->length;
+
+    return true;
 }
 
 ndPluginProcessor::ndPluginProcessor(const string &tag,
@@ -267,10 +274,10 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
   const uint8_t *payload, ndFlags<ndPlugin::DispatchFlags> flags) {
     ndInstance &ndi = ndInstance::GetInstance();
 
-    ndPluginSinkPayload *sp = ndPluginSinkPayload::Create(
+    ndPluginSinkPayload::Ptr p = ndPluginSinkPayload::Create(
       length, payload, channels, flags);
 
-    if (ndi.plugins.DispatchSinkPayload(target, sp)) return;
+    if (ndi.plugins.DispatchSinkPayload(target, p)) return;
 
     throw ndException("%s: sink target not found", target.c_str());
 }
@@ -319,7 +326,7 @@ void ndPluginProcessor::DispatchSinkPayload(const string &target,
         }
 
         DispatchSinkPayload(target, channels, output.size(),
-          (const uint8_t *)output.c_str(), flags);
+          reinterpret_cast<const uint8_t *>(output.c_str()), flags);
     }
 }
 
@@ -358,11 +365,16 @@ ndPluginLoader::ndPluginLoader(const string &tag,
 
 ndPluginLoader::~ndPluginLoader() {
     if (so_handle != nullptr) {
-        dlclose(so_handle);
+        if (! ndGC_DEBUG) {
+            // In debug mode, don't close the shared object so tools like
+            // valgrind memcheck can resolve symbols.
+            dlclose(so_handle);
+        }
 #ifdef _ND_LOG_PLUGIN_DEBUG
         nd_dprintf("Plugin dereferenced: %s: %s\n",
           tag.c_str(), so_name.c_str());
 #endif
+        so_handle = nullptr;
     }
 }
 
@@ -581,29 +593,17 @@ void ndPluginManager::BroadcastEvent(ndPlugin::Type type,
 }
 
 void ndPluginManager::BroadcastSinkPayload(
-  ndPluginSinkPayload *payload) {
+  const ndPluginSinkPayload::Ptr &payload) {
     lock_guard<mutex> ul(lock);
 
-    if (sinks.empty()) {
-        delete payload;
-        return;
+    for (auto &sink : sinks) {
+        reinterpret_cast<ndPluginSink *>(sink.second->GetPlugin())
+          ->QueuePayload(payload);
     }
-
-    auto p = sinks.cbegin();
-
-    for (; p != prev(sinks.cend()); p++) {
-        ndPluginSinkPayload *sp = ndPluginSinkPayload::Create(payload);
-
-        reinterpret_cast<ndPluginSink *>(p->second->GetPlugin())
-          ->QueuePayload(sp);
-    }
-
-    reinterpret_cast<ndPluginSink *>(p->second->GetPlugin())
-      ->QueuePayload(payload);
 }
 
-bool ndPluginManager::DispatchSinkPayload(
-  const string &target, ndPluginSinkPayload *payload) {
+bool ndPluginManager::DispatchSinkPayload(const string &target,
+  const ndPluginSinkPayload::Ptr &payload) {
     lock_guard<mutex> ul(lock);
 
     auto p = sinks.find(target);

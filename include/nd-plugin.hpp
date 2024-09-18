@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <memory>
 #include <queue>
 #include <set>
 
@@ -107,26 +108,25 @@ protected:
 class ndPluginSinkPayload
 {
 public:
-    static ndPluginSinkPayload *Create(size_t length,
-      const uint8_t *data, const ndPlugin::Channels &channels,
+    typedef std::shared_ptr<ndPluginSinkPayload> Ptr;
+
+    static Ptr Create(size_t length, const uint8_t *data,
+      const ndPlugin::Channels &channels,
       ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE);
 
-    inline static ndPluginSinkPayload *
-    Create(const ndPluginSinkPayload &payload,
-      ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
-        return Create(payload.length, payload.data,
-          payload.channels, flags);
-    }
-
-    inline static ndPluginSinkPayload *
-    Create(const ndPluginSinkPayload *payload,
+    inline static Ptr Create(const Ptr &payload,
       ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
         return Create(payload->length, payload->data,
           payload->channels, flags);
     }
 
-    inline static ndPluginSinkPayload *
-    Create(const nlohmann::json &j,
+    inline static Ptr Create(const ndPluginSinkPayload *payload,
+      ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
+        return Create(payload->length, payload->data,
+          payload->channels, flags);
+    }
+
+    inline static Ptr Create(const nlohmann::json &j,
       const ndPlugin::Channels &channels,
       ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
         std::string output;
@@ -145,7 +145,7 @@ public:
       : length(length), data(nullptr), channels(channels),
         flags(flags) {
         this->data = new uint8_t[length];
-        memcpy(this->data, data, length);
+        memcpy(const_cast<uint8_t *>(this->data), data, length);
     }
 
     virtual ~ndPluginSinkPayload() {
@@ -157,7 +157,7 @@ public:
     }
 
     size_t length;
-    uint8_t *data;
+    const uint8_t *data;
     ndPlugin::Channels channels;
     ndFlags<ndPlugin::DispatchFlags> flags;
 };
@@ -218,7 +218,7 @@ protected:
       const std::vector<uint8_t> &payload,
       ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE) {
         DispatchSinkPayload(target, channels,
-          payload.size(), &payload[0], flags);
+          payload.size(), payload.data(), flags);
     }
 
     virtual void DispatchSinkPayload(const std::string &target,
@@ -240,26 +240,21 @@ public:
         ndPlugin::GetStatus(output);
     }
 
-    virtual void QueuePayload(ndPluginSinkPayload *payload);
+    virtual void
+    QueuePayload(const ndPluginSinkPayload::Ptr &payload);
 
 protected:
     size_t plq_size;
     size_t plq_size_max;
-    std::queue<ndPluginSinkPayload *> plq_public;
-    std::queue<ndPluginSinkPayload *> plq_private;
+    std::queue<ndPluginSinkPayload::Ptr> plq_public;
+    std::queue<ndPluginSinkPayload::Ptr> plq_private;
     pthread_cond_t plq_cond;
     pthread_mutex_t plq_cond_mutex;
 
     size_t PullPayloadQueue(void);
     size_t WaitOnPayloadQueue(unsigned timeout = 1);
 
-    inline ndPluginSinkPayload *PopPayloadQueue(void) {
-        if (! plq_private.size()) return nullptr;
-        ndPluginSinkPayload *p = plq_private.front();
-        plq_private.pop();
-        plq_size -= p->length;
-        return p;
-    }
+    bool PopPayloadQueue(ndPluginSinkPayload::Ptr &payload);
 };
 
 class ndPluginLoader
@@ -302,9 +297,9 @@ public:
       ndPlugin::Event event,
       void *param = nullptr);
 
-    void BroadcastSinkPayload(ndPluginSinkPayload *payload);
+    void BroadcastSinkPayload(const ndPluginSinkPayload::Ptr &payload);
     bool DispatchSinkPayload(const std::string &target,
-      ndPluginSinkPayload *payload);
+      const ndPluginSinkPayload::Ptr &payload);
 
     void BroadcastProcessorEvent(
       ndPluginProcessor::Event event, ndFlowMap *flow_map);
