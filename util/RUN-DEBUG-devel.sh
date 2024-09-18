@@ -63,6 +63,24 @@ else
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       lldb ${NETIFYD_PREFIX}/usr/sbin/netifyd -- $ARGS
   elif [ "${OPTION_VALGRIND}" != "disable" ]; then
+    case "${OPTION_VALGRIND}" in
+      memcheck)
+        exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+          ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
+            --track-origins=yes --read-inline-info=yes \
+            --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
+        ;;
+      massif)
+        exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+          ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} \
+            --massif-out-file=/tmp/netifyd-massif.%p.out ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
+        ;;
+      *)
+        echo "Unsupported or invalid valgrind tool: ${OPTION_VALGRIND}"
+        exit 1
+        ;;
+    esac
+  elif [ "${OPTION_VALGRIND}" == "memcheck" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
         --track-origins=yes --read-inline-info=yes \
@@ -73,4 +91,4 @@ else
   fi
 fi
 
-exit 0
+exit $?
