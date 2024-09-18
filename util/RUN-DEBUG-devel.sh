@@ -4,6 +4,7 @@
 set -euo pipefail
 
 : ${OPTION_GDB:=disable}
+: ${OPTION_LLDB:=disable}
 : ${OPTION_VALGRIND:=disable}
 : ${VALGRIND_EXEC:=valgrind}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
@@ -57,7 +58,10 @@ else
   if [ "${OPTION_GDB}" == "enable" ]; then
     grep -E '^#define' config.h | sed -e 's/#define/macro define/g' > defines.gdb
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
+      gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+  elif [ "${OPTION_LLDB}" == "enable" ]; then
+    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+      lldb ${NETIFYD_PREFIX}/usr/sbin/netifyd -- $ARGS
   elif [ "${OPTION_VALGRIND}" != "disable" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
