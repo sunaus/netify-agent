@@ -64,7 +64,7 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
 }
 
 ndFlow::ndFlow(nd_iface_ptr &iface)
-  : iface(iface), digest_lower{ 0 }, flags{}, tcp{},
+  : iface(iface),
     detected_protocol_name("Unknown") {
 }
 
