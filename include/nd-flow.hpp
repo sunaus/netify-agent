@@ -232,8 +232,8 @@ public:
         uint8_t ip_version = { 0 };
         uint32_t lower_teid = { 0 };
         uint32_t upper_teid = { 0 };
-        ndAddr::Type lower_type;
-        ndAddr::Type upper_type;
+        ndAddr::Type lower_type = { ndAddr::Type::NONE };
+        ndAddr::Type upper_type = { ndAddr::Type::NONE };
         ndAddr lower_addr;
         ndAddr upper_addr;
         LowerMap lower_map = { LowerMap::UNKNOWN };
