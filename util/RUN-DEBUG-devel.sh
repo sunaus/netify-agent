@@ -67,7 +67,7 @@ else
       memcheck)
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
           ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
-            --track-origins=yes --read-inline-info=yes \
+            --track-origins=yes --read-inline-info=yes --leak-check=full \
             --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS $@
         ;;
       massif)
