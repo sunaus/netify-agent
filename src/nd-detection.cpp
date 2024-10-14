@@ -952,7 +952,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
 #endif
             }
 
-            if (ndEF->tls.ech.version != 0 &&
+            if (ndEF->tls.ech.version == 0 &&
               ndEFNFP.tls_quic.encrypted_ch.version != 0)
             {
                 updated = true;
