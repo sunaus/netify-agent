@@ -640,18 +640,21 @@ public:
                     serialize(output,
                       { "ssl", "client_sni" }, host_server_name);
 
-                if (HasTLSEncryptedCH())
+                if (HasTLSEncryptedCH()) {
+                    sprintf(tohex, "0x%04hx", tls.ech.version);
                     serialize(output,
                       { "ssl", "encrypted_ch_version" },
-                      tls.ech.version);
+                      tohex);
+                }
 
                 if (HasTLSEncryptedSNI()) {
                     serialize(output,
                       { "ssl", "encrypted_sni" },
                       tls.esni.esni);
+                    sprintf(tohex, "0x%04hx", tls.esni.cipher_suite);
                     serialize(output,
                       { "ssl", "esni_cipher_suite" },
-                      tls.esni.cipher_suite);
+                      tohex);
                 }
 
                 if (HasTLSServerCN())
