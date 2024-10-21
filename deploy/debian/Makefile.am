@@ -6,6 +6,8 @@
 DEBFILES = changelog control conffiles debian.init rules $(PACKAGE_TARNAME).install $(PACKAGE_TARNAME)-dev.install
 DEBFILES_IN = changelog.in control.in debian.init.in conffiles.in rules.in $(PACKAGE_TARNAME).install.in $(PACKAGE_TARNAME)-dev.install.in
 
+sharedatadir = $(datadir)/netifyd
+
 BUILT_SOURCES = $(DEBFILES)
 CLEANFILES = $(DEBFILES)
 EXTRA_DIST = $(DEBFILES_IN)
@@ -16,13 +18,17 @@ EXTRA_DIST = $(DEBFILES_IN)
 		-e 's|[@]datadir@|$(datadir)/$(PACKAGE_TARNAME)|g' \
 		-e 's|[@]includedir@|$(includedir)|g' \
 		-e 's|[@]libdir@|$(libdir)|g' \
+		-e 's|[@]mandir@|$(mandir)|g' \
 		-e 's|[@]PACKAGE_BUGREPORT@|$(PACKAGE_BUGREPORT)|g' \
 		-e 's|[@]PACKAGE_NAME@|$(PACKAGE_NAME)|g' \
 		-e 's|[@]PACKAGE_TARNAME@|$(PACKAGE_TARNAME)|g' \
 		-e 's|[@]PACKAGE_VERSION@|$(PACKAGE_VERSION)|g' \
-		-e 's|[@]sbindir@|$(sbindir)|g' \
-		-e 's|[@]sysconfdir@|$(sysconfdir)|g' \
 		-e 's|[@]persistentstatedir@|$(persistentstatedir)|g' \
+		-e 's|[@]sbindir@|$(sbindir)|g' \
+		-e 's|[@]sharedatadir@|$(sharedatadir)|g' \
+		-e 's|[@]sysconfdir@|$(sysconfdir)|g' \
+		-e 's|[@]systemdsystemunitdir@|$(systemdsystemunitdir)|g' \
+		-e 's|[@]tmpfilesdir@|$(tmpfilesdir)|g' \
 		-e 's|[@]volatilestatedir@|$(volatilestatedir)|g' \
 		< "$<" > "$@"
 

@@ -30,14 +30,16 @@
 
 #include "nd-addr.hpp"
 
-#define ND_APP_UNKNOWN     0
-#define ND_APP_UNKNOWN_TAG "netify.unclassified"
-
 class ndFlow;
 class ndFlowParser;
 
 typedef uint32_t nd_app_id_t;
 typedef std::shared_ptr<ndFlow> nd_flow_ptr;
+
+constexpr nd_app_id_t ND_APP_UNKNOWN = 0;
+constexpr const char *ND_APP_UNKNOWN_TAG = {
+    "netify.unclassified"
+};
 
 class ndApplication
 {

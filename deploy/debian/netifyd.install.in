@@ -1,8 +1,8 @@
-etc/*
-lib/systemd/system/netifyd.service
-usr/lib/tmpfiles.d/netifyd.conf
-usr/lib/*/libnetifyd.so*
-usr/sbin/netifyd
-usr/share/man/man5/*
-usr/share/man/man8/*
-usr/share/netifyd/*
+@libdir@/*/libnetifyd.so*
+@mandir@/man5/*
+@mandir@/man8/*
+@sbindir@/netifyd
+@sharedatadir@/*
+@sysconfdir@/*
+@systemdsystemunitdir@/netifyd.service
+@tmpfilesdir@/netifyd.conf

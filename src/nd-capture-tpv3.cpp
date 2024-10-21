@@ -540,13 +540,10 @@ ndPacket *ndPacketRing::CopyPacket(const void *entry,
     // One-and-only packet copy...
     uint8_t *pkt_data = new uint8_t[tp_snaplen];
 
-    if (pkt_data) {
-        memcpy(pkt_data, data, tp_snaplen);
-        pkt = new ndPacket(status, tp_len, tp_snaplen, pkt_data, tv);
-    }
+    memcpy(pkt_data, data, tp_snaplen);
+    pkt = new ndPacket(status, tp_len, tp_snaplen, pkt_data, tv);
 
-    if (pkt) status |= ndPacket::StatusFlags::OK;
-    else status = ndPacket::StatusFlags::ALLOC_ERROR;
+    status |= ndPacket::StatusFlags::OK;
 
     return pkt;
 }
@@ -576,8 +573,6 @@ void *ndCaptureTPv3::Entry(void) {
 
     ndPacketRing *_ring = new ndPacketRing(iface->ifname,
       iface->config_tpv3, &stats);
-    if (_ring == nullptr)
-        throw runtime_error(strerror(ENOMEM));
 
     ring = static_cast<void *>(_ring);
 
