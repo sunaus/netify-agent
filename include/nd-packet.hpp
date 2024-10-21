@@ -37,8 +37,7 @@ public:
         CORRUPTED = (1 << 1),
         FILTERED = (1 << 2),
         VLAN_TAG_RESTORED = (1 << 3),
-        ALLOC_ERROR = (1 << 4),
-        LOCKED = (1 << 5),
+        LOCKED = (1 << 4),
     };
 
     ndPacket(const ndFlags<StatusFlags> &status,
