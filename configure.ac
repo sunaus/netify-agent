@@ -416,6 +416,8 @@ AX_GIT_VARS
 
 AC_SUBST([GIT_SOURCE_URL], [https://gitlab.com/netify.ai/public/netify-agent.git])
 
+AX_RELEASE_QUARTER
+
 # Defines substitution for pkg-config
 AC_SUBST([ND_DEFINES], [$ND_DEFINES])
 
