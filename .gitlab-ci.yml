@@ -206,7 +206,6 @@ Ubuntu/22.04/x86-64:
 
 Ubuntu/24.04/x86-64:
   extends: .debian_build
-  when: manual
   tags:
     - docker
   only:
