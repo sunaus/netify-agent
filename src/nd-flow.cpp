@@ -64,8 +64,7 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
 }
 
 ndFlow::ndFlow(nd_iface_ptr &iface)
-  : iface(iface),
-    detected_protocol_name("Unknown") {
+  : iface(iface), detected_protocol_name("Unknown") {
 }
 
 ndFlow::ndFlow(const ndFlow &flow)
@@ -552,14 +551,17 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
             if (HasTLSEncryptedCH()) {
                 dls << endl
                     << setw(plen) << " "
-                    << ": TLS/ECH: v" << hex
-                    << tls.ech.version << dec;
+                    << ": TLS/ECH: 0x" << setfill('0')
+                    << setw(4) << hex << tls.ech.version
+                    << setfill(' ') << dec;
             }
 
             if (HasTLSEncryptedSNI()) {
                 dls << endl
                     << setw(plen) << " "
-                    << ": TLS/ESNI: v" << hex << tls.esni.cipher_suite
+                    << ": TLS/ESNI: 0x" << setfill('0')
+                    << setw(4) << hex
+                    << tls.esni.cipher_suite << setfill(' ')
                     << dec << ": " << tls.esni.esni;
             }
 
