@@ -6,7 +6,6 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=@PACKAGE_TARNAME@
-PKG_VERSION:=@PACKAGE_VERSION@
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Darryl Sokoloski <darryl@egloo.ca>
 PKG_LICENSE:=GPL-3.0-or-later
