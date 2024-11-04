@@ -341,18 +341,24 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             return packet;
         }
 
-        switch (ntohl(*((uint32_t *)packet->data))) {
-        case 2: type = ETHERTYPE_IP; break;
-        case 24:
-        case 28:
-        case 30: type = ETHERTYPE_IPV6; break;
-        default:
+        for (unsigned i = 0; i < 2 && type == 0; i++) {
+            const uint32_t family = *((uint32_t *)packet->data);
+            switch ((i) ? ntohl(family) : family) {
+            case 2: type = ETHERTYPE_IP; break;
+            case 24:
+            case 28:
+            case 30: type = ETHERTYPE_IPV6; break;
+            default: break;
+            }
+        }
+
+        if (type == 0) {
 #ifdef _ND_LOG_PKT_DISCARD
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
             _ND_LOG_DISCARD(tag.c_str(),
               "unsupported BSD loopback encapsulation "
-              "type");
+              "protocol family");
 #endif
             return packet;
         }
