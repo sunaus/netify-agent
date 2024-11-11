@@ -82,7 +82,7 @@ enum class Id : uint32_t {
     DATASAVER = 46,
     XBOX = 47,
     QQ = 48,
-    TIKTOK = 49,
+    DEPR49 = 49,  // Deprecated: TikTok - not a protocol
     RTSP = 50,
     MAIL_IMAPS = 51,
     ICECAST = 52,
@@ -490,6 +490,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::CPHA, "CheckPointHA" },
     { Id::CROSSFIRE, "Crossfire" },
     { Id::CRYNET, "CryNetwork" },
+    { Id::DATASAVER, "DataSaver" },
     { Id::DCERPC, "DCE/RPC" },
     { Id::DHCP, "DHCP" },
     { Id::DHCPV6, "DHCPv6" },
@@ -717,7 +718,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::VALVE_SDR, "Valve/SDR" },
     { Id::VHUA, "VHUA" },
     { Id::VIBER, "Viber" },
-    { Id::VIBER, "Viber/VoIP" },
+    { Id::VIBER_VOIP, "Viber/VoIP" },
     { Id::VMWARE, "VMWARE" },
     { Id::VNC, "VNC" },
     { Id::VXLAN, "VXLAN" },
@@ -1023,7 +1024,6 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_TESO, Id::TESO },
     { NDPI_PROTOCOL_TFTP, Id::TFTP },
     { NDPI_PROTOCOL_THREEMA, Id::THREEMA },
-    { NDPI_PROTOCOL_TIKTOK, Id::TIKTOK },
     { NDPI_PROTOCOL_TINC, Id::TINC },
     { NDPI_PROTOCOL_TIVOCONNECT, Id::TIVOCONNECT },
     { NDPI_PROTOCOL_TLS, Id::TLS },
@@ -1338,6 +1338,7 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_MASTODON,  // Not a protocol: ID# 412
     NDPI_PROTOCOL_THREADS,  // Not a protocol: ID# 413
     NDPI_PROTOCOL_CLICKHOUSE,  // Not a protocol: ID# 419
+    NDPI_PROTOCOL_TIKTOK,  // Not a protocol: ID# 49
 };
 
 const std::vector<uint16_t> Free = {};
