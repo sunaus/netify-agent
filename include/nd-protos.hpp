@@ -1163,6 +1163,7 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_ROBLOX,  // Not a protocol: ID# 346 (Roblox)
     NDPI_PROTOCOL_MULLVAD,  // Not a protocol: ID# 348 (Mullvad)
     NDPI_PROTOCOL_SINA_WEIBO,  // Not a protocol: ID# 356 (SinaWeibo)
+    NDPI_PROTOCOL_TIKTOK,  // Not a protocol: ID# 49 (TikTok)
 };
 
 const std::vector<uint16_t> Free = {};
