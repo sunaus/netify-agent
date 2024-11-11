@@ -16,15 +16,17 @@ using namespace std;
 int main(int argc, char *argv[]) {
     int rc = 0;
 
-    cout << "Testing Netify Agent Risks..." << endl;
+    cerr << "Testing Netify Agent Risks..." << endl;
 
     nd_ndpi_global_init();
 
-    cout << endl
+    cerr << endl
          << "nDPI risks count: " << NDPI_MAX_RISK << endl;
-    cout << "Netify Agent risks count: "
+    cerr << "Netify Agent risks count: "
          << static_cast<unsigned>(ndRisk::Id::MAX) << endl
          << endl;
+
+    cout << "\"ndpi_risk\", \"ndpi_tag\", \"problem\"" << endl;
 
     for (uint16_t id = 0; id < NDPI_MAX_RISK; id++) {
         auto it = ndRisk::nDPI::Risks.find(id);
@@ -35,19 +37,21 @@ int main(int argc, char *argv[]) {
         ndpi_risk_info const * const risk_info =
           ndpi_risk2severity(rid);
         if (risk_info == NULL) {
-            rc = 1;
-            cout << "ID# " << id
-                 << " (ndpi_risk2severity: UNKNOWN/ERROR)" << endl;
+            rc++;
+            cout << id << ", "
+                 << "\"UNKNOWN/ERROR\""
+                 << ", \"missing risk\"" << endl;
             continue;
         }
 
-        rc = 1;
-        cout << "ID# " << id << " ("
-             << ndpi_risk2str(risk_info->risk) << ")" << endl;
+        rc++;
+        cout << id << ", "
+             << "\"" << ndpi_risk2str(risk_info->risk) << "\""
+             << ", \"missing risk\"" << endl;
     }
 
-    if (rc != 0) cout << endl;
-    cout << "Test result: " << ((rc == 0) ? "PASS" : "FAIL") << endl
+    if (rc != 0) cerr << endl;
+    cerr << "Test result: " << ((rc == 0) ? "PASS" : "FAIL") << endl
          << endl;
 
     return rc;

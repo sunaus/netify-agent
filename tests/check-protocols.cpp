@@ -18,16 +18,20 @@ int main(int argc, char *argv[]) {
     int rc = 0;
     char proto_name[64];
 
-    cout << "Testing Netify Agent Protocols..." << endl;
+    cerr << "Testing Netify Agent Protocols..." << endl;
 
     nd_ndpi_global_init();
     ndpi_detection_module_struct *ndpi = nd_ndpi_init();
 
-    cout << endl
+    cerr << endl
          << "nDPI protocol count: " << NDPI_LAST_IMPLEMENTED_PROTOCOL
          << endl;
-    cout << "Netify Agent protocol count: "
+    cerr << "Netify Agent protocol count: "
          << ndProto::nDPI::Protos.size() << endl
+         << endl;
+
+    cout << "\"ndpi_id\", \"netifyd_id\", \"ndpi_tag\", "
+            "\"problem\""
          << endl;
 
     for (uint16_t id = 0; id < NDPI_LAST_IMPLEMENTED_PROTOCOL; id++)
@@ -42,18 +46,30 @@ int main(int argc, char *argv[]) {
               id) != ndProto::nDPI::Free.end())
             continue;
 
-        if (it != ndProto::nDPI::Protos.end()) continue;
-
         ndpi_protocol proto = { id, 0 };
         ndpi_protocol2name(ndpi, proto, proto_name,
           sizeof(proto_name));
 
-        rc = 1;
-        cout << "ID# " << id << " (" << proto_name << ")" << endl;
+        if (it != ndProto::nDPI::Protos.end()) {
+            auto tag = ndProto::Tags.find((it->second));
+            if (tag == ndProto::Tags.end()) {
+                cout << id << ", " << (unsigned)it->second
+                     << ", \"" << proto_name << "\", "
+                     << "\"missing tag\"" << endl;
+                rc++;
+            }
+
+            continue;
+        }
+
+        rc++;
+        cout << id << ", " << (unsigned)it->second << ", \""
+             << proto_name << "\", "
+             << "\"missing protocol\"" << endl;
     }
 
-    if (rc != 0) cout << endl;
-    cout << "Test result: " << ((rc == 0) ? "PASS" : "FAIL") << endl
+    if (rc != 0) cerr << endl;
+    cerr << "Test result: " << ((rc == 0) ? "PASS" : "FAIL") << endl
          << endl;
 
     return rc;
