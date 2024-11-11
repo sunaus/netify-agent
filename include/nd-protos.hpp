@@ -397,11 +397,11 @@ enum class Id : uint32_t {
 
 const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::AFP, "AFP" },
-    { Id::AFP, "ApacheThrift" },
     { Id::AJP, "AJP" },
     { Id::ALICLOUD, "Alibaba/Cloud" },
     { Id::AMONG_US, "AmongUs" },
     { Id::AMQP, "AMQP" },
+    { Id::APACHE_THRIFT, "Apache/Thrift" },
     { Id::APPLE_PUSH, "Apple/Push" },
     { Id::ARMAGETRON, "Armagetron" },
     { Id::AVAST, "AVAST" },
@@ -1055,7 +1055,7 @@ const std::vector<uint16_t> Disabled = {
     // (NetFlix)
     NDPI_PROTOCOL_NTOP,  // Not a protocol: ID# 26 (ntop)
     NDPI_PROTOCOL_NVIDIA,  // Not a protocol: ID# 342
-    // (GeForceNow)
+    // (Nvidia)
     NDPI_PROTOCOL_OCS,  // Not a protocol: ID# 218 (OCS)
     NDPI_PROTOCOL_OCSP,  // Not a protocol (HTTP): ID# 63
     // (OCSP)
