@@ -449,10 +449,8 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             ndEFNF->host_server_name :
             "(null)");
 #endif
-        if (ndEFNF->extra_packets_func == nullptr) {
-            ndEF->stats.detection_packets = 0;
+        if (ndEFNF->extra_packets_func == nullptr)
             ndEF->Release();
-        }
 
         return;
     }
