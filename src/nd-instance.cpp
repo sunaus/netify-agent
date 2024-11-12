@@ -261,7 +261,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             ndGC_SetFlag(ndGlobalFlags::IGNORE_IFACE_CONFIGS, true);
             break;
         case '?':
-            cerr << "Try `--help' for more information.\n";
+            cerr << "Try --help for more information.\n";
             return ndEnumCast(ConfigResult, INVALID_OPTION);
         case 'c': conf_filename = optarg; break;
         case 'd':
@@ -298,7 +298,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             return ndCR_Pack(DISABLE_PLUGIN,
               (EnableInformatics(false)) ? 0 : 1);
         case '?':
-            cerr << "Try `--help' for more information.\n";
+            cerr << "Try --help for more information.\n";
             return ndEnumCast(ConfigResult, INVALID_OPTION);
         default: break;
         }
@@ -533,6 +533,12 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             CommandLineHelp();
             return ndEnumCast(ConfigResult, INVALID_OPTION);
         }
+    }
+
+    if (argc > optind) {
+        cerr << "Invalid option: " << argv[optind] << endl;
+        cerr << "Try --help for more information." << endl;
+        return ndEnumCast(ConfigResult, INVALID_OPTION);
     }
 
     Reload(false);
