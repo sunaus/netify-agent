@@ -94,7 +94,6 @@ ndInstance::~ndInstance() {
             }
         }
 #endif
-
         for (auto i : thread_detection) {
             if (p == 0) i.second->Terminate();
             else delete i.second;
@@ -1937,8 +1936,7 @@ bool ndInstance::DisplayAgentStatus(void) {
 int ndInstance::Run(void) {
     if (version.empty()) {
         nd_printf(
-          "%s: Instance configuration not "
-          "initialized.\n",
+          "%s: Instance configuration not initialized.\n",
           tag.c_str());
         goto ndInstance_RunReturn;
     }
@@ -1967,13 +1965,29 @@ int ndInstance::Run(void) {
     if (ndGC_USE_NETLINK) netlink = new ndNetlink();
 #endif
 
-    try {
 #ifdef _ND_ENABLE_CONNTRACK
-        if (ndGC_USE_CONNTRACK) {
+    if (ndGC_USE_CONNTRACK) {
+        try {
             thread_conntrack = new ndConntrackThread(ndGC.ca_conntrack);
             thread_conntrack->Create();
         }
+        catch (exception &e) {
+            if (thread_conntrack != nullptr) {
+                delete thread_conntrack;
+                thread_conntrack = nullptr;
+            }
+
+            ndGC_SetFlag(ndGlobalFlags::USE_CONNTRACK, false);
+
+            nd_printf(
+              "%s: WARNING: Conntrack support disabled by "
+              "exception: %s\n",
+              tag.c_str(), e.what());
+        }
+    }
 #endif
+
+    try {
         plugins.Load();
 
         int16_t cpu =
