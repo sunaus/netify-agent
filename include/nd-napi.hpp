@@ -115,7 +115,15 @@ public:
     ndNetifyApiManager() : ttl_last_update(0) { }
     virtual ~ndNetifyApiManager() { Terminate(); }
 
-    bool Update(void);
+    enum class UpdateResult : uint8_t {
+        OK,
+        RELOAD,
+        RELOAD_BROADCAST,
+        ERROR
+    };
+
+    UpdateResult Update(void);
+
     void Terminate(void);
 
     inline const nlohmann::json &GetStatus(void) const {
@@ -152,7 +160,8 @@ protected:
 
     Results download_results;
 
-    bool ProcessBootstrapRequest(ndNetifyApiBootstrap *bootstrap);
+    UpdateResult
+    ProcessBootstrapRequest(ndNetifyApiBootstrap *bootstrap);
     bool ProcessDownloadRequest(ndNetifyApiDownload *download,
       Request type);
 
