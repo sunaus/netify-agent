@@ -428,7 +428,8 @@ void *ndNetifyApiDownload::Entry(void) {
     return nullptr;
 }
 
-bool ndNetifyApiManager::Update(void) {
+ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
+    UpdateResult result = UpdateResult::OK;
     auto request = requests.find(Request::BOOTSTRAP);
 
     if (request != requests.end()) {
@@ -436,7 +437,7 @@ bool ndNetifyApiManager::Update(void) {
           dynamic_cast<ndNetifyApiBootstrap *>(request->second);
 
         if (bootstrap->HasTerminated()) {
-            ProcessBootstrapRequest(bootstrap);
+            result = ProcessBootstrapRequest(bootstrap);
 
             requests.erase(request);
             delete bootstrap;
@@ -489,7 +490,7 @@ bool ndNetifyApiManager::Update(void) {
     }
 
     if (downloads == 0 && download_results.size()) {
-        bool reload = false;
+        bool reload;
         size_t successful = 0;
 
         for (auto &r : download_results) {
@@ -504,7 +505,11 @@ bool ndNetifyApiManager::Update(void) {
           successful, download_results.size());
 
         download_results.clear();
-        return reload;
+
+        if (reload && result == UpdateResult::OK)
+            result = UpdateResult::RELOAD;
+
+        return result;
     }
 
     if (! token.empty()) {
@@ -549,7 +554,7 @@ bool ndNetifyApiManager::Update(void) {
         }
     }
 
-    return false;
+    return result;
 }
 
 void ndNetifyApiManager::Terminate(void) {
@@ -559,7 +564,8 @@ void ndNetifyApiManager::Terminate(void) {
     requests.clear();
 }
 
-bool ndNetifyApiManager::ProcessBootstrapRequest(
+ndNetifyApiManager::UpdateResult
+ndNetifyApiManager::ProcessBootstrapRequest(
   ndNetifyApiBootstrap *bootstrap) {
     jstatus["bootstrap"]["code"] = -1;
     jstatus["bootstrap"]["last_update"] = time(nullptr);
@@ -567,7 +573,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
     if (bootstrap->curl_rc != CURLE_OK) {
         jstatus["bootstrap"]["message"] = curl_easy_strerror(
           bootstrap->curl_rc);
-        return false;
+        return UpdateResult::ERROR;
     }
     else {
         jstatus["bootstrap"]["message"] = "Unknown result";
@@ -578,14 +584,14 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
         jstatus["bootstrap"]["message"] = "Request failure";
         nd_printf(
           "netify-api: Bootstrap request failed.\n");
-        return false;
+        return UpdateResult::ERROR;
     }
 
     if (bootstrap->content.length() == 0) {
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] = "Empty response";
         nd_printf("netify-api: Empty bootstrap content.\n");
-        return false;
+        return UpdateResult::ERROR;
     }
 
     if (bootstrap->content_type != "application/json") {
@@ -595,7 +601,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
         nd_printf(
           "netify-api: Invalid bootstrap content "
           "type.\n");
-        return false;
+        return UpdateResult::ERROR;
     }
 
     try {
@@ -644,7 +650,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
               "netify-api: Bootstrap request failed: HTTP "
               "%ld: %s [%d]\n",
               bootstrap->http_rc, message.c_str(), code);
-            return false;
+            return UpdateResult::ERROR;
         }
 
         auto jdata = content.find("data");
@@ -656,7 +662,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
               "netify-api: Malformed bootstrap content: "
               "%s\n",
               "data not found");
-            return false;
+            return UpdateResult::ERROR;
         }
 
         auto juuid_site = jdata->find("uuid-site");
@@ -672,7 +678,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
                   "netify-api: Site UUID provisioned: %s\n",
                   new_uuid.c_str());
             }
-            return false;
+            return UpdateResult::RELOAD_BROADCAST;
         }
 
         auto jsigs = jdata->find("signatures");
@@ -684,7 +690,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
               "netify-api: Malformed bootstrap content: "
               "%s\n",
               "signatures not found");
-            return false;
+            return UpdateResult::ERROR;
         }
 
         auto japps = jsigs->find("applications_endpoint");
@@ -699,7 +705,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
               "%s\n",
               "applications_endpoint not found or invalid "
               "type");
-            return false;
+            return UpdateResult::ERROR;
         }
 
         auto jcats = jsigs->find("categories_endpoint");
@@ -714,7 +720,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
               "%s\n",
               "categories_endpoint not found or invalid "
               "type");
-            return false;
+            return UpdateResult::ERROR;
         }
 
         auto jtoken = jsigs->find("token");
@@ -728,7 +734,7 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
               "netify-api: Malformed bootstrap content: "
               "%s\n",
               "token not found or invalid type");
-            return false;
+            return UpdateResult::ERROR;
         }
 
         string new_token = jtoken->get<string>();
@@ -750,10 +756,10 @@ bool ndNetifyApiManager::ProcessBootstrapRequest(
           "netify-api: Failed to decode bootstrap "
           "content.\n");
         nd_dprintf("netify-api: JSON exception: %s\n", e.what());
-        return false;
+        return UpdateResult::ERROR;
     }
 
-    return true;
+    return UpdateResult::RELOAD;
 }
 
 bool ndNetifyApiManager::ProcessDownloadRequest(

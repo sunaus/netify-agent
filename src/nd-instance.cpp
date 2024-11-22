@@ -2173,11 +2173,34 @@ void *ndInstance::ndInstance::Entry(void) {
             ProcessUpdate(thread_capture);
             break;
         case InstanceEvent::UPDATE_NAPI:
-            nd_dprintf("%s: received IPC: [%d] %s\n",
-              tag.c_str(), ipc, "Netify API update");
             if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
-                if (api_manager.Update()) {
+                switch (api_manager.Update()) {
+                case ndNetifyApiManager::UpdateResult::OK:
+                    nd_dprintf(
+                      "%s: received IPC: [%d] %s: %s\n",
+                      tag.c_str(), ipc, "Netify API update",
+                      "OK");
+                    break;
+                case ndNetifyApiManager::UpdateResult::RELOAD:
+                    nd_dprintf(
+                      "%s: received IPC: [%d] %s: %s\n",
+                      tag.c_str(), ipc, "Netify API update",
+                      "reload");
                     Reload(false, false);
+                    break;
+                case ndNetifyApiManager::UpdateResult::RELOAD_BROADCAST:
+                    nd_dprintf(
+                      "%s: received IPC: [%d] %s: %s\n",
+                      tag.c_str(), ipc, "Netify API update",
+                      "reload (broadcast)");
+                    Reload(true, false);
+                    break;
+                case ndNetifyApiManager::UpdateResult::ERROR:
+                    nd_dprintf(
+                      "%s: received IPC: [%d] %s: %s\n",
+                      tag.c_str(), ipc, "Netify API update",
+                      "error");
+                    break;
                 }
             }
             break;
