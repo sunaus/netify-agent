@@ -94,7 +94,7 @@ enum class Id : uint32_t {
     DEPR58 = 58,  // Deprecated: TVANTS
     DEPR59 = 59,  // Deprecated: TVUplayer
     DEPR60 = 60,  // Deprecated: HTTP_Download
-    QQLIVE = 61,
+    DEPR61 = 61,  // Deprecated: QQLive
     DEPR62 = 62,  // Deprecated: Thunder
     DEPR63 = 63,  // Deprecated: SoulSeek
     DEPR64 = 64,  // Deprecated: SSL No Cert
@@ -637,7 +637,6 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::PROFINET_IO, "PROFINET/IO" },
     { Id::PROTOBUF, "Protobuf" },
     { Id::PTPV2, "PTP/2" },
-    { Id::QQLIVE, "QQLive" },
     { Id::QQ, "QQ" },
     { Id::QUIC, "QUIC" },
     { Id::RADIUS, "RADIUS" },

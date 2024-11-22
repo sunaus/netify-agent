@@ -203,7 +203,6 @@ ndProto::Id ndFlow::GetMasterProtocol(void) const {
     case ndProto::Id::HTTP_CONNECT:
     case ndProto::Id::HTTP_PROXY:
     case ndProto::Id::OOKLA:
-    case ndProto::Id::QQ:
     case ndProto::Id::RTSP:
     case ndProto::Id::STEAM:
     case ndProto::Id::TEAMVIEWER:

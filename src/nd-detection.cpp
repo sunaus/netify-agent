@@ -800,6 +800,10 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
             app_twin = ndi.apps.Lookup("netify.nest");
             break;
 
+        case ndProto::Id::QQ:
+            app_twin = ndi.apps.Lookup("netify.qq");
+            break;
+
         case ndProto::Id::SPOTIFY:
             app_twin = ndi.apps.Lookup("netify.spotify");
             break;
