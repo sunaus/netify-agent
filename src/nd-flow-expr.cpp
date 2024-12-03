@@ -867,9 +867,9 @@ union yyalloc
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  50
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  275
+#define YYNRULES  277
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  418
+#define YYNSTATES  420
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   325
@@ -943,16 +943,16 @@ static const yytype_int16 yyrline[] =
      907,   914,   918,   922,   926,   930,   934,   941,   945,   949,
      953,   957,   961,   968,   972,   976,   980,   984,   988,   995,
     1001,  1009,  1010,  1013,  1022,  1034,  1059,  1087,  1123,  1160,
-    1164,  1168,  1186,  1208,  1212,  1216,  1220,  1224,  1228,  1232,
-    1236,  1243,  1247,  1251,  1255,  1259,  1263,  1267,  1271,  1278,
-    1282,  1286,  1290,  1294,  1298,  1302,  1306,  1313,  1329,  1348,
-    1364,  1383,  1399,  1418,  1424,  1430,  1431,  1434,  1440,  1449,
-    1468,  1489,  1506,  1526,  1533,  1540,  1558,  1576,  1613,  1622,
-    1630,  1638,  1646,  1654,  1662,  1670,  1678,  1689,  1693,  1697,
-    1701,  1705,  1709,  1713,  1717,  1724,  1728,  1732,  1736,  1740,
-    1744,  1748,  1752,  1759,  1763,  1767,  1771,  1775,  1779,  1783,
-    1787,  1794,  1798,  1802,  1806,  1810,  1814,  1818,  1822,  1829,
-    1833,  1837,  1841,  1848,  1849,  1850
+    1164,  1168,  1186,  1205,  1217,  1233,  1237,  1241,  1245,  1249,
+    1253,  1257,  1261,  1268,  1272,  1276,  1280,  1284,  1288,  1292,
+    1296,  1303,  1307,  1311,  1315,  1319,  1323,  1327,  1331,  1338,
+    1354,  1373,  1389,  1408,  1424,  1443,  1449,  1455,  1456,  1459,
+    1465,  1474,  1493,  1514,  1531,  1551,  1558,  1565,  1583,  1601,
+    1638,  1647,  1655,  1663,  1671,  1679,  1687,  1695,  1703,  1714,
+    1718,  1722,  1726,  1730,  1734,  1738,  1742,  1749,  1753,  1757,
+    1761,  1765,  1769,  1773,  1777,  1784,  1788,  1792,  1796,  1800,
+    1804,  1808,  1812,  1819,  1823,  1827,  1831,  1835,  1839,  1843,
+    1847,  1854,  1858,  1862,  1866,  1873,  1874,  1875
 };
 #endif
 
@@ -1029,24 +1029,24 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 static const yytype_int16 yypact[] =
 {
      -53,     1,   -53,   -11,   -52,    -7,    88,   124,   128,   168,
-     173,   101,   105,   177,   181,   183,   194,   196,   198,   200,
-     202,   204,   206,   208,   210,   212,   109,   114,   118,   214,
-     216,   218,   220,   222,   224,   226,   228,   141,   150,   154,
+     173,   101,   105,   177,   194,   196,   198,   200,   202,   204,
+     206,   208,   210,   212,   214,   216,   109,   114,   118,   218,
+     220,   222,   224,   226,   228,   230,   232,   141,   150,   154,
      158,   164,    73,   113,    -1,   -53,   -53,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -19,     4,
-      45,    47,    67,    97,   263,   264,   265,   266,   267,   268,
-     269,   271,   199,   199,    -4,     0,     8,   161,    54,    54,
-      54,    54,   272,   273,   274,   275,   276,   277,   278,   279,
-     280,   281,   282,   283,   139,   139,   223,   225,   227,   229,
-     231,   233,   235,   237,   239,   241,   243,   245,   247,   249,
-     251,   253,   255,   257,   259,   261,   290,   291,   292,   293,
-     288,   289,   294,   295,   296,   297,   298,   299,   300,   301,
+      50,    52,    67,    97,   267,   268,   269,   270,   271,   272,
+     273,   275,   199,   199,    -4,     0,     8,   161,   169,   169,
+     169,   169,   276,   277,   278,   279,   280,   281,   282,   283,
+     284,   285,   286,   287,   139,   139,   227,   229,   231,   233,
+     235,   237,   239,   241,   243,   245,   247,   249,   251,   253,
+     255,   257,   259,   261,   263,   265,   294,   295,   -10,    -9,
+     290,   291,   292,   293,   296,   297,   298,   299,   300,   301,
      302,   303,   304,   305,   306,   307,   308,   309,   316,   317,
-     318,   319,   -10,    -9,   320,   321,    -8,     2,   322,   323,
-     260,   262,   137,   137,   324,   325,   326,   327,   328,   329,
+     318,   319,    -8,     2,   320,   321,    51,    53,   322,   323,
+     264,   266,   137,   137,   324,   325,   326,   327,   328,   329,
      330,   331,   332,   333,   334,   335,   336,   337,   338,   339,
      340,   341,   342,   343,   344,   345,   346,   347,   348,   349,
      350,   351,   352,   353,    -6,   -53,   -53,   -53,   -53,   -53,
@@ -1069,7 +1069,7 @@ static const yytype_int16 yypact[] =
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
-     -53,   -53,   -53,   -53,   -53,   -53,   270,   270
+     -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   274,   274
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1079,12 +1079,12 @@ static const yytype_int16 yydefact[] =
 {
        2,     0,     1,    46,     0,    56,    64,     0,     0,     0,
        0,    87,    95,   103,   109,   115,   121,   127,   133,   139,
-     145,   151,   157,   163,     0,   179,   183,   191,   199,     0,
-       0,   169,     0,   213,     0,   223,   269,   229,   237,   245,
-     253,   261,     0,     0,     0,     4,     5,     6,     7,     8,
+     145,   151,   157,   163,     0,   179,   185,   193,   201,     0,
+       0,   169,     0,   215,     0,   225,   271,   231,   239,   247,
+     255,   263,     0,     0,     0,     4,     5,     6,     7,     8,
        9,    10,    11,    12,    13,    14,    15,    16,    17,    18,
       19,    20,    21,    22,    23,    24,    30,   171,   172,    25,
-      26,    27,    28,    29,    31,    32,    33,    34,   215,   216,
+      26,    27,    28,    29,    31,    32,    33,    34,   217,   218,
       35,    36,    42,    37,    38,    39,    40,    41,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
@@ -1100,8 +1100,8 @@ static const yytype_int16 yydefact[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,    47,    57,    65,    88,    96,
      104,   110,   116,   122,   128,   134,   140,   146,   152,   158,
-     164,   180,   184,   192,   200,   170,   214,   224,   270,   230,
-     238,   246,   254,   262,     0,     0,     3,    48,    49,    50,
+     164,   180,   186,   194,   202,   170,   216,   226,   272,   232,
+     240,   248,   256,   264,     0,     0,     3,    48,    49,    50,
       51,    52,    53,    54,    55,    58,    59,    60,    61,    62,
       63,    68,    69,    70,    71,    72,    73,    74,    66,    67,
       75,    76,    77,    78,    83,    84,    85,    86,    79,    80,
@@ -1111,24 +1111,24 @@ static const yytype_int16 yydefact[] =
      129,   130,   131,   132,   135,   136,   137,   138,   141,   142,
      143,   144,   147,   148,   149,   150,   153,   154,   155,   156,
      159,   160,   161,   162,   165,   166,   167,   168,   177,   178,
-     181,   182,   185,   186,   187,   188,   189,   190,   193,   194,
-     195,   196,   197,   198,   201,   202,   203,   204,   205,   206,
-     209,   210,   211,   212,   175,   173,   176,   174,   207,   208,
-     219,   217,   220,   218,   221,   222,   225,   227,   226,   228,
-     273,   274,   275,   271,   272,   231,   232,   233,   234,   235,
-     236,   239,   240,   241,   242,   243,   244,   247,   248,   249,
-     250,   251,   252,   255,   256,   257,   258,   259,   260,   263,
-     264,   265,   266,   267,   268,    45,    44,    43
+     181,   183,   182,   184,   187,   188,   189,   190,   191,   192,
+     195,   196,   197,   198,   199,   200,   203,   204,   205,   206,
+     207,   208,   211,   212,   213,   214,   175,   173,   176,   174,
+     209,   210,   221,   219,   222,   220,   223,   224,   227,   229,
+     228,   230,   275,   276,   277,   273,   274,   233,   234,   235,
+     236,   237,   238,   241,   242,   243,   244,   245,   246,   249,
+     250,   251,   252,   253,   254,   257,   258,   259,   260,   261,
+     262,   265,   266,   267,   268,   269,   270,    45,    44,    43
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -53,   -53,   -42,   -53,   -53,   -53,   -53,   258,   -53,   -53,
-     -53,   -53,    90,   -53,   -53,   -53,   205,   -53,   -53,   -53,
+     -53,   -53,   -42,   -53,   -53,   -53,   -53,   262,   -53,   -53,
+     -53,   -53,    90,   -53,   -53,   -53,   209,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
      -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
-     -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   148
+     -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   152
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -1138,7 +1138,7 @@ static const yytype_int16 yydefgoto[] =
       51,    52,   278,    53,    54,    55,   296,    56,    57,    58,
       59,    60,    61,    62,    63,    64,    65,    66,    67,    68,
       69,    70,    71,    72,    73,    74,    75,    76,    77,    78,
-      79,    80,    81,    82,    83,    84,    85,    86,    87,   383
+      79,    80,    81,    82,    83,    84,    85,    86,    87,   385
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -1151,44 +1151,44 @@ static const yytype_int16 yytable[] =
       19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
       29,    30,    31,    32,    33,    34,    35,    36,    37,    38,
       39,    40,    41,    88,    89,    90,    91,    96,    97,    98,
-      99,   247,   244,   245,   364,   366,   370,   244,   245,   270,
-     365,   367,   371,   271,    92,    93,   372,   415,   100,   101,
-     246,   272,   373,    42,   248,    43,     3,     4,     5,     6,
+      99,   247,   244,   245,   340,   342,   366,   244,   245,   270,
+     341,   343,   367,   271,    92,    93,   368,   417,   100,   101,
+     246,   272,   369,    42,   248,    43,     3,     4,     5,     6,
        7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
       17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
       27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
-      37,    38,    39,    40,    41,   249,   215,   250,   216,   217,
-     274,   275,   276,   277,   218,   219,   220,   221,   222,   223,
+      37,    38,    39,    40,    41,   372,   215,   374,   216,   217,
+     249,   373,   250,   375,   218,   219,   220,   221,   222,   223,
      224,   225,   226,   227,   228,   229,   230,   251,   231,   232,
      233,   234,   102,   103,   235,    42,   236,    43,   237,   238,
      239,   240,   241,   242,   243,   112,   113,   114,   115,   118,
      119,   120,   121,   150,   151,   152,   153,   252,   156,   157,
      158,   159,   162,   163,   164,   165,   116,   117,   104,   105,
-     122,   123,   106,   107,   154,   155,   380,   381,   382,   160,
+     122,   123,   106,   107,   154,   155,   382,   383,   384,   160,
      161,   294,   295,   166,   167,   184,   185,   186,   187,   279,
-     280,   281,   416,   417,   190,   191,   192,   193,   196,   197,
+     280,   281,   418,   419,   190,   191,   192,   193,   196,   197,
      198,   199,   202,   203,   204,   205,   188,   189,   208,   209,
      210,   211,   108,   109,   273,   194,   195,   110,   111,   200,
-     201,   124,   125,   206,   207,   126,   127,   128,   129,   212,
-     213,   261,   262,   263,   264,   265,   266,   267,   130,   131,
-     132,   133,   134,   135,   136,   137,   138,   139,   140,   141,
-     142,   143,   144,   145,   146,   147,   148,   149,   168,   169,
-     170,   171,   172,   173,   174,   175,   176,   177,   178,   179,
-     180,   181,   182,   183,   298,   299,   300,   301,   302,   303,
-     304,   305,   306,   307,   308,   309,   310,   311,   312,   313,
-     314,   315,   316,   317,   318,   319,   320,   321,   322,   323,
-     324,   325,   326,   327,   328,   329,   330,   331,   332,   333,
-     334,   335,   336,   337,   376,   377,   378,   379,   244,   245,
-     297,   384,     0,   253,   254,   255,   256,   257,   258,   259,
-       0,   260,   282,   283,   284,   285,   286,   287,   288,   289,
-     290,   291,   292,   293,   338,   339,   340,   341,   342,   343,
-       0,   269,     0,     0,   344,   345,   346,   347,   348,   349,
-     350,   351,   352,   353,   354,   355,   356,   357,   358,   359,
-     360,   361,   362,   363,   368,   369,   374,   375,     0,     0,
-       0,     0,     0,     0,   385,   386,   387,   388,   389,   390,
-     391,   392,   393,   394,   395,   396,   397,   398,   399,   400,
-     401,   402,   403,   404,   405,   406,   407,   408,   409,   410,
-     411,   412,   413,   414
+     201,   124,   125,   206,   207,   274,   275,   276,   277,   212,
+     213,   261,   262,   263,   264,   265,   266,   267,   126,   127,
+     128,   129,   130,   131,   132,   133,   134,   135,   136,   137,
+     138,   139,   140,   141,   142,   143,   144,   145,   146,   147,
+     148,   149,   168,   169,   170,   171,   172,   173,   174,   175,
+     176,   177,   178,   179,   180,   181,   182,   183,   298,   299,
+     300,   301,   302,   303,   304,   305,   306,   307,   308,   309,
+     310,   311,   312,   313,   314,   315,   316,   317,   318,   319,
+     320,   321,   322,   323,   324,   325,   326,   327,   328,   329,
+     330,   331,   332,   333,   334,   335,   336,   337,   378,   379,
+     380,   381,   244,   245,   297,   386,     0,   253,   254,   255,
+     256,   257,   258,   259,     0,   260,   282,   283,   284,   285,
+     286,   287,   288,   289,   290,   291,   292,   293,   338,   339,
+     344,   345,   346,   347,     0,   269,   348,   349,   350,   351,
+     352,   353,   354,   355,   356,   357,   358,   359,   360,   361,
+     362,   363,   364,   365,   370,   371,   376,   377,     0,     0,
+       0,     0,     0,     0,   387,   388,   389,   390,   391,   392,
+     393,   394,   395,   396,   397,   398,   399,   400,   401,   402,
+     403,   404,   405,   406,   407,   408,   409,   410,   411,   412,
+     413,   414,   415,   416
 };
 
 static const yytype_int16 yycheck[] =
@@ -1204,8 +1204,8 @@ static const yytype_int16 yycheck[] =
        7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
       17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
       27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
-      37,    38,    39,    40,    41,    70,     3,    70,     5,     6,
-      66,    67,    68,    69,    11,    12,    13,    14,    15,    16,
+      37,    38,    39,    40,    41,    64,     3,    64,     5,     6,
+      70,    70,    70,    70,    11,    12,    13,    14,    15,    16,
       17,    18,    19,    20,    21,    22,    23,    70,    25,    26,
       27,    28,    54,    55,    31,    72,    33,    74,    35,    36,
       37,    38,    39,    40,    41,    54,    55,    56,    57,    54,
@@ -1216,20 +1216,20 @@ static const yytype_int16 yycheck[] =
      110,   111,   244,   245,    54,    55,    56,    57,    54,    55,
       56,    57,    54,    55,    56,    57,    75,    76,    54,    55,
       56,    57,    54,    55,    63,    75,    76,    54,    55,    75,
-      76,    54,    55,    75,    76,    54,    55,    54,    55,    75,
+      76,    54,    55,    75,    76,    66,    67,    68,    69,    75,
       76,    42,    43,    44,    45,    46,    47,    48,    54,    55,
       54,    55,    54,    55,    54,    55,    54,    55,    54,    55,
       54,    55,    54,    55,    54,    55,    54,    55,    54,    55,
       54,    55,    54,    55,    54,    55,    54,    55,    54,    55,
-      54,    55,    54,    55,    61,    62,    61,    62,    61,    62,
+      54,    55,    54,    55,    54,    55,    54,    55,    61,    62,
       61,    62,    61,    62,    61,    62,    61,    62,    61,    62,
       61,    62,    61,    62,    61,    62,    61,    62,    61,    62,
       61,    62,    61,    62,    61,    62,    61,    62,    61,    62,
-      61,    62,    61,    62,    64,    65,    64,    65,    58,    59,
-     125,   183,    -1,    70,    70,    70,    70,    70,    70,    70,
-      -1,    70,    70,    70,    70,    70,    70,    70,    70,    70,
-      70,    70,    70,    70,    64,    64,    64,    64,    70,    70,
-      -1,   103,    -1,    -1,    70,    70,    70,    70,    70,    70,
+      61,    62,    61,    62,    61,    62,    61,    62,    64,    65,
+      64,    65,    58,    59,   125,   183,    -1,    70,    70,    70,
+      70,    70,    70,    70,    -1,    70,    70,    70,    70,    70,
+      70,    70,    70,    70,    70,    70,    70,    70,    64,    64,
+      70,    70,    70,    70,    -1,   103,    70,    70,    70,    70,
       70,    70,    70,    70,    70,    70,    70,    70,    70,    70,
       64,    64,    64,    64,    64,    64,    64,    64,    -1,    -1,
       -1,    -1,    -1,    -1,    70,    70,    70,    70,    70,    70,
@@ -1276,14 +1276,14 @@ static const yytype_int8 yystos[] =
       61,    62,    61,    62,    61,    62,    61,    62,    61,    62,
       61,    62,    61,    62,    61,    62,    61,    62,    61,    62,
       61,    62,    61,    62,    61,    62,    61,    62,    64,    64,
-      64,    64,    70,    70,    70,    70,    70,    70,    70,    70,
+      64,    70,    64,    70,    70,    70,    70,    70,    70,    70,
       70,    70,    70,    70,    70,    70,    70,    70,    70,    70,
-      64,    64,    64,    64,    64,    70,    64,    70,    64,    64,
-      64,    70,    64,    70,    64,    64,    64,    65,    64,    65,
-      49,    50,    51,   126,   126,    70,    70,    70,    70,    70,
+      70,    70,    64,    64,    64,    64,    64,    70,    64,    70,
+      64,    64,    64,    70,    64,    70,    64,    64,    64,    65,
+      64,    65,    49,    50,    51,   126,   126,    70,    70,    70,
       70,    70,    70,    70,    70,    70,    70,    70,    70,    70,
       70,    70,    70,    70,    70,    70,    70,    70,    70,    70,
-      70,    70,    70,    70,    70,    73,    79,    79
+      70,    70,    70,    70,    70,    70,    70,    73,    79,    79
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
@@ -1307,16 +1307,16 @@ static const yytype_int8 yyr1[] =
      100,   101,   101,   101,   101,   101,   101,   102,   102,   102,
      102,   102,   102,   103,   103,   103,   103,   103,   103,   104,
      104,   104,   104,   105,   105,   106,   106,   107,   107,   108,
-     108,   108,   108,   109,   109,   109,   109,   109,   109,   109,
-     109,   110,   110,   110,   110,   110,   110,   110,   110,   111,
-     111,   111,   111,   111,   111,   111,   111,   112,   112,   113,
-     113,   114,   114,   115,   115,   115,   115,   116,   116,   117,
-     117,   118,   118,   119,   119,   119,   119,   119,   119,   120,
-     120,   120,   120,   120,   120,   120,   120,   121,   121,   121,
-     121,   121,   121,   121,   121,   122,   122,   122,   122,   122,
-     122,   122,   122,   123,   123,   123,   123,   123,   123,   123,
-     123,   124,   124,   124,   124,   124,   124,   124,   124,   125,
-     125,   125,   125,   126,   126,   126
+     108,   108,   108,   108,   108,   109,   109,   109,   109,   109,
+     109,   109,   109,   110,   110,   110,   110,   110,   110,   110,
+     110,   111,   111,   111,   111,   111,   111,   111,   111,   112,
+     112,   113,   113,   114,   114,   115,   115,   115,   115,   116,
+     116,   117,   117,   118,   118,   119,   119,   119,   119,   119,
+     119,   120,   120,   120,   120,   120,   120,   120,   120,   121,
+     121,   121,   121,   121,   121,   121,   121,   122,   122,   122,
+     122,   122,   122,   122,   122,   123,   123,   123,   123,   123,
+     123,   123,   123,   124,   124,   124,   124,   124,   124,   124,
+     124,   125,   125,   125,   125,   126,   126,   126
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1340,16 +1340,16 @@ static const yytype_int8 yyr2[] =
        3,     1,     2,     3,     3,     3,     3,     1,     2,     3,
        3,     3,     3,     1,     2,     3,     3,     3,     3,     1,
        2,     1,     1,     3,     3,     3,     3,     3,     3,     1,
-       2,     3,     3,     1,     2,     3,     3,     3,     3,     3,
+       2,     3,     3,     3,     3,     1,     2,     3,     3,     3,
+       3,     3,     3,     1,     2,     3,     3,     3,     3,     3,
+       3,     1,     2,     3,     3,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,     3,     1,     2,     1,     1,     3,
+       3,     3,     3,     3,     3,     1,     2,     3,     3,     3,
        3,     1,     2,     3,     3,     3,     3,     3,     3,     1,
-       2,     3,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     1,     2,     1,     1,     3,     3,     3,
-       3,     3,     3,     1,     2,     3,     3,     3,     3,     1,
        2,     3,     3,     3,     3,     3,     3,     1,     2,     3,
        3,     3,     3,     3,     3,     1,     2,     3,     3,     3,
        3,     3,     3,     1,     2,     3,     3,     3,     3,     3,
-       3,     1,     2,     3,     3,     3,     3,     3,     3,     1,
-       2,     3,     3,     1,     1,     1
+       3,     1,     2,     3,     3,     1,     1,     1
 };
 
 
@@ -3498,7 +3498,7 @@ yyreduce:
             break;
         }
 
-        _NDFP_debugf("Risks == %s %s\n", (yyvsp[0].buffer), risk.c_str(), (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Risks == %s %s\n", risk.c_str(), (_NDFP_result) ? "yes" : "no");
     }
 #line 3504 "nd-flow-expr.cpp"
     break;
@@ -3522,229 +3522,264 @@ yyreduce:
         }
 
         _NDFP_result = !_NDFP_result;
-        _NDFP_debugf("Risks != %s %s\n", (yyvsp[0].buffer), risk.c_str(), (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Risks != %s %s\n", risk.c_str(), (_NDFP_result) ? "yes" : "no");
     }
 #line 3528 "nd-flow-expr.cpp"
     break;
 
-  case 183: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE  */
-#line 1208 "nd-flow-expr.ypp"
+  case 183: /* expr_risks: FLOW_RISKS CMP_EQUAL VALUE_NUMBER  */
+#line 1205 "nd-flow-expr.ypp"
+                                        {
+        unsigned long id = (yyvsp[0].ul_number);
+
+        _NDFP_result = false;
+        for (auto &i : _NDFP_flow->risk.risks) {
+            if (static_cast<unsigned long>(i) != id) continue;
+            _NDFP_result = true;
+            break;
+        }
+
+        _NDFP_debugf("Risks == %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
+    }
+#line 3545 "nd-flow-expr.cpp"
+    break;
+
+  case 184: /* expr_risks: FLOW_RISKS CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1217 "nd-flow-expr.ypp"
+                                           {
+        unsigned long id = (yyvsp[0].ul_number);
+
+        _NDFP_result = false;
+        for (auto &i : _NDFP_flow->risk.risks) {
+            if (static_cast<unsigned long>(i) != id) continue;
+            _NDFP_result = true;
+            break;
+        }
+
+        _NDFP_result = !_NDFP_result;
+        _NDFP_debugf("Risks != %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
+    }
+#line 3563 "nd-flow-expr.cpp"
+    break;
+
+  case 185: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE  */
+#line 1233 "nd-flow-expr.ypp"
                            {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score != 0));
         _NDFP_debugf("nDPI risk score is true? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3537 "nd-flow-expr.cpp"
+#line 3572 "nd-flow-expr.cpp"
     break;
 
-  case 184: /* expr_risk_ndpi_score: '!' FLOW_NDPI_RISK_SCORE  */
-#line 1212 "nd-flow-expr.ypp"
+  case 186: /* expr_risk_ndpi_score: '!' FLOW_NDPI_RISK_SCORE  */
+#line 1237 "nd-flow-expr.ypp"
                                {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score == 0));
         _NDFP_debugf("nDPI risk score is false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3546 "nd-flow-expr.cpp"
+#line 3581 "nd-flow-expr.cpp"
     break;
 
-  case 185: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_EQUAL VALUE_NUMBER  */
-#line 1216 "nd-flow-expr.ypp"
+  case 187: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_EQUAL VALUE_NUMBER  */
+#line 1241 "nd-flow-expr.ypp"
                                                   {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score == (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk score == %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3555 "nd-flow-expr.cpp"
+#line 3590 "nd-flow-expr.cpp"
     break;
 
-  case 186: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1220 "nd-flow-expr.ypp"
+  case 188: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1245 "nd-flow-expr.ypp"
                                                      {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score != (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk score != %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3564 "nd-flow-expr.cpp"
+#line 3599 "nd-flow-expr.cpp"
     break;
 
-  case 187: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1224 "nd-flow-expr.ypp"
+  case 189: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1249 "nd-flow-expr.ypp"
                                                        {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score >= (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk score >= %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3573 "nd-flow-expr.cpp"
+#line 3608 "nd-flow-expr.cpp"
     break;
 
-  case 188: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1228 "nd-flow-expr.ypp"
+  case 190: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1253 "nd-flow-expr.ypp"
                                                        {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score <= (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk score <= %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3582 "nd-flow-expr.cpp"
+#line 3617 "nd-flow-expr.cpp"
     break;
 
-  case 189: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE '>' VALUE_NUMBER  */
-#line 1232 "nd-flow-expr.ypp"
+  case 191: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE '>' VALUE_NUMBER  */
+#line 1257 "nd-flow-expr.ypp"
                                             {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score > (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk score > %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3591 "nd-flow-expr.cpp"
+#line 3626 "nd-flow-expr.cpp"
     break;
 
-  case 190: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE '<' VALUE_NUMBER  */
-#line 1236 "nd-flow-expr.ypp"
+  case 192: /* expr_risk_ndpi_score: FLOW_NDPI_RISK_SCORE '<' VALUE_NUMBER  */
+#line 1261 "nd-flow-expr.ypp"
                                             {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score < (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk score > %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3600 "nd-flow-expr.cpp"
+#line 3635 "nd-flow-expr.cpp"
     break;
 
-  case 191: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT  */
-#line 1243 "nd-flow-expr.ypp"
+  case 193: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT  */
+#line 1268 "nd-flow-expr.ypp"
                                   {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client != 0));
         _NDFP_debugf("nDPI risk client score is true? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3609 "nd-flow-expr.cpp"
+#line 3644 "nd-flow-expr.cpp"
     break;
 
-  case 192: /* expr_risk_ndpi_score_client: '!' FLOW_NDPI_RISK_SCORE_CLIENT  */
-#line 1247 "nd-flow-expr.ypp"
+  case 194: /* expr_risk_ndpi_score_client: '!' FLOW_NDPI_RISK_SCORE_CLIENT  */
+#line 1272 "nd-flow-expr.ypp"
                                       {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client == 0));
         _NDFP_debugf("nDPI risk client score is false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3618 "nd-flow-expr.cpp"
+#line 3653 "nd-flow-expr.cpp"
     break;
 
-  case 193: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_EQUAL VALUE_NUMBER  */
-#line 1251 "nd-flow-expr.ypp"
+  case 195: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_EQUAL VALUE_NUMBER  */
+#line 1276 "nd-flow-expr.ypp"
                                                          {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client == (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk client score == %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3627 "nd-flow-expr.cpp"
+#line 3662 "nd-flow-expr.cpp"
     break;
 
-  case 194: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1255 "nd-flow-expr.ypp"
+  case 196: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1280 "nd-flow-expr.ypp"
                                                             {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client != (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk client score != %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3636 "nd-flow-expr.cpp"
+#line 3671 "nd-flow-expr.cpp"
     break;
 
-  case 195: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1259 "nd-flow-expr.ypp"
+  case 197: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1284 "nd-flow-expr.ypp"
                                                               {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client >= (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk client score >= %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3645 "nd-flow-expr.cpp"
+#line 3680 "nd-flow-expr.cpp"
     break;
 
-  case 196: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1263 "nd-flow-expr.ypp"
+  case 198: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1288 "nd-flow-expr.ypp"
                                                               {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client <= (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk client score <= %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3654 "nd-flow-expr.cpp"
+#line 3689 "nd-flow-expr.cpp"
     break;
 
-  case 197: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT '>' VALUE_NUMBER  */
-#line 1267 "nd-flow-expr.ypp"
+  case 199: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT '>' VALUE_NUMBER  */
+#line 1292 "nd-flow-expr.ypp"
                                                    {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client > (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk client score > %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3663 "nd-flow-expr.cpp"
+#line 3698 "nd-flow-expr.cpp"
     break;
 
-  case 198: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT '<' VALUE_NUMBER  */
-#line 1271 "nd-flow-expr.ypp"
+  case 200: /* expr_risk_ndpi_score_client: FLOW_NDPI_RISK_SCORE_CLIENT '<' VALUE_NUMBER  */
+#line 1296 "nd-flow-expr.ypp"
                                                    {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_client < (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk client score > %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3672 "nd-flow-expr.cpp"
+#line 3707 "nd-flow-expr.cpp"
     break;
 
-  case 199: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER  */
-#line 1278 "nd-flow-expr.ypp"
+  case 201: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER  */
+#line 1303 "nd-flow-expr.ypp"
                                   {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server != 0));
         _NDFP_debugf("nDPI risk server score is true? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3681 "nd-flow-expr.cpp"
+#line 3716 "nd-flow-expr.cpp"
     break;
 
-  case 200: /* expr_risk_ndpi_score_server: '!' FLOW_NDPI_RISK_SCORE_SERVER  */
-#line 1282 "nd-flow-expr.ypp"
+  case 202: /* expr_risk_ndpi_score_server: '!' FLOW_NDPI_RISK_SCORE_SERVER  */
+#line 1307 "nd-flow-expr.ypp"
                                       {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server == 0));
         _NDFP_debugf("nDPI risk server score is false? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3690 "nd-flow-expr.cpp"
+#line 3725 "nd-flow-expr.cpp"
     break;
 
-  case 201: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_EQUAL VALUE_NUMBER  */
-#line 1286 "nd-flow-expr.ypp"
+  case 203: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_EQUAL VALUE_NUMBER  */
+#line 1311 "nd-flow-expr.ypp"
                                                          {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server == (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk server score == %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3699 "nd-flow-expr.cpp"
+#line 3734 "nd-flow-expr.cpp"
     break;
 
-  case 202: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1290 "nd-flow-expr.ypp"
+  case 204: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1315 "nd-flow-expr.ypp"
                                                             {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server != (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk server score != %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3708 "nd-flow-expr.cpp"
+#line 3743 "nd-flow-expr.cpp"
     break;
 
-  case 203: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1294 "nd-flow-expr.ypp"
+  case 205: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1319 "nd-flow-expr.ypp"
                                                               {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server >= (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk server score >= %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3717 "nd-flow-expr.cpp"
+#line 3752 "nd-flow-expr.cpp"
     break;
 
-  case 204: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1298 "nd-flow-expr.ypp"
+  case 206: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1323 "nd-flow-expr.ypp"
                                                               {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server <= (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk server score <= %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3726 "nd-flow-expr.cpp"
+#line 3761 "nd-flow-expr.cpp"
     break;
 
-  case 205: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER '>' VALUE_NUMBER  */
-#line 1302 "nd-flow-expr.ypp"
+  case 207: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER '>' VALUE_NUMBER  */
+#line 1327 "nd-flow-expr.ypp"
                                                    {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server > (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk server score > %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3735 "nd-flow-expr.cpp"
+#line 3770 "nd-flow-expr.cpp"
     break;
 
-  case 206: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER '<' VALUE_NUMBER  */
-#line 1306 "nd-flow-expr.ypp"
+  case 208: /* expr_risk_ndpi_score_server: FLOW_NDPI_RISK_SCORE_SERVER '<' VALUE_NUMBER  */
+#line 1331 "nd-flow-expr.ypp"
                                                    {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->risk.ndpi_score_server < (yyvsp[0].ul_number)));
         _NDFP_debugf("nDPI risk server score > %lu %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3744 "nd-flow-expr.cpp"
+#line 3779 "nd-flow-expr.cpp"
     break;
 
-  case 207: /* expr_app_category: FLOW_APPLICATION_CATEGORY CMP_EQUAL VALUE_NAME  */
-#line 1313 "nd-flow-expr.ypp"
+  case 209: /* expr_app_category: FLOW_APPLICATION_CATEGORY CMP_EQUAL VALUE_NAME  */
+#line 1338 "nd-flow-expr.ypp"
                                                      {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -3761,11 +3796,11 @@ yyreduce:
 
         _NDFP_debugf("App category == %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 3765 "nd-flow-expr.cpp"
+#line 3800 "nd-flow-expr.cpp"
     break;
 
-  case 208: /* expr_app_category: FLOW_APPLICATION_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
-#line 1329 "nd-flow-expr.ypp"
+  case 210: /* expr_app_category: FLOW_APPLICATION_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
+#line 1354 "nd-flow-expr.ypp"
                                                         {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -3782,11 +3817,11 @@ yyreduce:
 
         _NDFP_debugf("App category != %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 3786 "nd-flow-expr.cpp"
+#line 3821 "nd-flow-expr.cpp"
     break;
 
-  case 209: /* expr_domain_category: FLOW_DOMAIN_CATEGORY CMP_EQUAL VALUE_NAME  */
-#line 1348 "nd-flow-expr.ypp"
+  case 211: /* expr_domain_category: FLOW_DOMAIN_CATEGORY CMP_EQUAL VALUE_NAME  */
+#line 1373 "nd-flow-expr.ypp"
                                                 {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -3803,11 +3838,11 @@ yyreduce:
 
         _NDFP_debugf("Domain category == %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 3807 "nd-flow-expr.cpp"
+#line 3842 "nd-flow-expr.cpp"
     break;
 
-  case 210: /* expr_domain_category: FLOW_DOMAIN_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
-#line 1364 "nd-flow-expr.ypp"
+  case 212: /* expr_domain_category: FLOW_DOMAIN_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
+#line 1389 "nd-flow-expr.ypp"
                                                    {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -3824,11 +3859,11 @@ yyreduce:
 
         _NDFP_debugf("Domain category != %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 3828 "nd-flow-expr.cpp"
+#line 3863 "nd-flow-expr.cpp"
     break;
 
-  case 211: /* expr_network_category: FLOW_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME  */
-#line 1383 "nd-flow-expr.ypp"
+  case 213: /* expr_network_category: FLOW_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME  */
+#line 1408 "nd-flow-expr.ypp"
                                                  {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -3845,11 +3880,11 @@ yyreduce:
 
         _NDFP_debugf("Network category == %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 3849 "nd-flow-expr.cpp"
+#line 3884 "nd-flow-expr.cpp"
     break;
 
-  case 212: /* expr_network_category: FLOW_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
-#line 1399 "nd-flow-expr.ypp"
+  case 214: /* expr_network_category: FLOW_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
+#line 1424 "nd-flow-expr.ypp"
                                                     {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -3866,55 +3901,55 @@ yyreduce:
 
         _NDFP_debugf("Network category != %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 3870 "nd-flow-expr.cpp"
+#line 3905 "nd-flow-expr.cpp"
     break;
 
-  case 213: /* expr_proto: FLOW_PROTOCOL  */
-#line 1418 "nd-flow-expr.ypp"
+  case 215: /* expr_proto: FLOW_PROTOCOL  */
+#line 1443 "nd-flow-expr.ypp"
                     {
         _NDFP_result = ((yyval.bool_result) = (
             _NDFP_flow->detected_protocol != ndProto::Id::UNKNOWN
         ));
         _NDFP_debugf("Protocol detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3881 "nd-flow-expr.cpp"
+#line 3916 "nd-flow-expr.cpp"
     break;
 
-  case 214: /* expr_proto: '!' FLOW_PROTOCOL  */
-#line 1424 "nd-flow-expr.ypp"
+  case 216: /* expr_proto: '!' FLOW_PROTOCOL  */
+#line 1449 "nd-flow-expr.ypp"
                         {
         _NDFP_result = ((yyval.bool_result) = (
             _NDFP_flow->detected_protocol == ndProto::Id::UNKNOWN
         ));
         _NDFP_debugf("Protocol not detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 3892 "nd-flow-expr.cpp"
+#line 3927 "nd-flow-expr.cpp"
     break;
 
-  case 217: /* expr_proto_id: FLOW_PROTOCOL CMP_EQUAL VALUE_NUMBER  */
-#line 1434 "nd-flow-expr.ypp"
+  case 219: /* expr_proto_id: FLOW_PROTOCOL CMP_EQUAL VALUE_NUMBER  */
+#line 1459 "nd-flow-expr.ypp"
                                            {
         _NDFP_result = ((yyval.bool_result) = (
             static_cast<unsigned>(_NDFP_flow->detected_protocol) == (yyvsp[0].ul_number)
         ));
         _NDFP_debugf("Protocol ID == %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3903 "nd-flow-expr.cpp"
+#line 3938 "nd-flow-expr.cpp"
     break;
 
-  case 218: /* expr_proto_id: FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1440 "nd-flow-expr.ypp"
+  case 220: /* expr_proto_id: FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1465 "nd-flow-expr.ypp"
                                               {
         _NDFP_result = ((yyval.bool_result) = (
             static_cast<unsigned>(_NDFP_flow->detected_protocol) != (yyvsp[0].ul_number)
         ));
         _NDFP_debugf("Protocol ID != %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 3914 "nd-flow-expr.cpp"
+#line 3949 "nd-flow-expr.cpp"
     break;
 
-  case 219: /* expr_proto_name: FLOW_PROTOCOL CMP_EQUAL VALUE_NAME  */
-#line 1449 "nd-flow-expr.ypp"
+  case 221: /* expr_proto_name: FLOW_PROTOCOL CMP_EQUAL VALUE_NAME  */
+#line 1474 "nd-flow-expr.ypp"
                                          {
         _NDFP_result = ((yyval.bool_result) = false);
         if (! _NDFP_flow->detected_protocol_name.empty()) {
@@ -3934,11 +3969,11 @@ yyreduce:
             "Protocol name == %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no"
         );
     }
-#line 3938 "nd-flow-expr.cpp"
+#line 3973 "nd-flow-expr.cpp"
     break;
 
-  case 220: /* expr_proto_name: FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NAME  */
-#line 1468 "nd-flow-expr.ypp"
+  case 222: /* expr_proto_name: FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NAME  */
+#line 1493 "nd-flow-expr.ypp"
                                             {
         _NDFP_result = ((yyval.bool_result) = true);
         if (! _NDFP_flow->detected_protocol_name.empty()) {
@@ -3957,11 +3992,11 @@ yyreduce:
             "Protocol name != %s? %s\n", (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no"
         );
     }
-#line 3961 "nd-flow-expr.cpp"
+#line 3996 "nd-flow-expr.cpp"
     break;
 
-  case 221: /* expr_proto_category: FLOW_PROTOCOL_CATEGORY CMP_EQUAL VALUE_NAME  */
-#line 1489 "nd-flow-expr.ypp"
+  case 223: /* expr_proto_category: FLOW_PROTOCOL_CATEGORY CMP_EQUAL VALUE_NAME  */
+#line 1514 "nd-flow-expr.ypp"
                                                   {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -3979,11 +4014,11 @@ yyreduce:
         _NDFP_debugf("Protocol category == %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 3983 "nd-flow-expr.cpp"
+#line 4018 "nd-flow-expr.cpp"
     break;
 
-  case 222: /* expr_proto_category: FLOW_PROTOCOL_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
-#line 1506 "nd-flow-expr.ypp"
+  case 224: /* expr_proto_category: FLOW_PROTOCOL_CATEGORY CMP_NOTEQUAL VALUE_NAME  */
+#line 1531 "nd-flow-expr.ypp"
                                                      {
         size_t p;
         string category((yyvsp[0].buffer));
@@ -4001,11 +4036,11 @@ yyreduce:
         _NDFP_debugf("Protocol category != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 4005 "nd-flow-expr.cpp"
+#line 4040 "nd-flow-expr.cpp"
     break;
 
-  case 223: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME  */
-#line 1526 "nd-flow-expr.ypp"
+  case 225: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME  */
+#line 1551 "nd-flow-expr.ypp"
                              {
         _NDFP_result = ((yyval.bool_result) = (
             _NDFP_flow->host_server_name[0] != '\0'
@@ -4013,11 +4048,11 @@ yyreduce:
         _NDFP_debugf("Application hostname detected? %s\n",
             (_NDFP_result) ? "yes" : "no");
     }
-#line 4017 "nd-flow-expr.cpp"
+#line 4052 "nd-flow-expr.cpp"
     break;
 
-  case 224: /* expr_detected_hostname: '!' FLOW_DETECTED_HOSTNAME  */
-#line 1533 "nd-flow-expr.ypp"
+  case 226: /* expr_detected_hostname: '!' FLOW_DETECTED_HOSTNAME  */
+#line 1558 "nd-flow-expr.ypp"
                                  {
         _NDFP_result = ((yyval.bool_result) = (
             _NDFP_flow->host_server_name[0] == '\0'
@@ -4025,11 +4060,11 @@ yyreduce:
         _NDFP_debugf("Application hostname not detected? %s\n",
             (_NDFP_result) ? "yes" : "no");
     }
-#line 4029 "nd-flow-expr.cpp"
+#line 4064 "nd-flow-expr.cpp"
     break;
 
-  case 225: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_NAME  */
-#line 1540 "nd-flow-expr.ypp"
+  case 227: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_NAME  */
+#line 1565 "nd-flow-expr.ypp"
                                                   {
         _NDFP_result = ((yyval.bool_result) = false);
         if (_NDFP_flow->host_server_name[0] != '\0') {
@@ -4048,11 +4083,11 @@ yyreduce:
         _NDFP_debugf("Detected hostname == %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 4052 "nd-flow-expr.cpp"
+#line 4087 "nd-flow-expr.cpp"
     break;
 
-  case 226: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_NAME  */
-#line 1558 "nd-flow-expr.ypp"
+  case 228: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_NAME  */
+#line 1583 "nd-flow-expr.ypp"
                                                      {
         _NDFP_result = ((yyval.bool_result) = true);
         if (_NDFP_flow->host_server_name[0] != '\0') {
@@ -4071,11 +4106,11 @@ yyreduce:
         _NDFP_debugf("Detected hostname != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 4075 "nd-flow-expr.cpp"
+#line 4110 "nd-flow-expr.cpp"
     break;
 
-  case 227: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_REGEX  */
-#line 1576 "nd-flow-expr.ypp"
+  case 229: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_REGEX  */
+#line 1601 "nd-flow-expr.ypp"
                                                    {
         _NDFP_result = ((yyval.bool_result) = false);
 #if HAVE_WORKING_REGEX
@@ -4113,22 +4148,22 @@ yyreduce:
         _NDFP_debugf("Detected hostname == %s? Broken regex support.\n", (yyvsp[0].buffer));
 #endif
     }
-#line 4117 "nd-flow-expr.cpp"
+#line 4152 "nd-flow-expr.cpp"
     break;
 
-  case 228: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_REGEX  */
-#line 1613 "nd-flow-expr.ypp"
+  case 230: /* expr_detected_hostname: FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_REGEX  */
+#line 1638 "nd-flow-expr.ypp"
                                                       {
         _NDFP_result = ((yyval.bool_result) = true);
 
         _NDFP_debugf("Detected hostname != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
-#line 4128 "nd-flow-expr.cpp"
+#line 4163 "nd-flow-expr.cpp"
     break;
 
-  case 229: /* expr_fwmark: FLOW_CT_MARK  */
-#line 1622 "nd-flow-expr.ypp"
+  case 231: /* expr_fwmark: FLOW_CT_MARK  */
+#line 1647 "nd-flow-expr.ypp"
                    {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark != 0));
@@ -4137,11 +4172,11 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4141 "nd-flow-expr.cpp"
+#line 4176 "nd-flow-expr.cpp"
     break;
 
-  case 230: /* expr_fwmark: '!' FLOW_CT_MARK  */
-#line 1630 "nd-flow-expr.ypp"
+  case 232: /* expr_fwmark: '!' FLOW_CT_MARK  */
+#line 1655 "nd-flow-expr.ypp"
                        {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark == 0));
@@ -4150,11 +4185,11 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4154 "nd-flow-expr.cpp"
+#line 4189 "nd-flow-expr.cpp"
     break;
 
-  case 231: /* expr_fwmark: FLOW_CT_MARK CMP_EQUAL VALUE_NUMBER  */
-#line 1638 "nd-flow-expr.ypp"
+  case 233: /* expr_fwmark: FLOW_CT_MARK CMP_EQUAL VALUE_NUMBER  */
+#line 1663 "nd-flow-expr.ypp"
                                           {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark == (yyvsp[0].ul_number)));
@@ -4163,11 +4198,11 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4167 "nd-flow-expr.cpp"
+#line 4202 "nd-flow-expr.cpp"
     break;
 
-  case 232: /* expr_fwmark: FLOW_CT_MARK CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1646 "nd-flow-expr.ypp"
+  case 234: /* expr_fwmark: FLOW_CT_MARK CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1671 "nd-flow-expr.ypp"
                                              {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark != (yyvsp[0].ul_number)));
@@ -4176,11 +4211,11 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4180 "nd-flow-expr.cpp"
+#line 4215 "nd-flow-expr.cpp"
     break;
 
-  case 233: /* expr_fwmark: FLOW_CT_MARK CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1654 "nd-flow-expr.ypp"
+  case 235: /* expr_fwmark: FLOW_CT_MARK CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1679 "nd-flow-expr.ypp"
                                                {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark >= (yyvsp[0].ul_number)));
@@ -4189,11 +4224,11 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4193 "nd-flow-expr.cpp"
+#line 4228 "nd-flow-expr.cpp"
     break;
 
-  case 234: /* expr_fwmark: FLOW_CT_MARK CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1662 "nd-flow-expr.ypp"
+  case 236: /* expr_fwmark: FLOW_CT_MARK CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1687 "nd-flow-expr.ypp"
                                                {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark <= (yyvsp[0].ul_number)));
@@ -4202,11 +4237,11 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4206 "nd-flow-expr.cpp"
+#line 4241 "nd-flow-expr.cpp"
     break;
 
-  case 235: /* expr_fwmark: FLOW_CT_MARK '>' VALUE_NUMBER  */
-#line 1670 "nd-flow-expr.ypp"
+  case 237: /* expr_fwmark: FLOW_CT_MARK '>' VALUE_NUMBER  */
+#line 1695 "nd-flow-expr.ypp"
                                     {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark > (yyvsp[0].ul_number)));
@@ -4215,11 +4250,11 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4219 "nd-flow-expr.cpp"
+#line 4254 "nd-flow-expr.cpp"
     break;
 
-  case 236: /* expr_fwmark: FLOW_CT_MARK '<' VALUE_NUMBER  */
-#line 1678 "nd-flow-expr.ypp"
+  case 238: /* expr_fwmark: FLOW_CT_MARK '<' VALUE_NUMBER  */
+#line 1703 "nd-flow-expr.ypp"
                                     {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->conntrack.mark < (yyvsp[0].ul_number)));
@@ -4228,353 +4263,353 @@ yyreduce:
         _NDFP_result = ((yyval.bool_result) = (false));
 #endif
     }
-#line 4232 "nd-flow-expr.cpp"
+#line 4267 "nd-flow-expr.cpp"
     break;
 
-  case 237: /* expr_tls_version: FLOW_TLS_VERSION  */
-#line 1689 "nd-flow-expr.ypp"
+  case 239: /* expr_tls_version: FLOW_TLS_VERSION  */
+#line 1714 "nd-flow-expr.ypp"
                        {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version != 0));
         _NDFP_debugf("TLS version set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4241 "nd-flow-expr.cpp"
+#line 4276 "nd-flow-expr.cpp"
     break;
 
-  case 238: /* expr_tls_version: '!' FLOW_TLS_VERSION  */
-#line 1693 "nd-flow-expr.ypp"
+  case 240: /* expr_tls_version: '!' FLOW_TLS_VERSION  */
+#line 1718 "nd-flow-expr.ypp"
                            {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version == 0));
         _NDFP_debugf("TLS version not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4250 "nd-flow-expr.cpp"
+#line 4285 "nd-flow-expr.cpp"
     break;
 
-  case 239: /* expr_tls_version: FLOW_TLS_VERSION CMP_EQUAL VALUE_NUMBER  */
-#line 1697 "nd-flow-expr.ypp"
+  case 241: /* expr_tls_version: FLOW_TLS_VERSION CMP_EQUAL VALUE_NUMBER  */
+#line 1722 "nd-flow-expr.ypp"
                                               {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version == (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS version == %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4259 "nd-flow-expr.cpp"
+#line 4294 "nd-flow-expr.cpp"
     break;
 
-  case 240: /* expr_tls_version: FLOW_TLS_VERSION CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1701 "nd-flow-expr.ypp"
+  case 242: /* expr_tls_version: FLOW_TLS_VERSION CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1726 "nd-flow-expr.ypp"
                                                  {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version != (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS version != %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4268 "nd-flow-expr.cpp"
+#line 4303 "nd-flow-expr.cpp"
     break;
 
-  case 241: /* expr_tls_version: FLOW_TLS_VERSION CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1705 "nd-flow-expr.ypp"
+  case 243: /* expr_tls_version: FLOW_TLS_VERSION CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1730 "nd-flow-expr.ypp"
                                                    {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version >= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS version >= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4277 "nd-flow-expr.cpp"
+#line 4312 "nd-flow-expr.cpp"
     break;
 
-  case 242: /* expr_tls_version: FLOW_TLS_VERSION CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1709 "nd-flow-expr.ypp"
+  case 244: /* expr_tls_version: FLOW_TLS_VERSION CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1734 "nd-flow-expr.ypp"
                                                    {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version <= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS version <= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4286 "nd-flow-expr.cpp"
+#line 4321 "nd-flow-expr.cpp"
     break;
 
-  case 243: /* expr_tls_version: FLOW_TLS_VERSION '>' VALUE_NUMBER  */
-#line 1713 "nd-flow-expr.ypp"
+  case 245: /* expr_tls_version: FLOW_TLS_VERSION '>' VALUE_NUMBER  */
+#line 1738 "nd-flow-expr.ypp"
                                         {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version > (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS version > %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4295 "nd-flow-expr.cpp"
+#line 4330 "nd-flow-expr.cpp"
     break;
 
-  case 244: /* expr_tls_version: FLOW_TLS_VERSION '<' VALUE_NUMBER  */
-#line 1717 "nd-flow-expr.ypp"
+  case 246: /* expr_tls_version: FLOW_TLS_VERSION '<' VALUE_NUMBER  */
+#line 1742 "nd-flow-expr.ypp"
                                         {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.version < (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS version < %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4304 "nd-flow-expr.cpp"
+#line 4339 "nd-flow-expr.cpp"
     break;
 
-  case 245: /* expr_tls_cipher: FLOW_TLS_CIPHER  */
-#line 1724 "nd-flow-expr.ypp"
+  case 247: /* expr_tls_cipher: FLOW_TLS_CIPHER  */
+#line 1749 "nd-flow-expr.ypp"
                       {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite != 0));
         _NDFP_debugf("TLS cipher suite set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4313 "nd-flow-expr.cpp"
+#line 4348 "nd-flow-expr.cpp"
     break;
 
-  case 246: /* expr_tls_cipher: '!' FLOW_TLS_CIPHER  */
-#line 1728 "nd-flow-expr.ypp"
+  case 248: /* expr_tls_cipher: '!' FLOW_TLS_CIPHER  */
+#line 1753 "nd-flow-expr.ypp"
                           {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite == 0));
         _NDFP_debugf("TLS cipher suite not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4322 "nd-flow-expr.cpp"
+#line 4357 "nd-flow-expr.cpp"
     break;
 
-  case 247: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_EQUAL VALUE_NUMBER  */
-#line 1732 "nd-flow-expr.ypp"
+  case 249: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_EQUAL VALUE_NUMBER  */
+#line 1757 "nd-flow-expr.ypp"
                                              {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite == (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS cipher suite == %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4331 "nd-flow-expr.cpp"
+#line 4366 "nd-flow-expr.cpp"
     break;
 
-  case 248: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1736 "nd-flow-expr.ypp"
+  case 250: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1761 "nd-flow-expr.ypp"
                                                 {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite != (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS cipher suite != %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4340 "nd-flow-expr.cpp"
+#line 4375 "nd-flow-expr.cpp"
     break;
 
-  case 249: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1740 "nd-flow-expr.ypp"
+  case 251: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1765 "nd-flow-expr.ypp"
                                                   {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite >= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS cipher suite >= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4349 "nd-flow-expr.cpp"
+#line 4384 "nd-flow-expr.cpp"
     break;
 
-  case 250: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1744 "nd-flow-expr.ypp"
+  case 252: /* expr_tls_cipher: FLOW_TLS_CIPHER CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1769 "nd-flow-expr.ypp"
                                                   {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite <= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS cipher suite <= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4358 "nd-flow-expr.cpp"
+#line 4393 "nd-flow-expr.cpp"
     break;
 
-  case 251: /* expr_tls_cipher: FLOW_TLS_CIPHER '>' VALUE_NUMBER  */
-#line 1748 "nd-flow-expr.ypp"
+  case 253: /* expr_tls_cipher: FLOW_TLS_CIPHER '>' VALUE_NUMBER  */
+#line 1773 "nd-flow-expr.ypp"
                                        {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite > (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS cipher suite > %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4367 "nd-flow-expr.cpp"
+#line 4402 "nd-flow-expr.cpp"
     break;
 
-  case 252: /* expr_tls_cipher: FLOW_TLS_CIPHER '<' VALUE_NUMBER  */
-#line 1752 "nd-flow-expr.ypp"
+  case 254: /* expr_tls_cipher: FLOW_TLS_CIPHER '<' VALUE_NUMBER  */
+#line 1777 "nd-flow-expr.ypp"
                                        {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.cipher_suite < (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS cipher suite < %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4376 "nd-flow-expr.cpp"
+#line 4411 "nd-flow-expr.cpp"
     break;
 
-  case 253: /* expr_tls_ech: FLOW_TLS_ECH  */
-#line 1759 "nd-flow-expr.ypp"
+  case 255: /* expr_tls_ech: FLOW_TLS_ECH  */
+#line 1784 "nd-flow-expr.ypp"
                    {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version != 0));
         _NDFP_debugf("TLS ECH version set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4385 "nd-flow-expr.cpp"
+#line 4420 "nd-flow-expr.cpp"
     break;
 
-  case 254: /* expr_tls_ech: '!' FLOW_TLS_ECH  */
-#line 1763 "nd-flow-expr.ypp"
+  case 256: /* expr_tls_ech: '!' FLOW_TLS_ECH  */
+#line 1788 "nd-flow-expr.ypp"
                        {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version == 0));
         _NDFP_debugf("TLS ECH version not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4394 "nd-flow-expr.cpp"
+#line 4429 "nd-flow-expr.cpp"
     break;
 
-  case 255: /* expr_tls_ech: FLOW_TLS_ECH CMP_EQUAL VALUE_NUMBER  */
-#line 1767 "nd-flow-expr.ypp"
+  case 257: /* expr_tls_ech: FLOW_TLS_ECH CMP_EQUAL VALUE_NUMBER  */
+#line 1792 "nd-flow-expr.ypp"
                                           {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version == (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ECH version == %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4403 "nd-flow-expr.cpp"
+#line 4438 "nd-flow-expr.cpp"
     break;
 
-  case 256: /* expr_tls_ech: FLOW_TLS_ECH CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1771 "nd-flow-expr.ypp"
+  case 258: /* expr_tls_ech: FLOW_TLS_ECH CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1796 "nd-flow-expr.ypp"
                                              {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version != (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ECH version != %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4412 "nd-flow-expr.cpp"
+#line 4447 "nd-flow-expr.cpp"
     break;
 
-  case 257: /* expr_tls_ech: FLOW_TLS_ECH CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1775 "nd-flow-expr.ypp"
+  case 259: /* expr_tls_ech: FLOW_TLS_ECH CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1800 "nd-flow-expr.ypp"
                                                {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version >= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ECH version >= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4421 "nd-flow-expr.cpp"
+#line 4456 "nd-flow-expr.cpp"
     break;
 
-  case 258: /* expr_tls_ech: FLOW_TLS_ECH CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1779 "nd-flow-expr.ypp"
+  case 260: /* expr_tls_ech: FLOW_TLS_ECH CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1804 "nd-flow-expr.ypp"
                                                {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version <= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ECH version <= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4430 "nd-flow-expr.cpp"
+#line 4465 "nd-flow-expr.cpp"
     break;
 
-  case 259: /* expr_tls_ech: FLOW_TLS_ECH '>' VALUE_NUMBER  */
-#line 1783 "nd-flow-expr.ypp"
+  case 261: /* expr_tls_ech: FLOW_TLS_ECH '>' VALUE_NUMBER  */
+#line 1808 "nd-flow-expr.ypp"
                                     {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version > (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ECH version > %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4439 "nd-flow-expr.cpp"
+#line 4474 "nd-flow-expr.cpp"
     break;
 
-  case 260: /* expr_tls_ech: FLOW_TLS_ECH '<' VALUE_NUMBER  */
-#line 1787 "nd-flow-expr.ypp"
+  case 262: /* expr_tls_ech: FLOW_TLS_ECH '<' VALUE_NUMBER  */
+#line 1812 "nd-flow-expr.ypp"
                                     {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.ech.version < (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ECH version < %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4448 "nd-flow-expr.cpp"
+#line 4483 "nd-flow-expr.cpp"
     break;
 
-  case 261: /* expr_tls_esni: FLOW_TLS_ESNI  */
-#line 1794 "nd-flow-expr.ypp"
+  case 263: /* expr_tls_esni: FLOW_TLS_ESNI  */
+#line 1819 "nd-flow-expr.ypp"
                     {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite != 0));
         _NDFP_debugf("TLS ESNI cipher suite set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4457 "nd-flow-expr.cpp"
+#line 4492 "nd-flow-expr.cpp"
     break;
 
-  case 262: /* expr_tls_esni: '!' FLOW_TLS_ESNI  */
-#line 1798 "nd-flow-expr.ypp"
+  case 264: /* expr_tls_esni: '!' FLOW_TLS_ESNI  */
+#line 1823 "nd-flow-expr.ypp"
                         {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite == 0));
         _NDFP_debugf("TLS ESNI cipher suite not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4466 "nd-flow-expr.cpp"
+#line 4501 "nd-flow-expr.cpp"
     break;
 
-  case 263: /* expr_tls_esni: FLOW_TLS_ESNI CMP_EQUAL VALUE_NUMBER  */
-#line 1802 "nd-flow-expr.ypp"
+  case 265: /* expr_tls_esni: FLOW_TLS_ESNI CMP_EQUAL VALUE_NUMBER  */
+#line 1827 "nd-flow-expr.ypp"
                                            {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite == (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ESNI cipher suite == %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4475 "nd-flow-expr.cpp"
+#line 4510 "nd-flow-expr.cpp"
     break;
 
-  case 264: /* expr_tls_esni: FLOW_TLS_ESNI CMP_NOTEQUAL VALUE_NUMBER  */
-#line 1806 "nd-flow-expr.ypp"
+  case 266: /* expr_tls_esni: FLOW_TLS_ESNI CMP_NOTEQUAL VALUE_NUMBER  */
+#line 1831 "nd-flow-expr.ypp"
                                               {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite != (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ESNI cipher suite != %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4484 "nd-flow-expr.cpp"
+#line 4519 "nd-flow-expr.cpp"
     break;
 
-  case 265: /* expr_tls_esni: FLOW_TLS_ESNI CMP_GTHANEQUAL VALUE_NUMBER  */
-#line 1810 "nd-flow-expr.ypp"
+  case 267: /* expr_tls_esni: FLOW_TLS_ESNI CMP_GTHANEQUAL VALUE_NUMBER  */
+#line 1835 "nd-flow-expr.ypp"
                                                 {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite >= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ESNI cipher suite >= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4493 "nd-flow-expr.cpp"
+#line 4528 "nd-flow-expr.cpp"
     break;
 
-  case 266: /* expr_tls_esni: FLOW_TLS_ESNI CMP_LTHANEQUAL VALUE_NUMBER  */
-#line 1814 "nd-flow-expr.ypp"
+  case 268: /* expr_tls_esni: FLOW_TLS_ESNI CMP_LTHANEQUAL VALUE_NUMBER  */
+#line 1839 "nd-flow-expr.ypp"
                                                 {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite <= (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ESNI cipher suite <= %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4502 "nd-flow-expr.cpp"
+#line 4537 "nd-flow-expr.cpp"
     break;
 
-  case 267: /* expr_tls_esni: FLOW_TLS_ESNI '>' VALUE_NUMBER  */
-#line 1818 "nd-flow-expr.ypp"
+  case 269: /* expr_tls_esni: FLOW_TLS_ESNI '>' VALUE_NUMBER  */
+#line 1843 "nd-flow-expr.ypp"
                                      {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite > (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ESNI cipher suite > %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4511 "nd-flow-expr.cpp"
+#line 4546 "nd-flow-expr.cpp"
     break;
 
-  case 268: /* expr_tls_esni: FLOW_TLS_ESNI '<' VALUE_NUMBER  */
-#line 1822 "nd-flow-expr.ypp"
+  case 270: /* expr_tls_esni: FLOW_TLS_ESNI '<' VALUE_NUMBER  */
+#line 1847 "nd-flow-expr.ypp"
                                      {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_flow->tls.esni.cipher_suite < (yyvsp[0].ul_number)));
         _NDFP_debugf("TLS ESNI cipher suite < %lu? %s\n", (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4520 "nd-flow-expr.cpp"
+#line 4555 "nd-flow-expr.cpp"
     break;
 
-  case 269: /* expr_origin: FLOW_ORIGIN  */
-#line 1829 "nd-flow-expr.ypp"
+  case 271: /* expr_origin: FLOW_ORIGIN  */
+#line 1854 "nd-flow-expr.ypp"
                   {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_origin != _NDFP_ORIGIN_UNKNOWN));
         _NDFP_debugf("Flow origin known? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4529 "nd-flow-expr.cpp"
+#line 4564 "nd-flow-expr.cpp"
     break;
 
-  case 270: /* expr_origin: '!' FLOW_ORIGIN  */
-#line 1833 "nd-flow-expr.ypp"
+  case 272: /* expr_origin: '!' FLOW_ORIGIN  */
+#line 1858 "nd-flow-expr.ypp"
                       {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_origin == _NDFP_ORIGIN_UNKNOWN));
         _NDFP_debugf("Flow origin unknown? %s\n", (_NDFP_result) ? "yes" : "no");
     }
-#line 4538 "nd-flow-expr.cpp"
+#line 4573 "nd-flow-expr.cpp"
     break;
 
-  case 271: /* expr_origin: FLOW_ORIGIN CMP_EQUAL value_origin_type  */
-#line 1837 "nd-flow-expr.ypp"
+  case 273: /* expr_origin: FLOW_ORIGIN CMP_EQUAL value_origin_type  */
+#line 1862 "nd-flow-expr.ypp"
                                               {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_origin == (yyvsp[0].us_number)));
         _NDFP_debugf("Flow origin == %hu? %s\n", (yyvsp[0].us_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4547 "nd-flow-expr.cpp"
+#line 4582 "nd-flow-expr.cpp"
     break;
 
-  case 272: /* expr_origin: FLOW_ORIGIN CMP_NOTEQUAL value_origin_type  */
-#line 1841 "nd-flow-expr.ypp"
+  case 274: /* expr_origin: FLOW_ORIGIN CMP_NOTEQUAL value_origin_type  */
+#line 1866 "nd-flow-expr.ypp"
                                                  {
         _NDFP_result = ((yyval.bool_result) = (_NDFP_origin != (yyvsp[0].us_number)));
         _NDFP_debugf("Flow origin != %hu? %s\n", (yyvsp[0].us_number), (_NDFP_result) ? "yes" : "no");
     }
-#line 4556 "nd-flow-expr.cpp"
+#line 4591 "nd-flow-expr.cpp"
     break;
 
-  case 273: /* value_origin_type: FLOW_ORIGIN_LOCAL  */
-#line 1848 "nd-flow-expr.ypp"
+  case 275: /* value_origin_type: FLOW_ORIGIN_LOCAL  */
+#line 1873 "nd-flow-expr.ypp"
                         { (yyval.us_number) = (yyvsp[0].us_number); }
-#line 4562 "nd-flow-expr.cpp"
+#line 4597 "nd-flow-expr.cpp"
     break;
 
-  case 274: /* value_origin_type: FLOW_ORIGIN_OTHER  */
-#line 1849 "nd-flow-expr.ypp"
+  case 276: /* value_origin_type: FLOW_ORIGIN_OTHER  */
+#line 1874 "nd-flow-expr.ypp"
                         { (yyval.us_number) = (yyvsp[0].us_number); }
-#line 4568 "nd-flow-expr.cpp"
+#line 4603 "nd-flow-expr.cpp"
     break;
 
-  case 275: /* value_origin_type: FLOW_ORIGIN_UNKNOWN  */
-#line 1850 "nd-flow-expr.ypp"
+  case 277: /* value_origin_type: FLOW_ORIGIN_UNKNOWN  */
+#line 1875 "nd-flow-expr.ypp"
                           { (yyval.us_number) = (yyvsp[0].us_number); }
-#line 4574 "nd-flow-expr.cpp"
+#line 4609 "nd-flow-expr.cpp"
     break;
 
 
-#line 4578 "nd-flow-expr.cpp"
+#line 4613 "nd-flow-expr.cpp"
 
       default: break;
     }
@@ -4772,7 +4807,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 1852 "nd-flow-expr.ypp"
+#line 1877 "nd-flow-expr.ypp"
 
 
 ndFlowParser::ndFlowParser()

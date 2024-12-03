@@ -1181,7 +1181,7 @@ expr_risks:
             break;
         }
 
-        _NDFP_debugf("Risks == %s %s\n", $3, risk.c_str(), (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Risks == %s %s\n", risk.c_str(), (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_RISKS CMP_NOTEQUAL VALUE_NAME {
         size_t p;
@@ -1200,7 +1200,32 @@ expr_risks:
         }
 
         _NDFP_result = !_NDFP_result;
-        _NDFP_debugf("Risks != %s %s\n", $3, risk.c_str(), (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Risks != %s %s\n", risk.c_str(), (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_RISKS CMP_EQUAL VALUE_NUMBER {
+        unsigned long id = $3;
+
+        _NDFP_result = false;
+        for (auto &i : _NDFP_flow->risk.risks) {
+            if (static_cast<unsigned long>(i) != id) continue;
+            _NDFP_result = true;
+            break;
+        }
+
+        _NDFP_debugf("Risks == %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_RISKS CMP_NOTEQUAL VALUE_NUMBER {
+        unsigned long id = $3;
+
+        _NDFP_result = false;
+        for (auto &i : _NDFP_flow->risk.risks) {
+            if (static_cast<unsigned long>(i) != id) continue;
+            _NDFP_result = true;
+            break;
+        }
+
+        _NDFP_result = !_NDFP_result;
+        _NDFP_debugf("Risks != %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
