@@ -72,6 +72,6 @@ protected:
     int Join(void);
 
 private:
-    std::atomic<bool> terminate;
-    std::atomic<bool> terminated;
+    std::atomic<bool> terminate = { false };
+    std::atomic<bool> terminated = { false };
 };
