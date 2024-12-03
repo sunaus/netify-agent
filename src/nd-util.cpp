@@ -69,7 +69,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-static mutex nd_printf_mutex;
+std::mutex nd_printf_mutex;
 
 const bool nd_isatty = (isatty(STDOUT_FILENO) == 1 &&
   isatty(STDERR_FILENO) == 1);
@@ -101,14 +101,6 @@ const char *ndTerm::Icon::RARROW = "→";
 
 bool ndTerm::IsTTY(void) {
     return nd_isatty;
-}
-
-void *nd_mem_alloc(size_t size) {
-    return malloc(size);
-}
-
-void nd_mem_free(void *ptr) {
-    free(ptr);
 }
 
 void nd_output_lock(void) {
@@ -161,32 +153,6 @@ void nd_flow_printf(const char *format, ...) {
     vfprintf(ndGC.h_flow, format, ap);
     va_end(ap);
 }
-
-#ifdef _ND_ENABLE_NDPI_DEBUG
-void nd_ndpi_debug_printf(uint32_t protocol, void *ndpi,
-  ndpi_log_level_t level, const char *file,
-  const char *func, unsigned line, const char *format, ...) {
-    if (ndGC_DEBUG && (ndGC_DEBUG_NDPI || level == NDPI_LOG_ERROR))
-    {
-        lock_guard<mutex> lock(nd_printf_mutex);
-
-        va_list ap;
-        va_start(ap, format);
-
-        fprintf(stdout,
-          "[nDPI:%08x:%p:%s]: %s/%s:%d: ", protocol, ndpi,
-          (level == NDPI_LOG_ERROR)         ? "ERROR" :
-            (level == NDPI_LOG_TRACE)       ? "TRACE" :
-            (level == NDPI_LOG_DEBUG)       ? "DEBUG" :
-            (level == NDPI_LOG_DEBUG_EXTRA) ? "DEXTRA" :
-                                              "UNK???",
-          file, func, line);
-
-        vfprintf(stdout, format, ap);
-        va_end(ap);
-    }
-}
-#endif  // NDPI_ENABLE_DEBUG_MESSAGES
 
 int ndLogBuffer::overflow(int ch) {
     if (ch != EOF) os << (char)ch;

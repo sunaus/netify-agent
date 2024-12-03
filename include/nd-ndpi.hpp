@@ -24,6 +24,12 @@
 #include <ndpi_main.h>
 #include <ndpi_typedefs.h>
 
+#ifdef _ND_ENABLE_NDPI_DEBUG
+void nd_ndpi_debug_printf(uint32_t protocol, void *ndpi,
+  ndpi_log_level_t level, const char *file,
+  const char *func, unsigned line, const char *format, ...);
+#endif
+
 void nd_ndpi_global_init(void);
 void nd_ndpi_global_shutdown(void);
 

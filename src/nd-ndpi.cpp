@@ -36,8 +36,37 @@
 
 using namespace std;
 
+extern mutex nd_printf_mutex;
+
 static ndpi_global_context *ndpi_ctx = nullptr;
 static NDPI_PROTOCOL_BITMASK ndpi_protos;
+
+#ifdef _ND_ENABLE_NDPI_DEBUG
+void nd_ndpi_debug_printf(uint32_t protocol,
+  struct ndpi_detection_module_struct *ndpi,
+  ndpi_log_level_t level, const char *file,
+  const char *func, unsigned line, const char *format, ...) {
+    if (ndGC_DEBUG && (ndGC_DEBUG_NDPI || level == NDPI_LOG_ERROR))
+    {
+        lock_guard<mutex> lock(nd_printf_mutex);
+
+        va_list ap;
+        va_start(ap, format);
+
+        fprintf(stdout,
+          "[nDPI:%08x:%p:%s]: %s/%s:%d: ", protocol, ndpi,
+          (level == NDPI_LOG_ERROR)         ? "ERROR" :
+            (level == NDPI_LOG_TRACE)       ? "TRACE" :
+            (level == NDPI_LOG_DEBUG)       ? "DEBUG" :
+            (level == NDPI_LOG_DEBUG_EXTRA) ? "DEXTRA" :
+                                              "UNK???",
+          file, func, line);
+
+        vfprintf(stdout, format, ap);
+        va_end(ap);
+    }
+}
+#endif  // _ND_ENABLE_NDPI_DEBUG
 
 void nd_ndpi_global_init(void) {
     nd_dprintf("Initializing nDPI v%s, API v%u...\n",
@@ -49,9 +78,6 @@ void nd_ndpi_global_init(void) {
         throw ndException(
           "%s: nDPI library version mis-match", __PRETTY_FUNCTION__);
     }
-
-    set_ndpi_malloc(nd_mem_alloc);
-    set_ndpi_free(nd_mem_free);
 
     NDPI_BITMASK_RESET(ndpi_protos);
 
@@ -187,8 +213,19 @@ struct ndpi_detection_module_struct *nd_ndpi_init(void) {
           "ndpi_init_detection_module");
     }
 
-    ndpi_set_protocol_detection_bitmask2(ndpi, &ndpi_protos);
+#ifdef _ND_ENABLE_NDPI_DEBUG
+    if (ndGC_DEBUG) {
+        set_ndpi_debug_function(ndpi, nd_ndpi_debug_printf);
 
+        ndpi_set_config(ndpi, nullptr, "log.level", "0");
+        if (! ndGC_QUIET) {
+            ndpi_set_config(ndpi, nullptr, "log.level", "2");
+        }
+        if (ndGC_DEBUG_NDPI) {
+            ndpi_set_config(ndpi, nullptr, "log.level", "3");
+        }
+    }
+#endif
     ndpi_set_config(ndpi, nullptr, "flow_risk_lists.load",
       "0");
     ndpi_set_config(ndpi, nullptr, "fpc", "0");
@@ -207,16 +244,7 @@ struct ndpi_detection_module_struct *nd_ndpi_init(void) {
 
     ndpi_set_config(ndpi, "dns", "process_response", "1");
 
-#ifdef NDPI_ENABLE_DEBUG_MESSAGES
-    if (ndGC_DEBUG) {
-        ndpi->ndpi_log_level = NDPI_LOG_ERROR;
-        if (! ndGC_QUIET)
-            ndpi->ndpi_log_level = NDPI_LOG_DEBUG;
-        if (ndGC_DEBUG_NDPI)
-            ndpi->ndpi_log_level = NDPI_LOG_DEBUG_EXTRA;
-        set_ndpi_debug_function(ndpi, nd_ndpi_debug_printf);
-    }
-#endif
+    ndpi_set_protocol_detection_bitmask2(ndpi, &ndpi_protos);
 
     ndpi_finalize_initialization(ndpi);
 

@@ -90,10 +90,6 @@ constexpr size_t _ND_LOG_FILE_STAMP_SIZE = sizeof(
 #define ndEnumCast(T, n) \
     static_cast<typename std::underlying_type<T>::type>(T::n)
 
-void *nd_mem_alloc(size_t size);
-
-void nd_mem_free(void *ptr);
-
 class ndLogBuffer : public std::streambuf
 {
 public:
@@ -258,12 +254,6 @@ void nd_printf(const char *format, va_list ap);
 void nd_dprintf(const char *format, ...);
 void nd_dprintf(const char *format, va_list ap);
 void nd_flow_printf(const char *format, ...);
-
-#ifdef _ND_ENABLE_NDPI_DEBUG
-void nd_ndpi_debug_printf(uint32_t protocol, void *ndpi,
-  ndpi_log_level_t level, const char *file,
-  const char *func, unsigned line, const char *format, ...);
-#endif
 
 void nd_ltrim(std::string &s, unsigned char c = 0);
 void nd_rtrim(std::string &s, unsigned char c = 0);
