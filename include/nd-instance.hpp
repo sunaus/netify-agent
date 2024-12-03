@@ -32,6 +32,7 @@
 #include "nd-fhc.hpp"
 #include "nd-flow-map.hpp"
 #include "nd-napi.hpp"
+#include "nd-ndpi.hpp"
 #include "nd-packet.hpp"
 #include "nd-plugin.hpp"
 #include "nd-protos.hpp"
@@ -73,6 +74,8 @@ public:
     size_t tcm_alloc_kb = { 0 };
     size_t tcm_alloc_kb_prev = { 0 };
 #endif
+    size_t ndpi_kb = { 0 };
+    size_t ndpi_kb_prev = { 0 };
     bool dhc_status = { false };
     bool fhc_status = { false };
 
@@ -98,10 +101,11 @@ public:
         serialize(output, { "maxrss_kb" }, maxrss_kb);
         serialize(output, { "maxrss_kb_prev" }, maxrss_kb_prev);
 #ifdef _ND_ENABLE_LIBTCMALLOC
-        serialize(output, { "tcm_kb" }, (unsigned)tcm_alloc_kb);
-        serialize(output, { "tcm_kb_prev" },
-          (unsigned)tcm_alloc_kb_prev);
+        serialize(output, { "tcm_kb" }, tcm_alloc_kb);
+        serialize(output, { "tcm_kb_prev" }, tcm_alloc_kb_prev);
 #endif  // _ND_ENABLE_LIBTCMALLOC
+        serialize(output, { "ndpi_kb" }, ndpi_kb);
+        serialize(output, { "ndpi_kb_prev" }, ndpi_kb_prev);
         serialize(output, { "dhc_status" }, dhc_status);
         serialize(output, { "fhc_status" }, fhc_status);
     }

@@ -1686,6 +1686,10 @@ bool ndInstance::DisplayAgentStatus(void) {
           ndTerm::Color::GREEN, ndTerm::Icon::INFO,
           ndTerm::Attr::RESET,
           jstatus["maxrss_kb"].get<unsigned>());
+        fprintf(stdout, "%s%s%s nDPI memory usage: %u kB\n",
+          ndTerm::Color::GREEN, ndTerm::Icon::INFO,
+          ndTerm::Attr::RESET,
+          jstatus["ndpi_kb"].get<unsigned>());
 
         if (jstatus.find("interfaces") == jstatus.end() ||
           jstatus["interfaces"].empty())
@@ -2664,6 +2668,10 @@ void ndInstance::UpdateStatus(void) {
     status.tcm_alloc_kb_prev = status.tcm_alloc_kb;
     status.tcm_alloc_kb = tcm_alloc_bytes / 1024;
 #endif
+    status.ndpi_kb_prev = status.ndpi_kb;
+    status.ndpi_kb = static_cast<size_t>(
+      ndpi_get_tot_allocated_memory() / 1024);
+
     struct rusage rusage_data;
     getrusage(RUSAGE_SELF, &rusage_data);
 
