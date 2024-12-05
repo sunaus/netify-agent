@@ -188,11 +188,6 @@ public:
         MAX
     };
 
-    template <class T>
-    void GetStatus(T &output) const {
-        ndPlugin::GetStatus(output);
-    }
-
     virtual void
     DispatchProcessorEvent(Event event, ndFlowMap *flow_map) { }
     virtual void
@@ -234,11 +229,6 @@ public:
     ndPluginSink(const std::string &tag,
       const ndPlugin::Params &params);
     virtual ~ndPluginSink();
-
-    template <class T>
-    void GetStatus(T &output) const {
-        ndPlugin::GetStatus(output);
-    }
 
     virtual void
     QueuePayload(const ndPluginSinkPayload::Ptr &payload);
