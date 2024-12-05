@@ -43,7 +43,8 @@
 #include "nd-except.hpp"
 
 #define _ND_LOG_WARNINGS 1
-//#define _ND_LOG_DEBUG    1
+//#define _ND_LOG_DEBUG     1
+//#define _ND_LOG_PACKETS   1
 
 static int ndCaptureNFQueue_Callback(
   const struct nlmsghdr *nlh, void *user) {
@@ -98,7 +99,9 @@ static int ndCaptureNFQueue_Callback(
     else
         nd_dprintf("%s: WARNING: no hardware address.\n", tag);
 #endif
-    uint16_t pkt_len = mnl_attr_get_payload_len(attr[NFQA_PAYLOAD]);
+
+    const uint16_t pkt_len = mnl_attr_get_payload_len(
+      attr[NFQA_PAYLOAD]);
     void *payload = mnl_attr_get_payload(attr[NFQA_PAYLOAD]);
 #ifdef _ND_LOG_PACKETS
     uint16_t x = 0;
@@ -111,22 +114,25 @@ static int ndCaptureNFQueue_Callback(
     }
     fprintf(stderr, "\n");
 #endif
+
+#ifdef _ND_LOG_DEBUG
     uint32_t skbinfo = attr[NFQA_SKB_INFO] ?
       ntohl(mnl_attr_get_u32(attr[NFQA_SKB_INFO])) :
       0;
+    if (skbinfo & NFQA_SKB_GSO)
+        nd_dprintf("%s: GSO packet.\n", tag);
+#endif
 
-    uint32_t pkt_caplen = pkt_len;
+    constexpr size_t hdr_eth_size = sizeof(struct ether_header);
+    const uint16_t pkt_caplen = (attr[NFQA_CAP_LEN]) ?
+      ntohl(mnl_attr_get_u32(attr[NFQA_CAP_LEN])) :
+      pkt_len;
 
-    if (attr[NFQA_CAP_LEN])
-        pkt_caplen = ntohl(mnl_attr_get_u32(attr[NFQA_CAP_LEN]));
-
-    ndPacket *pkt = nullptr;
     // One-and-only packet copy...
-    uint8_t *pkt_data =
-      new uint8_t[sizeof(struct ether_header) + pkt_len];
+    uint8_t *pkt_data = new uint8_t[hdr_eth_size + pkt_caplen];
 
     struct ether_header *hdr_eth = (struct ether_header *)pkt_data;
-    memset(hdr_eth, 0, sizeof(struct ether_addr));
+    memset(hdr_eth, 0, hdr_eth_size);
     hdr_eth->ether_type = pkt_hdr->hw_protocol;
     if (pkt_hwaddr != nullptr) {
         memcpy(&hdr_eth->ether_shost[0],
@@ -146,16 +152,14 @@ static int ndCaptureNFQueue_Callback(
         tv.tv_usec = (time_t)pkt_ts->usec;
     };
 
-    uint8_t *pkt_offset = pkt_data + sizeof(struct ether_header);
-    memcpy(pkt_offset, payload, pkt_len);
+    memcpy(pkt_data + hdr_eth_size, payload, pkt_caplen);
 
-    pkt = new ndPacket(ndPacket::StatusFlags::OK, pkt_caplen,
-      sizeof(struct ether_header) + pkt_len, pkt_data, tv);
+    ndPacket *pkt = new ndPacket(ndPacket::StatusFlags::OK,
+      static_cast<uint16_t>(hdr_eth_size + pkt_len),
+      static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
+      pkt_data, tv);
 
     nfq->PushPacket(pkt);
-
-    if (skbinfo & NFQA_SKB_GSO)
-        nd_dprintf("%s: GSO packet.\n", tag);
 
     struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
       mnl_nlmsg_get_payload(nlh));
@@ -237,7 +241,10 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     // mnl_socket_setsockopt(nl, NETLINK_NO_ENOBUFS, &enable,
     // sizeof(int));
 
-    nd_dprintf("%s: NFQ capture thread created.\n", tag.c_str());
+    nd_dprintf(
+      "%s: NFQ capture thread created with buffer size: "
+      "%lu\n",
+      tag.c_str(), buffer_size);
 }
 
 ndCaptureNFQueue::~ndCaptureNFQueue() {

@@ -536,12 +536,12 @@ ndPacket *ndPacketRing::CopyPacket(const void *entry,
         return nullptr;
     }
 
-    ndPacket *pkt = nullptr;
     // One-and-only packet copy...
     uint8_t *pkt_data = new uint8_t[tp_snaplen];
-
     memcpy(pkt_data, data, tp_snaplen);
-    pkt = new ndPacket(status, tp_len, tp_snaplen, pkt_data, tv);
+
+    ndPacket *pkt = new ndPacket(status, tp_len, tp_snaplen,
+      pkt_data, tv);
 
     status |= ndPacket::StatusFlags::OK;
 
