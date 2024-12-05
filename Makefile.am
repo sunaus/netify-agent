@@ -3,7 +3,7 @@
 #
 # This is free software, licensed under the GNU General Public License v3.
 
-DEBUG_HOST := root@gw.sokoloski.ca
+DEBUG_HOST := root@hp360.qw.sokoloski.ca
 
 AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
@@ -44,12 +44,12 @@ deploy-rpm:
 
 deploy-debug: all
 	rsync -av --progress --inplace src/.libs/netifyd $(DEBUG_HOST):/usr/sbin/
-	rsync -avl --progress --inplace src/.libs/libnetifyd.so* $(DEBUG_HOST):/usr/lib64/
+	rsync -avl --progress --inplace src/.libs/libnetifyd.so* $(DEBUG_HOST):/usr/lib/x86_64-linux-gnu
 
 deploy-debug-archive: all
-	mkdir -p /tmp/netifyd-debug/usr/{sbin,lib64}
+	mkdir -p /tmp/netifyd-debug/usr/{sbin,lib/x86_64-linux-gnu}
 	cp src/.libs/netifyd /tmp/netifyd-debug/usr/sbin/
-	cp src/.libs/libnetifyd.so.0.0.0 /tmp/netifyd-debug/usr/lib64/
+	cp src/.libs/libnetifyd.so.0.0.0 /tmp/netifyd-debug/usr/lib/x86_64-linux-gnu
 	cd /tmp/netifyd-debug && tar -cvzf ../netifyd-debug.tar.gz *
 
 include $(abs_top_srcdir)/automake/dist-git.am

@@ -23,7 +23,7 @@
 : ${sysconfdir:=/etc}
 : ${datadir:=${prefix}/share}
 : ${includedir:=${prefix}/include}
-: ${libdir:=${prefix}/lib64}
+: ${libdir:=${prefix}/lib/x86_64-linux-gnu}
 : ${libexecdir:=${prefix}/libexec}
 : ${localstatedir:=/var}
 : ${sharedstatedir:=/var/lib}
