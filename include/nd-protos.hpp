@@ -27,6 +27,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <ndpi_protocol_ids.h>
+
 #include "nd-ndpi.hpp"
 #include "nd-util.hpp"
 
@@ -448,6 +450,15 @@ enum class Id : uint32_t {
     HLS = 418,  // HTTP Live Streaming: https://en.wikipedia.org/wiki/HTTP_Live_Streaming
     NANO_NP = 420,  // Nano Network Protocol: https://docs.nano.org/protocol-design/networking/
     OPENWIRE = 421,  // ActiveMQ OpenWire: https://activemq.apache.org/components/classic/documentation/openwire
+    CNP_IP = 422,  // Control Network Protocol (ISO/IEC 14908-4:2012): https://www.iso.org/standard/60206.html
+    ATG = 423,  // Automatic Tank Gauge (ATG) protocol.
+    TRDP = 424,  // Train Real Time Data Protocol (TRDP): https://www.typhoon-hil.com/documentation/typhoon-hil-software-manual/References/iec_61375_trdp_protocol.html
+    LUSTRE = 425,  // Lustre distributed file-systemd: https://www.lustre.org/
+    SONOS = 426,  // SONOS: https://www.sonos.com/en-ca/home
+    DINGTALK = 427,  // DingTalk communication and collaboration platform developed by Alibaba Group: https://www.dingtalk.com/en
+    PALTALK = 428,  // paltalk video chat: https://www.paltalk.com/
+    MIKROTIK_NDP = 429,  // MikroTik Neighbor Discovery Protocol: https://help.mikrotik.com/docs/spaces/ROS/pages/24805517/Neighbor+discovery/
+    DICOM = 430,  // Digital Imaging and Communications in Medicine: https://en.wikipedia.org/wiki/DICOM/
 
     MAX,
     TODO = 0xffffffff
@@ -464,6 +475,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::APACHE_THRIFT, "Apache/Thrift" },
     { Id::APPLE_PUSH, "Apple/Push" },
     { Id::ARMAGETRON, "Armagetron" },
+    { Id::ATG, "ATG" },
     { Id::AVAST, "AVAST" },
     { Id::AVAST_SDNS, "AVAST/SecureDNS" },
     { Id::BACNET, "BACnet" },
@@ -483,6 +495,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::CISCO_SKINNY, "Cisco/Skinny" },
     { Id::CISCO_VPN, "Cisco/VPN" },
     { Id::CITRIX, "Citrix" },
+    { Id::CNP_IP, "CNP/IP" },
     { Id::COAP, "COAP" },
     { Id::COD_MOBILE, "CoD/Mobile" },
     { Id::COLLECTD, "Collectd" },
@@ -495,6 +508,8 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::DHCP, "DHCP" },
     { Id::DHCPV6, "DHCPv6" },
     { Id::DIAMETER, "Diameter" },
+    { Id::DICOM, "DICOM" },
+    { Id::DINGTALK, "DingTalk" },
     { Id::DLEP, "DLEP" },
     { Id::DNP3, "DNP3" },
     { Id::DNSCRYPT, "DNSCrypt" },
@@ -584,6 +599,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::LLMNR, "LLMNR" },
     { Id::LOL_WILD_RIFT, "LoL/WildRift" },
     { Id::LOTUS_NOTES, "LotusNotes" },
+    { Id::LUSTRE, "Lustre" },
     { Id::MAIL_IMAP, "IMAP" },
     { Id::MAIL_IMAPS, "IMAP/S" },
     { Id::MAIL_POP, "POP3" },
@@ -596,6 +612,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::MEMCACHED, "Memcached" },
     { Id::MERAKI_CLOUD, "Meraki/Cloud" },
     { Id::MGCP, "MGCP" },
+    { Id::MIKROTIK_NDP, "Mikrotik/NDP" },
     { Id::MINING, "Mining" },
     { Id::MODBUS, "Modbus" },
     { Id::MONERO, "Monero" },
@@ -630,6 +647,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::OPENVPN, "OpenVPN" },
     { Id::OPENWIRE, "OpenWire" },
     { Id::ORACLE, "Oracle" },
+    { Id::PALTALK, "paltalk" },
     { Id::PATH_OF_EXILE, "PathOfExile" },
     { Id::PFCP, "PFCP" },
     { Id::POSTGRES, "PGSQL" },
@@ -677,6 +695,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::SOAP, "SOAP" },
     { Id::SOCKS, "SOCKS" },
     { Id::SOMEIP, "SOMEIP" },
+    { Id::SONOS, "SONOS" },
     { Id::SOURCE_ENGINE, "SourceEngine" },
     { Id::SPOTIFY, "Spotify" },
     { Id::SRTP, "SRTP" },
@@ -707,6 +726,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::TOCA_BOCA, "TocaBoca" },
     { Id::TODO, "TODO" },
     { Id::TPLINK_SHP, "TPLINK/SHP" },
+    { Id::TRDP, "TRDP" },
     { Id::TRUPHONE, "TruPhone" },
     { Id::TUYA_LP, "Tuya/LP" },
     { Id::UBNTAC2, "UBNTAC2" },
@@ -793,6 +813,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_APACHE_THRIFT, Id::APACHE_THRIFT },
     { NDPI_PROTOCOL_APPLE_PUSH, Id::APPLE_PUSH },
     { NDPI_PROTOCOL_ARMAGETRON, Id::ARMAGETRON },
+    { NDPI_PROTOCOL_ATG, Id::ATG },
     { NDPI_PROTOCOL_AVAST, Id::AVAST },
     { NDPI_PROTOCOL_AVAST_SECUREDNS, Id::AVAST_SDNS },
     { NDPI_PROTOCOL_BACNET, Id::BACNET },
@@ -812,6 +833,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_CIP, Id::CIP },
     { NDPI_PROTOCOL_CISCOVPN, Id::CISCO_VPN },
     { NDPI_PROTOCOL_CITRIX, Id::CITRIX },
+    { NDPI_PROTOCOL_CNP_IP, Id::CNP_IP },
     { NDPI_PROTOCOL_COAP, Id::COAP },
     { NDPI_PROTOCOL_COD_MOBILE, Id::COD_MOBILE },
     { NDPI_PROTOCOL_COLLECTD, Id::COLLECTD },
@@ -824,6 +846,8 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_DHCP, Id::DHCP },
     { NDPI_PROTOCOL_DHCPV6, Id::DHCPV6 },
     { NDPI_PROTOCOL_DIAMETER, Id::DIAMETER },
+    { NDPI_PROTOCOL_DICOM, Id::DICOM },
+    { NDPI_PROTOCOL_DINGTALK, Id::DINGTALK },
     { NDPI_PROTOCOL_DLEP, Id::DLEP },
     { NDPI_PROTOCOL_DNP3, Id::DNP3 },
     { NDPI_PROTOCOL_DNSCRYPT, Id::DNSCRYPT },
@@ -911,6 +935,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_LLMNR, Id::LLMNR },
     { NDPI_PROTOCOL_LOLWILDRIFT, Id::LOL_WILD_RIFT },
     { NDPI_PROTOCOL_LOTUS_NOTES, Id::LOTUS_NOTES },
+    { NDPI_PROTOCOL_LUSTRE, Id::LUSTRE },
     { NDPI_PROTOCOL_MAIL_IMAP, Id::MAIL_IMAP },
     { NDPI_PROTOCOL_MAIL_IMAPS, Id::MAIL_IMAPS },
     { NDPI_PROTOCOL_MAIL_POP, Id::MAIL_POP },
@@ -923,6 +948,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_MEMCACHED, Id::MEMCACHED },
     { NDPI_PROTOCOL_MERAKI_CLOUD, Id::MERAKI_CLOUD },
     { NDPI_PROTOCOL_MGCP, Id::MGCP },
+    { NDPI_PROTOCOL_MIKROTIK, Id::MIKROTIK_NDP },
     { NDPI_PROTOCOL_MINING, Id::MINING },
     { NDPI_PROTOCOL_MODBUS, Id::MODBUS },
     { NDPI_PROTOCOL_MONERO, Id::MONERO },
@@ -954,6 +980,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_OPENVPN, Id::OPENVPN },
     { NDPI_PROTOCOL_OPENWIRE, Id::OPENWIRE },
     { NDPI_PROTOCOL_ORACLE, Id::ORACLE },
+    { NDPI_PROTOCOL_PALTALK, Id::PALTALK },
     { NDPI_PROTOCOL_PATHOFEXILE, Id::PATH_OF_EXILE },
     { NDPI_PROTOCOL_PFCP, Id::PFCP },
     { NDPI_PROTOCOL_POSTGRES, Id::POSTGRES },
@@ -1000,6 +1027,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_SOAP, Id::SOAP },
     { NDPI_PROTOCOL_SOCKS, Id::SOCKS },
     { NDPI_PROTOCOL_SOMEIP, Id::SOMEIP },
+    { NDPI_PROTOCOL_SONOS, Id::SONOS },
     { NDPI_PROTOCOL_SOURCE_ENGINE, Id::SOURCE_ENGINE },
     { NDPI_PROTOCOL_SPOTIFY, Id::SPOTIFY },
     { NDPI_PROTOCOL_SRTP, Id::SRTP },
@@ -1028,6 +1056,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_TLS, Id::TLS },
     { NDPI_PROTOCOL_TOCA_BOCA, Id::TOCA_BOCA },
     { NDPI_PROTOCOL_TPLINK_SHP, Id::TPLINK_SHP },
+    { NDPI_PROTOCOL_TRDP, Id::TRDP },
     { NDPI_PROTOCOL_TRUPHONE, Id::TRUPHONE },
     { NDPI_PROTOCOL_TUYA_LP, Id::TUYA_LP },
     { NDPI_PROTOCOL_UBNTAC2, Id::UBNTAC2 },
@@ -1088,6 +1117,7 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_BLOOMBERG,  // Not a protocol: ID# 246 (Bloomberg)
     NDPI_PROTOCOL_BLUESKY,  // Not a protocol: ID# 411
     NDPI_PROTOCOL_CACHEFLY,  // Not a protocol: ID# 289 (Cachefly)
+    NDPI_PROTOCOL_CACTUSVPN,  // Not a protocol: ID# 428 (CactusVPN)
     NDPI_PROTOCOL_CLICKHOUSE,  // Not a protocol: ID# 419
     NDPI_PROTOCOL_CLOUDFLARE,  // Not a protocol: ID# 220 (Cloudflare)
     NDPI_PROTOCOL_CLOUDFLARE_WARP,  // Not a protocol: ID# 300 (CloudflareWarp)
@@ -1149,7 +1179,9 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_MS_OUTLOOK,  // Not a protocol: ID# 21 (Outlook)
     NDPI_PROTOCOL_MSTEAMS,  // Not a protocol (see SKYPE_TEAMS_CALL): ID# 250 (Teams)
     NDPI_PROTOCOL_MULLVAD,  // Not a protocol: ID# 348 (Mullvad)
+    NDPI_PROTOCOL_NAVER,  // Not a protocol: ID# 433 (Naver)
     NDPI_PROTOCOL_NETFLIX,  // Not a protocol: ID# 133 (NetFlix)
+    NDPI_PROTOCOL_NORDVPN,  // Not a protocol: ID# 426 (NordVPN)
     NDPI_PROTOCOL_NTOP,  // Not a protocol: ID# 26 (ntop)
     NDPI_PROTOCOL_NVIDIA,  // Not a protocol: ID# 342 (GeForceNow)
     NDPI_PROTOCOL_OCS,  // Not a protocol: ID# 218 (OCS)
@@ -1157,6 +1189,7 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_OPENDNS,  // Not a protocol (no dissector): ID# 225 (OpenDNS)
     NDPI_PROTOCOL_OPERA_VPN,  // Not a protocol: ID# 339 (OperaVPN)
     NDPI_PROTOCOL_PANDORA,  // Not a protocol: ID# 187 (Pandora)
+    NDPI_PROTOCOL_PARAMOUNTPLUS,  // Not a protocol: ID# 439 (ParamountPlus)
     NDPI_PROTOCOL_PASTEBIN,  // Not a protocol: ID# 232 (Pastebin)
     NDPI_PROTOCOL_PIA,  // Not a protocol: ID# 384
     NDPI_PROTOCOL_PINTEREST,  // Not a protocol: ID# 183 (Pinterest)
@@ -1168,6 +1201,7 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_REDDIT,  // Not a protocol: ID# 205 (Reddit)
     NDPI_PROTOCOL_ROBLOX,  // Not a protocol: ID# 346 (Roblox)
     NDPI_PROTOCOL_SALESFORCE,  // Not a protocol: ID# 266 (Salesforce)
+    NDPI_PROTOCOL_SHEIN,  // Not a protocol: ID# 434 (Shein)
     NDPI_PROTOCOL_SHOWTIME,  // Not a protocol: ID# 321 (Showtime)
     NDPI_PROTOCOL_SIGNAL,  // Not a protocol (see SIGNAL_VOIP): ID# 39 (Signal)
     NDPI_PROTOCOL_SINA,  // Not a protocol (no dissector): ID# 200 (Sina(Weibo))
@@ -1177,6 +1211,9 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_SNAPCHAT,  // Not a protocol (no dissector): ID# 199 (Snapchat)
     NDPI_PROTOCOL_SOFTETHER,  // Not a protocol (no dissector): ID# 290 (Softether)
     NDPI_PROTOCOL_SOUNDCLOUD,  // Not a protocol: ID# 234 (SoundCloud)
+    NDPI_PROTOCOL_SURFSHARK,  // Not a protocol: ID# 427 (SurfShark)
+    NDPI_PROTOCOL_TAOBAO,  // Not a protocol: ID# 436 (TaoBao)
+    NDPI_PROTOCOL_TEMU,  // Not a protocol: ID# 435 (TEMU)
     NDPI_PROTOCOL_TENCENT,  // Not a protocol: ID# 285 (Tencent)
     NDPI_PROTOCOL_TENCENTVIDEO,  // Not a protocol: ID# 324 (Tencentvideo)
     NDPI_PROTOCOL_TESLA_SERVICES,  // Not a protocol: ID# 357
@@ -1199,7 +1236,9 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_WHATSAPP_FILES,  // Not a protocol: ID# 242 (WhatsAppFiles)
     NDPI_PROTOCOL_WIKIPEDIA,  // Not a protocol: ID# 176 (Wikipedia)
     NDPI_PROTOCOL_WINDOWS_UPDATE,  // Not a protocol (no dissector): ID# 147 (WindowsUpdate)
+    NDPI_PROTOCOL_WINDSCRIBE,  // Not a protocol: ID# 429 (WindScribe)
     NDPI_PROTOCOL_YAHOO,  // Not a protocol: ID# 70 (Yahoo)
+    NDPI_PROTOCOL_YANDEX_ALICE,  // Not a protocol: ID# 440 (YandexAlice)
     NDPI_PROTOCOL_YANDEX_CLOUD,  // Not a protocol: ID# 62 (Yandex Cloud)
     NDPI_PROTOCOL_YANDEX_DIRECT,  // Not a protocol: ID# 99 (Yandex Direct)
     NDPI_PROTOCOL_YANDEX_DISK,  // Not a protocol: ID# 57 (Yandex Disk)

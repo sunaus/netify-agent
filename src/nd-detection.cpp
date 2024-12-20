@@ -26,6 +26,8 @@
 
 #include <netinet/in.h>
 
+#include <ndpi_protocol_ids.h>
+
 #include "nd-apps.hpp"
 #include "nd-detection.hpp"
 #include "nd-except.hpp"
@@ -35,8 +37,6 @@
 #include "nd-sha1.h"
 #include "nd-tls-alpn.hpp"
 #include "nd-util.hpp"
-
-#include "ndpi_protocol_ids.h"
 
 using namespace std;
 
@@ -369,20 +369,21 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
 
     lock_guard<recursive_mutex> lg(ndEF->lock);
 
-    if (ndpi_rc.master_protocol == NDPI_PROTOCOL_STUN &&
-      ndpi_rc.app_protocol != NDPI_PROTOCOL_UNKNOWN)
+    if (ndpi_rc.proto.master_protocol == NDPI_PROTOCOL_STUN &&
+      ndpi_rc.proto.app_protocol != NDPI_PROTOCOL_UNKNOWN)
     {
 #ifdef _ND_LOG_STUN
         nd_dprintf(
           "%s: STUN[%lu]: master: %hu, app: %hu, stack[0]: "
           "%hu, stack[1]: %hu, detected_protocol: %hu\n",
           tag.c_str(), ndEF->stats.detection_packets.load(),
-          ndpi_rc.master_protocol, ndpi_rc.app_protocol,
+          ndpi_rc.proto.master_protocol, ndpi_rc.app_protocol,
           ndEFNF->detected_protocol_stack[0],
           ndEFNF->detected_protocol_stack[1],
           ndEF->detected_protocol);
 #endif
-        ndProto::Id id = ProtocolLookup(ndpi_rc.app_protocol, entry);
+        ndProto::Id id = ProtocolLookup(
+          ndpi_rc.proto.app_protocol, entry);
 
         if (id != ndProto::Id::TODO) {
             SetDetectedProtocol(entry, id);
@@ -398,15 +399,15 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
     }
 
     if (ndEF->detected_protocol == ndProto::Id::UNKNOWN) {
-        if (ndpi_rc.master_protocol != NDPI_PROTOCOL_UNKNOWN)
+        if (ndpi_rc.proto.master_protocol != NDPI_PROTOCOL_UNKNOWN)
         {
             SetDetectedProtocol(entry,
-              ProtocolLookup(ndpi_rc.master_protocol, entry));
+              ProtocolLookup(ndpi_rc.proto.master_protocol, entry));
         }
-        else if (ndpi_rc.app_protocol != NDPI_PROTOCOL_UNKNOWN)
+        else if (ndpi_rc.proto.app_protocol != NDPI_PROTOCOL_UNKNOWN)
         {
             SetDetectedProtocol(entry,
-              ProtocolLookup(ndpi_rc.app_protocol, entry));
+              ProtocolLookup(ndpi_rc.proto.app_protocol, entry));
         }
     }
 
@@ -423,8 +424,8 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         nd_dprintf(
           "%s: unmapped protocol detected: ID #%hu/%hu "
           "(%s)\n",
-          tag.c_str(), ndpi_rc.master_protocol,
-          ndpi_rc.app_protocol, proto_name);
+          tag.c_str(), ndpi_rc.proto.master_protocol,
+          ndpi_rc.proto.app_protocol, proto_name);
 
         DetectionComplete(entry);
         return;
@@ -1028,7 +1029,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
 #endif
             }
 
-            if (ndEFNFP.tls_quic.hello_processed &&
+            if (ndEFNFP.tls_quic.client_hello_processed &&
               ! ndEF->tls.proc_hello.load())
             {
                 ndEF->tls.proc_hello = true;
@@ -1137,10 +1138,10 @@ void ndDetectionThread::DetectionGuess(ndDetectionQueueEntry *entry) {
 
     if (guessed) {
         ndProto::Id id = ProtocolLookup(
-          ndpi_rc.master_protocol, entry);
+          ndpi_rc.proto.master_protocol, entry);
 
         if (id == ndProto::Id::UNKNOWN) {
-            id = ProtocolLookup(ndpi_rc.app_protocol, entry);
+            id = ProtocolLookup(ndpi_rc.proto.app_protocol, entry);
             if (id != ndProto::Id::UNKNOWN) {
                 SetDetectedProtocol(entry, id);
             }

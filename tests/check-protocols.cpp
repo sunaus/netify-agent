@@ -63,8 +63,7 @@ int main(int argc, char *argv[]) {
         }
 
         rc++;
-        cout << id << ", " << static_cast<unsigned>(it->second) << ", \""
-             << proto_name << "\", "
+        cout << id << ", " << 0 << ", \"" << proto_name << "\", "
              << "\"missing protocol\"" << endl;
     }
 

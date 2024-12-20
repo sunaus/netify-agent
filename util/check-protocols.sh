@@ -10,9 +10,10 @@ if [ ! -d "$NDPI" ]; then
 fi
 
 while read LINE; do
-  if [[ "$LINE" =~ ^ID ]]; then
+  if [[ "$LINE" =~ ^[0-9] ]]; then
     # ID# 72 (HART-IP)
-    ID=$(echo "$LINE" | sed -Ee 's/^ID# ([0-9]+).*$/\1/')
+    # 422, 0, "CNP-IP", "missing protocol"
+    ID=$(echo "$LINE" | sed -Ee 's/^([0-9]+).*$/\1/')
     DEFINE=$(echo "$LINE" |\
       grep -E "^[[:space:]]*NDPI_.*[[:space:]]*=[[:space:]]*$ID," \
         $NDPI/src/include/ndpi_protocol_ids.h |\
