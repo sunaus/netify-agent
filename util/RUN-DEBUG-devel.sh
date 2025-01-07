@@ -6,6 +6,7 @@ set -euo pipefail
 : ${OPTION_GDB:=disable}
 : ${OPTION_LLDB:=disable}
 : ${OPTION_VALGRIND:=disable}
+: ${OPTION_PIDCORE:=disable}
 : ${VALGRIND_EXEC:=valgrind}
 : ${NETIFYD_PREFIX:=/tmp/netify-agent}
 : ${NETIFYD_DETECTION_CORES:=4}
@@ -18,16 +19,18 @@ fi
 
 echo "Options:"
 echo " OPTION_GDB: ${OPTION_GDB}"
+echo " OPTION_LLDB: ${OPTION_LLDB}"
+echo " OPTION_PIDCORE: ${OPTION_PIDCORE}"
+echo " VALGRIND_EXEC: ${VALGRIND_EXEC}"
 echo " OPTION_VALGRIND: ${OPTION_VALGRIND}"
 echo " NETIFYD_PREFIX: ${NETIFYD_PREFIX}"
 echo " NETIFYD_OPTIONS: ${NETIFYD_OPTIONS}"
+echo " NETIFYD_CONF: ${NETIFYD_CONF}"
 
 if [ ! -d "${NETIFYD_PREFIX}" ]; then
   echo "ERROR: The Netify Agent prefix path does not exist."
   exit 1
 fi
-
-echo " NETIFYD_CONF: ${NETIFYD_CONF}"
 
 if [ ! -f "${NETIFYD_CONF}" ]; then
   echo "ERROR: The Netify Agent configuration file was not found."
@@ -57,8 +60,13 @@ if [ -z "${SUDO}" ]; then
 else
   if [ "${OPTION_GDB}" == "enable" ]; then
     grep -E '^#define' config.h | sed -e 's/#define/macro define/g' > defines.gdb
-    exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+    if [ "${OPTION_PIDCORE}" == "disable" ]; then
+        exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+          gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+    else
+        exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+          gdb -x defines.gdb ${NETIFYD_PREFIX}/usr/sbin/netifyd ${OPTION_PIDCORE}
+    fi
   elif [ "${OPTION_LLDB}" == "enable" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       lldb ${NETIFYD_PREFIX}/usr/sbin/netifyd -- $ARGS
