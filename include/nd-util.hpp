@@ -316,6 +316,7 @@ int nd_ifreq(const std::string &name, unsigned long request,
   struct ifreq *ifr);
 
 void nd_basename(const std::string &path, std::string &base);
+void nd_pathname(const std::string &path, std::string &base);
 
 pid_t nd_is_running(pid_t pid, const std::string &exe_base);
 pid_t nd_load_pid(const std::string &pidfile);

@@ -860,6 +860,11 @@ void nd_basename(const string &path, string &base) {
     base = path.substr(p + 1);
 }
 
+void nd_pathname(const string &path, string &base) {
+    size_t p = path.find_last_of("/");
+    if (p != string::npos) base = path.substr(0, p);
+}
+
 #if defined(__linux__)
 pid_t nd_is_running(pid_t pid, const string &exe_base) {
     pid_t rc = -1;
