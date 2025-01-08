@@ -31,6 +31,7 @@
 
 %%
 ip_protocol             return FLOW_IP_PROTO;
+ip_dscp                 return FLOW_IP_DSCP;
 ip_version              return FLOW_IP_VERSION;
 vlan_id                 return FLOW_VLAN_ID;
 other_type              return FLOW_OTHER_TYPE;

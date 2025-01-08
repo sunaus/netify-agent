@@ -150,6 +150,7 @@ public:
     int direction = { 0 };
 
     uint8_t ip_version = { 0 };
+    uint8_t ip_dscp = { 0 };
     uint8_t ip_protocol = { 0 };
 
     uint16_t vlan_id = { 0 };
@@ -230,6 +231,7 @@ public:
     struct {
         uint8_t version = { 0xFF };
         uint8_t ip_version = { 0 };
+        uint8_t ip_dscp = { 0 };
         uint32_t lower_teid = { 0 };
         uint32_t upper_teid = { 0 };
         ndAddr::Type lower_type = { ndAddr::Type::NONE };
@@ -496,6 +498,7 @@ public:
             serialize(output, { "ct_mark" }, conntrack.mark);
 #endif
             serialize(output, { "ip_version" }, (unsigned)ip_version);
+            serialize(output, { "ip_dscp" }, (unsigned)ip_dscp);
             serialize(output, { "ip_protocol" },
               (unsigned)ip_protocol);
             serialize(output, { "vlan_id" }, (unsigned)vlan_id);
@@ -758,6 +761,7 @@ public:
                 serialize(output, { "gtp", "version" }, gtp.version);
                 serialize(output, { "gtp", "ip_version" },
                   gtp.ip_version);
+                serialize(output, { "gtp", "ip_dscp" }, gtp.ip_dscp);
                 serialize(output, { "gtp", _lower_ip },
                   gtp.lower_addr.GetString());
                 serialize(output, { "gtp", _upper_ip },

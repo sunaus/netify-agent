@@ -113,7 +113,7 @@ typedef void* yyscan_t;
     bool bool_result;
 }
 
-%token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_VLAN_ID FLOW_OTHER_TYPE
+%token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_IP_DSCP FLOW_VLAN_ID FLOW_OTHER_TYPE
 %token FLOW_LOCAL_MAC FLOW_OTHER_MAC FLOW_LOCAL_IP FLOW_OTHER_IP
 %token FLOW_LOCAL_PORT FLOW_OTHER_PORT
 %token FLOW_TUNNEL_TYPE
@@ -150,7 +150,7 @@ typedef void* yyscan_t;
 %type <buffer> value_addr_ip
 %type <us_number> value_tunnel_type
 
-%type <bool_result> expr expr_ip_proto expr_ip_version expr_vlan_id expr_other_type
+%type <bool_result> expr expr_ip_proto expr_ip_dscp expr_ip_version expr_vlan_id expr_other_type
 %type <bool_result> expr_local_mac expr_other_mac expr_local_ip expr_other_ip
 %type <bool_result> expr_local_port expr_other_port
 %type <bool_result> expr_tunnel_type
@@ -175,6 +175,7 @@ exprs:
 
 expr:
       expr_ip_proto
+    | expr_ip_dscp
     | expr_ip_version
     | expr_vlan_id
     | expr_other_type
@@ -258,6 +259,17 @@ expr_ip_proto:
     | FLOW_IP_PROTO '<' VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->ip_protocol < $3));
         _NDFP_debugf("IP Protocol > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_ip_dscp:
+      FLOW_IP_DSCP CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->ip_dscp == $3));
+        _NDFP_debugf("IP DSCP == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IP_DSCP CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (_NDFP_flow->ip_dscp != $3));
+        _NDFP_debugf("IP DSCP != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 

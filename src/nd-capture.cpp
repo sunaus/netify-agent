@@ -582,6 +582,7 @@ nd_process_ip:
       &packet->data[l2_len]);
 
     flow.ip_version = hdr_ip->ip_v;
+    flow.ip_dscp = (hdr_ip->ip_tos & 0xfc) >> 2;
 
     if (flow.ip_version == 4) {
         if (type == 0) type = ETHERTYPE_IP;
@@ -790,6 +791,7 @@ nd_process_ip:
 
                     flow.gtp.version = hdr_gtpv1->flags.version;
                     flow.gtp.ip_version = flow.ip_version;
+                    flow.gtp.ip_dscp = flow.ip_dscp;
                     flow.gtp.lower_addr = flow.lower_addr;
                     flow.gtp.upper_addr = flow.upper_addr;
                 }
