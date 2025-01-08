@@ -33,7 +33,7 @@ public:
     }
 
 protected:
-    static constexpr size_t _ND_EXCEPT_MAX_MESSAGE = { 128 };
+    static constexpr size_t _ND_EXCEPT_MAX_MESSAGE = { 1024 };
     std::array<char, _ND_EXCEPT_MAX_MESSAGE> message;
 };
 
