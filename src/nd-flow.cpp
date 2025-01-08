@@ -288,16 +288,10 @@ bool ndFlow::HasTLSSubjectDN(void) const {
       ! tls.subject_dn.empty());
 }
 
-bool ndFlow::HasTLSClientJA3(void) const {
+bool ndFlow::HasTLSClientJA4(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
               detected_protocol == ndProto::Id::DTLS) &&
-      ! tls.client_ja3.empty());
-}
-
-bool ndFlow::HasTLSServerJA3(void) const {
-    return ((GetMasterProtocol() == ndProto::Id::TLS ||
-              detected_protocol == ndProto::Id::DTLS) &&
-      ! tls.server_ja3.empty());
+      ! tls.client_ja4.empty());
 }
 
 bool ndFlow::HasBTInfoHash(void) const {
@@ -572,6 +566,12 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                     dls << " TLS/IDN: " << tls.issuer_dn;
                 if (HasTLSSubjectDN())
                     dls << " TLS/SDN: " << tls.subject_dn;
+            }
+
+            if (HasTLSClientJA4()) {
+                dls << endl
+                    << setw(plen) << " "
+                    << ": JA4: " << tls.client_ja4;
             }
         }
 

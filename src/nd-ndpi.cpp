@@ -244,6 +244,13 @@ struct ndpi_detection_module_struct *nd_ndpi_init(void) {
 
     ndpi_set_config(ndpi, "dns", "process_response", "1");
 
+    ndpi_set_config(ndpi, "tls",
+      "metadata.ja3c_fingerprint", "0");
+    ndpi_set_config(ndpi, "tls",
+      "metadata.ja3s_fingerprint", "0");
+    ndpi_set_config(ndpi, "tls",
+      "metadata.ja4c_fingerprint", "1");
+
     ndpi_set_protocol_detection_bitmask2(ndpi, &ndpi_protos);
 
     ndpi_finalize_initialization(ndpi);

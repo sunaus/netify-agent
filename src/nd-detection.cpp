@@ -919,14 +919,14 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
 #endif
             }
 
-            if (ndEF->tls.server_ja3.empty() &&
-              ndEFNFP.tls_quic.ja3_server[0] != '\0')
+            if (ndEF->tls.client_ja4.empty() &&
+              ndEFNFP.tls_quic.ja4_client[0] != '\0')
             {
                 updated = true;
-                ndEF->tls.server_ja3.assign(
-                  ndEFNFP.tls_quic.ja3_server);
+                ndEF->tls.client_ja4.assign(
+                  ndEFNFP.tls_quic.ja4_client);
 #ifdef _ND_LOG_FLOW_DEBUG
-                nd_dprintf("%s: TLS: set ja3_server.\n",
+                nd_dprintf("%s: TLS: set ja4_client.\n",
                   tag.c_str());
 #endif
             }

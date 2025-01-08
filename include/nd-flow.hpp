@@ -278,8 +278,7 @@ public:
         std::string subject_dn;
         std::string issuer_dn;
         std::string server_cn;
-        std::string client_ja3;
-        std::string server_ja3;
+        std::string client_ja4;
         std::vector<uint8_t> cert_fingerprint;
         std::vector<std::string> alpn, alpn_server;
 
@@ -351,8 +350,7 @@ public:
     bool HasTLSServerCN(void) const;
     bool HasTLSIssuerDN(void) const;
     bool HasTLSSubjectDN(void) const;
-    bool HasTLSClientJA3(void) const;
-    bool HasTLSServerJA3(void) const;
+    bool HasTLSClientJA4(void) const;
     bool HasBTInfoHash(void) const;
     bool HasSSDPUserAgent(void) const;
     bool HasMDNSDomainName(void) const;
@@ -669,13 +667,9 @@ public:
                     serialize(output,
                       { "ssl", "subject_dn" }, tls.subject_dn);
 
-                if (HasTLSClientJA3())
+                if (HasTLSClientJA4())
                     serialize(output,
-                      { "ssl", "client_ja3" }, tls.client_ja3);
-
-                if (HasTLSServerJA3())
-                    serialize(output,
-                      { "ssl", "server_ja3" }, tls.server_ja3);
+                      { "ssl", "client_ja4" }, tls.client_ja4);
 
                 if (! tls.cert_fingerprint.empty()) {
                     nd_sha1_to_string(tls.cert_fingerprint, digest);
