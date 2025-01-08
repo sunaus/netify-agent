@@ -87,6 +87,7 @@ tls_version             return FLOW_TLS_VERSION;
 tls_cipher              return FLOW_TLS_CIPHER;
 tls_ech                 return FLOW_TLS_ECH;
 tls_esni                return FLOW_TLS_ESNI;
+tls_ja4                 return FLOW_TLS_JA4;
 origin                  return FLOW_ORIGIN;
 origin_local            yylval->us_number = _NDFP_ORIGIN_LOCAL; return FLOW_ORIGIN_LOCAL;
 origin_other            yylval->us_number = _NDFP_ORIGIN_OTHER; return FLOW_ORIGIN_OTHER;
