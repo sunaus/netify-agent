@@ -61,6 +61,69 @@ ndPlugin::~ndPlugin() {
 #endif
 }
 
+void ndPlugin::DispatchSinkPayload(const string &target,
+  const ndPlugin::Channels &channels, size_t length,
+  const uint8_t *payload, ndFlags<ndPlugin::DispatchFlags> flags) {
+    ndInstance &ndi = ndInstance::GetInstance();
+
+    ndPluginSinkPayload::Ptr p = ndPluginSinkPayload::Create(
+      length, payload, channels, flags);
+
+    if (ndi.plugins.DispatchSinkPayload(target, p)) return;
+
+    throw ndException("%s: sink target not found", target.c_str());
+}
+
+void ndPlugin::DispatchSinkPayload(const string &target,
+  const ndPlugin::Channels &channels, const json &j,
+  ndFlags<ndPlugin::DispatchFlags> flags) {
+    if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::FORMAT_MSGPACK))
+    {
+        vector<uint8_t> output;
+        output = json::to_msgpack(j);
+
+        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_HEADER))
+        {
+            json jheader;
+            jheader["length"] = output.size();
+
+            vector<uint8_t> header;
+            header = json::to_msgpack(jheader);
+
+            output.insert(output.begin(), header.begin(),
+              header.end());
+        }
+
+        ndPlugin::DispatchSinkPayload(target, channels,
+          output, flags);
+    }
+    else {
+        string output;
+        nd_json_to_string(j, output, ndGC_DEBUG);
+
+        flags |= ndPlugin::DispatchFlags::FORMAT_JSON;
+
+        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_CR))
+            output.append("\n");
+        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_HEADER))
+        {
+            json jheader;
+            jheader["length"] = output.size();
+
+            string header;
+            nd_json_to_string(jheader, header, false);
+            header.append("\n");
+
+            output.insert(output.begin(), header.begin(),
+              header.end());
+        }
+
+        ndPlugin::DispatchSinkPayload(target, channels,
+          output.size(),
+          reinterpret_cast<const uint8_t *>(output.c_str()), flags);
+    }
+}
+
 ndPluginSink::ndPluginSink(const string &tag,
   const ndPlugin::Params &params)
   : ndPlugin(ndPlugin::Type::SINK, tag, params),
@@ -267,67 +330,6 @@ ndPluginProcessor::~ndPluginProcessor() {
 #ifdef _ND_LOG_PLUGIN_DEBUG
     nd_dprintf("Processor plugin destroyed: %s\n", tag.c_str());
 #endif
-}
-
-void ndPluginProcessor::DispatchSinkPayload(const string &target,
-  const ndPlugin::Channels &channels, size_t length,
-  const uint8_t *payload, ndFlags<ndPlugin::DispatchFlags> flags) {
-    ndInstance &ndi = ndInstance::GetInstance();
-
-    ndPluginSinkPayload::Ptr p = ndPluginSinkPayload::Create(
-      length, payload, channels, flags);
-
-    if (ndi.plugins.DispatchSinkPayload(target, p)) return;
-
-    throw ndException("%s: sink target not found", target.c_str());
-}
-
-void ndPluginProcessor::DispatchSinkPayload(const string &target,
-  const ndPlugin::Channels &channels, const json &j,
-  ndFlags<ndPlugin::DispatchFlags> flags) {
-    if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::FORMAT_MSGPACK))
-    {
-        vector<uint8_t> output;
-        output = json::to_msgpack(j);
-
-        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_HEADER))
-        {
-            json jheader;
-            jheader["length"] = output.size();
-
-            vector<uint8_t> header;
-            header = json::to_msgpack(jheader);
-
-            output.insert(output.begin(), header.begin(),
-              header.end());
-        }
-
-        DispatchSinkPayload(target, channels, output, flags);
-    }
-    else {
-        string output;
-        nd_json_to_string(j, output, ndGC_DEBUG);
-
-        flags |= ndPlugin::DispatchFlags::FORMAT_JSON;
-
-        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_CR))
-            output.append("\n");
-        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_HEADER))
-        {
-            json jheader;
-            jheader["length"] = output.size();
-
-            string header;
-            nd_json_to_string(jheader, header, false);
-            header.append("\n");
-
-            output.insert(output.begin(), header.begin(),
-              header.end());
-        }
-
-        DispatchSinkPayload(target, channels, output.size(),
-          reinterpret_cast<const uint8_t *>(output.c_str()), flags);
-    }
 }
 
 ndPluginLoader::ndPluginLoader(const string &tag,

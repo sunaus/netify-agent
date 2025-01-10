@@ -100,9 +100,67 @@ public:
         GZ_DEFLATE = (1 << 4),
     };
 
+    static void DispatchSinkPayload(const std::string &target,
+      const ndPlugin::Channels &channels, size_t length,
+      const uint8_t *payload,
+      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE);
+
+    static void DispatchSinkPayload(const std::string &target,
+      const ndPlugin::Channels &channels,
+      const std::vector<uint8_t> &payload,
+      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE) {
+        ndPlugin::DispatchSinkPayload(target, channels,
+          payload.size(), payload.data(), flags);
+    }
+
+    static void DispatchSinkPayload(const std::string &target,
+      const ndPlugin::Channels &channels, const nlohmann::json &j,
+      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE);
+
 protected:
     Type type;
     std::string conf_filename;
+};
+
+class ndPluginProcessor : public ndPlugin
+{
+public:
+    ndPluginProcessor(const std::string &tag,
+      const ndPlugin::Params &params);
+    virtual ~ndPluginProcessor();
+
+    enum class Event : uint16_t {
+        NONE,
+
+        FLOW_MAP,  // ndFlowMap *
+        FLOW_NEW,  // nd_flow_ptr
+        FLOW_EXPIRING,  // nd_flow_ptr
+        FLOW_EXPIRE,  // nd_flow_ptr
+        DPI_NEW,  // nd_flow_ptr
+        DPI_UPDATE,  // nd_flow_ptr
+        DPI_COMPLETE,  // nd_flow_ptr
+        INTERFACES,  // ndInterfaces
+        PKT_CAPTURE_STATS,  // string, ndPacketStats *
+        PKT_GLOBAL_STATS,  // ndPacketStats *
+        UPDATE_INIT,  // ndInstanceStatus *
+        UPDATE_COMPLETE,
+
+        MAX
+    };
+
+    virtual void
+    DispatchProcessorEvent(Event event, ndFlowMap *flow_map) { }
+    virtual void
+    DispatchProcessorEvent(Event event, nd_flow_ptr &flow) { }
+    virtual void DispatchProcessorEvent(Event event,
+      ndInterfaces *interfaces) { }
+    virtual void DispatchProcessorEvent(Event event,
+      const std::string &iface, ndPacketStats *stats) { }
+    virtual void DispatchProcessorEvent(Event event,
+      ndPacketStats *stats) { }
+    virtual void DispatchProcessorEvent(Event event,
+      ndInstanceStatus *status) { }
+    virtual void DispatchProcessorEvent(Event event) { }
 };
 
 class ndPluginSinkPayload
@@ -162,66 +220,7 @@ public:
     ndFlags<ndPlugin::DispatchFlags> flags;
 };
 
-class ndPluginProcessor : public ndPlugin
-{
-public:
-    ndPluginProcessor(const std::string &tag,
-      const ndPlugin::Params &params);
-    virtual ~ndPluginProcessor();
-
-    enum class Event : uint16_t {
-        NONE,
-
-        FLOW_MAP,  // ndFlowMap *
-        FLOW_NEW,  // nd_flow_ptr
-        FLOW_EXPIRING,  // nd_flow_ptr
-        FLOW_EXPIRE,  // nd_flow_ptr
-        DPI_NEW,  // nd_flow_ptr
-        DPI_UPDATE,  // nd_flow_ptr
-        DPI_COMPLETE,  // nd_flow_ptr
-        INTERFACES,  // ndInterfaces
-        PKT_CAPTURE_STATS,  // string, ndPacketStats *
-        PKT_GLOBAL_STATS,  // ndPacketStats *
-        UPDATE_INIT,  // ndInstanceStatus *
-        UPDATE_COMPLETE,
-
-        MAX
-    };
-
-    virtual void
-    DispatchProcessorEvent(Event event, ndFlowMap *flow_map) { }
-    virtual void
-    DispatchProcessorEvent(Event event, nd_flow_ptr &flow) { }
-    virtual void DispatchProcessorEvent(Event event,
-      ndInterfaces *interfaces) { }
-    virtual void DispatchProcessorEvent(Event event,
-      const std::string &iface, ndPacketStats *stats) { }
-    virtual void DispatchProcessorEvent(Event event,
-      ndPacketStats *stats) { }
-    virtual void DispatchProcessorEvent(Event event,
-      ndInstanceStatus *status) { }
-    virtual void DispatchProcessorEvent(Event event) { }
-
-protected:
-    virtual void DispatchSinkPayload(const std::string &target,
-      const ndPlugin::Channels &channels, size_t length,
-      const uint8_t *payload,
-      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE);
-
-    inline void DispatchSinkPayload(const std::string &target,
-      const ndPlugin::Channels &channels,
-      const std::vector<uint8_t> &payload,
-      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE) {
-        DispatchSinkPayload(target, channels,
-          payload.size(), payload.data(), flags);
-    }
-
-    virtual void DispatchSinkPayload(const std::string &target,
-      const ndPlugin::Channels &channels, const nlohmann::json &j,
-      ndFlags<ndPlugin::DispatchFlags> flags = DispatchFlags::NONE);
-};
-
-#define _ND_PLQ_DEFAULT_MAX_SIZE 2097152
+constexpr size_t _ND_PLQ_DEFAULT_MAX_SIZE = 2097152;
 
 class ndPluginSink : public ndPlugin
 {
