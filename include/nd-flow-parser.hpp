@@ -21,7 +21,10 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <regex>
+#include <unordered_map>
 
 #include "nd-flow-parser.h"
 
@@ -48,6 +51,8 @@
     ((ndFlowParser *)yyget_extra(scanner))->expr_result
 #define _NDFP_categories \
     ((ndFlowParser *)yyget_extra(scanner))->ndi.categories
+#define _NDFP_regex_search(rx, search) \
+    ((ndFlowParser *)yyget_extra(scanner))->RegExSearch(rx, search)
 
 class ndFlowParser : public ndInstanceClient
 {
@@ -56,6 +61,8 @@ public:
     virtual ~ndFlowParser();
 
     bool Parse(nd_flow_ptr const &flow, const std::string &expr);
+
+    bool RegExSearch(std::string &expr, const std::string &search);
 
     nd_flow_ptr flow;
     const char *local_mac;
@@ -70,4 +77,7 @@ public:
 
 protected:
     void *scanner;
+
+    typedef std::unordered_map<std::string, std::unique_ptr<std::regex>> rx_cache_map;
+    rx_cache_map rx_cache;
 };
