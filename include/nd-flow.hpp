@@ -196,7 +196,7 @@ public:
 
     ndFlags<PrivacyMask> privacy_mask = { PrivacyMask::NONE };
 
-    ndDigest digest_lower = { 0 };
+    ndDigest digest_lower = { { 0 } };
 
     typedef std::vector<ndDigest> DigestVec;
     DigestVec digest_mdata;
