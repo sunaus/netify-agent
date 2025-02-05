@@ -490,7 +490,7 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
     }
 
     if (downloads == 0 && download_results.size()) {
-        bool reload;
+        bool reload = false;
         size_t successful = 0;
 
         for (auto &r : download_results) {
@@ -759,7 +759,7 @@ ndNetifyApiManager::ProcessBootstrapRequest(
         return UpdateResult::ERROR;
     }
 
-    return UpdateResult::RELOAD;
+    return UpdateResult::OK;
 }
 
 bool ndNetifyApiManager::ProcessDownloadRequest(
