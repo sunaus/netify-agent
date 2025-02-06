@@ -60,6 +60,7 @@ if [ -z "${SUDO}" ]; then
 else
   if [ "${OPTION_GDB}" == "enable" ]; then
     grep -E '^#define' config.h | sed -e 's/#define/macro define/g' > defines.gdb
+    echo "set solib-search-path ${NETIFYD_PREFIX}/usr/lib/x86_64-linux-gnu/" >> defines.gdb
     if [ "${OPTION_PIDCORE}" == "disable" ]; then
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
           gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
