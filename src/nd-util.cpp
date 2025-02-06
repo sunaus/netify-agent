@@ -56,6 +56,7 @@
 #include <iostream>
 #include <mutex>
 #include <regex>
+#include <sched.h>
 #include <sstream>
 #include <stdexcept>
 #include <unordered_map>
@@ -1668,3 +1669,28 @@ void nd_time_ago(time_t seconds, string &ago) {
     ago = to_string((time_t)value) + " " + unit +
       ((plural) ? "s" : "");
 }
+
+#if defined(__linux__)
+int nd_set_netns(const string &ns) {
+    string path = "/var/run/netns/" + ns;
+
+    int fd = open(path.c_str(), O_RDONLY);
+    if (fd < 0)
+        fd = open(ns.c_str(), O_RDONLY);
+    if (fd < 0) {
+        path = "/proc/" + ns + "/ns/net";
+        fd = open(path.c_str(), O_RDONLY);
+    }
+    if (fd < 0)
+        throw ndException("open: %s", strerror(errno));
+
+    int rc = setns(fd, CLONE_NEWNET);
+
+    close(fd);
+
+    if (rc < 0)
+        throw ndException("setns: %s", strerror(errno));
+
+    return rc;
+}
+#endif

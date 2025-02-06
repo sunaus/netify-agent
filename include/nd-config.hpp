@@ -223,9 +223,13 @@ enum class ndGlobalFlags : uint32_t {
 
 typedef struct nd_config_pcap_t {
     std::string capture_filename;
+    bool conntrack_counters = { false };
 
     inline bool operator==(const struct nd_config_pcap_t &i) const {
-        return (capture_filename == i.capture_filename);
+        return (
+            capture_filename == i.capture_filename &&
+            conntrack_counters == i.conntrack_counters
+        );
     }
 } nd_config_pcap;
 
@@ -236,6 +240,7 @@ typedef struct nd_config_tpv3_t {
     unsigned rb_block_size{ ND_TPV3_RB_BLOCK_SIZE };
     unsigned rb_frame_size{ ND_TPV3_RB_FRAME_SIZE };
     unsigned rb_blocks{ ND_TPV3_RB_BLOCKS };
+    bool conntrack_counters = { false };
 
     inline bool operator==(const struct nd_config_tpv3_t &i) const {
         if (fanout_mode != i.fanout_mode) return false;
@@ -245,6 +250,7 @@ typedef struct nd_config_tpv3_t {
         if (rb_block_size != i.rb_block_size) return false;
         if (rb_frame_size != i.rb_frame_size) return false;
         if (rb_blocks != i.rb_blocks) return false;
+        if (conntrack_counters != i.conntrack_counters) return false;
         return true;
     }
 } nd_config_tpv3;
@@ -252,9 +258,14 @@ typedef struct nd_config_tpv3_t {
 typedef struct nd_config_nfq_t {
     unsigned queue_id{ 0 };
     unsigned instances{ 0 };
+    bool conntrack_counters = { false };
 
     inline bool operator==(const struct nd_config_nfq_t &i) const {
-        return (queue_id == i.queue_id && instances == i.instances);
+        return (
+            queue_id == i.queue_id &&
+            instances == i.instances &&
+            conntrack_counters == i.conntrack_counters
+        );
     }
 } nd_config_nfq;
 
@@ -263,6 +274,7 @@ class ndGlobalConfig
 public:
     bool napi_tls_verify;
     std::string napi_vendor;
+    std::string network_namespace;
     std::string path_agent_status;
     std::string path_app_config;
     std::string path_cat_config;
@@ -290,7 +302,6 @@ public:
     nd_config_tpv3 tpv3_defaults;
     FILE *h_flow;
     int16_t ca_capture_base;
-    int16_t ca_conntrack;
     int16_t ca_detection_base;
     int16_t ca_detection_cores;
     uint16_t max_capture_length;

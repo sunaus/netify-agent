@@ -46,12 +46,12 @@ libnetifyd_la_LIBADD = -L$(top_srcdir)/libs/inih -lini \
 	$(LIBCURL_LIBS) $(ZLIB_LIBS)
 
 if USE_NETLINK
-libnetifyd_la_SOURCES += nd-netlink.cpp
-endif
-
+libnetifyd_la_SOURCES += nd-netlink.cpp nd-netlink-rt.cpp
+libnetifyd_la_LIBADD += $(LIBMNL_LIBS)
 if USE_CONNTRACK
-libnetifyd_la_SOURCES += nd-conntrack.cpp
-libnetifyd_la_LIBADD += $(LIBNETFILTER_CONNTRACK_LIBS) $(LIBMNL_LIBS)
+libnetifyd_la_SOURCES += nd-netlink-ct.cpp
+libnetifyd_la_LIBADD += $(LIBNETFILTER_CONNTRACK_LIBS)
+endif
 endif
 
 if USE_LIBPCAP

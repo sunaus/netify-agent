@@ -40,14 +40,17 @@
 
 using namespace std;
 
-// Enable flow hash cache debug logging
+// Enable extra flow hash cache debug logging
 // #define _ND_LOG_FHC 1
 
-// Enable extra flow debug logging
-// #define _ND_LOG_FLOW_DEBUG 1
+// Enable extra DNS flow debug logging
+// #define _ND_LOG_FLOW_DEBUG_DNS 1
 
-// Enable to log STUN debug
-// #define _ND_LOG_STUN 1
+// Enable extra TLS flow debug logging
+// #define _ND_LOG_FLOW_DEBUG_TLS 1
+
+// Enable extra STUN flow debug logging
+// #define _ND_LOG_DEBUG STUN 1
 
 #define ndEF    entry->flow
 #define ndEFNF  entry->flow->ndpi_flow
@@ -55,18 +58,18 @@ using namespace std;
 
 ndDetectionThread::ndDetectionThread(int16_t cpu, const string &tag,
 #ifdef _ND_ENABLE_NETLINK
-  ndNetlink *netlink,
-#endif
+  ndNetlinkRouteThread *thread_netlink,
 #ifdef _ND_ENABLE_CONNTRACK
-  ndConntrackThread *thread_conntrack,
+  ndNetlinkConntrackThread *thread_conntrack,
+#endif
 #endif
   ndDNSHintCache *dhc, ndFlowHashCache *fhc, uint8_t private_addr)
   : ndThread(tag, (long)cpu, true), ndInstanceClient(),
 #ifdef _ND_ENABLE_NETLINK
-    netlink(netlink),
-#endif
+    thread_netlink(thread_netlink),
 #ifdef _ND_ENABLE_CONNTRACK
     thread_conntrack(thread_conntrack),
+#endif
 #endif
     ndpi(nullptr), dhc(dhc), fhc(fhc) {
     Reload();
@@ -372,7 +375,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
     if (ndpi_rc.proto.master_protocol == NDPI_PROTOCOL_STUN &&
       ndpi_rc.proto.app_protocol != NDPI_PROTOCOL_UNKNOWN)
     {
-#ifdef _ND_LOG_STUN
+#ifdef _ND_LOG_DEBUG_STUN
         nd_dprintf(
           "%s: STUN[%lu]: master: %hu, app: %hu, stack[0]: "
           "%hu, stack[1]: %hu, detected_protocol: %hu\n",
@@ -387,7 +390,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
 
         if (id != ndProto::Id::TODO) {
             SetDetectedProtocol(entry, id);
-#ifdef _ND_LOG_STUN
+#ifdef _ND_LOG_DEBUG_STUN
             nd_dprintf(
               "%s: STUN[%lu]: refined detected protocol: "
               "%hu\n",
@@ -435,7 +438,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         DetectionUpdate(entry);
 
     if (ndEF->GetMasterProtocol() == ndProto::Id::DNS) {
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_DNS
         nd_dprintf(
           "%s: DNS: extra_packets_func: %p, "
           "detection_packets: %hhu, "
@@ -450,10 +453,10 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             ndEFNF->host_server_name :
             "(null)");
 #endif
-        if (ndEFNF->extra_packets_func == nullptr)
-            ndEF->Release();
+        //if (ndEFNF->extra_packets_func == nullptr)
+        //    ndEF->Release();
 
-        return;
+        //return;
     }
 
     if ((ndEF->flags.detection_init.load() &&
@@ -512,16 +515,24 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
     }
 
 #ifdef _ND_ENABLE_CONNTRACK
-    if (thread_conntrack != nullptr &&
-      ndEF->iface->role == ndInterfaceRole::WAN &&
-      ((ndEF->lower_type == ndAddr::Type::LOCAL &&
-         ndEF->upper_type == ndAddr::Type::OTHER) ||
-        (ndEF->lower_type == ndAddr::Type::OTHER &&
-          ndEF->upper_type == ndAddr::Type::LOCAL)))
-    {
-        // Update flow with any collected information from the
-        // connection tracker (CT ID, mark, NAT'd).
+    if (thread_conntrack != nullptr) {
+        // Possibly update flow with metadata collected from the
+        // connection tracker (mark, NAT, counters, etc.).
+#if defined(_ND_ENABLE_CONNTRACK_MDATA)
         thread_conntrack->UpdateFlow(ndEF);
+#else
+        if ((ndEF->iface->role == ndInterfaceRole::WAN &&
+            ((ndEF->lower_type == ndAddr::Type::LOCAL &&
+            ndEF->upper_type == ndAddr::Type::OTHER) ||
+            (ndEF->lower_type == ndAddr::Type::OTHER &&
+            ndEF->upper_type == ndAddr::Type::LOCAL)))
+#if defined(_ND_ENABLE_CONNTRACK_COUNTERS)
+            || ndEF->iface->conntrack_counters
+#endif
+            ) {
+            thread_conntrack->UpdateFlow(ndEF);
+        }
+#endif
     }
 #endif
 
@@ -886,12 +897,20 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 }
 
                 if (updated) {
+                    SetDetectedApplication(entry,
+                      ndi.apps.Find(ndEF->tls.server_cn));
+/*
                     ndEF->detected_application = ND_APP_UNKNOWN;
                     ndEF->detected_application_name =
                       "Unknown";
                     SetDetectedApplication(entry,
                       ndi.apps.Find(ndEF->host_server_name));
+*/
                 }
+#ifdef _ND_LOG_FLOW_DEBUG_DNS
+                nd_dprintf("%s: DNS: %s hostname.\n", tag.c_str(),
+                    (updated) ? "updated" : "set");
+#endif
             }
             break;
 
@@ -903,7 +922,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
             {
                 updated = true;
                 ndEF->tls.version = ndEFNFP.tls_quic.ssl_version;
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set version.\n", tag.c_str());
 #endif
             }
@@ -913,7 +932,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
             {
                 updated = true;
                 ndEF->tls.cipher_suite = ndEFNFP.tls_quic.server_cipher;
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set cipher_suite.\n",
                   tag.c_str());
 #endif
@@ -925,7 +944,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 updated = true;
                 ndEF->tls.client_ja4.assign(
                   ndEFNFP.tls_quic.ja4_client);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set ja4_client.\n",
                   tag.c_str());
 #endif
@@ -938,7 +957,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 nd_set_hostname(ndEF->tls.server_cn,
                   ndEFNFP.tls_quic.serverCN,
                   ND_FLOW_TLS_CNLEN);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set serverCN: %s\n",
                   tag.c_str(), ndEF->tls.server_cn.c_str());
 #endif
@@ -955,7 +974,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 updated = true;
                 ndEF->tls.issuer_dn.assign(ndEFNFP.tls_quic.issuerDN);
                 nd_trim(ndEF->tls.issuer_dn);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set issuerDN.\n", tag.c_str());
 #endif
             }
@@ -966,7 +985,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 updated = true;
                 ndEF->tls.subject_dn.assign(ndEFNFP.tls_quic.subjectDN);
                 nd_trim(ndEF->tls.issuer_dn);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set subjectDN.\n",
                   tag.c_str());
 #endif
@@ -981,7 +1000,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 memcpy(&ndEF->tls.cert_fingerprint[0],
                   ndEFNFP.tls_quic.sha1_certificate_fingerprint,
                   SHA1_DIGEST_LENGTH);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf(
                   "%s: TLS: set cert_fingerprint.\n", tag.c_str());
 #endif
@@ -990,7 +1009,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
             if (ndEF->tls.alpn.empty() && ndEFNFP.tls_quic.advertised_alpns)
             {
                 updated = ProcessALPN(entry, true);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set ALPNs.\n", tag.c_str());
 #endif
             }
@@ -999,7 +1018,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
               ndEFNFP.tls_quic.negotiated_alpn)
             {
                 updated = ProcessALPN(entry, false);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf(
                   "%s: TLS: set negotiated_alpn.\n", tag.c_str());
 #endif
@@ -1011,7 +1030,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 updated = true;
                 ndEF->tls.ech.version =
                   ndEFNFP.tls_quic.encrypted_ch.version;
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set ECH.\n", tag.c_str());
 #endif
             }
@@ -1024,7 +1043,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                   ndEFNFP.tls_quic.encrypted_sni.cipher_suite;
                 ndEF->tls.esni.esni.assign(
                   ndEFNFP.tls_quic.encrypted_sni.esni);
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set ESNI.\n", tag.c_str());
 #endif
             }
@@ -1033,7 +1052,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
               ! ndEF->tls.proc_hello.load())
             {
                 ndEF->tls.proc_hello = true;
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: hello processed.\n",
                   tag.c_str());
 #endif
@@ -1043,7 +1062,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
               ! ndEF->tls.proc_certificate.load())
             {
                 ndEF->tls.proc_certificate = true;
-#ifdef _ND_LOG_FLOW_DEBUG
+#ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf(
                   "%s: TLS: certificate processed.\n", tag.c_str());
 #endif

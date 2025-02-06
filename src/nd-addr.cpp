@@ -33,6 +33,7 @@
 using namespace std;
 
 bool ndAddr::Create(ndAddr &a, const string &addr) {
+    a.Reset();
     string _addr(addr);
 
     size_t p;
@@ -109,6 +110,7 @@ bool ndAddr::Create(ndAddr &a, const string &addr) {
 }
 
 bool ndAddr::Create(ndAddr &a, const uint8_t *hw_addr, size_t length) {
+    a.Reset();
     switch (length) {
     case ETH_ALEN:
 #if defined(__linux__)
@@ -136,6 +138,7 @@ bool ndAddr::Create(ndAddr &a, const uint8_t *hw_addr, size_t length) {
 bool ndAddr::Create(ndAddr &a,
   const struct sockaddr_storage *ss_addr,
   uint8_t prefix) {
+    a.Reset();
     switch (ss_addr->ss_family) {
     case AF_INET:
         if (prefix > _ND_ADDR_BITSv4) {
@@ -174,6 +177,7 @@ bool ndAddr::Create(ndAddr &a,
 
 bool ndAddr::Create(ndAddr &a,
   const struct sockaddr_in *ss_in, uint8_t prefix) {
+    a.Reset();
     if (ss_in->sin_family != AF_INET) {
         nd_dprintf("Unsupported address family: %hu\n",
           ss_in->sin_family);
@@ -196,6 +200,7 @@ bool ndAddr::Create(ndAddr &a,
 
 bool ndAddr::Create(ndAddr &a,
   const struct sockaddr_in6 *ss_in6, uint8_t prefix) {
+    a.Reset();
     if (ss_in6->sin6_family != AF_INET6) {
         nd_dprintf("Unsupported address family: %hu\n",
           ss_in6->sin6_family);
@@ -218,6 +223,7 @@ bool ndAddr::Create(ndAddr &a,
 
 bool ndAddr::Create(ndAddr &a,
   const struct in_addr *in_addr, uint8_t prefix) {
+    a.Reset();
     if (prefix > _ND_ADDR_BITSv4) {
         nd_dprintf(
           "Invalid IP address prefix length: %hhu\n", prefix);
@@ -236,6 +242,7 @@ bool ndAddr::Create(ndAddr &a,
 
 bool ndAddr::Create(ndAddr &a,
   const struct in6_addr *in6_addr, uint8_t prefix) {
+    a.Reset();
     if (prefix > _ND_ADDR_BITSv6) {
         nd_dprintf(
           "Invalid IP address prefix length: %hhu\n", prefix);
@@ -453,10 +460,10 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
       (! ifname.empty()) ? ifname.c_str() : "(global)",
       addr.GetString(ndAddr::MakeFlags::PREFIX).c_str());
 #endif
-    lock_guard<mutex> ul(lock);
-
     try {
         if (addr.IsEthernet()) {
+            lock_guard<mutex> ul(lock_ether_reserved);
+
             string mac = addr.GetString(ndAddr::MakeFlags::PREFIX);
             auto it = ether_reserved.find(mac);
             if (it != ether_reserved.end()) {
@@ -467,8 +474,10 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
                 return false;
             }
             ether_reserved[mac] = type;
+#ifdef _ND_ENABLE_DEBUG_STATS
             nd_dprintf("ether_reserved: %u\n",
               ether_reserved.size());
+#endif
             return true;
         }
 
@@ -479,6 +488,8 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv4_reserved);
+
                 ipv4_reserved[entry] = type;
                 return true;
             }
@@ -488,6 +499,8 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv6_reserved);
+
                 ipv6_reserved[entry] = type;
                 return true;
             }
@@ -497,6 +510,8 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv4_iface);
+
                 ipv4_iface[ifname][entry] = type;
                 return true;
             }
@@ -506,6 +521,8 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv6_iface);
+
                 ipv6_iface[ifname][entry] = type;
                 return true;
             }
@@ -532,10 +549,10 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
       (! ifname.empty()) ? ifname.c_str() : "(global)",
       addr.GetString(ndAddr::MakeFlags::PREFIX).c_str());
 #endif
-    lock_guard<mutex> ul(lock);
-
     try {
         if (addr.IsEthernet()) {
+            lock_guard<mutex> ul(lock_ether_reserved);
+
             string mac = addr.GetString(ndAddr::MakeFlags::PREFIX);
             auto it = ether_reserved.find(mac);
             if (it != ether_reserved.end()) {
@@ -549,6 +566,8 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv4_reserved);
+
                 return ipv4_reserved.erase(entry);
             }
         }
@@ -557,6 +576,8 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv6_reserved);
+
                 return ipv6_reserved.erase(entry);
             }
         }
@@ -565,6 +586,8 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv4_iface);
+
                 auto it = ipv4_iface.find(ifname);
                 if (it != ipv4_iface.end())
                     return it->second.erase(entry);
@@ -576,6 +599,8 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr))
             {
+                lock_guard<mutex> ul(lock_ipv6_iface);
+
                 auto it = ipv6_iface.find(ifname);
                 if (it != ipv6_iface.end())
                     return it->second.erase(entry);
@@ -590,6 +615,107 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
     }
 
     return false;
+}
+
+bool ndAddrLookup::AddLinkAddress(
+    unsigned index, const ndAddr &addr) {
+    if (! (addr.IsValid() && addr.IsEthernet())) return false;
+
+    lock_guard<mutex> ul(lock_lla_iface);
+
+    auto result = lla_iface.insert(make_pair(index, addr));
+
+    return result.second;
+}
+
+bool ndAddrLookup::RemoveLinkAddress(unsigned index) {
+    lock_guard<mutex> ul(lock_lla_iface);
+
+    auto result = lla_iface.find(index);
+    if (result == lla_iface.end()) return false;
+
+    lla_iface.erase(result);
+
+    return true;
+}
+
+bool ndAddrLookup::LookupLinkAddress(unsigned index, ndAddr &addr) {
+    if (! (addr.IsValid() && addr.IsEthernet())) return false;
+
+    lock_guard<mutex> ul(lock_lla_iface);
+
+    auto result = lla_iface.find(index);
+    if (result == lla_iface.end()) return false;
+
+    addr = result->second;
+
+    return true;
+}
+
+bool ndAddrLookup::AddNeighbor(const ndAddr &addr, const ndAddr &lladdr) {
+    if (! (addr.IsValid() && lladdr.IsValid())) return false;
+    if (! (addr.IsIP() && lladdr.IsEthernet())) return false;
+
+    lock_guard<mutex> ul(lock_neighbors);
+
+    auto result = neighbors.insert(make_pair(addr, lladdr));
+
+    return result.second;
+#if 0
+    if (result.second) return true;
+
+    if (result.first->second != lladdr) {
+        result.first->second = lladdr;
+        nd_dprintf("%s: neighbor updated.\n", __PRETTY_FUNCTION__);
+        return true;
+    }
+
+    nd_dprintf("%s: neighbor already up-to-date.\n", __PRETTY_FUNCTION__);
+
+    return true;
+#endif
+}
+
+bool ndAddrLookup::RemoveNeighbor(const ndAddr &addr) {
+    if (! addr.IsValid()) return false;
+    if (! (addr.IsIP() || addr.IsEthernet())) return false;
+
+    lock_guard<mutex> ul(lock_neighbors);
+
+    bool removed = false;
+
+    if (addr.IsIP()) {
+        auto result = neighbors.find(addr);
+        if (result == neighbors.end()) return false;
+
+        neighbors.erase(result);
+        removed = true;
+    }
+    else {
+        for (neighbor_map::iterator i = neighbors.begin();
+            i != neighbors.end(); i++) {
+            if (i->second != addr) continue;
+
+            neighbors.erase(i);
+            removed = true;
+            break;
+        }
+    }
+
+    return removed;
+}
+
+bool ndAddrLookup::LookupNeighbor(const ndAddr &addr, ndAddr &lladdr) {
+    if (! (addr.IsValid() && addr.IsIP())) return false;
+
+    lock_guard<mutex> ul(lock_neighbors);
+
+    auto result = neighbors.find(addr);
+    if (result == neighbors.end()) return false;
+
+    lladdr = result->second;
+
+    return true;
 }
 
 void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
@@ -649,9 +775,9 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
             return;
         }
 #endif
-        if (ether_reserved.size()) {
-            lock_guard<mutex> ul(lock);
+        lock_guard<mutex> ul(lock_ether_reserved);
 
+        if (ether_reserved.size()) {
             auto it = ether_reserved.find(addr.GetString());
             if (it != ether_reserved.end()) {
                 type = it->second;
@@ -670,13 +796,14 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
             return;
         }
 
+        lock_guard<mutex> ul_ipv4_iface(lock_ipv4_iface);
+        lock_guard<mutex> ul_ipv4_reserved(lock_ipv4_reserved);
+
         for (auto &iface : ipv4_iface) {
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
                   entry, addr))
             {
-                lock_guard<mutex> ul(lock);
-
                 nd_rn4_atype::iterator it;
                 if ((it = iface.second.longest_match(entry)) !=
                   iface.second.end())
@@ -694,8 +821,6 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
               entry, addr))
         {
-            lock_guard<mutex> ul(lock);
-
             nd_rn4_atype::iterator it;
             if ((it = ipv4_reserved.longest_match(entry)) !=
               ipv4_reserved.end())
@@ -709,13 +834,14 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         }
     }
     else if (addr.IsIPv6()) {
+        lock_guard<mutex> ul_ipv6_iface(lock_ipv6_iface);
+        lock_guard<mutex> ul_ipv6_reserved(lock_ipv6_reserved);
+
         for (auto &iface : ipv6_iface) {
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
                   entry, addr))
             {
-                lock_guard<mutex> ul(lock);
-
                 nd_rn6_atype::iterator it;
                 if ((it = iface.second.longest_match(entry)) !=
                   iface.second.end())
@@ -733,8 +859,6 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
               entry, addr))
         {
-            lock_guard<mutex> ul(lock);
-
             nd_rn6_atype::iterator it;
             if ((it = ipv6_reserved.longest_match(entry)) !=
               ipv6_reserved.end())
@@ -751,9 +875,10 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
 
 size_t ndAddrLookup::GetInterfaceAddresses(const string &iface,
   set<string> &result, sa_family_t family) {
-    lock_guard<mutex> ul(lock);
 
     if (family == AF_UNSPEC || family == AF_INET) {
+        lock_guard<mutex> ul(lock_ipv4_iface);
+
         auto rn = ipv4_iface.find(iface);
         if (rn == ipv4_iface.end()) return result.size();
 
@@ -764,6 +889,8 @@ size_t ndAddrLookup::GetInterfaceAddresses(const string &iface,
     }
 
     if (family == AF_UNSPEC || family == AF_INET6) {
+        lock_guard<mutex> ul(lock_ipv6_iface);
+
         auto rn = ipv6_iface.find(iface);
         if (rn == ipv6_iface.end()) return result.size();
 

@@ -406,8 +406,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "truncated packet", hdr_eth);
+            _ND_LOG_DISCARD(tag.c_str(),
+              "truncated packet");
 #endif
             return packet;
         }
@@ -429,8 +429,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        _ND_LOG_DISCARD_ETHER(tag.c_str(),
-          "unsupported datalink type", hdr_eth);
+        _ND_LOG_DISCARD(tag.c_str(),
+          "unsupported datalink type");
 #endif
         return packet;
     }
@@ -439,12 +439,18 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        _ND_LOG_DISCARD_ETHER(tag.c_str(),
-          "layer-2 length is beyond capture length", hdr_eth);
+        if (hdr_eth == nullptr) {
+            _ND_LOG_DISCARD(tag.c_str(),
+              "layer-2 length is beyond capture length");
+        }
+        else {
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "layer-2 length is beyond capture length", hdr_eth);
+        }
 #endif
     }
 
-    flow.vlan_id = 0;
+    flow.Reset();
 
     while (true) {
         if (type == ETHERTYPE_VLAN) {
@@ -518,10 +524,9 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                _ND_LOG_DISCARD(tag.c_str(),
                   "layer-2 + PPP length is beyond capture "
-                  "length",
-                  hdr_eth);
+                  "length");
 #endif
             }
 
@@ -532,8 +537,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                _ND_LOG_DISCARD_ETHER(tag.c_str(),
-                  "unsupported PPP protocol", hdr_eth);
+                _ND_LOG_DISCARD(tag.c_str(),
+                  "unsupported PPP protocol");
 #endif
                 return packet;
             }
@@ -544,10 +549,9 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                _ND_LOG_DISCARD(tag.c_str(),
                   "layer-2 + PPP length is beyond capture "
-                  "length",
-                  hdr_eth);
+                  "length");
 #endif
             }
         }
@@ -556,8 +560,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-            _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "PPPoE discovery protocol", hdr_eth);
+            _ND_LOG_DISCARD(tag.c_str(),
+              "PPPoE discovery protocol");
 #endif
             return packet;
         }
@@ -573,8 +577,14 @@ nd_process_ip:
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        _ND_LOG_DISCARD_ETHER(tag.c_str(),
-          "layer-2 + IP length is beyond capture length", hdr_eth);
+        if (hdr_eth == nullptr) {
+            _ND_LOG_DISCARD(tag.c_str(),
+              "layer-2 + IP length is beyond capture length");
+        }
+        else {
+            _ND_LOG_DISCARD_ETHER(tag.c_str(),
+              "layer-2 + IP length is beyond capture length", hdr_eth);
+        }
 #endif
     }
 
@@ -656,14 +666,6 @@ nd_process_ip:
             ndAddr::Create(flow.upper_addr,
               (const struct in_addr *)_ND_ADDROFF(hdr_ip,
                 struct ip, ip_dst));
-            if (dl_type == DLT_EN10MB) {
-                ndAddr::Create(flow.lower_mac,
-                  (const uint8_t *)hdr_eth->ether_shost,
-                  ETH_ALEN);
-                ndAddr::Create(flow.upper_mac,
-                  (const uint8_t *)hdr_eth->ether_dhost,
-                  ETH_ALEN);
-            }
         }
         else {
             ndAddr::Create(flow.lower_addr,
@@ -672,14 +674,6 @@ nd_process_ip:
             ndAddr::Create(flow.upper_addr,
               (const struct in_addr *)_ND_ADDROFF(hdr_ip,
                 struct ip, ip_src));
-            if (dl_type == DLT_EN10MB) {
-                ndAddr::Create(flow.lower_mac,
-                  (const uint8_t *)hdr_eth->ether_dhost,
-                  ETH_ALEN);
-                ndAddr::Create(flow.upper_mac,
-                  (const uint8_t *)hdr_eth->ether_shost,
-                  ETH_ALEN);
-            }
         }
 
         l4 = reinterpret_cast<const uint8_t *>(l3 + l3_len);
@@ -728,12 +722,6 @@ nd_process_ip:
             ndAddr::Create(flow.upper_addr,
               (const struct in6_addr *)_ND_ADDROFF(hdr_ip6,
                 struct ip6_hdr, ip6_dst));
-            if (dl_type == DLT_EN10MB) {
-                ndAddr::Create(flow.lower_mac,
-                  hdr_eth->ether_shost, ETH_ALEN);
-                ndAddr::Create(flow.upper_mac,
-                  hdr_eth->ether_dhost, ETH_ALEN);
-            }
         }
         else {
             ndAddr::Create(flow.lower_addr,
@@ -742,12 +730,6 @@ nd_process_ip:
             ndAddr::Create(flow.upper_addr,
               (const struct in6_addr *)_ND_ADDROFF(hdr_ip6,
                 struct ip6_hdr, ip6_src));
-            if (dl_type == DLT_EN10MB) {
-                ndAddr::Create(flow.lower_mac,
-                  hdr_eth->ether_dhost, ETH_ALEN);
-                ndAddr::Create(flow.upper_mac,
-                  hdr_eth->ether_shost, ETH_ALEN);
-            }
         }
     }
     else {
@@ -762,13 +744,52 @@ nd_process_ip:
         return packet;
     }
 
+    if (dl_type == DLT_EN10MB) {
+        if (ndCT_TYPE(
+            iface->capture_type.flags) != ndCaptureType::NFQ) {
+            ndAddr::Create(flow.lower_mac,
+              (addr_cmp < 0) ?
+                hdr_eth->ether_shost : hdr_eth->ether_dhost, ETH_ALEN);
+            ndAddr::Create(flow.upper_mac,
+              (addr_cmp < 0) ?
+                hdr_eth->ether_dhost : hdr_eth->ether_shost, ETH_ALEN);
+        }
+        else {
+            flow.lower_mac.Reset();
+            ndi.addr_lookup.LookupNeighbor(flow.lower_addr, flow.lower_mac);
+
+            flow.upper_mac.Reset();
+            ndi.addr_lookup.LookupNeighbor(flow.upper_addr, flow.upper_mac);
+
+            if (! flow.lower_mac.IsValid()) {
+                nd_dprintf("%s: lower MAC not found for IP: %s\n",
+                    tag.c_str(), flow.lower_addr.GetString().c_str()
+                );
+            }
+            if (! flow.upper_mac.IsValid()) {
+                nd_dprintf("%s: upper MAC not found for IP: %s\n",
+                    tag.c_str(), flow.upper_addr.GetString().c_str()
+                );
+            }
+
+            if ((! flow.lower_mac.IsValid() || ! flow.upper_mac.IsValid()) &&
+                ndFlagBoolean(
+                    packet->status, ndPacket::StatusFlags::NFQ_HWADDR)) {
+                ndAddr hwaddr;
+                ndAddr::Create(hwaddr, hdr_eth->ether_shost, ETH_ALEN);
+                nd_dprintf("%s: NFQ HWADDR: %s\n", tag.c_str(),
+                    hwaddr.GetString().c_str()
+                );
+            }
+        }
+    }
+
     if (l2_len + l3_len + l4_len > packet->caplen) {
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
         _ND_LOG_DISCARD_ETHER(tag.c_str(),
-          "layer-2 + layer-3 + layer-4 length is beyond "
-          "capture length",
+          "layer-2 + layer-3 + layer-4 length is beyond capture length",
           hdr_eth);
 #endif
         return packet;
@@ -1117,8 +1138,10 @@ nd_process_ip:
         stats.pkt.ip6_bytes += packet->length;
     }
 
-    nf->stats.total_packets++;
-    nf->stats.total_bytes += packet->length;
+    if (iface->conntrack_counters == false) {
+        nf->stats.total_packets++;
+        nf->stats.total_bytes += packet->length;
+    }
 
     if (addr_cmp < 0) {
         nf->stats.lower_packets++;

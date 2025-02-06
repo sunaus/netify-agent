@@ -184,25 +184,24 @@ public:
 
     friend std::ostream &
     operator<<(std::ostream &os, const ndLogFormat &f) {
-        using namespace std;
-        ios old_state(nullptr);
+        std::ios old_state(nullptr);
         old_state.copyfmt(os);
-        os << setw(f.width) << setprecision(f.precision);
+        os << std::setw(f.width) << std::setprecision(f.precision);
 
         switch (f.format) {
         case Format::BYTES:
             if (f.value >= 1099511627776.0f) {
                 os << (f.value / 1099511627776.0f)
-                   << setw(0) << " TiB";
+                   << std::setw(0) << " TiB";
             }
             else if (f.value >= 1073741824.0f) {
-                os << (f.value / 1073741824.0f) << setw(0) << " GiB";
+                os << (f.value / 1073741824.0f) << std::setw(0) << " GiB";
             }
             else if (f.value >= 1048576.0f) {
-                os << (f.value / 1048576.0f) << setw(0) << " MiB";
+                os << (f.value / 1048576.0f) << std::setw(0) << " MiB";
             }
             else if (f.value >= 1024.0f) {
-                os << (f.value / 1024.0f) << setw(0) << " KiB";
+                os << (f.value / 1024.0f) << std::setw(0) << " KiB";
             }
             else {
                 os << f.value;
@@ -212,16 +211,16 @@ public:
         case Format::PACKETS:
             if (f.value >= 1000000000000.0f) {
                 os << (f.value / 1000000000000.0f)
-                   << setw(0) << " TP";
+                   << std::setw(0) << " TP";
             }
             else if (f.value >= 1000000000.0f) {
-                os << (f.value / 1000000000.0f) << setw(0) << " GP";
+                os << (f.value / 1000000000.0f) << std::setw(0) << " GP";
             }
             else if (f.value >= 1000000.0f) {
-                os << (f.value / 1000000.0f) << setw(0) << " MP";
+                os << (f.value / 1000000.0f) << std::setw(0) << " MP";
             }
             else if (f.value >= 1000.0f) {
-                os << (f.value / 1000.0f) << setw(0) << " KP";
+                os << (f.value / 1000.0f) << std::setw(0) << " KP";
             }
             else {
                 os << f.value;
@@ -591,3 +590,20 @@ struct ndEnumHasher {
         return ss_hash;
     }
 };
+
+struct ndArrayHasher {
+    template <class T, size_t N>
+    std::size_t operator()(const std::array<T, N>& a) const {
+        std::hash<T> hasher;
+        std::size_t ss_hash = 0;
+        for (const auto& e : a) {
+            ss_hash ^= hasher(e) + 0x9e3779b9 + (ss_hash << 6) + (ss_hash >> 2);
+        }
+
+        return ss_hash;
+    }
+};
+
+#if defined(__linux__)
+int nd_set_netns(const std::string &ns);
+#endif

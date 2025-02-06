@@ -162,6 +162,12 @@ public:
     uint16_t GetPort(bool byte_swap = true) const;
     bool SetPort(uint16_t port);
 
+    inline void Reset(void) {
+        addr.ss.ss_family = AF_UNSPEC;
+        cached_addr.clear();
+        cached_flags = MakeFlags::NONE;
+    }
+
     inline bool IsValid(void) const {
         return (addr.ss.ss_family != AF_UNSPEC);
     }
@@ -700,6 +706,14 @@ public:
         return RemoveAddress(ndAddr(addr), ifname);
     }
 
+    bool AddLinkAddress(unsigned index, const ndAddr &addr);
+    bool RemoveLinkAddress(unsigned index);
+    bool LookupLinkAddress(unsigned index, ndAddr &addr);
+
+    bool AddNeighbor(const ndAddr &addr, const ndAddr &lladdr);
+    bool RemoveNeighbor(const ndAddr &addr);
+    bool LookupNeighbor(const ndAddr &addr, ndAddr &lladdr);
+
     void Classify(ndAddr::Type &type, const ndAddr &addr);
     inline void
     Classify(ndAddr::Type &type, const std::string &addr) {
@@ -710,15 +724,27 @@ public:
       std::set<std::string> &result, sa_family_t family = AF_UNSPEC);
 
 protected:
-    mutable std::mutex lock;
-
+    mutable std::mutex lock_ether_reserved;
     std::unordered_map<std::string, ndAddr::Type> ether_reserved;
 
+    mutable std::mutex lock_ipv4_reserved;
     nd_rn4_atype ipv4_reserved;
+    mutable std::mutex lock_ipv6_reserved;
     nd_rn6_atype ipv6_reserved;
 
+    mutable std::mutex lock_ipv4_iface;
     std::unordered_map<std::string, nd_rn4_atype> ipv4_iface;
+    mutable std::mutex lock_ipv6_iface;
     std::unordered_map<std::string, nd_rn6_atype> ipv6_iface;
+
+    mutable std::mutex lock_lla_iface;
+    std::unordered_map<
+        unsigned, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> lla_iface;
+
+    mutable std::mutex lock_neighbors;
+    typedef std::unordered_map<
+        ndAddr, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> neighbor_map;
+    neighbor_map neighbors;
 };
 
 typedef std::unordered_set<ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceAddrs;
@@ -816,12 +842,12 @@ public:
         case ndCaptureType::PCAP:
             config_pcap = iface.config_pcap;
             break;
-#if defined(_ND_ENABLE_TPACKETV3)
+#ifdef _ND_ENABLE_TPACKETV3
         case ndCaptureType::TPV3:
             config_tpv3 = iface.config_tpv3;
             break;
 #endif
-#if defined(_ND_ENABLE_NFQUEUE)
+#ifdef _ND_ENABLE_NFQUEUE
         case ndCaptureType::NFQ:
             config_nfq = iface.config_nfq;
             break;
@@ -939,15 +965,24 @@ public:
 
     inline void SetConfig(const nd_config_pcap *pcap) {
         config_pcap = *pcap;
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        conntrack_counters = pcap->conntrack_counters;
+#endif
     }
-#if defined(_ND_ENABLE_TPACKETV3)
+#ifdef _ND_ENABLE_TPACKETV3
     inline void SetConfig(const nd_config_tpv3 *tpv3) {
         config_tpv3 = *tpv3;
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        conntrack_counters = tpv3->conntrack_counters;
+#endif
     }
 #endif
-#if defined(_ND_ENABLE_NFQUEUE)
+#ifdef _ND_ENABLE_NFQUEUE
     inline void SetConfig(const nd_config_nfq *nfq) {
         config_nfq = *nfq;
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        conntrack_counters = nfq->conntrack_counters;
+#endif
     }
 #endif
 
@@ -961,11 +996,11 @@ public:
         case ndCaptureType::PCAP:
         case ndCaptureType::PCAP_OFFLINE:
             return (config_pcap == i.config_pcap);
-#if defined(_ND_ENABLE_TPACKETV3)
+#ifdef _ND_ENABLE_TPACKETV3
         case ndCaptureType::TPV3:
             return (config_tpv3 == i.config_tpv3);
 #endif
-#if defined(_ND_ENABLE_NFQUEUE)
+#ifdef _ND_ENABLE_NFQUEUE
         case ndCaptureType::NFQ:
             return (config_nfq == i.config_nfq);
 #endif
@@ -980,13 +1015,15 @@ public:
     ndInterfaceRole role;
 
     nd_config_pcap config_pcap;
-#if defined(_ND_ENABLE_TPACKETV3)
+#ifdef _ND_ENABLE_TPACKETV3
     nd_config_tpv3 config_tpv3;
 #endif
-#if defined(_ND_ENABLE_NFQUEUE)
+#ifdef _ND_ENABLE_NFQUEUE
     nd_config_nfq config_nfq;
 #endif
-
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+    bool conntrack_counters = { false };
+#endif
 protected:
     ndInterfaceAddr addrs;
     ndInterfaceEndpoints endpoints[2];

@@ -49,10 +49,10 @@ class ndDetectionThread : public ndThread, public ndInstanceClient
 public:
     ndDetectionThread(int16_t cpu, const std::string &tag,
 #ifdef _ND_ENABLE_NETLINK
-      ndNetlink *netlink,
-#endif
+      ndNetlinkRouteThread *netlink,
 #ifdef _ND_ENABLE_CONNTRACK
-      ndConntrackThread *thread_conntrack,
+      ndNetlinkConntrackThread *thread_conntrack,
+#endif
 #endif
       ndDNSHintCache *dhc = NULL,
       ndFlowHashCache *fhc = NULL, uint8_t private_addr = 0);
@@ -75,10 +75,10 @@ public:
 
 protected:
 #ifdef _ND_ENABLE_NETLINK
-    ndNetlink *netlink;
-#endif
+    ndNetlinkRouteThread *thread_netlink;
 #ifdef _ND_ENABLE_CONNTRACK
-    ndConntrackThread *thread_conntrack;
+    ndNetlinkConntrackThread *thread_conntrack;
+#endif
 #endif
     struct ndpi_detection_module_struct *ndpi;
 

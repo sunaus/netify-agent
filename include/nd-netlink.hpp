@@ -1,5 +1,5 @@
 // Netify Agent
-// Copyright (C) 2015-2024 eGloo Incorporated
+// Copyright (C) 2015-2025 eGloo Incorporated
 // <http://www.egloo.ca>
 //
 // This program is free software: you can redistribute it
@@ -20,35 +20,52 @@
 
 #pragma once
 
-#include <linux/netlink.h>
-
 #include <array>
-#include <string>
+#include <cstdint>
+
+#include <libmnl/libmnl.h>
+#include <linux/netfilter/nfnetlink.h>
 
 #include "nd-addr.hpp"
 
-constexpr size_t _ND_NETLINK_BUFSIZ = 4096;
+#define _ND_NLEX_CHECK_ATTR(tag, attr) \
+    if (attr == nullptr) { \
+        throw ndException("%s: required attribute not found: " #attr, tag); \
+    }
+#define _ND_NLRT_CHECK_ATTR(tag, attr, rtn) \
+    if (attr == nullptr) { \
+        nd_dprintf("%s: required attribute not found: " #attr "\n", tag); \
+        return rtn; \
+    }
 
 class ndNetlink
 {
 public:
-    ndNetlink(void);
-    virtual ~ndNetlink();
+    ndNetlink(int bus);
+    ndNetlink(int bus, unsigned int groups);
 
-    int GetDescriptor(void) { return nd; }
-    void Refresh(void);
-    bool ProcessEvent(void);
+    virtual ~ndNetlink() {
+        if (socket_nl != nullptr) {
+            mnl_socket_close(socket_nl);
+            socket_nl = nullptr;
+        }
+    }
+
+    inline int GetDescriptor(void) {
+        if (socket_nl != nullptr)
+            return mnl_socket_get_fd(socket_nl);
+        return -1;
+    }
+
+    virtual int ProcessMessage(const struct nlmsghdr *nlh) = 0;
+
+    bool Recv(void);
 
 protected:
-    bool CopyAddress(sa_family_t family, ndAddr &dst,
-      void *src, uint8_t prefix = 0);
+    bool dump = { false };
+    struct mnl_socket *socket_nl = { nullptr };
+    std::array<uint8_t, MNL_SOCKET_DUMP_SIZE> socket_buffer = { 0 };
+    unsigned int port_id = { 0 }, seq_id = { 0 };
 
-    bool AddRemoveNetwork(struct nlmsghdr *nlh, bool add = true);
-
-    bool AddRemoveAddress(struct nlmsghdr *nlh, bool add = true);
-
-    int nd;
-    unsigned seq;
-    struct sockaddr_nl sa;
-    std::array<uint8_t, _ND_NETLINK_BUFSIZ> buffer;
+    bool Send(nlmsghdr *nlh);
 };
