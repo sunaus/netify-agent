@@ -249,62 +249,9 @@ public:
         compare_flags = flags;
     }
 
-    inline bool operator==(const ndAddr &a) const {
-        if (a.addr.ss.ss_family != addr.ss.ss_family)
-            return false;
-        if (ndFlagBoolean(compare_flags, CompareFlags::PREFIX) &&
-          a.prefix != prefix)
-            return false;
+    int Compare(const ndAddr &) const;
 
-        switch (addr.ss.ss_family) {
-#if defined(__linux__)
-        case AF_PACKET:
-            if (! ndFlagBoolean(compare_flags, CompareFlags::ADDR))
-                return true;
-            return (memcmp(&addr.ll, &a.addr.ll,
-                      sizeof(struct sockaddr_ll)) == 0);
-#elif defined(__FreeBSD__)
-        case AF_LINK:
-            if (! ndFlagBoolean(compare_flags, CompareFlags::ADDR))
-                return true;
-            return (memcmp(&addr.dl, &a.addr.dl,
-                      sizeof(struct sockaddr_dl)) == 0);
-#endif
-        case AF_INET:
-            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
-              (ndFlagBoolean(compare_flags, CompareFlags::PORT)))
-            {
-                return (memcmp(&addr.in, &a.addr.in,
-                          sizeof(struct sockaddr_in)) == 0);
-            }
-            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
-              memcmp(&addr.in.sin_addr, &a.addr.in.sin_addr,
-                sizeof(struct in_addr)) == 0)
-                return true;
-            if (ndFlagBoolean(compare_flags, CompareFlags::PORT) &&
-              addr.in.sin_port == a.addr.in.sin_port)
-                return true;
-            break;
-        case AF_INET6:
-            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
-              (ndFlagBoolean(compare_flags, CompareFlags::PORT)))
-            {
-                return (memcmp(&addr.in6, &a.addr.in6,
-                          sizeof(struct sockaddr_in6)) == 0);
-            }
-            if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
-              memcmp(&addr.in6.sin6_addr,
-                &a.addr.in6.sin6_addr,
-                sizeof(struct in6_addr)) == 0)
-                return true;
-            if (ndFlagBoolean(compare_flags, CompareFlags::PORT) &&
-              addr.in6.sin6_port == a.addr.in6.sin6_port)
-                return true;
-            break;
-        }
-        return false;
-    }
-
+    bool operator==(const ndAddr &a) const;
     inline bool operator!=(const ndAddr &a) const {
         return ! (a == *this);
     }
@@ -738,8 +685,7 @@ protected:
     std::unordered_map<std::string, nd_rn6_atype> ipv6_iface;
 
     mutable std::mutex lock_lla_iface;
-    std::unordered_map<
-        unsigned, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> lla_iface;
+    std::unordered_map<unsigned, ndAddr> lla_iface;
 
     mutable std::mutex lock_neighbors;
     typedef std::unordered_map<

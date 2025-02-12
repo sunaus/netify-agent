@@ -264,6 +264,8 @@ const uint8_t *ndAddr::GetAddress(void) const {
     if (IsIPv4()) return (const uint8_t *)&addr.in.sin_addr;
     if (IsIPv6())
         return (const uint8_t *)&addr.in6.sin6_addr;
+    if (IsEthernet())
+        return (const uint8_t *)&addr.ll.sll_addr[0];
 
     return nullptr;
 }
@@ -272,6 +274,7 @@ size_t ndAddr::GetAddressSize(void) const {
     if (! IsValid()) return 0;
     if (IsIPv4()) return sizeof(struct in_addr);
     if (IsIPv6()) return sizeof(struct in6_addr);
+    if (IsEthernet()) return ETH_ALEN;
 
     return 0;
 }
@@ -424,6 +427,82 @@ bool ndAddr::MakeString(const ndAddr &a, string &result,
     }
 
     return false;
+}
+
+bool ndAddr::operator==(const ndAddr &a) const {
+    if (a.addr.ss.ss_family != addr.ss.ss_family)
+        return false;
+    if (ndFlagBoolean(compare_flags, CompareFlags::PREFIX) &&
+      a.prefix != prefix)
+        return false;
+
+    switch (addr.ss.ss_family) {
+#if defined(__linux__)
+    case AF_PACKET:
+        if (! ndFlagBoolean(compare_flags, CompareFlags::ADDR))
+            return true;
+        return (memcmp(&addr.ll, &a.addr.ll,
+                  sizeof(struct sockaddr_ll)) == 0);
+#elif defined(__FreeBSD__)
+    case AF_LINK:
+        if (! ndFlagBoolean(compare_flags, CompareFlags::ADDR))
+            return true;
+        return (memcmp(&addr.dl, &a.addr.dl,
+                  sizeof(struct sockaddr_dl)) == 0);
+#endif
+    case AF_INET:
+        if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
+          (ndFlagBoolean(compare_flags, CompareFlags::PORT)))
+        {
+            return (memcmp(&addr.in, &a.addr.in,
+                      sizeof(struct sockaddr_in)) == 0);
+        }
+        if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
+          memcmp(&addr.in.sin_addr, &a.addr.in.sin_addr,
+            sizeof(struct in_addr)) == 0)
+            return true;
+        if (ndFlagBoolean(compare_flags, CompareFlags::PORT) &&
+          addr.in.sin_port == a.addr.in.sin_port)
+            return true;
+        break;
+    case AF_INET6:
+        if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
+          (ndFlagBoolean(compare_flags, CompareFlags::PORT)))
+        {
+            return (memcmp(&addr.in6, &a.addr.in6,
+                      sizeof(struct sockaddr_in6)) == 0);
+        }
+        if (ndFlagBoolean(compare_flags, CompareFlags::ADDR) &&
+          memcmp(&addr.in6.sin6_addr,
+            &a.addr.in6.sin6_addr,
+            sizeof(struct in6_addr)) == 0)
+            return true;
+        if (ndFlagBoolean(compare_flags, CompareFlags::PORT) &&
+          addr.in6.sin6_port == a.addr.in6.sin6_port)
+            return true;
+        break;
+    }
+    return false;
+}
+
+int ndAddr::Compare(const ndAddr &a) const {
+    switch (addr.ss.ss_family) {
+#if defined(__linux__)
+    case AF_PACKET:
+        return memcmp(&addr.ll, &a.addr.ll, sizeof(struct sockaddr_ll));
+#elif defined(__FreeBSD__)
+    case AF_LINK:
+        return memcmp(&addr.dl, &a.addr.dl, sizeof(struct sockaddr_dl));
+#endif
+    case AF_INET:
+        return memcmp(
+            &addr.in.sin_addr, &a.addr.in.sin_addr, sizeof(struct in_addr));
+    case AF_INET6:
+        return memcmp(
+            &addr.in6.sin6_addr, &a.addr.in6.sin6_addr, sizeof(struct in6_addr));
+        break;
+    }
+    return 0;
 }
 
 ndAddrLookup::ndAddrLookup() {
@@ -640,8 +719,6 @@ bool ndAddrLookup::RemoveLinkAddress(unsigned index) {
 }
 
 bool ndAddrLookup::LookupLinkAddress(unsigned index, ndAddr &addr) {
-    if (! (addr.IsValid() && addr.IsEthernet())) return false;
-
     lock_guard<mutex> ul(lock_lla_iface);
 
     auto result = lla_iface.find(index);

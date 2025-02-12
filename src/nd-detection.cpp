@@ -392,8 +392,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             SetDetectedProtocol(entry, id);
 #ifdef _ND_LOG_DEBUG_STUN
             nd_dprintf(
-              "%s: STUN[%lu]: refined detected protocol: "
-              "%hu\n",
+              "%s: STUN[%lu]: refined detected protocol: %hu\n",
               tag.c_str(),
               ndEF->stats.detection_packets.load(),
               ndEF->detected_protocol);

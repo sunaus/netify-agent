@@ -33,8 +33,6 @@
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
-constexpr time_t _ND_CT_FLOW_TTL = 900;
-
 class ndConntrackFlow;
 
 class ndNetlinkConntrackThread : public ndThread, public ndNetlink
@@ -50,10 +48,9 @@ public:
     void Dump(bool zero_counters = false);
 
     void UpdateFlow(nd_flow_ptr &flow);
+#if defined(_ND_ENABLE_CONNTRACK_COUNTERS)
     void UpdateFlowStats(nd_flow_ptr &flow, const struct timeval &stamp) const;
-
-    void PurgeFlows(void);
-
+#endif
     typedef struct {
         uint32_t created = { 0 };
         uint32_t updated = { 0 };
@@ -68,8 +65,8 @@ public:
         std::lock_guard<std::mutex> lg(map_lock);
 
         stats = this->stats;
-        stats.total_ids = (uint32_t)id_digests.size();
-        stats.total_flows = (uint32_t)flows.size();
+        stats.total_ids = (uint32_t)id_flows.size();
+        stats.total_flows = (uint32_t)digest_flows.size();
 
         this->stats.lookups = this->stats.matches = 0;
         this->stats.created = this->stats.updated = this->stats.destroyed = 0;
@@ -85,21 +82,22 @@ public:
         );
     }
 
-    typedef std::array<struct nlattr *, CTA_MAX + 1> Attributes;
+    typedef std::array<struct nlattr *, CTA_MAX + 1> Attrs;
 
 protected:
-    bool NewFlow(uint32_t id, const Attributes &attrs);
-    bool UpdateFlow(uint32_t id, const Attributes &attrs);
+    bool NewFlow(uint32_t id, const Attrs &attrs);
+    bool UpdateFlow(uint32_t id, const Attrs &attrs);
     void DestroyFlow(uint32_t id);
 
     mutable std::mutex map_lock;
 
-    typedef std::unordered_map<uint32_t, ndDigest> IdMap;
+    typedef std::unordered_map<uint32_t,
+        std::shared_ptr<ndConntrackFlow>> IdFlowMap;
     typedef std::unordered_map<ndDigest,
-        std::unique_ptr<ndConntrackFlow>, ndArrayHasher> FlowMap;
+        std::shared_ptr<ndConntrackFlow>, ndArrayHasher> DigestFlowMap;
 
-    IdMap id_digests;
-    FlowMap flows;
+    IdFlowMap id_flows;
+    DigestFlowMap digest_flows;
 
     Stats stats;
 };
@@ -107,26 +105,21 @@ protected:
 class ndConntrackFlow
 {
 public:
-    enum class Direction : uint8_t { SRC, DST };
+    enum class Origin : uint8_t { ORIG, REPLY, MAX };
+    enum class Direction : uint8_t { SRC, DST, MAX };
 
-    typedef std::pair<ndConntrackFlow *, void *> Attributes;
-    typedef std::array<struct nlattr *, CTA_IP_MAX + 1> AttributesIP;
-    typedef std::array<struct nlattr *, CTA_PROTO_MAX + 1> AttributesProto;
-    typedef std::array<struct nlattr *, CTA_TUPLE_MAX + 1> AttributesTuple;
-    typedef std::array<struct nlattr *, CTA_COUNTERS_MAX + 1> AttributesCounters;
+    typedef std::pair<ndConntrackFlow *, void *> Attrs;
+    typedef std::array<struct nlattr *, CTA_IP_MAX + 1> AttrsIP;
+    typedef std::array<struct nlattr *, CTA_PROTO_MAX + 1> AttrsProto;
+    typedef std::array<struct nlattr *, CTA_TUPLE_MAX + 1> AttrsTuple;
+    typedef std::array<struct nlattr *, CTA_COUNTERS_MAX + 1> AttrsCounters;
 
     ndConntrackFlow(uint32_t id,
-        const ndNetlinkConntrackThread::Attributes &attr);
+        const ndNetlinkConntrackThread::Attrs &attr);
 
-    void Update(const ndNetlinkConntrackThread::Attributes &attr);
+    void Update(const ndNetlinkConntrackThread::Attrs &attr);
 
     inline uint32_t GetId(void) { return id; }
-
-    inline bool HasExpired(void) {
-        return (updated_at + _ND_CT_FLOW_TTL <= nd_time_monotonic()) ?
-          true :
-          false;
-    }
 
     void Print(void);
 
@@ -140,7 +133,7 @@ protected:
     uint32_t mark = { 0 };
 #endif
     time_t updated_at = { 0 };
-    ndDigest digest;
+    ndDigest digest[2] = { { 0 } };
     sa_family_t l3_proto = { 0 };
     uint8_t l4_proto = { 0 };
     ndAddr orig_addr[2];
@@ -150,4 +143,3 @@ protected:
     uint64_t bytes[2] = { 0, 0 };
 #endif
 };
-

@@ -137,6 +137,9 @@ using namespace std;
 // Enable to log discarded flows
 // #define _ND_LOG_FLOW_DISCARD 1
 
+// Enable to log NFQ debug messages
+// #define _ND_LOG_NFQ_DEBUG 1
+
 #define _ND_LOG_DISCARD(tag, reason) \
     nd_dprintf("%s: discard: %s\n", tag, reason);
 
@@ -747,6 +750,7 @@ nd_process_ip:
     if (dl_type == DLT_EN10MB) {
         if (ndCT_TYPE(
             iface->capture_type.flags) != ndCaptureType::NFQ) {
+            // Assign upper/lower MACs for all by NFQ capture sources...
             ndAddr::Create(flow.lower_mac,
               (addr_cmp < 0) ?
                 hdr_eth->ether_shost : hdr_eth->ether_dhost, ETH_ALEN);
@@ -755,32 +759,59 @@ nd_process_ip:
                 hdr_eth->ether_dhost : hdr_eth->ether_shost, ETH_ALEN);
         }
         else {
-            flow.lower_mac.Reset();
-            ndi.addr_lookup.LookupNeighbor(flow.lower_addr, flow.lower_mac);
+            // NFQ: If we have a source MAC, use it.
+            if (ndFlagBoolean(packet->status,
+                ndPacket::StatusFlags::NFQ_HWADDR_SRC)) {
+                ndAddr::Create(
+                    (addr_cmp < 0) ? flow.lower_mac : flow.upper_mac,
+                    hdr_eth->ether_shost, ETH_ALEN);
+            }
+            else {
+                // No source MAC, try to find one by looking up the IP in
+                // the ARP cache.
+                if (addr_cmp < 0) {
+                    flow.lower_mac.Reset();
+                    ndi.addr_lookup.LookupNeighbor(flow.lower_addr, flow.lower_mac);
+                }
+                else {
+                    flow.upper_mac.Reset();
+                    ndi.addr_lookup.LookupNeighbor(flow.upper_addr, flow.upper_mac);
+                }
+            }
 
-            flow.upper_mac.Reset();
-            ndi.addr_lookup.LookupNeighbor(flow.upper_addr, flow.upper_mac);
+            // If we have a destination MAC, initially assign it...
+            if (ndFlagBoolean(packet->status,
+                ndPacket::StatusFlags::NFQ_HWADDR_DST)) {
+                ndAddr::Create(
+                    (addr_cmp < 0) ? flow.upper_mac : flow.lower_mac,
+                    hdr_eth->ether_dhost, ETH_ALEN);
+            }
 
+            // Now try to refine it by looking up the destination IP in
+            // the ARP cache.
+            if (addr_cmp < 0) {
+                ndAddr addr;
+                if (ndi.addr_lookup.LookupNeighbor(flow.upper_addr, addr))
+                    flow.upper_mac = addr;
+            }
+            else {
+                ndAddr addr;
+                if (ndi.addr_lookup.LookupNeighbor(flow.lower_addr, addr))
+                    flow.lower_mac = addr;
+            }
+#ifdef _ND_LOG_NFQ_DEBUG
             if (! flow.lower_mac.IsValid()) {
                 nd_dprintf("%s: lower MAC not found for IP: %s\n",
                     tag.c_str(), flow.lower_addr.GetString().c_str()
                 );
             }
+
             if (! flow.upper_mac.IsValid()) {
                 nd_dprintf("%s: upper MAC not found for IP: %s\n",
                     tag.c_str(), flow.upper_addr.GetString().c_str()
                 );
             }
-
-            if ((! flow.lower_mac.IsValid() || ! flow.upper_mac.IsValid()) &&
-                ndFlagBoolean(
-                    packet->status, ndPacket::StatusFlags::NFQ_HWADDR)) {
-                ndAddr hwaddr;
-                ndAddr::Create(hwaddr, hdr_eth->ether_shost, ETH_ALEN);
-                nd_dprintf("%s: NFQ HWADDR: %s\n", tag.c_str(),
-                    hwaddr.GetString().c_str()
-                );
-            }
+#endif
         }
     }
 

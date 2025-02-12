@@ -866,22 +866,11 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
             }
             break;
         case ndCaptureType::NFQ:
-            p = iface.find_first_of("0123456789");
-            if (p == string::npos ||
-              strncasecmp(iface.c_str(), "nfq", 3))
-            {
-                fprintf(stderr,
-                  "Invalid NFQUEUE identifier: %s\n",
-                  iface.c_str());
-                return false;
-            }
             config = static_cast<void *>(new nd_config_nfq);
             if (! LoadCaptureSettings(r, s, type, config)) {
                 delete static_cast<nd_config_nfq *>(config);
                 return false;
             }
-            static_cast<nd_config_nfq *>(config)->queue_id =
-              (unsigned)strtol(iface.substr(p).c_str(), NULL, 0);
             break;
         default: break;
         }
@@ -1103,6 +1092,8 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
     }
     else if (ndCT_TYPE(type.flags) == ndCaptureType::NFQ) {
         nd_config_nfq *nfq = static_cast<nd_config_nfq *>(config);
+        nfq->queue_id = (unsigned)r->GetInteger(section,
+          "queue_id", 0);
         nfq->instances = (unsigned)r->GetInteger(section,
           "queue_instances", 1);
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS

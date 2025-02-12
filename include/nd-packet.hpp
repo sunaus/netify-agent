@@ -38,7 +38,8 @@ public:
         FILTERED = (1 << 2),
         VLAN_TAG_RESTORED = (1 << 3),
         LOCKED = (1 << 4),
-        NFQ_HWADDR = (1 << 5),
+        NFQ_HWADDR_SRC = (1 << 5),
+        NFQ_HWADDR_DST = (1 << 6),
     };
 
     ndPacket(const ndFlags<StatusFlags> &status,

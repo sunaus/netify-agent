@@ -34,9 +34,9 @@
 // Enable Conntrack debug logging
 //#define _ND_DEBUG_LOG   1
 
-constexpr const char *TAG = { "nd-netlink-ct" };
-
 using namespace std;
+
+constexpr const char *TAG = { "nd-netlink-ct" };
 
 static int ndNetlinkConntrack_attr_parse(
     const struct nlattr *attr, void *data) {
@@ -279,7 +279,7 @@ int ndNetlinkConntrackThread::ProcessMessage(const struct nlmsghdr *nlh) {
         NLMSG_HDRLEN, NLMSG_LENGTH(nlh->nlmsg_len),
         nlh->nlmsg_flags, nlh->nlmsg_seq, nlh->nlmsg_pid, nfg->nfgen_family);
 #endif
-    Attributes attrs = { 0 };
+    Attrs attrs = { 0 };
     if (mnl_attr_parse(nlh, sizeof(*nfg),
         ndNetlinkConntrack_attr_parse, attrs.data()) != MNL_CB_OK) {
         return MNL_CB_OK;
@@ -328,80 +328,62 @@ int ndNetlinkConntrackThread::ProcessMessage(const struct nlmsghdr *nlh) {
     }
     catch (exception &e) {
         nd_printf("%s: Exception: %s.\n", TAG, e.what());
-        //return MNL_CB_STOP;
     }
 
     return MNL_CB_OK;
 }
 
-bool ndNetlinkConntrackThread::NewFlow(uint32_t id, const Attributes &attrs) {
+bool ndNetlinkConntrackThread::NewFlow(uint32_t id, const Attrs &attrs) {
 #ifdef _ND_DEBUG_LOG
     nd_dprintf("%s: %lu: new flow.\n", TAG, id);
 #endif
     lock_guard<mutex> lg(map_lock);
 
-    auto id_digest = id_digests.find(id);
-    if (id_digest != id_digests.end()) {
+    auto id_flow = id_flows.find(id);
+    if (id_flow != id_flows.end()) {
 #ifdef _ND_DEBUG_LOG
-        nd_dprintf(
-            "%s: %lu: ID found in map.\n",
-            TAG, id);
+        nd_dprintf("%s: %lu: ID found in map.\n", TAG, id);
 #endif
         return false;
     }
 
-    unique_ptr<ndConntrackFlow> flow(new ndConntrackFlow(id, attrs));
-#ifdef _ND_DEBUG_LOG
-    flow->Print();
-#endif
-    auto flow_iter = flows.find(flow->digest);
-    if (flow_iter != flows.end()) {
-#ifdef _ND_DEBUG_LOG
-        flow_iter->second->Print();
-#endif
-        flows.erase(flow_iter);
-    }
+    shared_ptr<ndConntrackFlow> flow = make_shared<ndConntrackFlow>(id, attrs);
 
-    auto id_digests_insert = id_digests.insert(make_pair(id, flow->digest));
-    if (! id_digests_insert.second)
-        throw ndException("duplicate flow ID on insert");
+    auto orig_digest_flow = digest_flows.insert(
+        make_pair(
+            flow->digest[ndEnumCast(ndConntrackFlow::Origin, ORIG)], flow));
 
-    auto flows_insert = flows.insert(
-        make_pair(flow->digest, std::move(flow))
-    );
-    if (! flows_insert.second) {
-        id_digests.erase(id_digests_insert.first);
-        throw ndException("duplicate flow digest on insert");
-    }
+    if (orig_digest_flow.second == false)
+        throw ndException("ORIG flow digest exists");
+
+    // XXX: It's OK if this fails on duplicate entries...
+    // All non-NAT flows will have the same reply hash.
+    digest_flows.insert(
+        make_pair(
+            flow->digest[ndEnumCast(ndConntrackFlow::Origin, REPLY)], flow));
+
+    auto id_flow_insert = id_flows.insert(make_pair(id, flow));
+
+    if (id_flow_insert.second == false)
+        throw ndException("ID flow exists");
 
     stats.created++;
 
     return true;
 }
 
-bool ndNetlinkConntrackThread::UpdateFlow(uint32_t id, const Attributes &attrs) {
+bool ndNetlinkConntrackThread::UpdateFlow(uint32_t id, const Attrs &attrs) {
 #ifdef _ND_DEBUG_LOG
     nd_dprintf("%s: %lu: update flow\n", TAG, id);
 #endif
     lock_guard<mutex> lg(map_lock);
 
-    auto id_digest = id_digests.find(id);
-    if (id_digest == id_digests.end()) return false;
+    auto id_flow = id_flows.find(id);
+    if (id_flow == id_flows.end()) return false;
 
-    auto flow_iter = flows.find(id_digest->second);
-    if (flow_iter == flows.end()) {
-#ifdef _ND_DEBUG_LOG
-        nd_dprintf(
-          "%s: %lu: digest not found in flow map.\n",
-          TAG, id);
-#endif
-        id_digests.erase(id_digest);
-        return false;
-    }
+    id_flow->second->Update(attrs);
 
-    auto flow = *flow_iter->second;
-
-    flow.Update(attrs);
+    // TODO: Verify that the hashes haven't changed?
 
     stats.updated++;
 
@@ -414,13 +396,21 @@ void ndNetlinkConntrackThread::DestroyFlow(uint32_t id) {
 #endif
     lock_guard<mutex> lg(map_lock);
 
-    auto id_digest = id_digests.find(id);
-    if (id_digest != id_digests.end()) {
-        auto flow_iter = flows.find(id_digest->second);
-        if (flow_iter != flows.end())
-            flows.erase(flow_iter);
+    auto id_flow = id_flows.find(id);
+    if (id_flow != id_flows.end()) {
+        auto digest_flow = digest_flows.find(
+            id_flow->second->digest[ndEnumCast(ndConntrackFlow::Origin, ORIG)]
+        );
+        if (digest_flow != digest_flows.end())
+            digest_flows.erase(digest_flow);
 
-        id_digests.erase(id_digest);
+        digest_flow = digest_flows.find(
+            id_flow->second->digest[ndEnumCast(ndConntrackFlow::Origin, REPLY)]
+        );
+        if (digest_flow != digest_flows.end())
+            digest_flows.erase(digest_flow);
+
+        id_flows.erase(id_flow);
 
         stats.destroyed++;
     }
@@ -432,17 +422,15 @@ void ndNetlinkConntrackThread::Dump(bool zero_counters) {
 }
 
 void ndNetlinkConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
-    sa_family_t family;
-    struct sockaddr_in *sa_orig_src = nullptr, *sa_orig_dst = nullptr;
-    struct sockaddr_in *sa_reply_src = nullptr, *sa_reply_dst = nullptr;
-    struct sockaddr_in6 *sa6_orig_src = nullptr, *sa6_orig_dst = nullptr;
-    struct sockaddr_in6 *sa6_reply_src = nullptr, *sa6_reply_dst = nullptr;
-
-    if (flow->ip_version == 4) family = AF_INET;
-    else family = AF_INET6;
 
     sha1 ctx;
     sha1_init(&ctx);
+
+    sa_family_t family;
+    switch (flow->ip_version) {
+    case 4: family = AF_INET; break;
+    default: family = AF_INET6; break;
+    }
 
     sha1_write(&ctx, (const char *)&family, sizeof(sa_family_t));
     sha1_write(&ctx, (const char *)&flow->ip_protocol, sizeof(uint8_t));
@@ -450,7 +438,7 @@ void ndNetlinkConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
     sha1_write(&ctx, flow->lower_addr.GetAddress(),
       flow->lower_addr.GetAddressSize());
     sha1_write(&ctx, flow->upper_addr.GetAddress(),
-      flow->upper_addr.GetAddressSize());
+      flow->lower_addr.GetAddressSize());
 
     uint16_t port = flow->lower_addr.GetPort(false);
     sha1_write(&ctx, (const char *)&port, sizeof(uint16_t));
@@ -463,96 +451,79 @@ void ndNetlinkConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
     lock_guard<mutex> lg(map_lock);
 
     stats.lookups++;
-    auto flow_iter = flows.find(digest);
+    auto digest_flow = digest_flows.find(digest);
 
-    if (flow_iter != flows.end()) {
-        if (! flow_iter->second->reply_addr[ndEnumCast(
-            ndConntrackFlow::Direction, SRC)].IsValid() ||
-            ! flow_iter->second->reply_addr[ndEnumCast(
-            ndConntrackFlow::Direction, DST)].IsValid()) {
+    if (digest_flow != digest_flows.end()) {
+        if (! digest_flow->second->reply_addr[
+                static_cast<int>(ndConntrackFlow::Direction::SRC)].IsValid() ||
+            ! digest_flow->second->reply_addr[
+                static_cast<int>(ndConntrackFlow::Direction::DST)].IsValid()) {
             throw ndException("reply SRC or DST invalid");
         }
 
         stats.matches++;
-        auto ct_flow = *flow_iter->second;
+        auto ct_flow = *digest_flow->second;
 
         ct_flow.updated_at = nd_time_monotonic();
 
         flow->conntrack.id = ct_flow.id;
-#if defined(_ND_ENABLE_CONNTRACK_MDATA)
+#ifdef _ND_ENABLE_CONNTRACK_MDATA
         flow->conntrack.mark = ct_flow.mark;
 #endif
-        switch (ct_flow.l3_proto) {
-        case AF_INET:
-            sa_orig_src = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow.orig_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)].addr.in);
-            sa_orig_dst = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow.orig_addr[ndEnumCast(ndConntrackFlow::Direction, DST)].addr.in);
-            sa_reply_src = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow.reply_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)].addr.in);
-            sa_reply_dst = reinterpret_cast<struct sockaddr_in *>(
-              &ct_flow.reply_addr[ndEnumCast(ndConntrackFlow::Direction, DST)].addr.in);
+        if (flow->iface->role != ndInterfaceRole::WAN) return;
 
-            if (memcmp(sa_orig_src, sa_reply_dst,
-                  sizeof(struct sockaddr_in)) ||
-              memcmp(sa_orig_dst, sa_reply_src,
-                sizeof(struct sockaddr_in)))
-                flow->flags.ip_nat = true;
-
-            break;
-
-        case AF_INET6:
-            sa6_orig_src = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow.orig_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)].addr.in6);
-            sa6_orig_dst = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow.orig_addr[ndEnumCast(ndConntrackFlow::Direction, DST)].addr.in6);
-            sa6_reply_src = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow.reply_addr[ndEnumCast(ndConntrackFlow::Direction, SRC)].addr.in6);
-            sa6_reply_dst = reinterpret_cast<struct sockaddr_in6 *>(
-              &ct_flow.reply_addr[ndEnumCast(ndConntrackFlow::Direction, DST)].addr.in6);
-
-            if (memcmp(sa6_orig_src, sa6_reply_dst,
-                  sizeof(struct sockaddr_in6)) ||
-              memcmp(sa6_orig_dst, sa6_reply_src,
-                sizeof(struct sockaddr_in6)))
-                flow->flags.ip_nat = true;
-
-            break;
-        }
+        flow->flags.ip_nat = (
+            ct_flow.orig_addr[static_cast<int>(
+                ndConntrackFlow::Direction::SRC)].Compare(
+                ct_flow.reply_addr[
+                    static_cast<int>(ndConntrackFlow::Direction::DST)])
+            != 0 ||
+            ct_flow.orig_addr[static_cast<int>(
+                ndConntrackFlow::Direction::DST)].Compare(
+                ct_flow.reply_addr[
+                    static_cast<int>(ndConntrackFlow::Direction::SRC)])
+            != 0);
     }
 #ifdef _ND_DEBUG_LOG
     else {
         string _digest;
         nd_sha1_to_string(digest, _digest);
-        nd_dprintf("%s: flow not found: %s\n", TAG, _digest.c_str());
+        nd_dprintf("%s: flow not updated, no match: %s\n", TAG, _digest.c_str());
         flow->Print();
     }
 #endif
 }
 
-void ndNetlinkConntrackThread::UpdateFlowStats(nd_flow_ptr &flow, const struct timeval &stamp) const {
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+void ndNetlinkConntrackThread::UpdateFlowStats(
+    nd_flow_ptr &flow, const struct timeval &stamp) const {
+
     if (flow->conntrack.id == 0) {
-//        nd_dprintf("%s: id not set.\n", TAG);
+#ifdef _ND_DEBUG_LOG
+        nd_dprintf("%s: id not set.\n", TAG);
+#endif
         return;
     }
 
     lock_guard<mutex> lg(map_lock);
 
-    auto i = id_digests.find(flow->conntrack.id);
-    if (i == id_digests.end()) {
-//        nd_dprintf("%s: id not found in map.\n", TAG);
+    auto id_flow = id_flows.find(flow->conntrack.id);
+    if (id_flow == id_flows.end()) {
+#ifdef _ND_DEBUG_LOG
+        nd_dprintf("%s: id not found in map.\n", TAG);
+#endif
         return;
     }
 
-    auto j = flows.find(i->second);
-    if (j == flows.end()) {
-//        nd_dprintf("%s: flow hash not found in map.\n", TAG);
+    if (id_flow->second->packets[
+            ndEnumCast(ndConntrackFlow::Direction, SRC)] == 0 &&
+        id_flow->second->packets[
+            ndEnumCast(ndConntrackFlow::Direction, DST)] == 0) {
+#ifdef _ND_DEBUG_LOG
+        nd_dprintf("%s: no packets.\n", TAG);
+#endif
         return;
     }
-
-    if (j->second->packets[ndEnumCast(ndConntrackFlow::Direction, SRC)] == 0 &&
-        j->second->packets[ndEnumCast(ndConntrackFlow::Direction, DST)] == 0)
-        return;
 
     unsigned idx_lower, idx_upper;
 
@@ -576,44 +547,33 @@ void ndNetlinkConntrackThread::UpdateFlowStats(nd_flow_ptr &flow, const struct t
 
     flow->ts_last_seen = ts_pkt;
 
-    flow->stats.lower_packets = j->second->packets[idx_lower];
-    flow->stats.lower_bytes = j->second->bytes[idx_lower];
-    flow->stats.upper_packets = j->second->packets[idx_upper];
-    flow->stats.upper_bytes = j->second->bytes[idx_upper];
+    flow->stats.lower_packets = id_flow->second->packets[idx_lower];
+    flow->stats.lower_bytes = id_flow->second->bytes[idx_lower];
+    flow->stats.upper_packets = id_flow->second->packets[idx_upper];
+    flow->stats.upper_bytes = id_flow->second->bytes[idx_upper];
 
-    flow->stats.total_packets += j->second->packets[idx_lower];
-    flow->stats.total_bytes += j->second->bytes[idx_lower];
-    flow->stats.total_packets += j->second->packets[idx_upper];
-    flow->stats.total_bytes += j->second->bytes[idx_upper];
+    flow->stats.total_packets += id_flow->second->packets[idx_lower];
+    flow->stats.total_bytes += id_flow->second->bytes[idx_lower];
+    flow->stats.total_packets += id_flow->second->packets[idx_upper];
+    flow->stats.total_bytes += id_flow->second->bytes[idx_upper];
 #ifdef _ND_ENABLE_EXTENDED_STATS
-    flow->stats.UpdateRate(true, ts_pkt, j->second->bytes[idx_lower]);
-    flow->stats.UpdateRate(false, ts_pkt, j->second->bytes[idx_upper]);
+    flow->stats.UpdateRate(true, ts_pkt, id_flow->second->bytes[idx_lower]);
+    flow->stats.UpdateRate(false, ts_pkt, id_flow->second->bytes[idx_upper]);
 #endif
-//    nd_dprintf("%s: updated flow counters.\n", TAG);
+#ifdef _ND_DEBUG_LOG
+    nd_dprintf("%s: updated flow counters.\n", TAG);
+#endif
 }
-
-void ndNetlinkConntrackThread::PurgeFlows(void) {
-    lock_guard<mutex> lg(map_lock);
-
-    for (FlowMap::iterator i = flows.begin();
-         i != flows.end();)
-    {
-        if (i->second->HasExpired()) {
-            id_digests.erase(i->second->GetId());
-            i = flows.erase(i);
-        }
-        else i++;
-    }
-}
+#endif // _ND_ENABLE_CONNTRACK_COUNTERS
 
 ndConntrackFlow::ndConntrackFlow(uint32_t id,
-    const ndNetlinkConntrackThread::Attributes &attr)
+    const ndNetlinkConntrackThread::Attrs &attr)
     : id(id) {
     Update(attr);
 }
 
-void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
-    AttributesTuple tuple_orig = { 0 }, tuple_reply = { 0 };
+void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attrs &attr) {
+    AttrsTuple tuple_orig = { 0 }, tuple_reply = { 0 };
 
     if (mnl_attr_parse_nested(attr[CTA_TUPLE_ORIG],
         ndNetlinkConntrack_attr_parse_tuple, tuple_orig.data()) != MNL_CB_OK) {
@@ -624,7 +584,7 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
         throw ndException("reply %s invalid", "CTA_TUPLE_REPLY");
     }
 
-    AttributesIP ip_orig = { 0 }, ip_reply = { 0 };
+    AttrsIP ip_orig = { 0 }, ip_reply = { 0 };
 
     if (mnl_attr_parse_nested(tuple_orig[CTA_TUPLE_IP],
         ndNetlinkConntrack_attr_parse_ip, ip_orig.data()) != MNL_CB_OK) {
@@ -701,7 +661,7 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
         throw ndException("un-supported address family: %hhu", l3_proto);
     }
 
-    AttributesProto proto_orig = { 0 }, proto_reply = { 0 };
+    AttrsProto proto_orig = { 0 }, proto_reply = { 0 };
 
     if (mnl_attr_parse_nested(tuple_orig[CTA_TUPLE_PROTO],
         ndNetlinkConntrack_attr_parse_proto, proto_orig.data()) != MNL_CB_OK) {
@@ -718,7 +678,7 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
     if (mnl_attr_get_u8(proto_orig[CTA_PROTO_NUM]) !=
         mnl_attr_get_u8(proto_reply[CTA_PROTO_NUM])) {
         nd_dprintf(
-            "%s: WARNING: origin protocol doesn't match destination.\n", TAG);
+            "%s: WARNING: origin protocol doesn't match reply.\n", TAG);
     }
 
     l4_proto = mnl_attr_get_u8(proto_orig[CTA_PROTO_NUM]);
@@ -744,14 +704,14 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
         );
     }
 
-#if defined(_ND_ENABLE_CONNTRACK_MDATA)
+#ifdef _ND_ENABLE_CONNTRACK_MDATA
     if (attr[CTA_MARK])
         mark = ntohl(mnl_attr_get_u32(attr[CTA_MARK]));
 #endif
 
-#if defined(_ND_ENABLE_CONNTRACK_COUNTERS)
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
     if (attr[CTA_COUNTERS_ORIG]) {
-        AttributesCounters counters = { 0 };
+        AttrsCounters counters = { 0 };
 
         if (mnl_attr_parse_nested(attr[CTA_COUNTERS_ORIG],
             ndNetlinkConntrack_attr_parse_counters,
@@ -773,7 +733,7 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
     }
 
     if (attr[CTA_COUNTERS_REPLY]) {
-        AttributesCounters counters = { 0 };
+        AttrsCounters counters = { 0 };
 
         if (mnl_attr_parse_nested(attr[CTA_COUNTERS_REPLY],
             ndNetlinkConntrack_attr_parse_counters,
@@ -793,7 +753,7 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
             bytes[ndEnumCast(Direction, DST)]);
 #endif
     }
-#endif
+#endif // _ND_ENABLE_CONNTRACK_COUNTERS
 
     updated_at = nd_time_monotonic();
 
@@ -801,116 +761,76 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attributes &attr) {
 }
 
 void ndConntrackFlow::Hash(void) {
-    sha1 ctx;
-    int addr_cmp = 0;
-    struct sockaddr_in *sa_src = nullptr, *sa_dst = nullptr;
-    struct sockaddr_in6 *sa6_src = nullptr, *sa6_dst = nullptr;
+    for (uint8_t i = 0; i < static_cast<uint8_t>(Origin::MAX); i++) {
+        sha1 ctx;
+        sha1_init(&ctx);
 
-    sha1_init(&ctx);
+        sha1_write(&ctx, reinterpret_cast<const char *>(&l3_proto),
+          sizeof(sa_family_t));
+        sha1_write(&ctx, reinterpret_cast<const char *>(&l4_proto),
+          sizeof(uint8_t));
 
-    sha1_write(&ctx, reinterpret_cast<const char *>(&l3_proto),
-      sizeof(sa_family_t));
-    sha1_write(&ctx, reinterpret_cast<const char *>(&l4_proto),
-      sizeof(uint8_t));
+        const ndAddr *src, *dst;
 
-    string src, dst;
+        if (i == static_cast<uint8_t>(Origin::ORIG)) {
+            src = &orig_addr[static_cast<int>(Direction::SRC)];
+            dst = &orig_addr[static_cast<int>(Direction::DST)];
+        }
+        else if (i == static_cast<uint8_t>(Origin::REPLY)) {
+            src = &reply_addr[static_cast<int>(Direction::SRC)];
+            dst = &reply_addr[static_cast<int>(Direction::DST)];
+        }
 
-    switch (orig_addr[ndEnumCast(Direction, SRC)].addr.ss.ss_family) {
-    case AF_INET:
-        sa_src = reinterpret_cast<struct sockaddr_in *>(
-            &reply_addr[ndEnumCast(Direction, DST)].addr.in);
-
-        sa_dst = reinterpret_cast<struct sockaddr_in *>(
-            &reply_addr[ndEnumCast(Direction, SRC)].addr.in);
-
-        addr_cmp = memcmp(
-            &sa_src->sin_addr, &sa_dst->sin_addr, sizeof(in_addr));
+        uint16_t port = 0;
+        int addr_cmp = src->Compare(*dst);
 
         if (addr_cmp < 0) {
+            sha1_write(&ctx, src->GetAddress(), src->GetAddressSize());
+            sha1_write(&ctx, dst->GetAddress(), dst->GetAddressSize());
+
+            port = src->GetPort(false);
             sha1_write(&ctx,
-              reinterpret_cast<const char *>(&sa_src->sin_addr),
-              sizeof(struct in_addr));
+              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
+            port = dst->GetPort(false);
             sha1_write(&ctx,
-              reinterpret_cast<const char *>(&sa_dst->sin_addr),
-              sizeof(struct in_addr));
+              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
         }
         else {
+            sha1_write(&ctx, dst->GetAddress(), dst->GetAddressSize());
+            sha1_write(&ctx, src->GetAddress(), src->GetAddressSize());
+            port = dst->GetPort(false);
             sha1_write(&ctx,
-              reinterpret_cast<const char *>(&sa_dst->sin_addr),
-              sizeof(struct in_addr));
+              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
+            port = src->GetPort(false);
             sha1_write(&ctx,
-              reinterpret_cast<const char *>(&sa_src->sin_addr),
-              sizeof(struct in_addr));
+              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
         }
-        break;
 
-    case AF_INET6:
-        sa6_src = reinterpret_cast<struct sockaddr_in6 *>(
-            &reply_addr[ndEnumCast(Direction, DST)].addr.in6);
-
-        sa6_dst = reinterpret_cast<struct sockaddr_in6 *>(
-            &reply_addr[ndEnumCast(Direction, SRC)].addr.in6);
-
-        addr_cmp = memcmp(&sa6_src->sin6_addr,
-          &sa6_dst->sin6_addr, sizeof(struct in6_addr));
-
-        if (addr_cmp < 0) {
-            sha1_write(&ctx,
-              reinterpret_cast<const char *>(&sa6_src->sin6_addr),
-              sizeof(struct in6_addr));
-            sha1_write(&ctx,
-              reinterpret_cast<const char *>(&sa6_dst->sin6_addr),
-              sizeof(struct in6_addr));
-        }
-        else {
-            sha1_write(&ctx,
-              reinterpret_cast<const char *>(&sa6_dst->sin6_addr),
-              sizeof(struct in6_addr));
-            sha1_write(&ctx, (const char *)&sa6_src->sin6_addr,
-              sizeof(struct in6_addr));
-        }
-        break;
-    }
-
-    if (addr_cmp < 0) {
-        uint16_t port;
-
-        port = reply_addr[ndEnumCast(Direction, DST)].GetPort(false);
-        sha1_write(&ctx,
-          reinterpret_cast<const char *>(&port), sizeof(uint16_t));
-        port = reply_addr[ndEnumCast(Direction, SRC)].GetPort(false);
-        sha1_write(&ctx,
-          reinterpret_cast<const char *>(&port), sizeof(uint16_t));
-    }
-    else {
-        uint16_t port;
-
-        port = reply_addr[ndEnumCast(Direction, SRC)].GetPort(false);
-        sha1_write(&ctx,
-          reinterpret_cast<const char *>(&port), sizeof(uint16_t));
-        port = reply_addr[ndEnumCast(Direction, DST)].GetPort(false);
-        sha1_write(&ctx,
-          reinterpret_cast<const char *>(&port), sizeof(uint16_t));
-    }
-
-    sha1_result(&ctx, digest.data());
+        sha1_result(&ctx, digest[i].data());
 #ifdef _ND_DEBUG_LOG
-    string _digest;
-    nd_sha1_to_string(digest, _digest);
-    nd_dprintf("%s: %lu: %s\n", TAG, id, _digest.c_str());
+        string _digest;
+        nd_sha1_to_string(digest[i], _digest);
+        nd_dprintf("%s: %lu: [%hhu]:%s\n", TAG, id, i, _digest.c_str());
 #endif
+    }
 }
 
 void ndConntrackFlow::Print(void) {
+#ifdef _ND_DEBUG_LOG
     ndDebugLogStream dls(ndDebugLogStream::Type::FLOW);
 
     // ID
     dls << TAG << ": " << setw(8) << id << ": ";
 
-    // Digest
+    // Digest ORIG
     for (unsigned i = 0; i < 5; i++) {
         dls << setw(2) << setfill('0') << hex
-            << (int)digest[i];
+            << (int)digest[ndEnumCast(Origin, ORIG)][i];
+    }
+    // Digest REPLY
+    for (unsigned i = 0; i < 5; i++) {
+        dls << ": " << setw(2) << setfill('0') << hex
+            << (int)digest[ndEnumCast(Origin, REPLY)][i];
     }
     dls << ": ";
 
@@ -928,10 +848,13 @@ void ndConntrackFlow::Print(void) {
     dls << ": " << setfill(' ') << dec << setw(2) << (unsigned)l4_proto << ": ";
 
     // Origin addresses
-    auto SRC = ndEnumCast(ndConntrackFlow::Direction, SRC);
-    auto DST = ndEnumCast(ndConntrackFlow::Direction, DST);
-    dls << orig_addr[SRC].GetString(ndAddr::MakeFlags::PORT) << " --> "
-        << orig_addr[DST].GetString(ndAddr::MakeFlags::PORT) << " : "
-        << reply_addr[SRC].GetString(ndAddr::MakeFlags::PORT) << " --> "
-        << reply_addr[DST].GetString(ndAddr::MakeFlags::PORT) << endl;
+    dls << orig_addr[static_cast<int>(Direction::SRC)].GetString(
+            ndAddr::MakeFlags::PORT) << " --> "
+        << orig_addr[static_cast<int>(Direction::DST)].GetString(
+            ndAddr::MakeFlags::PORT) << " : "
+        << reply_addr[static_cast<int>(Direction::SRC)].GetString(
+            ndAddr::MakeFlags::PORT) << " --> "
+        << reply_addr[static_cast<int>(Direction::DST)].GetString(
+            ndAddr::MakeFlags::PORT) << endl;
+#endif // _ND_LOG_DEBUG
 }

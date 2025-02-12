@@ -65,10 +65,10 @@ public:
     void GetStats(Stats &stats);
     void PrintStats(const Stats &stats) const;
 
-    typedef std::array<struct nlattr *, IFA_MAX + 1> AttributesAddr;
-    typedef std::array<struct nlattr *, RTA_MAX + 1> AttributesRoute;
-    typedef std::array<struct nlattr *, IFLA_MAX + 1> AttributesLink;
-    typedef std::array<struct nlattr *, NDA_MAX + 1> AttributesNeigh;
+    typedef std::array<struct nlattr *, IFA_MAX + 1> AttrsAddr;
+    typedef std::array<struct nlattr *, RTA_MAX + 1> AttrsRoute;
+    typedef std::array<struct nlattr *, IFLA_MAX + 1> AttrsLink;
+    typedef std::array<struct nlattr *, NDA_MAX + 1> AttrsNeigh;
 
 protected:
     int AddRemoveAddress(const struct nlmsghdr *nlh, bool add = true);

@@ -22,17 +22,15 @@
 #include "config.h"
 #endif
 
-#include <net/if.h>
-
 #include <libmnl/libmnl.h>
 #include <libnetfilter_queue/libnetfilter_queue.h>
+#include <libnfnetlink/libnfnetlink.h>
+#include <linux/netfilter/nf_conntrack_common.h>
+#include <net/if.h>
 
 #ifndef NF_ACCEPT
 #define NF_ACCEPT 1
 #endif
-
-#include <libnfnetlink/libnfnetlink.h>
-#include <linux/netfilter/nf_conntrack_common.h>
 
 #if defined(HAVE_PCAP_DLT_H)
 #include <pcap/dlt.h>
@@ -45,8 +43,8 @@
 #include "nd-capture-nfq.hpp"
 #include "nd-except.hpp"
 
-#define _ND_LOG_WARNINGS 1
-#define _ND_LOG_DEBUG 1
+// #define _ND_LOG_WARNINGS 1
+// #define _ND_LOG_DEBUG 1
 
 #ifdef _ND_LOG_DEBUG
 static void ndCaptureNFQueue_PrintAttrs(const char *tag, struct nlattr **attr) {
@@ -177,54 +175,17 @@ static int ndCaptureNFQueue_Callback(
         nd_dprintf("%s: <--: %s\n", tag, ifname);
     }
 #endif
-    struct nfqnl_msg_packet_hw *pkt_hwaddr = nullptr;
-    if (attr[NFQA_HWADDR] != nullptr) {
-        pkt_hwaddr = static_cast<struct nfqnl_msg_packet_hw *>(
-          mnl_attr_get_payload(attr[NFQA_HWADDR]));
-    }
-#ifdef _ND_LOG_WARNINGS
-    else {
-        nd_dprintf("%s: WARNING: no hardware address.\n", tag);
-#ifdef _ND_LOG_DEBUG
-        //ndCaptureNFQueue_PrintAttrs(tag, attr);
-#endif
-    }
-#endif
-#if 0
-    uint32_t ct_state = -1;
-    if (attr[NFQA_CT_INFO] != nullptr) {
-        ct_state = ntohl(mnl_attr_get_u32(attr[NFQA_CT_INFO]));
-#ifdef _ND_LOG_DEBUG
-        // nd_dprintf("%s: NFQA_CT_INFO: %lu\n", tag, ct_state);
-#endif
-        if (ct_state == IP_CT_NEW) {
-            if (! pkt_hwaddr) {
-                char ifname_in[IFNAMSIZ] = { "???" };
-                char ifname_out[IFNAMSIZ] = { "???" };
 
-                if (ifidx_in > 0)
-                    if_indextoname(ifidx_in, ifname_in);
-                if (ifidx_out > 0)
-                    if_indextoname(ifidx_out, ifname_out);
-
-                nd_dprintf(
-                    "%s: New flow, no hardware address: %s --> %s\n",
-                    tag, ifname_in, ifname_out
-                );
-            }
-        }
-    }
-#endif
     const uint16_t pkt_caplen = mnl_attr_get_payload_len(
       attr[NFQA_PAYLOAD]);
     void *payload = mnl_attr_get_payload(attr[NFQA_PAYLOAD]);
 
 #ifdef _ND_LOG_DEBUG
-    //uint32_t skbinfo = attr[NFQA_SKB_INFO] ?
-    //  ntohl(mnl_attr_get_u32(attr[NFQA_SKB_INFO])) :
-    //  0;
-    //if (skbinfo & NFQA_SKB_GSO)
-    //    nd_dprintf("%s: GSO packet.\n", tag);
+    uint32_t skbinfo = attr[NFQA_SKB_INFO] ?
+      ntohl(mnl_attr_get_u32(attr[NFQA_SKB_INFO])) :
+      0;
+    if (skbinfo & NFQA_SKB_GSO)
+        nd_dprintf("%s: GSO packet.\n", tag);
 #endif
 
     constexpr size_t hdr_eth_size = sizeof(struct ether_header);
@@ -237,20 +198,47 @@ static int ndCaptureNFQueue_Callback(
     memcpy(pkt_data + hdr_eth_size, payload, pkt_caplen);
 
     // Initialize Ethernet header...
-    // An attempt to fill in the src/dst MAC addresses will be made by
-    // ndCaptureThread...
     struct ether_header *hdr_eth = (struct ether_header *)pkt_data;
     memset(hdr_eth, 0, hdr_eth_size);
     hdr_eth->ether_type = pkt_hdr->hw_protocol;
 
+    // If we have a HW address, use it as source MAC...
+    struct nfqnl_msg_packet_hw *pkt_hwaddr = nullptr;
+    if (attr[NFQA_HWADDR] != nullptr) {
+        pkt_hwaddr = static_cast<struct nfqnl_msg_packet_hw *>(
+          mnl_attr_get_payload(attr[NFQA_HWADDR]));
+    }
+
     ndFlags<ndPacket::StatusFlags> pkt_status = ndPacket::StatusFlags::OK;
 
     if (pkt_hwaddr != nullptr) {
-        pkt_status |= ndPacket::StatusFlags::NFQ_HWADDR;
+        pkt_status |= ndPacket::StatusFlags::NFQ_HWADDR_SRC;
         memcpy(&hdr_eth->ether_shost[0],
           &pkt_hwaddr->hw_addr[0], ETH_ALEN);
     }
+    else if (ifidx_in > 0) {
+        // ...otheriwse attempt to look-up MAC for input interface.
+        ndAddr addr;
+        if (nfq->ndi.addr_lookup.LookupLinkAddress(ifidx_in, addr)
+            && addr.IsEthernet()) {
+            pkt_status |= ndPacket::StatusFlags::NFQ_HWADDR_SRC;
+            memcpy(&hdr_eth->ether_shost[0],
+                addr.GetAddress(), ETH_ALEN);
+        }
+    }
 
+    // Set initial destination MAC using output interface, if available.
+    if (ifidx_out > 0) {
+        ndAddr addr;
+        if (nfq->ndi.addr_lookup.LookupLinkAddress(ifidx_out, addr)
+            && addr.IsEthernet()) {
+            pkt_status |= ndPacket::StatusFlags::NFQ_HWADDR_DST;
+            memcpy(&hdr_eth->ether_dhost[0],
+                addr.GetAddress(), ETH_ALEN);
+        }
+    }
+
+    // Create and push packet...
     ndPacket *pkt = new ndPacket(pkt_status,
       static_cast<uint16_t>(hdr_eth_size + pkt_len),
       static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
@@ -258,6 +246,7 @@ static int ndCaptureNFQueue_Callback(
 
     nfq->PushPacket(pkt);
 
+    // Set NFQUEUE verdict to ACCEPT.
     struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
       mnl_nlmsg_get_payload(nlh));
 
@@ -337,9 +326,11 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     // sizeof(int));
 
     nd_dprintf(
-      "%s: NFQ capture thread created with buffer size: "
-      "%lu\n",
-      tag.c_str(), buffer_size);
+      "%s: NFQ capture thread created on queue #%u, thread #%u, "
+      "counters: %s, buffer size: %lu\n", tag.c_str(),
+      iface->config_nfq.queue_id, instance_id,
+      (iface->config_nfq.conntrack_counters) ? "enabled" : "disabled",
+      buffer_size);
 }
 
 ndCaptureNFQueue::~ndCaptureNFQueue() {

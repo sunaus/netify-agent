@@ -37,9 +37,9 @@
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_LOG   1
 
-constexpr const char *TAG = { "nd-netlink-rt" };
-
 using namespace std;
+
+constexpr const char *TAG = { "nd-netlink-rt" };
 
 static int ndNetlinkRoute_attr_parse_ifav4(
     const struct nlattr *attr, void *data) {
@@ -51,10 +51,8 @@ static int ndNetlinkRoute_attr_parse_ifav4(
     case IFA_ADDRESS:
     case IFA_BROADCAST:
         if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
-#ifdef _ND_DEBUG_LOG
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "U32");
-#endif
             return MNL_CB_ERROR;
         }
         break;
@@ -75,10 +73,8 @@ static int ndNetlinkRoute_attr_parse_ifav6(
     case IFA_ADDRESS:
         if (mnl_attr_validate2(
             attr, MNL_TYPE_BINARY, sizeof(struct in6_addr)) < 0) {
-#ifdef _ND_DEBUG_LOG
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "BINARY");
-#endif
             return MNL_CB_ERROR;
         }
         break;
@@ -98,10 +94,8 @@ static int ndNetlinkRoute_attr_parse_rtav4(
     case RTA_DST:
     case RTA_OIF:
         if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
-#ifdef _ND_DEBUG_LOG
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "U32");
-#endif
             return MNL_CB_ERROR;
         }
         break;
@@ -121,10 +115,8 @@ static int ndNetlinkRoute_attr_parse_rtav6(
     case RTA_DST:
         if (mnl_attr_validate2(
             attr, MNL_TYPE_BINARY, sizeof(struct in6_addr)) < 0) {
-#ifdef _ND_DEBUG_LOG
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "BINARY");
-#endif
             return MNL_CB_ERROR;
         }
         break;
@@ -150,10 +142,8 @@ static int ndNetlinkRoute_attr_parse_ifla(
     switch(type) {
     case IFLA_ADDRESS:
         if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
-#ifdef _ND_DEBUG_LOG
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "BINARY");
-#endif
             return MNL_CB_ERROR;
         }
         break;
@@ -173,10 +163,8 @@ static int ndNetlinkRoute_attr_parse_nda(
     case NDA_DST:
     case NDA_LLADDR:
         if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
-#ifdef _ND_DEBUG_LOG
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "BINARY");
-#endif
             return MNL_CB_ERROR;
         }
         break;
@@ -271,7 +259,7 @@ void *ndNetlinkRouteThread::Entry(void) {
 }
 
 int ndNetlinkRouteThread::ProcessMessage(const struct nlmsghdr *nlh) {
-#ifdef _ND_DEBUG_LOG
+#if 0
     struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
         mnl_nlmsg_get_payload(nlh)
     );
@@ -388,7 +376,7 @@ int ndNetlinkRouteThread::AddRemoveAddress(const struct nlmsghdr *nlh, bool add)
         return rc;
     }
 
-    AttributesAddr attrs = { 0 };
+    AttrsAddr attrs = { 0 };
 
     switch(ifa->ifa_family) {
     case AF_INET:
@@ -493,7 +481,7 @@ int ndNetlinkRouteThread::AddRemoveNetwork(const struct nlmsghdr *nlh, bool add)
 
     if (rtm->rtm_type != RTN_UNICAST) return 0;
 
-    AttributesRoute attrs = { 0 };
+    AttrsRoute attrs = { 0 };
 
     switch(rtm->rtm_family) {
     case AF_INET:
@@ -575,7 +563,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
     ndInstance &ndi = ndInstance::GetInstance();
 
     if (add) {
-        AttributesLink attrs = { 0 };
+        AttrsLink attrs = { 0 };
 
         if (mnl_attr_parse(nlh, sizeof(*ifm),
             ndNetlinkRoute_attr_parse_ifla, attrs.data()) != MNL_CB_OK)
@@ -589,20 +577,20 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
                 mnl_attr_get_payload(attrs[IFLA_ADDRESS])), ETH_ALEN
         );
 
-//#ifdef _ND_DEBUG_LOG
+#ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: adding link: %u: %s\n", TAG,
             ifm->ifi_index,
             addr.GetString().c_str()
         );
-//#endif
+#endif
         if (ndi.addr_lookup.AddLinkAddress(ifm->ifi_index, addr)) rc = 1;
     }
     else {
-//#ifdef _ND_DEBUG_LOG
+#ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: removing link: %d\n", TAG,
             ifm->ifi_index
         );
-//#endif
+#endif
         if (ndi.addr_lookup.RemoveNeighbor(ifm->ifi_index)) rc = 1;
     }
 
@@ -614,7 +602,7 @@ int ndNetlinkRouteThread::AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add
         mnl_nlmsg_get_payload(nlh)
     );
 
-    AttributesNeigh attrs = { 0 };
+    AttrsNeigh attrs = { 0 };
 
     if (mnl_attr_parse(nlh, sizeof(*ndm),
         ndNetlinkRoute_attr_parse_nda, attrs.data()) != MNL_CB_OK)
@@ -670,7 +658,7 @@ int ndNetlinkRouteThread::AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add
         return -1;
     }
 
-//#ifdef _ND_DEBUG_LOG
+#ifdef _ND_DEBUG_LOG
     string state;
     switch(ndm->ndm_state) {
     case NUD_INCOMPLETE:
@@ -701,39 +689,26 @@ int ndNetlinkRouteThread::AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add
         state = "unknown: " + to_string(ndm->ndm_state);
         break;
     }
-//#endif
+#endif
 
     bool rc = false;
     ndInstance &ndi = ndInstance::GetInstance();
 
     if (add) {
-//#ifdef _ND_DEBUG_LOG
+#ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: adding neighbor: %s: %s [%s]\n", TAG,
             lladdr.GetString().c_str(),
             addr.GetString().c_str(), state.c_str()
         );
-//#endif
+#endif
         rc = ndi.addr_lookup.AddNeighbor(addr, lladdr);
-/*
-        if (rc) {
-            ndAddr verify;
-            if (ndi.addr_lookup.LookupNeighbor(addr, verify)) {
-                nd_dprintf("%s: verified neighbor: %s == %s\n", TAG,
-                    lladdr.GetString().c_str(), verify.GetString().c_str());
-            }
-            else {
-                nd_dprintf("%s: neighbor lookup failed: %s != %s\n", TAG,
-                    lladdr.GetString().c_str(), verify.GetString().c_str());
-            }
-        }
-*/
     }
     else {
-//#ifdef _ND_DEBUG_LOG
+#ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: removing neighbor: %s [%s]\n", TAG,
             lladdr.GetString().c_str(), state.c_str()
         );
-//#endif
+#endif
         rc = ndi.addr_lookup.RemoveNeighbor(lladdr);
     }
 
