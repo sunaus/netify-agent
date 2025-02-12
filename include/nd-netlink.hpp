@@ -38,6 +38,12 @@
         return rtn; \
     }
 
+#ifndef MNL_SOCKET_DUMP_SIZE
+constexpr size_t ND_NETLINK_BUFFER_SIZE = 32768; // 32KB
+#else
+constexpr size_t ND_NETLINK_BUFFER_SIZE = MNL_SOCKET_DUMP_SIZE;
+#endif
+
 class ndNetlink
 {
 public:
@@ -64,7 +70,7 @@ public:
 protected:
     bool dump = { false };
     struct mnl_socket *socket_nl = { nullptr };
-    std::array<uint8_t, MNL_SOCKET_DUMP_SIZE> socket_buffer = { 0 };
+    std::array<uint8_t, ND_NETLINK_BUFFER_SIZE> socket_buffer = { 0 };
     unsigned int port_id = { 0 }, seq_id = { 0 };
 
     bool Send(nlmsghdr *nlh);
