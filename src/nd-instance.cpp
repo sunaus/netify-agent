@@ -604,7 +604,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             return ndEnumCast(ConfigResult, INVALID_PERMS);
         }
     }
-
+#if defined(__linux__)
     if (! ndGC.network_namespace.empty()) {
         // Attempt to enter alternate network namespace...
         try {
@@ -615,7 +615,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             return ndEnumCast(ConfigResult, SETNETNS_FAILURE);
         }
     }
-
+#endif
     // Test mode enabled?  Override certain config
     // parameters
     if (ndGC.h_flow != stderr) {

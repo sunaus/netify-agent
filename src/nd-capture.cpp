@@ -1168,12 +1168,12 @@ nd_process_ip:
         stats.pkt.ip6++;
         stats.pkt.ip6_bytes += packet->length;
     }
-
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
     if (iface->conntrack_counters == false) {
         nf->stats.total_packets++;
         nf->stats.total_bytes += packet->length;
     }
-
+#endif
     if (addr_cmp < 0) {
         nf->stats.lower_packets++;
         nf->stats.lower_bytes += packet->length;

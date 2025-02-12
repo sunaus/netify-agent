@@ -28,7 +28,6 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-capture-tpv3.hpp
 %%DEVEL%%include/netifyd/nd-category.hpp
 %%DEVEL%%include/netifyd/nd-config.hpp
-%%DEVEL%%include/netifyd/nd-conntrack.hpp
 %%DEVEL%%include/netifyd/nd-detection.hpp
 %%DEVEL%%include/netifyd/nd-dhc.hpp
 %%DEVEL%%include/netifyd/nd-except.hpp
@@ -42,6 +41,8 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-napi.hpp
 %%DEVEL%%include/netifyd/nd-ndpi.hpp
 %%DEVEL%%include/netifyd/nd-netlink.hpp
+%%DEVEL%%include/netifyd/nd-netlink-ct.hpp
+%%DEVEL%%include/netifyd/nd-netlink-rt.hpp
 %%DEVEL%%include/netifyd/nd-packet.hpp
 %%DEVEL%%include/netifyd/nd-plugin.hpp
 %%DEVEL%%include/netifyd/nd-protos.hpp

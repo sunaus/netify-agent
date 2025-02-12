@@ -261,12 +261,16 @@ bool ndAddr::Create(ndAddr &a,
 
 const uint8_t *ndAddr::GetAddress(void) const {
     if (! IsValid()) return nullptr;
-    if (IsIPv4()) return (const uint8_t *)&addr.in.sin_addr;
+    if (IsIPv4())
+        return reinterpret_cast<const uint8_t *>(&addr.in.sin_addr);
     if (IsIPv6())
-        return (const uint8_t *)&addr.in6.sin6_addr;
+        return reinterpret_cast<const uint8_t *>(&addr.in6.sin6_addr);
     if (IsEthernet())
-        return (const uint8_t *)&addr.ll.sll_addr[0];
-
+#if defined(__linux__)
+        return reinterpret_cast<const uint8_t *>(&addr.ll.sll_addr[0]);
+#elif defined(__FreeBSD__)
+        return reinterpret_cast<const uint8_t *>(&addr.dl.sdl_data[0]);
+#endif
     return nullptr;
 }
 
