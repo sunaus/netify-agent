@@ -68,7 +68,6 @@ int main(int argc, char* argv[]) {
     sigaddset(&sigset, ND_SIG_UPDATE_NAPI);
     sigaddset(&sigset, SIGHUP);
     sigaddset(&sigset, SIGINT);
-    sigaddset(&sigset, SIGIO);
 #ifdef SIGPWR
     sigaddset(&sigset, SIGPWR);
 #endif

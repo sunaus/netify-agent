@@ -111,21 +111,34 @@ case "${host_os}" in
             PKG_CHECK_MODULES([LIBNETFILTER_CONNTRACK], [libnetfilter_conntrack >= 1.0.4])
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK=1"])
             AM_CONDITIONAL(USE_CONNTRACK, true)
+
+            dnl CONNTRACK meta-data extraction support
+
+            AC_ARG_ENABLE([conntrack-mdata],
+                [AS_HELP_STRING([--enable-conntrack-mdata], [Enable connection tracking metadata [default=no]])],
+                [],
+                [enable_conntrack_mdata=no])
+
+            AS_IF([test "x$enable_conntrack_mdata" = "xyes"], [
+                AC_DEFINE([_ND_ENABLE_CONNTRACK_MDATA], [1],
+                    [Enable to extract additional conntrack metadata (ID and mark).])
+                AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK_MDATA=1"])
+            ])
+
+            dnl CONNTRACK packet/byte counters support
+
+            AC_ARG_ENABLE([conntrack-counters],
+                [AS_HELP_STRING([--enable-conntrack-counters], [Enable connection tracking packet/bytes counters [default=yes]])],
+                [],
+                [enable_conntrack_counters=yes])
+
+            AS_IF([test "x$enable_conntrack_counters" = "xyes"], [
+                AC_DEFINE([_ND_ENABLE_CONNTRACK_COUNTERS], [1],
+                    [Enable to extract conntrack packet/bytes counters.])
+                AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK_COUNTERS=1"])
+            ])
         ], [
             AM_CONDITIONAL(USE_CONNTRACK, false)
-        ])
-
-        dnl CONNTRACK meta-data extraction support
-
-        AC_ARG_ENABLE([conntrack-mdata],
-            [AS_HELP_STRING([--enable-conntrack-mdata], [Enable connection tracking metadata [default=no]])],
-            [],
-            [enable_conntrack_mdata=no])
-
-        AS_IF([test "x$enable_conntrack_mdata" = "xyes"], [
-            AC_DEFINE([_ND_ENABLE_CONNTRACK_MDATA], [1],
-                [Enable to extract additional conntrack metadata (ID and mark).])
-            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK_MDATA=1"])
         ])
 
         dnl NETLINK support
@@ -448,7 +461,10 @@ AS_BOX([${PACKAGE_NAME} v${PACKAGE_VERSION}])
 case "${host_os}" in
     linux*)
         AC_MSG_NOTICE([Conntrack support: ${enable_conntrack}])
-        AC_MSG_NOTICE([Conntrack meta-data: ${enable_conntrack_mdata}])
+        if test "x${enable_conntrack}" = "xyes"; then
+            AC_MSG_NOTICE([Conntrack meta-data: ${enable_conntrack_mdata}])
+            AC_MSG_NOTICE([Conntrack counters: ${enable_conntrack_counters}])
+        fi
         AC_MSG_NOTICE([Netlink support: ${enable_netlink}])
         AC_MSG_NOTICE([TPv3 capture support: ${enable_tpacketv3}])
         AC_MSG_NOTICE([NFQUEUE capture support: ${enable_nfqueue}])

@@ -85,6 +85,14 @@ ndInstance::~ndInstance() {
     api_manager.Terminate();
 
     for (unsigned p = 0; p < 2; p++) {
+#ifdef _ND_ENABLE_NETLINK
+        if (ndGC_USE_NETLINK && thread_netlink) {
+            if (p == 0) thread_netlink->Terminate();
+            else {
+                delete thread_netlink;
+                thread_netlink = nullptr;
+            }
+        }
 #ifdef _ND_ENABLE_CONNTRACK
         if (ndGC_USE_CONNTRACK && thread_conntrack) {
             if (p == 0) thread_conntrack->Terminate();
@@ -93,6 +101,7 @@ ndInstance::~ndInstance() {
                 thread_conntrack = nullptr;
             }
         }
+#endif
 #endif
         for (auto i : thread_detection) {
             if (p == 0) i.second->Terminate();
@@ -119,13 +128,6 @@ ndInstance::~ndInstance() {
         delete flow_buckets;
         flow_buckets = nullptr;
     }
-
-#ifdef _ND_ENABLE_NETLINK
-    if (netlink != nullptr) {
-        delete netlink;
-        netlink = nullptr;
-    }
-#endif
 
     if (this == instance) {
         instance = nullptr;
@@ -201,18 +203,16 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 #define _ND_LO_FORCE_RESET 6
         { "force-reset", 0, 0, _ND_LO_FORCE_RESET },
 #define _ND_LO_CA_CAPTURE_BASE    7
-#define _ND_LO_CA_CONNTRACK       8
-#define _ND_LO_CA_DETECTION_BASE  9
-#define _ND_LO_CA_DETECTION_CORES 10
+#define _ND_LO_CA_DETECTION_BASE  8
+#define _ND_LO_CA_DETECTION_CORES 9
         { "thread-capture-base", 1, 0, _ND_LO_CA_CAPTURE_BASE },
-        { "thread-conntrack", 1, 0, _ND_LO_CA_CONNTRACK },
         { "thread-detection-base", 1, 0, _ND_LO_CA_DETECTION_BASE },
         { "thread-detection-cores", 1, 0, _ND_LO_CA_DETECTION_CORES },
-#define _ND_LO_DUMP_PROTOS 11
-#define _ND_LO_DUMP_APPS   12
-#define _ND_LO_DUMP_CAT    13
-#define _ND_LO_DUMP_CATS   14
-#define _ND_LO_DUMP_RISKS  15
+#define _ND_LO_DUMP_PROTOS 10
+#define _ND_LO_DUMP_APPS   11
+#define _ND_LO_DUMP_CAT    12
+#define _ND_LO_DUMP_CATS   13
+#define _ND_LO_DUMP_RISKS  14
         { "dump-all", 0, 0, 'P' },
         { "dump-protos", 0, 0, _ND_LO_DUMP_PROTOS },
         { "dump-protocols", 0, 0, _ND_LO_DUMP_PROTOS },
@@ -221,27 +221,27 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         { "dump-category", 1, 0, _ND_LO_DUMP_CAT },
         { "dump-categories", 0, 0, _ND_LO_DUMP_CATS },
         { "dump-risks", 0, 0, _ND_LO_DUMP_RISKS },
-#define _ND_LO_DUMP_SORT_BY_TAG 16
+#define _ND_LO_DUMP_SORT_BY_TAG 15
         { "dump-sort-by-tag", 0, 0, _ND_LO_DUMP_SORT_BY_TAG },
-#define _ND_LO_DUMP_WITH_CATS 17
+#define _ND_LO_DUMP_WITH_CATS 16
         { "dump-with-categories", 0, 0, _ND_LO_DUMP_WITH_CATS },
-#define _ND_LO_EXPORT_APPS 18
+#define _ND_LO_EXPORT_APPS 17
         { "export-apps", 0, 0, _ND_LO_EXPORT_APPS },
-#define _ND_LO_EXPORT_APPS_LEGACY 19
+#define _ND_LO_EXPORT_APPS_LEGACY 18
         { "export-legacy", 0, 0, _ND_LO_EXPORT_APPS_LEGACY },
-#define _ND_LO_LOOKUP_IP 20
+#define _ND_LO_LOOKUP_IP 19
         { "lookup-ip", 1, 0, _ND_LO_LOOKUP_IP },
-#define _ND_LO_CAPTURE_DELAY 21
+#define _ND_LO_CAPTURE_DELAY 20
         { "capture-delay", 1, 0, _ND_LO_CAPTURE_DELAY },
-#define _ND_LO_ALLOW_UNPRIV 22
+#define _ND_LO_ALLOW_UNPRIV 21
         { "allow-unprivileged", 0, 0, _ND_LO_ALLOW_UNPRIV },
-#define _ND_LO_IGNORE_IFACE_CONFIGS 23
+#define _ND_LO_IGNORE_IFACE_CONFIGS 22
         { "ignore-interface-configs", 0, 0, _ND_LO_IGNORE_IFACE_CONFIGS },
-#define _ND_LO_DISABLE_AUTO_FLOW_EXPIRY 24
+#define _ND_LO_DISABLE_AUTO_FLOW_EXPIRY 23
         { "disable-auto-flow-expiry", 0, 0, _ND_LO_DISABLE_AUTO_FLOW_EXPIRY },
-#define _ND_LO_RUN_WITHOUT_SOURCES 25
+#define _ND_LO_RUN_WITHOUT_SOURCES 24
         { "run-without-sources", 0, 0, _ND_LO_RUN_WITHOUT_SOURCES },
-#define _ND_LO_VERBOSE_FLAG 26
+#define _ND_LO_VERBOSE_FLAG 25
         { "verbose-flag", 1, 0, _ND_LO_VERBOSE_FLAG },
 
         { NULL, 0, 0, 0 } };
@@ -341,14 +341,6 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             ndGC.ca_capture_base = (int16_t)atoi(optarg);
             if (ndGC.ca_capture_base > status.cpus) {
                 cerr << "Capture thread base greater than "
-                        "online cores.\n";
-                return ndEnumCast(ConfigResult, INVALID_VALUE);
-            }
-            break;
-        case _ND_LO_CA_CONNTRACK:
-            ndGC.ca_conntrack = (int16_t)atoi(optarg);
-            if (ndGC.ca_conntrack > status.cpus) {
-                cerr << "Conntrack thread ID greater than "
                         "online cores.\n";
                 return ndEnumCast(ConfigResult, INVALID_VALUE);
             }
@@ -610,6 +602,17 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             cerr << "Error starting Agent: " << strerror(EPERM)
                  << " (not root)\n";
             return ndEnumCast(ConfigResult, INVALID_PERMS);
+        }
+    }
+
+    if (! ndGC.network_namespace.empty()) {
+        // Attempt to enter alternate network namespace...
+        try {
+            nd_set_netns(ndGC.network_namespace);
+        }
+        catch (exception &e) {
+            cerr << "Error entering network namespace: " << e.what() << endl;
+            return ndEnumCast(ConfigResult, SETNETNS_FAILURE);
         }
     }
 
@@ -1223,8 +1226,6 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "  --thread-capture-base <offset>\n    Specify a "
           "thread affinity base or offset for capture "
           "threads.\n"
-          "  --thread-conntrack <cpu>\n    Specify a CPU "
-          "affinity ID for the conntrack thread.\n"
           "  --thread-detection-base <offset>\n    Specify "
           "a thread affinity base or offset for detection "
           "(DPI) threads.\n"
@@ -1304,6 +1305,53 @@ bool ndInstance::SaveAgentStatus(const ndCaptureThreads &threads,
             jstatus["flow_hash_cache"] = jstats;
         }
 
+#ifdef _ND_ENABLE_NETLINK
+        if (ndGC_USE_NETLINK) {
+            ndNetlinkRouteThread::Stats rt_stats;
+            thread_netlink->GetStats(rt_stats);
+            thread_netlink->PrintStats(rt_stats);
+
+            json rt_jstats, rt_addrs, rt_nets, rt_neighs;
+
+            rt_addrs["added"] = rt_stats.addr.added.load();
+            rt_addrs["removed"] = rt_stats.addr.removed.load();
+            rt_addrs["error"] = rt_stats.addr.error.load();
+
+            rt_jstats["addresses"] = rt_addrs;
+
+            rt_nets["added"] = rt_stats.net.added.load();
+            rt_nets["removed"] = rt_stats.net.removed.load();
+            rt_nets["error"] = rt_stats.net.error.load();
+
+            rt_jstats["networks"] = rt_nets;
+
+            rt_neighs["added"] = rt_stats.neigh.added.load();
+            rt_neighs["removed"] = rt_stats.neigh.removed.load();
+            rt_neighs["error"] = rt_stats.neigh.error.load();
+
+            rt_jstats["neighbors"] = rt_neighs;
+
+            jstatus["netlink"] = rt_jstats;
+        }
+#ifdef _ND_ENABLE_CONNTRACK
+        if (ndGC_USE_CONNTRACK) {
+            ndNetlinkConntrackThread::Stats ct_stats;
+            thread_conntrack->GetStats(ct_stats);
+            thread_conntrack->PrintStats(ct_stats);
+
+            json ct_jstats;
+            ct_jstats["created"] = ct_stats.created;
+            ct_jstats["updated"] = ct_stats.updated;
+            ct_jstats["destroyed"] = ct_stats.destroyed;
+            ct_jstats["lookups"] = ct_stats.lookups;
+            ct_jstats["matches"] = ct_stats.matches;
+            ct_jstats["total_ids"] = ct_stats.total_ids;
+            ct_jstats["total_flows"] = ct_stats.total_flows;
+
+            jstatus["conntrack"] = ct_jstats;
+        }
+#endif
+#endif
         if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
             json jnetify_api;
             jstatus["netify_api"] = api_manager.GetStatus();
@@ -1686,10 +1734,6 @@ bool ndInstance::DisplayAgentStatus(void) {
           ndTerm::Color::GREEN, ndTerm::Icon::INFO,
           ndTerm::Attr::RESET,
           jstatus["maxrss_kb"].get<unsigned>());
-        fprintf(stdout, "%s%s%s nDPI memory usage: %u kB\n",
-          ndTerm::Color::GREEN, ndTerm::Icon::INFO,
-          ndTerm::Attr::RESET,
-          jstatus["ndpi_kb"].get<unsigned>());
 
         if (jstatus.find("interfaces") == jstatus.end() ||
           jstatus["interfaces"].empty())
@@ -1966,13 +2010,29 @@ int ndInstance::Run(void) {
     flow_buckets = new ndFlowMap(ndGC.fm_buckets);
 
 #ifdef _ND_ENABLE_NETLINK
-    if (ndGC_USE_NETLINK) netlink = new ndNetlink();
-#endif
+    if (ndGC_USE_NETLINK) {
+        try {
+            thread_netlink = new ndNetlinkRouteThread();
+            thread_netlink->Create();
+        }
+        catch (exception &e) {
+            if (thread_netlink != nullptr) {
+                delete thread_netlink;
+                thread_netlink = nullptr;
+            }
+
+            ndGC_SetFlag(ndGlobalFlags::USE_NETLINK, false);
+
+            nd_printf(
+              "%s: WARNING: Netlink address support disabled by exception: %s\n",
+              tag.c_str(), e.what());
+        }
+    }
 
 #ifdef _ND_ENABLE_CONNTRACK
     if (ndGC_USE_CONNTRACK) {
         try {
-            thread_conntrack = new ndConntrackThread(ndGC.ca_conntrack);
+            thread_conntrack = new ndNetlinkConntrackThread();
             thread_conntrack->Create();
         }
         catch (exception &e) {
@@ -1989,6 +2049,7 @@ int ndInstance::Run(void) {
               tag.c_str(), e.what());
         }
     }
+#endif
 #endif
 
     try {
@@ -2009,10 +2070,10 @@ int ndInstance::Run(void) {
             thread_detection[i] = new ndDetectionThread(cpu,
               string("dpi") + to_string(cpu),
 #ifdef _ND_ENABLE_NETLINK
-              netlink,
-#endif
+              (! ndGC_USE_NETLINK) ? nullptr : thread_netlink,
 #ifdef _ND_ENABLE_CONNTRACK
               (! ndGC_USE_CONNTRACK) ? nullptr : thread_conntrack,
+#endif
 #endif
               dns_hint_cache, flow_hash_cache, (uint8_t)cpu);
 
@@ -2046,17 +2107,6 @@ ndInstance_RunReturn:
 
 bool ndInstance::SendSignal(const siginfo_t &si) {
     switch (si.si_signo) {
-#ifdef _ND_ENABLE_NETLINK
-    case SIGIO:
-        if (ndGC_USE_NETLINK && netlink != nullptr &&
-          netlink->GetDescriptor() == si.si_fd)
-        {
-            ndThread::SendIPC(
-              static_cast<uint32_t>(InstanceEvent::NETLINK_IO));
-            return true;
-        }
-        break;
-#endif
     case SIGHUP:
         ndThread::SendIPC(
           static_cast<uint32_t>(InstanceEvent::RELOAD));
@@ -2081,26 +2131,27 @@ bool ndInstance::SendSignal(const siginfo_t &si) {
           si.si_signo == timer_update.GetSignal())
         {
             ndThread::SendIPC(
-              static_cast<uint32_t>(InstanceEvent::UPDATE));
+              static_cast<uint32_t>(InstanceEvent::TIMER_UPDATE));
             return true;
         }
         else if (timer_update_napi.GetSignal() >= 0 &&
           si.si_signo == timer_update_napi.GetSignal())
         {
             ndThread::SendIPC(static_cast<uint32_t>(
-              InstanceEvent::UPDATE_NAPI));
+              InstanceEvent::TIMER_UPDATE_NAPI));
             return true;
         }
         break;
     }
     return false;
 }
+
 void *ndInstance::ndInstance::Entry(void) {
     size_t proc_plugins = 0;
     ndCaptureThreads thread_capture;
 
 #ifdef _ND_ENABLE_NETLINK
-    if (ndGC_USE_NETLINK) netlink->Refresh();
+    if (ndGC_USE_NETLINK) thread_netlink->Dump();
 #endif
 
     if (ndGC.ttl_capture_delay != 0) {
@@ -2146,14 +2197,6 @@ void *ndInstance::ndInstance::Entry(void) {
         switch (static_cast<InstanceEvent>(ipc = WaitForIPC(1)))
         {
         case InstanceEvent::NONE: break;
-        case InstanceEvent::NETLINK_IO:
-            nd_dprintf("%s: received IPC: [%d] %s\n",
-              tag.c_str(), ipc, "Netlink data available");
-#ifdef _ND_ENABLE_NETLINK
-            if (ndGC_USE_NETLINK && netlink != nullptr)
-                netlink->ProcessEvent();
-#endif
-            break;
         case InstanceEvent::RELOAD:
             nd_dprintf("%s: received IPC: [%d] %s\n", tag.c_str(),
               ipc, "Reload run-time configuration");
@@ -2170,13 +2213,13 @@ void *ndInstance::ndInstance::Entry(void) {
                 DestroyCaptureThreads(thread_capture, true);
             exit_code = EXIT_SUCCESS;
             break;
-        case InstanceEvent::UPDATE:
+        case InstanceEvent::TIMER_UPDATE:
             nd_dprintf("%s: received IPC: [%d] %s\n",
               tag.c_str(), ipc, "Update");
             ReapCaptureThreads(thread_capture);
             ProcessUpdate(thread_capture);
             break;
-        case InstanceEvent::UPDATE_NAPI:
+        case InstanceEvent::TIMER_UPDATE_NAPI:
             if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS) {
                 switch (api_manager.Update()) {
                 case ndNetifyApiManager::UpdateResult::OK:
@@ -2408,9 +2451,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 #endif
         default:
             nd_printf(
-              "%s: WARNING: Unsupported capture type: "
-              "%s: "
-              "%u\n",
+              "%s: WARNING: Unsupported capture type: %s: %u\n",
               tag.c_str(), it.second->ifname.c_str(),
               static_cast<unsigned>(it.second->capture_type.flags));
         }
@@ -2662,16 +2703,16 @@ void ndInstance::UpdateStatus(void) {
   defined(HAVE_GPERFTOOLS_MALLOC_EXTENSION_H)
     size_t tcm_alloc_bytes = 0;
 
+    char buffer[4096];
+    MallocExtension::instance()->GetStats(buffer, sizeof(buffer));
+    nd_dprintf(buffer);
+
     MallocExtension::instance()->ReleaseFreeMemory();
     MallocExtension::instance()->GetNumericProperty(
       "generic.current_allocated_bytes", &tcm_alloc_bytes);
     status.tcm_alloc_kb_prev = status.tcm_alloc_kb;
     status.tcm_alloc_kb = tcm_alloc_bytes / 1024;
 #endif
-    status.ndpi_kb_prev = status.ndpi_kb;
-    status.ndpi_kb = static_cast<size_t>(
-      ndpi_get_tot_allocated_memory() / 1024);
-
     struct rusage rusage_data;
     getrusage(RUSAGE_SELF, &rusage_data);
 
@@ -2729,6 +2770,38 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
         dns_hint_cache->Scoreboard(tag + ": DHC");
     if (flow_hash_cache != nullptr)
         flow_hash_cache->Scoreboard(tag + ": FHC");
+
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+    if (ndGC_USE_CONNTRACK) {
+        thread_conntrack->Dump(true);
+
+        set<string> ct_counter_ifnames;
+
+        for (auto &it : interfaces) {
+            if (! it.second->conntrack_counters) continue;
+            ct_counter_ifnames.insert(it.first);
+        }
+
+        struct timeval stamp;
+        gettimeofday(&stamp, nullptr);
+
+        const size_t buckets = flow_buckets->GetBuckets();
+        for (size_t b = 0; b < buckets; b++) {
+            auto &fm = flow_buckets->Acquire(b);
+
+            for (auto &i : fm) {
+                if (i.second->conntrack.id == 0) continue;
+                if (ct_counter_ifnames.find(i.second->iface->ifname) ==
+                    ct_counter_ifnames.end())
+                    continue;
+
+                thread_conntrack->UpdateFlowStats(i.second, stamp);
+            }
+
+            flow_buckets->Release(b);
+        }
+    }
+#endif // _ND_ENABLE_CONNTRACK_COUNTERS
 
     plugins.BroadcastEvent(ndPlugin::Type::BASE,
       ndPlugin::Event::STATUS_UPDATE);
@@ -2886,13 +2959,14 @@ void ndInstance::ProcessFlows(void) {
       "%s: new: %lu, pre-dpi: %lu, in-use: %lu, purged "
       "%lu, active: %lu, idle: %lu, expiring: "
       "%lu, "
-      "expired: %lu, total: %lu\n",
+      "expired: %lu, total: %lu (%lu)\n",
       tag.c_str(),
 
       flows_new, flows_pre_init, status.flows_in_use,
       status.flows_purged, status.flows_active,
       flows_total - status.flows_active - flows_pre_init,
-      status.flows_expiring, status.flows_expired, flows_total);
+      status.flows_expiring, status.flows_expired, flows_total,
+      status.flows.load());
 #ifdef _ND_PROCESS_FLOW_DEBUG
     nd_dprintf(
       "TCP: %lu, TCP+FIN: %lu, TCP+FIN+ACK1: %lu, "

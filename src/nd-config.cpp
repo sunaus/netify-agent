@@ -64,7 +64,7 @@ ndGlobalConfig::ndGlobalConfig()
     fhc_storage(ndFHCStorage::PERSISTENT),
     capture_type(ndCaptureType::NONE),
     capture_read_timeout(ND_CAPTURE_READ_TIMEOUT),
-    h_flow(stderr), ca_capture_base(0), ca_conntrack(-1),
+    h_flow(stderr), ca_capture_base(0),
     ca_detection_base(0), ca_detection_cores(-1),
     max_capture_length(ND_PCAP_SNAPLEN),
     flags(ndGlobalFlags::NONE), verbosity(0),
@@ -170,6 +170,9 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
         uuid_site = r->Get(ND_NAME_SHORT, "uuid_site",
           ND_SITE_UUID_NULL);
 
+    if (network_namespace.empty())
+        network_namespace = r->Get(ND_NAME_SHORT, "network_namespace", "");
+
     if (! profile) {
         path_state_persistent = r->Get(ND_NAME_SHORT,
           "path_state_persistent", ND_PERSISTENT_STATEDIR);
@@ -273,8 +276,6 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     // Threading section
     ca_capture_base = (int16_t)r->GetInteger("threads",
       "capture_base", this->ca_capture_base);
-    ca_conntrack = (int16_t)r->GetInteger("threads",
-      "conntrack", this->ca_conntrack);
     ca_detection_base = (int16_t)r->GetInteger("threads",
       "detection_base", this->ca_detection_base);
     ca_detection_cores = (int16_t)r->GetInteger("threads",
@@ -865,22 +866,11 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
             }
             break;
         case ndCaptureType::NFQ:
-            p = iface.find_first_of("0123456789");
-            if (p == string::npos ||
-              strncasecmp(iface.c_str(), "nfq", 3))
-            {
-                fprintf(stderr,
-                  "Invalid NFQUEUE identifier: %s\n",
-                  iface.c_str());
-                return false;
-            }
             config = static_cast<void *>(new nd_config_nfq);
             if (! LoadCaptureSettings(r, s, type, config)) {
                 delete static_cast<nd_config_nfq *>(config);
                 return false;
             }
-            static_cast<nd_config_nfq *>(config)->queue_id =
-              (unsigned)strtol(iface.substr(p).c_str(), NULL, 0);
             break;
         default: break;
         }
@@ -1004,7 +994,10 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
   const string &section, ndFlags<ndCaptureType> &type,
   void *config) const {
     INIReader *r = static_cast<INIReader *>(config_reader);
-
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+    bool conntrack_counters = r->GetBoolean(section,
+      "conntrack_counters", false);
+#endif
     if (ndCT_TYPE(type.flags) == ndCaptureType::PCAP) {
         nd_config_pcap *pcap = static_cast<nd_config_pcap *>(config);
         string capture_filename = r->Get(section,
@@ -1024,8 +1017,13 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
             else
                 type = ndCaptureType::PCAP_OFFLINE |
                   ndCaptureType::CMDLINE;
+
             pcap->capture_filename = capture_filename;
         }
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        if (! ((type & ndCaptureType::PCAP_OFFLINE) == ndCaptureType::PCAP_OFFLINE))
+            pcap->conntrack_counters = conntrack_counters;
+#endif
     }
     else if (ndCT_TYPE(type.flags) == ndCaptureType::TPV3) {
         nd_config_tpv3 *tpv3 = static_cast<nd_config_tpv3 *>(config);
@@ -1088,11 +1086,19 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
 
         tpv3->rb_blocks = (unsigned)r->GetInteger(section,
           "rb_blocks", tpv3_defaults.rb_blocks);
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        tpv3->conntrack_counters = conntrack_counters;
+#endif
     }
     else if (ndCT_TYPE(type.flags) == ndCaptureType::NFQ) {
         nd_config_nfq *nfq = static_cast<nd_config_nfq *>(config);
+        nfq->queue_id = (unsigned)r->GetInteger(section,
+          "queue_id", 0);
         nfq->instances = (unsigned)r->GetInteger(section,
           "queue_instances", 1);
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        nfq->conntrack_counters = conntrack_counters;
+#endif
     }
 
     return true;

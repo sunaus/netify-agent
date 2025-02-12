@@ -220,11 +220,12 @@ public:
         std::atomic<uint32_t> last_seq = { 0 };
     } tcp;
 
-#if defined(_ND_ENABLE_CONNTRACK) && \
-  defined(_ND_ENABLE_CONNTRACK_MDATA)
+#ifdef _ND_ENABLE_CONNTRACK
     struct {
         uint32_t id = { 0 };
+#ifdef _ND_ENABLE_CONNTRACK_MDATA
         uint32_t mark = { 0 };
+#endif
     } conntrack;
 #endif
 
@@ -334,7 +335,10 @@ public:
     void Hash(const std::string &device, bool hash_mdata = false,
       const uint8_t *key = nullptr, size_t key_length = 0);
 
-    inline void Reset(void) { stats.Reset(); }
+    inline void Reset(void) {
+        vlan_id = 0;
+        stats.Reset();
+    }
 
     void Release(void);
 
@@ -492,11 +496,6 @@ public:
             }
             serialize(output, { "soft_dissector" },
               (bool)flags.soft_dissector.load());
-#if defined(_ND_ENABLE_CONNTRACK) && \
-  defined(_ND_ENABLE_CONNTRACK_MDATA)
-            serialize(output, { "ct_id" }, conntrack.id);
-            serialize(output, { "ct_mark" }, conntrack.mark);
-#endif
             serialize(output, { "ip_version" }, (unsigned)ip_version);
             serialize(output, { "ip_dscp" }, (unsigned)ip_dscp);
             serialize(output, { "ip_protocol" },
@@ -590,6 +589,12 @@ public:
             serialize(output, { "category", "network" },
               category.network);
 
+#ifdef _ND_ENABLE_CONNTRACK
+            serialize(output, { "conntrack", "id" }, conntrack.id);
+#ifdef _ND_ENABLE_CONNTRACK_MDATA
+            serialize(output, { "conntrack", "mark" }, conntrack.mark);
+#endif
+#endif
             if (! dns_host_name.empty())
                 serialize(output, { "dns_host_name" }, dns_host_name);
 

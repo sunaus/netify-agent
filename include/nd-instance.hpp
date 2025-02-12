@@ -41,12 +41,11 @@
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
-#ifdef _ND_ENABLE_CONNTRACK
-#include "nd-conntrack.hpp"
-#endif
-
 #ifdef _ND_ENABLE_NETLINK
-#include "nd-netlink.hpp"
+#include "nd-netlink-rt.hpp"
+#ifdef _ND_ENABLE_CONNTRACK
+#include "nd-netlink-ct.hpp"
+#endif
 #endif
 
 class ndInstanceStatus : public ndSerializer
@@ -74,8 +73,6 @@ public:
     size_t tcm_alloc_kb = { 0 };
     size_t tcm_alloc_kb_prev = { 0 };
 #endif
-    size_t ndpi_kb = { 0 };
-    size_t ndpi_kb_prev = { 0 };
     bool dhc_status = { false };
     bool fhc_status = { false };
 
@@ -104,8 +101,6 @@ public:
         serialize(output, { "tcm_kb" }, tcm_alloc_kb);
         serialize(output, { "tcm_kb_prev" }, tcm_alloc_kb_prev);
 #endif  // _ND_ENABLE_LIBTCMALLOC
-        serialize(output, { "ndpi_kb" }, ndpi_kb);
-        serialize(output, { "ndpi_kb_prev" }, ndpi_kb_prev);
         serialize(output, { "dhc_status" }, dhc_status);
         serialize(output, { "fhc_status" }, fhc_status);
     }
@@ -114,8 +109,9 @@ public:
 class ndCaptureThread;
 class ndDetectionThread;
 class ndNetifyApiManager;
-#ifdef _ND_ENABLE_CONNTRACK
-class ndConntrackThread;
+#ifdef _ND_ENABLE_NETLINK
+class ndNetlinkRouteTherad;
+class ndNetlinkConntrackThread;
 #endif
 
 typedef std::map<int16_t, ndDetectionThread *> ndDetectionThreads;
@@ -168,6 +164,7 @@ public:
         PROVISION_UUID,
         SAVE_UUID_FAILURE,
         SET_CONFIG,
+        SETNETNS_FAILURE,
         USAGE_OR_VERSION,
     };
 
@@ -272,11 +269,10 @@ public:
 
     enum class InstanceEvent : uint32_t {
         NONE,
-        NETLINK_IO,
         RELOAD,
         TERMINATE,
-        UPDATE,
-        UPDATE_NAPI,
+        TIMER_UPDATE,
+        TIMER_UPDATE_NAPI,
     };
 
     inline void SendIPC(InstanceEvent event) {
@@ -296,12 +292,12 @@ public:
     ndDNSHintCache *dns_hint_cache = { nullptr };
     ndFlowHashCache *flow_hash_cache = { nullptr };
     ndFlowMap *flow_buckets = { nullptr };
-#ifdef _ND_ENABLE_NETLINK
-    ndNetlink *netlink = { nullptr };
-#endif
     ndNetifyApiManager api_manager;
+#ifdef _ND_ENABLE_NETLINK
+    ndNetlinkRouteThread *thread_netlink = { nullptr };
 #ifdef _ND_ENABLE_CONNTRACK
-    ndConntrackThread *thread_conntrack = { nullptr };
+    ndNetlinkConntrackThread *thread_conntrack = { nullptr };
+#endif
 #endif
     ndDetectionThreads thread_detection;
     ndPluginManager plugins;

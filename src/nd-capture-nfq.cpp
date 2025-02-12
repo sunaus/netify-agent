@@ -24,12 +24,13 @@
 
 #include <libmnl/libmnl.h>
 #include <libnetfilter_queue/libnetfilter_queue.h>
+#include <libnfnetlink/libnfnetlink.h>
+#include <linux/netfilter/nf_conntrack_common.h>
+#include <net/if.h>
 
 #ifndef NF_ACCEPT
 #define NF_ACCEPT 1
 #endif
-
-#include <libnfnetlink/libnfnetlink.h>
 
 #if defined(HAVE_PCAP_DLT_H)
 #include <pcap/dlt.h>
@@ -42,9 +43,64 @@
 #include "nd-capture-nfq.hpp"
 #include "nd-except.hpp"
 
-#define _ND_LOG_WARNINGS 1
-//#define _ND_LOG_DEBUG     1
-//#define _ND_LOG_PACKETS   1
+// #define _ND_LOG_WARNINGS 1
+// #define _ND_LOG_DEBUG 1
+
+#ifdef _ND_LOG_DEBUG
+static void ndCaptureNFQueue_PrintAttrs(const char *tag, struct nlattr **attr) {
+    for (unsigned i = 0; i < NFQA_MAX; i++) {
+        if (attr[i] == nullptr) continue;
+
+        switch (i) {
+        case NFQA_UNSPEC:
+            nd_dprintf("%s: NFQA_UNSPEC\n", tag);
+            break;
+        case NFQA_PACKET_HDR:
+            nd_dprintf("%s: NFQA_PACKET_HDR\n", tag);
+            break;
+        case NFQA_VERDICT_HDR:
+            nd_dprintf("%s: NFQA_VERDICT_HDR\n", tag);
+            break;
+        case NFQA_MARK:
+            nd_dprintf("%s: NFQA_MARK\n", tag);
+            break;
+        case NFQA_TIMESTAMP:
+            nd_dprintf("%s: NFQA_TIMESTAMP\n", tag);
+            break;
+        case NFQA_IFINDEX_INDEV:
+            nd_dprintf("%s: NFQA_IFINDEX_INDEV\n", tag);
+            break;
+        case NFQA_IFINDEX_OUTDEV:
+            nd_dprintf("%s: NFQA_IFINDEX_OUTDEV\n", tag);
+            break;
+        case NFQA_IFINDEX_PHYSINDEV:
+            nd_dprintf("%s: NFQA_IFINDEX_PHYSINDEV\n", tag);
+            break;
+        case NFQA_IFINDEX_PHYSOUTDEV:
+            nd_dprintf("%s: NFQA_IFINDEX_PHYSOUTDEV\n", tag);
+            break;
+        case NFQA_HWADDR:
+            nd_dprintf("%s: NFQA_HWADDR\n", tag);
+            break;
+        case NFQA_PAYLOAD:
+            nd_dprintf("%s: NFQA_PAYLOAD\n", tag);
+            break;
+        case NFQA_CT:
+            nd_dprintf("%s: NFQA_CT\n", tag);
+            break;
+        case NFQA_CT_INFO:
+            nd_dprintf("%s: NFQA_CT_INFO\n", tag);
+            break;
+        case NFQA_CAP_LEN:
+            nd_dprintf("%s: NFQA_CAP_LEN\n", tag);
+            break;
+        default:
+            nd_dprintf("%s: NFQA_???: %u\n", tag, i);
+            break;
+        }
+    }
+}
+#endif
 
 static int ndCaptureNFQueue_Callback(
   const struct nlmsghdr *nlh, void *user) {
@@ -57,10 +113,7 @@ static int ndCaptureNFQueue_Callback(
           strerror(errno));
         return MNL_CB_ERROR;
     }
-#if 0
-    for (unsigned i = 0; i < NFQA_MAX; i++)
-        nd_dprintf("NFQA_%i: %p\n", i, attr[i]);
-#endif
+
     if (attr[NFQA_PACKET_HDR] == nullptr) {
         nd_printf("%s: No packet header metadata set.\n", tag);
         return MNL_CB_ERROR;
@@ -69,51 +122,63 @@ static int ndCaptureNFQueue_Callback(
     struct nfqnl_msg_packet_hdr *pkt_hdr = nullptr;
     pkt_hdr = static_cast<struct nfqnl_msg_packet_hdr *>(
       mnl_attr_get_payload(attr[NFQA_PACKET_HDR]));
-#if 0
-    nd_dprintf("%s: pkt protocol: 0x%04x\n", tag,
-        ntohs(pkt_hdr->hw_protocol));
+
+    switch (ntohs(pkt_hdr->hw_protocol)) {
+    case ETHERTYPE_IP:
+    case ETHERTYPE_IPV6:
+        break;
+    default:
+#ifdef _ND_LOG_WARNINGS
+        nd_dprintf("%s: unsupported packet protocol: 0x%04x\n",
+            tag, ntohs(pkt_hdr->hw_protocol));
 #endif
+        return MNL_CB_OK;
+    }
+
     struct nfqnl_msg_packet_timestamp *pkt_ts = nullptr;
     if (attr[NFQA_TIMESTAMP] != nullptr) {
         pkt_ts = static_cast<struct nfqnl_msg_packet_timestamp *>(
           mnl_attr_get_payload(attr[NFQA_TIMESTAMP]));
     }
 
-    struct nfqnl_msg_packet_hw *pkt_hwaddr = nullptr;
-    if (attr[NFQA_HWADDR] != nullptr) {
-        pkt_hwaddr = static_cast<struct nfqnl_msg_packet_hw *>(
-          mnl_attr_get_payload(attr[NFQA_HWADDR]));
-#ifdef _ND_LOG_DEBUG
-        if (pkt_hwaddr != nullptr) {
-            nd_dprintf(
-              "%s: hwaddr[%hu]: "
-              "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n",
-              tag, pkt_hwaddr->hw_addrlen,
-              pkt_hwaddr->hw_addr[0], pkt_hwaddr->hw_addr[1],
-              pkt_hwaddr->hw_addr[2], pkt_hwaddr->hw_addr[3],
-              pkt_hwaddr->hw_addr[4], pkt_hwaddr->hw_addr[5]);
-        }
-#endif
+    struct timeval pkt_tv;
+    if (pkt_ts != nullptr && (pkt_ts->sec != 0 || pkt_ts->usec != 0)) {
+        pkt_tv.tv_sec = __be64_to_cpu(pkt_ts->sec);
+        pkt_tv.tv_usec = __be64_to_cpu(pkt_ts->usec);
     }
+    else {
 #ifdef _ND_LOG_WARNINGS
-    else
-        nd_dprintf("%s: WARNING: no hardware address.\n", tag);
+        nd_dprintf("%s: WARNING: no packet timestamp.\n", tag);
+#endif
+        gettimeofday(&pkt_tv, nullptr);
+    }
+
+    uint32_t ifidx_in = 0;
+    if (attr[NFQA_IFINDEX_PHYSINDEV] != nullptr)
+        ifidx_in = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSINDEV]));
+    else if (attr[NFQA_IFINDEX_INDEV] != nullptr)
+        ifidx_in = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_INDEV]));
+    uint32_t ifidx_out = 0;
+    if (attr[NFQA_IFINDEX_PHYSOUTDEV] != nullptr)
+        ifidx_out = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSOUTDEV]));
+    else if (attr[NFQA_IFINDEX_OUTDEV] != nullptr)
+        ifidx_out = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_OUTDEV]));
+#ifdef _ND_LOG_DEBUG
+    if (ifidx_in > 0) {
+        char ifname[IFNAMSIZ] = { '\0' };
+        if_indextoname(ifidx_in, ifname);
+        nd_dprintf("%s: -->: %s\n", tag, ifname);
+    }
+    if (ifidx_out > 0) {
+        char ifname[IFNAMSIZ] = { '\0' };
+        if_indextoname(ifidx_out, ifname);
+        nd_dprintf("%s: <--: %s\n", tag, ifname);
+    }
 #endif
 
-    const uint16_t pkt_len = mnl_attr_get_payload_len(
+    const uint16_t pkt_caplen = mnl_attr_get_payload_len(
       attr[NFQA_PAYLOAD]);
     void *payload = mnl_attr_get_payload(attr[NFQA_PAYLOAD]);
-#ifdef _ND_LOG_PACKETS
-    uint16_t x = 0;
-    for (uint16_t i = 0; i < pkt_len; i++) {
-        fprintf(stderr, " %02x", ((uint8_t *)payload)[i]);
-        if (++x == 16) {
-            x = 0;
-            fprintf(stderr, "\n");
-        }
-    }
-    fprintf(stderr, "\n");
-#endif
 
 #ifdef _ND_LOG_DEBUG
     uint32_t skbinfo = attr[NFQA_SKB_INFO] ?
@@ -124,43 +189,64 @@ static int ndCaptureNFQueue_Callback(
 #endif
 
     constexpr size_t hdr_eth_size = sizeof(struct ether_header);
-    const uint16_t pkt_caplen = (attr[NFQA_CAP_LEN]) ?
+    const uint16_t pkt_len = (attr[NFQA_CAP_LEN]) ?
       ntohl(mnl_attr_get_u32(attr[NFQA_CAP_LEN])) :
-      pkt_len;
+      pkt_caplen;
 
     // One-and-only packet copy...
     uint8_t *pkt_data = new uint8_t[hdr_eth_size + pkt_caplen];
+    memcpy(pkt_data + hdr_eth_size, payload, pkt_caplen);
 
+    // Initialize Ethernet header...
     struct ether_header *hdr_eth = (struct ether_header *)pkt_data;
     memset(hdr_eth, 0, hdr_eth_size);
     hdr_eth->ether_type = pkt_hdr->hw_protocol;
+
+    // If we have a HW address, use it as source MAC...
+    struct nfqnl_msg_packet_hw *pkt_hwaddr = nullptr;
+    if (attr[NFQA_HWADDR] != nullptr) {
+        pkt_hwaddr = static_cast<struct nfqnl_msg_packet_hw *>(
+          mnl_attr_get_payload(attr[NFQA_HWADDR]));
+    }
+
+    ndFlags<ndPacket::StatusFlags> pkt_status = ndPacket::StatusFlags::OK;
+
     if (pkt_hwaddr != nullptr) {
+        pkt_status |= ndPacket::StatusFlags::NFQ_HWADDR_SRC;
         memcpy(&hdr_eth->ether_shost[0],
           &pkt_hwaddr->hw_addr[0], ETH_ALEN);
     }
-
-    struct timeval tv;
-
-    if (pkt_ts == nullptr) {
-#ifdef _ND_LOG_WARNINGS
-        nd_dprintf("%s: WARNING: no packet timestamp.\n", tag);
-#endif
-        gettimeofday(&tv, NULL);
+    else if (ifidx_in > 0) {
+        // ...otheriwse attempt to look-up MAC for input interface.
+        ndAddr addr;
+        if (nfq->ndi.addr_lookup.LookupLinkAddress(ifidx_in, addr)
+            && addr.IsEthernet()) {
+            pkt_status |= ndPacket::StatusFlags::NFQ_HWADDR_SRC;
+            memcpy(&hdr_eth->ether_shost[0],
+                addr.GetAddress(), ETH_ALEN);
+        }
     }
-    else {
-        tv.tv_sec = (time_t)pkt_ts->sec;
-        tv.tv_usec = (time_t)pkt_ts->usec;
-    };
 
-    memcpy(pkt_data + hdr_eth_size, payload, pkt_caplen);
+    // Set initial destination MAC using output interface, if available.
+    if (ifidx_out > 0) {
+        ndAddr addr;
+        if (nfq->ndi.addr_lookup.LookupLinkAddress(ifidx_out, addr)
+            && addr.IsEthernet()) {
+            pkt_status |= ndPacket::StatusFlags::NFQ_HWADDR_DST;
+            memcpy(&hdr_eth->ether_dhost[0],
+                addr.GetAddress(), ETH_ALEN);
+        }
+    }
 
-    ndPacket *pkt = new ndPacket(ndPacket::StatusFlags::OK,
+    // Create and push packet...
+    ndPacket *pkt = new ndPacket(pkt_status,
       static_cast<uint16_t>(hdr_eth_size + pkt_len),
       static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
-      pkt_data, tv);
+      pkt_data, pkt_tv);
 
     nfq->PushPacket(pkt);
 
+    // Set NFQUEUE verdict to ACCEPT.
     struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
       mnl_nlmsg_get_payload(nlh));
 
@@ -191,8 +277,6 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     buffer_size(0xffff + (MNL_SOCKET_BUFFER_SIZE / 2)),
     buffer(nullptr), dropped(0) {
     dl_type = DLT_EN10MB;
-
-    tag.append("#" + std::to_string(instance_id));
 
     queue_id = iface->config_nfq.queue_id + instance_id;
 
@@ -226,9 +310,9 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     nlh = nfq_nlmsg_put((char *)buffer, NFQNL_MSG_CONFIG, queue_id);
     nfq_nlmsg_cfg_put_params(nlh, NFQNL_COPY_PACKET, 0xffff);
 
-    long flags = NFQA_CFG_F_FAIL_OPEN | NFQA_CFG_F_GSO;
-    //    long flags = NFQA_CFG_F_FAIL_OPEN |
-    //        NFQA_CFG_F_CONNTRACK | NFQA_CFG_F_GSO;
+    //long flags = NFQA_CFG_F_FAIL_OPEN | NFQA_CFG_F_GSO;
+    long flags = NFQA_CFG_F_FAIL_OPEN |
+        NFQA_CFG_F_CONNTRACK | NFQA_CFG_F_GSO;
     mnl_attr_put_u32(nlh, NFQA_CFG_FLAGS, htonl(flags));
     mnl_attr_put_u32(nlh, NFQA_CFG_MASK, htonl(flags));
 
@@ -242,9 +326,11 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     // sizeof(int));
 
     nd_dprintf(
-      "%s: NFQ capture thread created with buffer size: "
-      "%lu\n",
-      tag.c_str(), buffer_size);
+      "%s: NFQ capture thread created on queue #%u, thread #%u, "
+      "counters: %s, buffer size: %lu\n", tag.c_str(),
+      iface->config_nfq.queue_id, instance_id,
+      (iface->config_nfq.conntrack_counters) ? "enabled" : "disabled",
+      buffer_size);
 }
 
 ndCaptureNFQueue::~ndCaptureNFQueue() {
@@ -274,7 +360,7 @@ void *ndCaptureNFQueue::Entry(void) {
         memset(&tv, 0, sizeof(struct timeval));
         tv.tv_sec = 1;
 
-        rc = select(fd + 1, &fds_read, NULL, NULL, &tv);
+        rc = select(fd + 1, &fds_read, nullptr, nullptr, &tv);
 
         if (rc == -1) {
             throw ndExceptionSystemError(__PRETTY_FUNCTION__,
@@ -334,7 +420,7 @@ void *ndCaptureNFQueue::Entry(void) {
     nd_dprintf("%s: NFQ capture ended on CPU: %lu\n",
       tag.c_str(), cpu >= 0 ? cpu : 0);
 
-    return NULL;
+    return nullptr;
 }
 
 void ndCaptureNFQueue::GetCaptureStats(ndPacketStats &stats) {

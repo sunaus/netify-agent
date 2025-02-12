@@ -76,8 +76,7 @@ ndFlow::ndFlow(const ndFlow &flow)
     ts_last_seen(flow.ts_last_seen.load()),
     tunnel_type(flow.tunnel_type), origin(flow.origin),
     digest_lower(flow.digest_lower), flags{}, tcp{},
-#if defined(_ND_ENABLE_CONNTRACK) && \
-  defined(_ND_ENABLE_CONNTRACK_MDATA)
+#ifdef _ND_ENABLE_CONNTRACK
     conntrack(flow.conntrack),
 #endif
     gtp(flow.gtp), detected_protocol_name("Unknown") {

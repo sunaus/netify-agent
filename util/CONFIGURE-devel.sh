@@ -11,6 +11,8 @@
 : ${ENABLE_SANITIZER:=false}
 : ${ENABLE_STACK_PROTECTION:=false}
 : ${OPTION_CONNTRACK:=enable}
+: ${OPTION_CONNTRACK_MDATA:=enable}
+: ${OPTION_CONNTRACK_COUNTERS:=enable}
 : ${OPTION_NETLINK:=enable}
 : ${OPTION_PLUGINS:=enable}
 : ${OPTION_LIBTCMALLOC:=enable}
@@ -89,6 +91,8 @@ echo " VARIANT: ${VARIANT}"
 echo " ENABLE_SANITIZER: ${ENABLE_SANITIZER}"
 echo " ENABLE_STACK_PROTECTION: ${ENABLE_STACK_PROTECTION}"
 echo " OPTION_CONNTRACK: ${OPTION_CONNTRACK}"
+echo " OPTION_CONNTRACK_MDATA: ${OPTION_CONNTRACK_MDATA}"
+echo " OPTION_CONNTRACK_COUNTERS: ${OPTION_CONNTRACK_COUNTERS}"
 echo " OPTION_NETLINK: ${OPTION_NETLINK}"
 echo " OPTION_PLUGINS: ${OPTION_PLUGINS}"
 echo " OPTION_LIBTCMALLOC: ${OPTION_LIBTCMALLOC}"
@@ -96,26 +100,33 @@ echo " OPTION_NFQUEUE: ${OPTION_NFQUEUE}"
 
 if [ $# -gt 0 -a "x$1" == "xhelp" ]; then exit 0; fi
 
+CONFIGURE_ARGS="--program-prefix="
+CONFIGURE_ARGS+=" --prefix=${prefix}"
+CONFIGURE_ARGS+=" --exec-prefix=${exec_prefix}"
+CONFIGURE_ARGS+=" --bindir=${bindir}"
+CONFIGURE_ARGS+=" --sbindir=${sbindir}"
+CONFIGURE_ARGS+=" --sysconfdir=${sysconfdir}"
+CONFIGURE_ARGS+=" --datadir=${datadir}"
+CONFIGURE_ARGS+=" --includedir=${includedir}"
+CONFIGURE_ARGS+=" --libdir=${libdir}"
+CONFIGURE_ARGS+=" --libexecdir=${libexecdir}"
+CONFIGURE_ARGS+=" --localstatedir=${localstatedir}"
+CONFIGURE_ARGS+=" --sharedstatedir=${sharedstatedir}"
+CONFIGURE_ARGS+=" --mandir=${mandir}"
+CONFIGURE_ARGS+=" --infodir=${infodir}"
+CONFIGURE_ARGS+=" --${OPTION_CONNTRACK}-conntrack"
+CONFIGURE_ARGS+=" --${OPTION_NETLINK}-netlink"
+CONFIGURE_ARGS+=" --${OPTION_PLUGINS}-plugins"
+CONFIGURE_ARGS+=" --${OPTION_LIBTCMALLOC}-libtcmalloc"
+CONFIGURE_ARGS+=" --${OPTION_NFQUEUE}-nfqueue"
+
+if [ "x${OPTION_CONNTRACK}" = "xenable" ]; then
+    CONFIGURE_ARGS+=" --${OPTION_CONNTRACK_MDATA}-conntrack-mdata"
+    CONFIGURE_ARGS+=" --${OPTION_CONNTRACK_COUNTERS}-conntrack-counters"
+fi
+
 ./configure \
-    --program-prefix= \
-    --prefix=${prefix} \
-    --exec-prefix=${exec_prefix} \
-    --bindir=${bindir} \
-    --sbindir=${sbindir} \
-    --sysconfdir=${sysconfdir} \
-    --datadir=${datadir} \
-    --includedir=${includedir} \
-    --libdir=${libdir} \
-    --libexecdir=${libexecdir} \
-    --localstatedir=${localstatedir} \
-    --sharedstatedir=${sharedstatedir} \
-    --mandir=${mandir} \
-    --infodir=${infodir} \
-    --${OPTION_CONNTRACK}-conntrack \
-    --${OPTION_NETLINK}-netlink \
-    --${OPTION_PLUGINS}-plugins \
-    --${OPTION_LIBTCMALLOC}-libtcmalloc \
-    --${OPTION_NFQUEUE}-nfqueue \
+    $CONFIGURE_ARGS \
     $@ || exit $?
 
 cat << EOF > compile_flags.txt

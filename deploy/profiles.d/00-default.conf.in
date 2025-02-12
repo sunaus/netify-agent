@@ -68,6 +68,11 @@ update_interval = 15
 # available.  Should be enabled for FreeBSD and variants.
 use_getifaddrs = false
 
+# Attach to an alternate network namespace.  The namespace can be specified
+# as a name (/var/run/netns/<name>), or a PID (/proc/<PID>/ns/net), or as a
+# full path.
+# network_namespace = netify
+
 # Capture Defaults
 ############################################################################
 
@@ -85,6 +90,11 @@ read_timeout = 500
 ############################################################################
 
 [flow-hash-cache]
+# When enabled, a flow's metadata hash along with the detected protocol and
+# application ID will be cached for cases where a flow idles longer than the
+# set TTL (ttl_idle_flow for non-TCP, and ttl_idle_tcp_flow for TCP).  When
+# a flow's activity resumes, it will re-use the old hash and IDs from the
+# cache if available.
 enable = yes
 save = persistent
 cache_size = 1000
