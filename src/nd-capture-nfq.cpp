@@ -24,8 +24,6 @@
 
 #include <libmnl/libmnl.h>
 #include <libnetfilter_queue/libnetfilter_queue.h>
-#include <libnfnetlink/libnfnetlink.h>
-#include <linux/netfilter/nf_conntrack_common.h>
 #include <net/if.h>
 
 #ifndef NF_ACCEPT
