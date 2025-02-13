@@ -28,14 +28,15 @@
 #include "nd-except.hpp"
 #include "nd-flow.hpp"
 #include "nd-protos.hpp"
+#include "nd-types.hpp"
 #include "nd-util.hpp"
 
 class ndFlowHashCacheEntry
 {
 public:
     ndFlowHashCacheEntry()
-      : app_id(ND_APP_UNKNOWN), proto_id(ndProto::Id::UNKNOWN) { }
-    ndFlowHashCacheEntry(const nd_flow_ptr &flow)
+      : app_id(ndApp::Id::UNKNOWN), proto_id(ndProto::Id::UNKNOWN) { }
+    ndFlowHashCacheEntry(const ndFlow::Ptr &flow)
       : app_id(flow->detected_application),
         proto_id(flow->detected_protocol) {
         if (flow->digest_mdata.empty())
@@ -55,7 +56,7 @@ public:
     }
 
     ndDigest digest;
-    nd_app_id_t app_id;
+    ndApp::Id app_id;
     ndProto::Id proto_id;
 };
 
@@ -65,7 +66,7 @@ class ndFlowHashCache :
 public:
     ndFlowHashCache(size_t cache_size);
 
-    inline void Insert(const nd_flow_ptr &flow) {
+    inline void Insert(const ndFlow::Ptr &flow) {
         const std::string key(flow->digest_lower.begin(),
           flow->digest_lower.end());
         CacheInsert(key, ndFlowHashCacheEntry(flow));

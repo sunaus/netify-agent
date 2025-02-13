@@ -326,7 +326,7 @@ protected:
 
     //void DisplayDebugScoreboard(void) const;
 
-    bool ExpireFlow(nd_flow_ptr &flow);
+    bool ExpireFlow(ndFlow::Ptr &flow);
 
     void ProcessUpdate(const ndCaptureThreads &threads);
 

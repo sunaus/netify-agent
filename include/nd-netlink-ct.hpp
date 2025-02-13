@@ -47,9 +47,9 @@ public:
 
     void Dump(bool zero_counters = false);
 
-    void UpdateFlow(nd_flow_ptr &flow);
+    void UpdateFlow(ndFlow::Ptr &flow);
 #if defined(_ND_ENABLE_CONNTRACK_COUNTERS)
-    void UpdateFlowStats(nd_flow_ptr &flow, const struct timeval &stamp) const;
+    void UpdateFlowStats(ndFlow::Ptr &flow, const struct timeval &stamp) const;
 #endif
     typedef struct {
         uint32_t created = { 0 };

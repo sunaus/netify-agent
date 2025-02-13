@@ -1694,3 +1694,8 @@ int nd_set_netns(const string &ns) {
     return rc;
 }
 #endif
+
+std::ostream &operator<<(std::ostream &stream, ndApp::Id id) {
+    stream << static_cast<unsigned>(id);
+    return stream;
+}

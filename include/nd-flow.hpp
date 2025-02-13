@@ -22,18 +22,19 @@
 
 #include <atomic>
 #include <mutex>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "nd-addr.hpp"
-#include "nd-apps.hpp"
 #include "nd-category.hpp"
 #include "nd-config.hpp"
 #include "nd-flags.hpp"
 #include "nd-protos.hpp"
 #include "nd-serializer.hpp"
 #include "nd-sha1.h"
+#include "nd-types.hpp"
 #include "nd-util.hpp"
 
 // TLS SNI hostname/common-name length. Reference: RFC 4366
@@ -136,6 +137,8 @@ public:
 class ndFlow : public ndSerializer
 {
 public:
+    typedef std::shared_ptr<ndFlow> Ptr;
+
     nd_iface_ptr iface;
 
     ndAddr lower_mac;
@@ -249,7 +252,7 @@ public:
     ndProto::Id detected_protocol = { ndProto::Id::UNKNOWN };
     std::string detected_protocol_name;
 
-    nd_app_id_t detected_application = { ND_APP_UNKNOWN };
+    ndApp::Id detected_application = { ndApp::Id::UNKNOWN };
     std::string detected_application_name;
 
     struct {
@@ -821,10 +824,6 @@ public:
 #endif
         }
     }
-};
 
-typedef std::shared_ptr<ndFlow> nd_flow_ptr;
-typedef std::unordered_map<std::string, nd_flow_ptr> nd_flow_map;
-typedef std::map<std::string, nd_flow_map *> nd_flows;
-typedef std::pair<std::string, nd_flow_ptr> nd_flow_pair;
-typedef std::pair<nd_flow_map::iterator, bool> nd_flow_insert;
+    bool PushMetadataDigest(const ndDigest &digest);
+};

@@ -42,6 +42,7 @@
 
 #include "nd-except.hpp"
 #include "nd-sha1.h"
+#include "nd-types.hpp"
 
 constexpr unsigned ND_SHA1_BUFFER = 4096;
 typedef std::array<uint8_t, SHA1_DIGEST_LENGTH> ndDigest;
@@ -607,3 +608,5 @@ struct ndArrayHasher {
 #if defined(__linux__)
 int nd_set_netns(const std::string &ns);
 #endif
+
+std::ostream &operator<<(std::ostream &stream, ndApp::Id id);

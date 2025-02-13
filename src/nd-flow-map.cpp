@@ -29,7 +29,7 @@ using namespace std;
 
 ndFlowMap::ndFlowMap(size_t buckets) : buckets(buckets) {
     for (size_t i = 0; i < buckets; i++) {
-        nd_flow_map *b = new nd_flow_map;
+        Map *b = new Map;
 #ifdef HAVE_CXX11
         b->reserve(ND_HASH_BUCKETS_FLOWS);
 #endif
@@ -51,9 +51,9 @@ ndFlowMap::~ndFlowMap() {
     bucket_lock.clear();
 }
 
-nd_flow_ptr
+ndFlow::Ptr
 ndFlowMap::Lookup(const string &digest, bool acquire_lock) {
-    nd_flow_ptr f;
+    ndFlow::Ptr f;
     size_t b = HashToBucket(digest);
 
     bucket_lock[b]->lock();
@@ -67,14 +67,13 @@ ndFlowMap::Lookup(const string &digest, bool acquire_lock) {
 }
 
 bool ndFlowMap::Insert(const string &digest,
-  nd_flow_ptr &flow, bool unlocked) {
+  ndFlow::Ptr &flow, bool unlocked) {
     bool result = false;
     size_t b = HashToBucket(digest);
 
     if (! unlocked) bucket_lock[b]->lock();
 
-    nd_flow_pair fp(digest, flow);
-    nd_flow_insert fi = bucket[b]->insert(fp);
+    auto fi = bucket[b]->insert(make_pair(digest, flow));
 
     result = fi.second;
 
@@ -97,7 +96,7 @@ bool ndFlowMap::Delete(const string &digest) {
     return deleted;
 }
 
-nd_flow_map &ndFlowMap::Acquire(size_t b) {
+ndFlowMap::Map &ndFlowMap::Acquire(size_t b) {
     if (b >= buckets) {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
           "bucket", strerror(EINVAL));
@@ -108,7 +107,7 @@ nd_flow_map &ndFlowMap::Acquire(size_t b) {
     return *bucket[b];
 }
 
-const nd_flow_map &ndFlowMap::AcquireConst(size_t b) const {
+const ndFlowMap::Map &ndFlowMap::AcquireConst(size_t b) const {
     if (b >= buckets) {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
           "bucket", strerror(EINVAL));

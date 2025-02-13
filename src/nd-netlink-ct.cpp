@@ -421,7 +421,7 @@ void ndNetlinkConntrackThread::Dump(bool zero_counters) {
     ct_dump.Dump(zero_counters);
 }
 
-void ndNetlinkConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
+void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
 
     sha1 ctx;
     sha1_init(&ctx);
@@ -496,7 +496,7 @@ void ndNetlinkConntrackThread::UpdateFlow(nd_flow_ptr &flow) {
 
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
 void ndNetlinkConntrackThread::UpdateFlowStats(
-    nd_flow_ptr &flow, const struct timeval &stamp) const {
+    ndFlow::Ptr &flow, const struct timeval &stamp) const {
 
     if (flow->conntrack.id == 0) {
 #ifdef _ND_DEBUG_LOG

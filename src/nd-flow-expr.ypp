@@ -1008,13 +1008,13 @@ expr_soft_dissector:
 expr_app:
       FLOW_APPLICATION {
         _NDFP_result = ($$ = (
-            _NDFP_flow->detected_application != 0
+            static_cast<unsigned>(_NDFP_flow->detected_application) != 0
         ));
         _NDFP_debugf("Application detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_APPLICATION {
         _NDFP_result = ($$ = (
-            _NDFP_flow->detected_application == 0
+            static_cast<unsigned>(_NDFP_flow->detected_application) == 0
         ));
         _NDFP_debugf(
             "Application not detected? %s\n", (_NDFP_result) ? "yes" : "no"
@@ -1026,7 +1026,7 @@ expr_app:
 expr_app_id:
       FLOW_APPLICATION CMP_EQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = false);
-        if ($3 == _NDFP_flow->detected_application)
+        if ($3 == static_cast<unsigned>(_NDFP_flow->detected_application))
             _NDFP_result = ($$ = true);
 
         _NDFP_debugf(
@@ -1035,7 +1035,7 @@ expr_app_id:
     }
     | FLOW_APPLICATION CMP_NOTEQUAL VALUE_NUMBER {
         _NDFP_result = ($$ = true);
-        if ($3 == _NDFP_flow->detected_application)
+        if ($3 == static_cast<unsigned>(_NDFP_flow->detected_application))
             _NDFP_result = ($$ = false);
 
         _NDFP_debugf(
@@ -2032,7 +2032,7 @@ ndFlowParser::~ndFlowParser()
     yylex_destroy((yyscan_t)scanner);
 }
 
-bool ndFlowParser::Parse(nd_flow_ptr const& flow, const string &expr)
+bool ndFlowParser::Parse(ndFlow::Ptr const& flow, const string &expr)
 {
     this->flow = flow;
     expr_result = false;

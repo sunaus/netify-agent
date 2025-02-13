@@ -52,6 +52,7 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-signal.hpp
 %%DEVEL%%include/netifyd/nd-thread.hpp
 %%DEVEL%%include/netifyd/nd-tls-alpn.hpp
+%%DEVEL%%include/netifyd/nd-types.hpp
 %%DEVEL%%include/netifyd/nd-util.hpp
 %%DEVEL%%include/netifyd/nd-version.hpp
 %%DEVEL%%include/netifyd/netifyd.hpp

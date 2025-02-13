@@ -278,7 +278,7 @@ ndCaptureThread::ndCaptureThread(ndFlags<ndCaptureType> cs_type,
 
 const ndPacket *
 ndCaptureThread::ProcessPacket(const ndPacket *packet) {
-    nd_flow_ptr nf;
+    ndFlow::Ptr nf;
 
     const struct ether_header *hdr_eth = nullptr;
     const struct sll_header *hdr_sll = nullptr;
@@ -1270,7 +1270,7 @@ nd_process_ip:
     return packet;
 }
 
-bool ndCaptureThread::ProcessDNSPacket(nd_flow_ptr &flow,
+bool ndCaptureThread::ProcessDNSPacket(ndFlow::Ptr &flow,
   const uint8_t *pkt,
   uint16_t pkt_len,
   ndProto::Id proto) {

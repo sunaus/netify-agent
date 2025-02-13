@@ -29,27 +29,27 @@
 
 #include "nd-flow.hpp"
 
-typedef std::shared_ptr<ndFlow> nd_flow_ptr;
-
 class ndFlowMap
 {
 public:
     ndFlowMap(size_t buckets = ND_FLOW_MAP_BUCKETS);
     virtual ~ndFlowMap();
 
-    nd_flow_ptr Lookup(const std::string &digest,
+    ndFlow::Ptr Lookup(const std::string &digest,
       bool acquire_lock = false);
     bool Insert(const std::string &digest,
-      nd_flow_ptr &flow, bool unlocked = false);
+      ndFlow::Ptr &flow, bool unlocked = false);
     inline bool InsertUnlocked(const std::string &digest,
-      nd_flow_ptr &flow) {
+      ndFlow::Ptr &flow) {
         return Insert(digest, flow, true);
     }
 
     bool Delete(const std::string &digest);
 
-    nd_flow_map &Acquire(size_t b);
-    const nd_flow_map &AcquireConst(size_t b) const;
+    typedef std::unordered_map<std::string, ndFlow::Ptr> Map;
+
+    Map &Acquire(size_t b);
+    const Map &AcquireConst(size_t b) const;
 
     void Release(size_t b) const;
 #if 0
@@ -74,7 +74,7 @@ protected:
 
     size_t buckets;
 
-    typedef std::vector<nd_flow_map *> FlowBucket;
+    typedef std::vector<Map *> FlowBucket;
     FlowBucket bucket;
 
     typedef std::vector<std::unique_ptr<std::mutex>> BucketLock;

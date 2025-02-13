@@ -29,35 +29,28 @@
 #include <unordered_set>
 
 #include "nd-addr.hpp"
+#include "nd-flow.hpp"
+#include "nd-types.hpp"
 
-class ndFlow;
 class ndFlowParser;
-
-typedef uint32_t nd_app_id_t;
-typedef std::shared_ptr<ndFlow> nd_flow_ptr;
-
-constexpr nd_app_id_t ND_APP_UNKNOWN = 0;
-constexpr const char *ND_APP_UNKNOWN_TAG = {
-    "netify.unclassified"
-};
 
 class ndApplication
 {
 public:
-    nd_app_id_t id;
+    ndApp::Id id;
     std::string tag;
 
     ndApplication()
-      : id(ND_APP_UNKNOWN), tag(ND_APP_UNKNOWN_TAG) { }
-    ndApplication(nd_app_id_t id, const std::string &tag)
+      : id(ndApp::Id::UNKNOWN), tag(ndApp::Tag::UNKNOWN) { }
+    ndApplication(ndApp::Id id, const std::string &tag)
       : id(id), tag(tag) { }
 };
 
-typedef std::map<std::string, nd_app_id_t> nd_apps_t;
+typedef std::map<std::string, ndApp::Id> nd_apps_t;
 typedef std::map<std::string, ndApplication *> nd_app_tag_map;
 typedef std::unordered_set<std::string> nd_tlds_t;
-typedef std::unordered_map<nd_app_id_t, ndApplication *> nd_app_id_map;
-typedef std::unordered_map<std::string, nd_app_id_t> nd_domains_t;
+typedef std::unordered_map<ndApp::Id, ndApplication *, ndEnumHasher> nd_app_id_map;
+typedef std::unordered_map<std::string, ndApp::Id> nd_domains_t;
 typedef std::unordered_map<std::string, std::pair<std::regex *, std::string>> nd_domain_rx_xforms_t;
 
 class ndSoftDissector
@@ -92,18 +85,18 @@ public:
     bool Save(const std::string &filename);
     bool SaveLegacy(const std::string &filename);
 
-    nd_app_id_t Find(const std::string &domain);
-    nd_app_id_t Find(const ndAddr &addr);
+    ndApp::Id Find(const std::string &domain);
+    ndApp::Id Find(const ndAddr &addr);
 
-    bool Lookup(nd_app_id_t id, std::string &dst);
-    const char *Lookup(nd_app_id_t id);
-    nd_app_id_t Lookup(const std::string &tag);
+    bool Lookup(ndApp::Id id, std::string &dst);
+    const char *Lookup(ndApp::Id id);
+    ndApp::Id Lookup(const std::string &tag);
     bool Lookup(const std::string &tag, ndApplication &app);
-    bool Lookup(nd_app_id_t id, ndApplication &app);
+    bool Lookup(ndApp::Id id, ndApplication &app);
 
     void Get(nd_apps_t &apps_copy);
 
-    bool SoftDissectorMatch(nd_flow_ptr const &flow,
+    bool SoftDissectorMatch(ndFlow::Ptr const &flow,
       ndFlowParser *parser,
       ndSoftDissector &match);
 
@@ -134,11 +127,11 @@ protected:
 
     void Reset(bool free_only = false);
 
-    ndApplication *AddApp(nd_app_id_t id, const std::string &tag);
-    bool AddDomain(nd_app_id_t id, const std::string &domain);
+    ndApplication *AddApp(ndApp::Id id, const std::string &tag);
+    bool AddDomain(ndApp::Id id, const std::string &domain);
     bool AddDomainTransform(const std::string &search,
       const std::string &replace);
-    bool AddNetwork(nd_app_id_t id, const std::string &network);
+    bool AddNetwork(ndApp::Id id, const std::string &network);
     bool AddSoftDissector(signed aid, signed pid,
       const std::string &expr);
 

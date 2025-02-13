@@ -3326,7 +3326,7 @@ yyreduce:
 #line 1009 "nd-flow-expr.ypp"
                        {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->detected_application != 0
+            static_cast<unsigned>(_NDFP_flow->detected_application) != 0
         ));
         _NDFP_debugf("Application detected? %s\n", (_NDFP_result) ? "yes" : "no");
     }
@@ -3337,7 +3337,7 @@ yyreduce:
 #line 1015 "nd-flow-expr.ypp"
                            {
         _NDFP_result = ((yyval.bool_result) = (
-            _NDFP_flow->detected_application == 0
+            static_cast<unsigned>(_NDFP_flow->detected_application) == 0
         ));
         _NDFP_debugf(
             "Application not detected? %s\n", (_NDFP_result) ? "yes" : "no"
@@ -3350,7 +3350,7 @@ yyreduce:
 #line 1027 "nd-flow-expr.ypp"
                                               {
         _NDFP_result = ((yyval.bool_result) = false);
-        if ((yyvsp[0].ul_number) == _NDFP_flow->detected_application)
+        if ((yyvsp[0].ul_number) == static_cast<unsigned>(_NDFP_flow->detected_application))
             _NDFP_result = ((yyval.bool_result) = true);
 
         _NDFP_debugf(
@@ -3364,7 +3364,7 @@ yyreduce:
 #line 1036 "nd-flow-expr.ypp"
                                                  {
         _NDFP_result = ((yyval.bool_result) = true);
-        if ((yyvsp[0].ul_number) == _NDFP_flow->detected_application)
+        if ((yyvsp[0].ul_number) == static_cast<unsigned>(_NDFP_flow->detected_application))
             _NDFP_result = ((yyval.bool_result) = false);
 
         _NDFP_debugf(
@@ -5058,7 +5058,7 @@ ndFlowParser::~ndFlowParser()
     yylex_destroy((yyscan_t)scanner);
 }
 
-bool ndFlowParser::Parse(nd_flow_ptr const& flow, const string &expr)
+bool ndFlowParser::Parse(ndFlow::Ptr const& flow, const string &expr)
 {
     this->flow = flow;
     expr_result = false;

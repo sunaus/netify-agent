@@ -60,11 +60,11 @@ public:
     ndFlowParser();
     virtual ~ndFlowParser();
 
-    bool Parse(nd_flow_ptr const &flow, const std::string &expr);
+    bool Parse(ndFlow::Ptr const &flow, const std::string &expr);
 
     bool RegExSearch(std::string &expr, const std::string &search);
 
-    nd_flow_ptr flow;
+    ndFlow::Ptr flow;
     const char *local_mac;
     const char *other_mac;
     const ndAddr *local_ip;

@@ -45,6 +45,7 @@
 #include "nd-detection.hpp"
 #include "nd-instance.hpp"
 #include "nd-progress.hpp"
+#include "nd-types.hpp"
 #include "nd-util.hpp"
 #ifdef _ND_ENABLE_LIBPCAP
 #include "nd-capture-pcap.hpp"
@@ -960,8 +961,8 @@ bool ndInstance::DumpList(ndFlags<DumpFlags> flags) {
         apps.Get(applist);
         for (auto &app : applist) {
             if (! ndFlagBoolean(flags, DumpFlags::SORT_BY_TAG))
-                entries_by_id[app.second] = app.first;
-            else entries_by_tag[app.first] = app.second;
+                entries_by_id[static_cast<unsigned>(app.second)] = app.first;
+            else entries_by_tag[app.first] = static_cast<unsigned>(app.second);
         }
     }
 
@@ -1039,7 +1040,7 @@ bool ndInstance::LookupAddress(const string &ip) {
         return false;
     }
 
-    nd_app_id_t id_app = apps.Find(addr);
+    ndApp::Id id_app = apps.Find(addr);
     nd_cat_id_t id_cat = categories.LookupDotDirectory(addr);
 
     cout << "Application ID:" << endl;
@@ -2739,7 +2740,7 @@ void ndInstance::UpdateStatus(void) {
 //void ndInstance::DisplayDebugScoreboard(void) const {
 //}
 
-bool ndInstance::ExpireFlow(nd_flow_ptr &flow) {
+bool ndInstance::ExpireFlow(ndFlow::Ptr &flow) {
     if (flow->flags.detection_complete.load() == true)
         flow->flags.expired = true;
     else if (flow->flags.expiring.load() == false) {

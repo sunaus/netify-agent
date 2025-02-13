@@ -32,8 +32,8 @@
 
 using namespace std;
 
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, nd_app_id_t> nd_rn4_app;
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, nd_app_id_t> nd_rn6_app;
+typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndApp::Id> nd_rn4_app;
+typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndApp::Id> nd_rn6_app;
 
 ndApplications::ndApplications()
   : stats{ 0 }, app_networks4(NULL), app_networks6(NULL) {
@@ -75,8 +75,9 @@ bool ndApplications::Load(const string &filename) {
         if (type == "app" || type == "dom" || type == "net") {
             if ((p = line.find_first_of(":")) == string::npos)
                 continue;
-            nd_app_id_t id = (nd_app_id_t)strtoul(
-              line.substr(0, p).c_str(), NULL, 0);
+            ndApp::Id id = static_cast<ndApp::Id>(
+                strtoul(line.substr(0, p).c_str(), NULL, 0)
+            );
 
             if (type == "app" && apps.find(id) == apps.end())
             {
@@ -157,8 +158,9 @@ bool ndApplications::LoadLegacy(const string &filename) {
         if ((p = app.find_first_of(".")) == string::npos)
             continue;
 
-        nd_app_id_t app_id = (nd_app_id_t)strtoul(
-          app.substr(0, p).c_str(), NULL, 0);
+        ndApp::Id app_id = static_cast<ndApp::Id>(
+            strtoul(app.substr(0, p).c_str(), NULL, 0)
+        );
 
         string app_tag = app.substr(p + 1);
         nd_trim(app_tag);
@@ -306,7 +308,7 @@ bool ndApplications::SaveLegacy(const string &filename) {
 #endif  // _ND_LEAN_AND_MEAN
 }
 
-nd_app_id_t ndApplications::Find(const string &domain) {
+ndApp::Id ndApplications::Find(const string &domain) {
     lock_guard<recursive_mutex> ul(lock);
 
     vector<string> search;
@@ -337,12 +339,12 @@ nd_app_id_t ndApplications::Find(const string &domain) {
         }
     }
 
-    return ND_APP_UNKNOWN;
+    return ndApp::Id::UNKNOWN;
 }
 
-nd_app_id_t ndApplications::Find(const ndAddr &addr) {
+ndApp::Id ndApplications::Find(const ndAddr &addr) {
     if (! addr.IsValid() || ! addr.IsIP())
-        return ND_APP_UNKNOWN;
+        return ndApp::Id::UNKNOWN;
 
     if (addr.IsIPv4()) {
         ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
@@ -372,10 +374,10 @@ nd_app_id_t ndApplications::Find(const ndAddr &addr) {
         }
     }
 
-    return ND_APP_UNKNOWN;
+    return ndApp::Id::UNKNOWN;
 }
 
-bool ndApplications::Lookup(nd_app_id_t id, string &dst) {
+bool ndApplications::Lookup(ndApp::Id id, string &dst) {
     lock_guard<recursive_mutex> ul(lock);
 
     auto it = apps.find(id);
@@ -387,7 +389,7 @@ bool ndApplications::Lookup(nd_app_id_t id, string &dst) {
     return true;
 }
 
-const char *ndApplications::Lookup(nd_app_id_t id) {
+const char *ndApplications::Lookup(ndApp::Id id) {
     lock_guard<recursive_mutex> ul(lock);
 
     auto it = apps.find(id);
@@ -395,12 +397,12 @@ const char *ndApplications::Lookup(nd_app_id_t id) {
     return "Unknown";
 }
 
-nd_app_id_t ndApplications::Lookup(const string &tag) {
+ndApp::Id ndApplications::Lookup(const string &tag) {
     lock_guard<recursive_mutex> ul(lock);
 
     auto it = app_tags.find(tag);
     if (it != app_tags.end()) return it->second->id;
-    return ND_APP_UNKNOWN;
+    return ndApp::Id::UNKNOWN;
 }
 
 bool ndApplications::Lookup(const string &tag, ndApplication &app) {
@@ -415,7 +417,7 @@ bool ndApplications::Lookup(const string &tag, ndApplication &app) {
     return false;
 }
 
-bool ndApplications::Lookup(nd_app_id_t id, ndApplication &app) {
+bool ndApplications::Lookup(ndApp::Id id, ndApplication &app) {
     lock_guard<recursive_mutex> ul(lock);
 
     auto it = apps.find(id);
@@ -468,7 +470,7 @@ void ndApplications::Get(nd_apps_t &apps_copy) {
 }
 
 ndApplication *
-ndApplications::AddApp(nd_app_id_t id, const string &tag) {
+ndApplications::AddApp(ndApp::Id id, const string &tag) {
     auto it_id = apps.find(id);
     if (it_id != apps.end()) return it_id->second;
 
@@ -483,7 +485,7 @@ ndApplications::AddApp(nd_app_id_t id, const string &tag) {
     return app;
 }
 
-bool ndApplications::AddDomain(nd_app_id_t id, const string &domain) {
+bool ndApplications::AddDomain(ndApp::Id id, const string &domain) {
     auto rc = domains.insert(make_pair(domain, id));
     if (domain.find_first_of(".") == string::npos)
         tlds.insert(domain);
@@ -515,7 +517,7 @@ bool ndApplications::AddDomainTransform(const string &search,
     return false;
 }
 
-bool ndApplications::AddNetwork(nd_app_id_t id,
+bool ndApplications::AddNetwork(ndApp::Id id,
   const string &network) {
     ndAddr addr(network);
 
@@ -573,7 +575,7 @@ bool ndApplications::AddSoftDissector(signed aid,
     return true;
 }
 
-bool ndApplications::SoftDissectorMatch(nd_flow_ptr const &flow,
+bool ndApplications::SoftDissectorMatch(ndFlow::Ptr const &flow,
   ndFlowParser *parser, ndSoftDissector &match) {
     lock_guard<recursive_mutex> ul(lock);
 

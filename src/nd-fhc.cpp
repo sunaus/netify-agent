@@ -106,7 +106,7 @@ void ndFlowHashCache::Load(void) {
         nd_trim(value);
 
         try {
-            entry.app_id = (nd_app_id_t)stoul(value);
+            entry.app_id = static_cast<ndApp::Id>(stoul(value));
         }
         catch (invalid_argument &e) {
             nd_dprintf(

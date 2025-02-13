@@ -75,7 +75,7 @@ protected:
 
     const ndPacket *ProcessPacket(const ndPacket *packet);
 
-    bool ProcessDNSPacket(nd_flow_ptr &flow,
+    bool ProcessDNSPacket(ndFlow::Ptr &flow,
       const uint8_t *pkt, uint16_t pkt_len, ndProto::Id proto);
 
     std::atomic<State> capture_state = { State::INIT };

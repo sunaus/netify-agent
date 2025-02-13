@@ -629,7 +629,7 @@ void ndPluginManager::BroadcastProcessorEvent(
 }
 
 void ndPluginManager::BroadcastProcessorEvent(
-  ndPluginProcessor::Event event, nd_flow_ptr &flow) {
+  ndPluginProcessor::Event event, ndFlow::Ptr &flow) {
     lock_guard<mutex> ul(lock);
 
     for (auto &p : processors) {

@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include <algorithm>
 #include <iomanip>
 #include <locale>
 #include <mutex>
@@ -147,7 +148,7 @@ void ndFlow::Hash(const string &device, bool hash_mdata,
         sha1_write(&ctx, (const char *)&detected_protocol,
           sizeof(ndProto::Id));
         sha1_write(&ctx, (const char *)&detected_application,
-          sizeof(nd_app_id_t));
+          sizeof(ndApp::Id));
 
         if (! host_server_name.empty()) {
             sha1_write(&ctx, host_server_name.c_str(),
@@ -168,11 +169,7 @@ void ndFlow::Hash(const string &device, bool hash_mdata,
     else {
         ndDigest mdata;
         sha1_result(&ctx, mdata.data());
-
-        if (! digest_mdata.empty() && mdata != digest_mdata.back())
-        {
-            digest_mdata.push_back(mdata);
-        }
+        PushMetadataDigest(mdata);
     }
 }
 
@@ -759,4 +756,13 @@ void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
           (ut == ndAddr::Type::ERROR) ? "atERROR" : at[ut].c_str());
     }
 #endif
+}
+
+bool ndFlow::PushMetadataDigest(const ndDigest &digest) {
+    for (auto &i : digest_mdata) {
+        if (equal(i.begin(), i.end(), digest.begin())) return false;
+    }
+
+    digest_mdata.push_back(digest);
+    return true;
 }

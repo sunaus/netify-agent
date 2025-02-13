@@ -25,6 +25,7 @@
 #include <set>
 
 #include "nd-config.hpp"
+#include "nd-flow.hpp"
 #include "nd-flow-map.hpp"
 #include "nd-packet.hpp"
 #include "nd-serializer.hpp"
@@ -133,12 +134,12 @@ public:
         NONE,
 
         FLOW_MAP,  // ndFlowMap *
-        FLOW_NEW,  // nd_flow_ptr
-        FLOW_EXPIRING,  // nd_flow_ptr
-        FLOW_EXPIRE,  // nd_flow_ptr
-        DPI_NEW,  // nd_flow_ptr
-        DPI_UPDATE,  // nd_flow_ptr
-        DPI_COMPLETE,  // nd_flow_ptr
+        FLOW_NEW,  // ndFlow::Ptr
+        FLOW_EXPIRING,  // ndFlow::Ptr
+        FLOW_EXPIRE,  // ndFlow::Ptr
+        DPI_NEW,  // ndFlow::Ptr
+        DPI_UPDATE,  // ndFlow::Ptr
+        DPI_COMPLETE,  // ndFlow::Ptr
         INTERFACES,  // ndInterfaces
         PKT_CAPTURE_STATS,  // string, ndPacketStats *
         PKT_GLOBAL_STATS,  // ndPacketStats *
@@ -151,7 +152,7 @@ public:
     virtual void
     DispatchProcessorEvent(Event event, ndFlowMap *flow_map) { }
     virtual void
-    DispatchProcessorEvent(Event event, nd_flow_ptr &flow) { }
+    DispatchProcessorEvent(Event event, ndFlow::Ptr &flow) { }
     virtual void DispatchProcessorEvent(Event event,
       ndInterfaces *interfaces) { }
     virtual void DispatchProcessorEvent(Event event,
@@ -293,7 +294,7 @@ public:
     void BroadcastProcessorEvent(
       ndPluginProcessor::Event event, ndFlowMap *flow_map);
     void BroadcastProcessorEvent(
-      ndPluginProcessor::Event event, nd_flow_ptr &flow);
+      ndPluginProcessor::Event event, ndFlow::Ptr &flow);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
       ndInterfaces *interfaces);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,

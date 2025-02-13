@@ -25,20 +25,20 @@
 class ndDetectionQueueEntry
 {
 public:
-    ndDetectionQueueEntry(nd_flow_ptr &flow,
+    ndDetectionQueueEntry(ndFlow::Ptr &flow,
       const ndPacket *packet,
       const uint8_t *data,
       uint16_t length)
       : flow(flow), packet(packet), data(data), length(length) { }
 
-    ndDetectionQueueEntry(nd_flow_ptr &flow)
+    ndDetectionQueueEntry(ndFlow::Ptr &flow)
       : flow(flow) { }
 
     virtual ~ndDetectionQueueEntry() {
         if (packet != nullptr) delete packet;
     }
 
-    nd_flow_ptr flow;
+    ndFlow::Ptr flow;
     const ndPacket *packet = { nullptr };
     const uint8_t *data = { nullptr };
     uint16_t length = { 0 };
@@ -62,7 +62,7 @@ public:
     // XXX: Not thread-safe!  Lock before calling...
     virtual void Reload(void);
 
-    void QueuePacket(nd_flow_ptr &flow,
+    void QueuePacket(ndFlow::Ptr &flow,
       const ndPacket *packet = nullptr,
       const uint8_t *data = nullptr,
       uint16_t length = 0);
@@ -110,7 +110,7 @@ protected:
     void SetDetectedProtocol(ndDetectionQueueEntry *entry,
       ndProto::Id id);
     void SetDetectedApplication(ndDetectionQueueEntry *entry,
-      nd_app_id_t id);
+      ndApp::Id id);
 
     void DispatchEvent(ndDetectionQueueEntry *entry);
 

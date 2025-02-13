@@ -36,6 +36,7 @@
 #include "nd-risks.hpp"
 #include "nd-sha1.h"
 #include "nd-tls-alpn.hpp"
+#include "nd-types.hpp"
 #include "nd-util.hpp"
 
 using namespace std;
@@ -141,7 +142,7 @@ void ndDetectionThread::Reload(void) {
     ndpi = nd_ndpi_init();
 }
 
-void ndDetectionThread::QueuePacket(nd_flow_ptr &flow,
+void ndDetectionThread::QueuePacket(ndFlow::Ptr &flow,
   const ndPacket *packet,
   const uint8_t *data,
   uint16_t length) {
@@ -329,7 +330,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
                     SetDetectedProtocol(entry, result.proto_id);
                 }
 
-                if (result.app_id != ND_APP_UNKNOWN) {
+                if (result.app_id != ndApp::Id::UNKNOWN) {
 #ifdef _ND_LOG_FHC
                     string app_from;
                     ndi.apps.Lookup(
@@ -705,14 +706,14 @@ void ndDetectionThread::SetDetectedProtocol(
 }
 
 void ndDetectionThread::SetDetectedApplication(
-  ndDetectionQueueEntry *entry, nd_app_id_t id) {
-    if (id == ND_APP_UNKNOWN) return;
+  ndDetectionQueueEntry *entry, ndApp::Id id) {
+    if (id == ndApp::Id::UNKNOWN) return;
 
     ndEF->detected_application = id;
     ndi.apps.Lookup(id, ndEF->detected_application_name);
 
     ndEF->category.application = ndi.categories.Lookup(
-      ndCategories::Type::APP, id);
+      ndCategories::Type::APP, static_cast<unsigned>(id));
 }
 
 void ndDetectionThread::DispatchEvent(ndDetectionQueueEntry *entry) {
@@ -786,7 +787,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
     if (ndEF->flags.detection_init.load() == false) {
         // Determine application based on master protocol metadata
         // for Protocol / Application "Twins"
-        nd_app_id_t app_twin = ND_APP_UNKNOWN;
+        ndApp::Id app_twin = ndApp::Id::UNKNOWN;
 
         switch (ndEF->detected_protocol) {
         case ndProto::Id::APPLE_PUSH:
@@ -871,7 +872,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
         default: break;
         }
 
-        if (app_twin != ND_APP_UNKNOWN)
+        if (app_twin != ndApp::Id::UNKNOWN)
             SetDetectedApplication(entry, app_twin);
     }
 
@@ -899,7 +900,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                     SetDetectedApplication(entry,
                       ndi.apps.Find(ndEF->tls.server_cn));
 /*
-                    ndEF->detected_application = ND_APP_UNKNOWN;
+                    ndEF->detected_application = ndApp::Id::UNKNOWN;
                     ndEF->detected_application_name =
                       "Unknown";
                     SetDetectedApplication(entry,
@@ -960,7 +961,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 nd_dprintf("%s: TLS: set serverCN: %s\n",
                   tag.c_str(), ndEF->tls.server_cn.c_str());
 #endif
-                if (ndEF->detected_application == ND_APP_UNKNOWN)
+                if (ndEF->detected_application == ndApp::Id::UNKNOWN)
                 {
                     SetDetectedApplication(entry,
                       ndi.apps.Find(ndEF->tls.server_cn));
@@ -1178,7 +1179,7 @@ void ndDetectionThread::DetectionComplete(
 
     // Determine application by DHC (dns_host_name) if still
     // unknown.
-    if (ndEF->detected_application == ND_APP_UNKNOWN) {
+    if (ndEF->detected_application == ndApp::Id::UNKNOWN) {
         if (! ndEF->dns_host_name.empty()) {
             if (! ndGC_DHC_PARTIAL_LOOKUPS ||
               ndEF->host_server_name.empty())
@@ -1186,10 +1187,10 @@ void ndDetectionThread::DetectionComplete(
                 SetDetectedApplication(entry,
                   ndi.apps.Find(ndEF->dns_host_name));
 
-                if (ndEF->detected_application == ND_APP_UNKNOWN)
+                if (ndEF->detected_application == ndApp::Id::UNKNOWN)
                 {
                     ndEF->flags.dhc_hit = (ndEF->detected_application !=
-                      ND_APP_UNKNOWN);
+                      ndApp::Id::UNKNOWN);
                 }
             }
         }
@@ -1198,13 +1199,13 @@ void ndDetectionThread::DetectionComplete(
     // Determine application by network CIDR if still unknown.
     // DNS flows excluded...
     if (ndEF->GetMasterProtocol() != ndProto::Id::DNS &&
-      ndEF->detected_application == ND_APP_UNKNOWN)
+      ndEF->detected_application == ndApp::Id::UNKNOWN)
     {
         if (ndEF->lower_type == ndAddr::Type::OTHER) {
             SetDetectedApplication(entry,
               ndi.apps.Find(ndEF->lower_addr));
 
-            if (ndEF->detected_application == ND_APP_UNKNOWN)
+            if (ndEF->detected_application == ndApp::Id::UNKNOWN)
                 SetDetectedApplication(entry,
                   ndi.apps.Find(ndEF->upper_addr));
         }
@@ -1212,7 +1213,7 @@ void ndDetectionThread::DetectionComplete(
             SetDetectedApplication(entry,
               ndi.apps.Find(ndEF->upper_addr));
 
-            if (ndEF->detected_application == ND_APP_UNKNOWN)
+            if (ndEF->detected_application == ndApp::Id::UNKNOWN)
                 SetDetectedApplication(entry,
                   ndi.apps.Find(ndEF->lower_addr));
         }
@@ -1225,19 +1226,22 @@ void ndDetectionThread::DetectionComplete(
             ndEF->flags.soft_dissector = true;
 
             if (nsd.aid > -1) {
-                if (nsd.aid == ND_APP_UNKNOWN) {
-                    ndEF->detected_application = ND_APP_UNKNOWN;
+                if (nsd.aid == static_cast<int>(ndApp::Id::UNKNOWN)) {
+                    ndEF->detected_application = ndApp::Id::UNKNOWN;
                     ndEF->detected_application_name.clear();
                     ndEF->category.application = ND_CAT_UNKNOWN;
                 }
                 else {
                     SetDetectedApplication(entry,
-                      (nd_app_id_t)nsd.aid);
+                      static_cast<ndApp::Id>(nsd.aid));
                 }
             }
 
-            if (nsd.pid > -1)
-                SetDetectedProtocol(entry, (ndProto::Id)nsd.pid);
+            if (nsd.pid > -1) {
+                SetDetectedProtocol(
+                    entry, static_cast<ndProto::Id>(nsd.pid)
+                );
+            }
         }
     }
 
@@ -1246,7 +1250,7 @@ void ndDetectionThread::DetectionComplete(
     if (fhc != nullptr && ! ndEF->flags.fhc_hit.load() &&
       ! ndEF->flags.detection_guessed.load() &&
       (ndEF->detected_protocol != ndProto::Id::UNKNOWN ||
-        ndEF->detected_application != ND_APP_UNKNOWN) &&
+        ndEF->detected_application != ndApp::Id::UNKNOWN) &&
       ndEF->ip_protocol != IPPROTO_ICMP &&
       ndEF->ip_protocol != IPPROTO_ICMPV6 &&
       ndEF->ip_protocol != IPPROTO_IGMP &&
