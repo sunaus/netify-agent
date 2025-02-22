@@ -137,6 +137,7 @@ case "${host_os}" in
                     [Enable to extract conntrack packet/bytes counters.])
                 AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK_COUNTERS=1"])
             ])
+
         ], [
             AM_CONDITIONAL(USE_CONNTRACK, false)
         ])
@@ -192,6 +193,38 @@ case "${host_os}" in
         ], [
             AM_CONDITIONAL(USE_NFQUEUE, false)
         ])
+
+        dnl UCI integration
+
+        AC_ARG_ENABLE([uci],
+            [AS_HELP_STRING([--enable-uci], [Enable OpenWrt UCI integration [default=no]])],
+            [],
+            [enable_uci=no])
+
+        AS_IF([test "x$enable_uci" = "xyes"], [
+            AC_DEFINE([_ND_ENABLE_UCI], [1],
+                [Enable to build OpenWrt UCI integration.])
+            AM_CONDITIONAL(USE_UCI, true)
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_UCI=1"])
+        ], [
+            AM_CONDITIONAL(USE_UCI, false)
+        ])
+
+        dnl UBUS integration
+
+        AC_ARG_ENABLE([ubus],
+            [AS_HELP_STRING([--enable-ubus], [Enable OpenWrt UBUS integration [default=no]])],
+            [],
+            [enable_ubus=no])
+
+        AS_IF([test "x$enable_ubus" = "xyes"], [
+            AC_DEFINE([_ND_ENABLE_UBUS], [1],
+                [Enable to build OpenWrt UBUS integration.])
+            AM_CONDITIONAL(USE_UBUS, true)
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_UBUS=1"])
+        ], [
+            AM_CONDITIONAL(USE_UBUS, false)
+        ])
         ;;
 
     *)
@@ -199,8 +232,27 @@ case "${host_os}" in
         AM_CONDITIONAL(USE_NETLINK, false)
         AM_CONDITIONAL(USE_NFQUEUE, false)
         AM_CONDITIONAL(USE_TPACKETV3, false)
+        AM_CONDITIONAL(USE_UCI, false)
+        AM_CONDITIONAL(USE_UBUS, false)
         ;;
 esac
+
+AS_IF([test "x$enable_uci" = "xyes" -o "x$enable_ubus" = "xyes" ], [
+  AC_CHECK_LIB([ubox],
+      [blob_buf_init], [], [AC_MSG_ERROR([libubox/blob_buf_init() not found.])])
+  AC_CHECK_LIB([blobmsg_json],
+      [blobmsg_add_json_element], [], [AC_MSG_ERROR([libblobmsg_json/blobmsg_add_json_element() not found.])])
+
+  AS_IF([test "x$enable_uci" = "xyes" ], [
+    AC_CHECK_LIB([uci],
+        [uci_alloc_context], [], [AC_MSG_ERROR([libuci/uci_alloc_context() not found.])])
+  ])
+
+  AS_IF([test "x$enable_ubus" = "xyes" ], [
+    AC_CHECK_LIB([ubus],
+        [ubus_connect], [], [AC_MSG_ERROR([libus/ubus_connect() not found.])])
+  ])
+])
 
 PKG_CHECK_MODULES([LIBCURL], [libcurl])
 PKG_CHECK_MODULES([ZLIB], [zlib])
@@ -468,6 +520,8 @@ case "${host_os}" in
         AC_MSG_NOTICE([Netlink support: ${enable_netlink}])
         AC_MSG_NOTICE([TPv3 capture support: ${enable_tpacketv3}])
         AC_MSG_NOTICE([NFQUEUE capture support: ${enable_nfqueue}])
+        AC_MSG_NOTICE([UCI integration: ${enable_uci}])
+        AC_MSG_NOTICE([UBUS integration: ${enable_ubus}])
     ;;
 esac
 

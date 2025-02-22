@@ -67,6 +67,14 @@ libnetifyd_la_SOURCES += nd-capture-nfq.cpp
 libnetifyd_la_LIBADD += $(LIBNETFILTER_QUEUE_LIBS)
 endif
 
+if USE_UCI
+libnetifyd_la_SOURCES += nd-uci.cpp
+endif
+
+if USE_UBUS
+libnetifyd_la_SOURCES += nd-ubus.cpp
+endif
+
 sbin_PROGRAMS = netifyd
 netifyd_SOURCES = netifyd.cpp
 netifyd_LDADD = ./libnetifyd.la $(LIBCURL_LIBS) $(ZLIB_LIBS)
