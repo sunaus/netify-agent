@@ -28,6 +28,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA \
 	CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS \
 	CONFIG_NETIFYD_ENABLE_TPACKETV3 \
+	CONFIG_NETIFYD_ENABLE_NFQUEUE \
 	CONFIG_NETIFYD_ENABLE_EXTENDED_STATS
 
 include $(INCLUDE_DIR)/package.mk
@@ -45,6 +46,7 @@ define Package/@PACKAGE_TARNAME@
   # performance reasons.
   DEPENDS+=+libstdcpp
   DEPENDS+=+NETIFYD_WITH_LOCAL_LIBGCRYPT:libgcrypt +NETIFYD_WITH_LOCAL_LIBGCRYPT:libgpg-error
+  DEPENDS+=+NETIFYD_ENABLE_NFQUEUE:libnetfilter-queue
 endef
 
 define Package/@PACKAGE_TARNAME@/description
@@ -80,6 +82,7 @@ CONFIGURE_ARGS+= \
 	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA),--enable-conntrack-mdata,--disable-conntrack-mdata) \
 	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS),--enable-conntrack-counters,--disable-conntrack-counters) \
 	$(if $(CONFIG_NETIFYD_ENABLE_TPACKETV3),--enable-tpacketv3,--disable-tpacketv3) \
+	$(if $(CONFIG_NETIFYD_ENABLE_NFQUEUE),--enable-nfqueue,--disable-nfqueue) \
 	$(if $(CONFIG_NETIFYD_ENABLE_EXTENDED_STATS),--enable-extended-stats,--disable-extended-stats) \
 	--sharedstatedir=/var/run \
 	--disable-libtcmalloc \

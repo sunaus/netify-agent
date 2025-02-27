@@ -37,6 +37,12 @@ config NETIFYD_ENABLE_TPACKETV3
 	help
 		Enable to support TPACKETv3 capture support.
 
+config NETIFYD_ENABLE_NFQUEUE
+	bool "Enable NFQUEUE capture support?"
+	default y
+	help
+		Enable to support NFQUEUE capture support.
+
 config NETIFYD_ENABLE_EXTENDED_STATS
 	bool "Enable the collection of extended flow stats?"
 	default y
