@@ -33,6 +33,21 @@ m4_define([lnv_so], m4_eval(lnv_current - lnv_age))
 so_version="so.lnv_so"
 AC_SUBST([LIBNETIFY_VERSION_SO], [$so_version])
 
+# Set conditionals
+AM_CONDITIONAL(ENABLE_DEBUG_STATS, false)
+AM_CONDITIONAL(ENABLE_EXTENDED_STATS, false)
+AM_CONDITIONAL(ENABLE_LEAN_AND_MEAN, false)
+AM_CONDITIONAL(USE_CONNTRACK, false)
+AM_CONDITIONAL(USE_LIBGCRYPT_SYSTEM, false)
+AM_CONDITIONAL(USE_LIBPCAP, false)
+AM_CONDITIONAL(USE_LIBTCMALLOC_BUNDLED, false)
+AM_CONDITIONAL(USE_LIBTCMALLOC, false)
+AM_CONDITIONAL(USE_NETLINK, false)
+AM_CONDITIONAL(USE_NFQUEUE, false)
+AM_CONDITIONAL(USE_TPACKETV3, false)
+AM_CONDITIONAL(USE_UBUS, false)
+AM_CONDITIONAL(USE_UCI, false)
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
@@ -72,8 +87,6 @@ AS_IF([test "$ac_cv_lib_pcap_pcap_open_live" = "yes"], [
     AC_DEFINE([_ND_ENABLE_LIBPCAP], [1], [Define if libpcap is available.])
     AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_LIBPCAP=1"])
     AM_CONDITIONAL(USE_LIBPCAP, true)
-], [
-    AM_CONDITIONAL(USE_LIBPCAP, false)
 ])
 
 AC_MSG_CHECKING([for DLT_* macros in pcap/bpf.h])
@@ -117,7 +130,7 @@ case "${host_os}" in
             AC_ARG_ENABLE([conntrack-mdata],
                 [AS_HELP_STRING([--enable-conntrack-mdata], [Enable connection tracking metadata [default=no]])],
                 [],
-                [enable_conntrack_mdata=no])
+                [enable_conntrack_mdata=yes])
 
             AS_IF([test "x$enable_conntrack_mdata" = "xyes"], [
                 AC_DEFINE([_ND_ENABLE_CONNTRACK_MDATA], [1],
@@ -137,9 +150,6 @@ case "${host_os}" in
                     [Enable to extract conntrack packet/bytes counters.])
                 AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_CONNTRACK_COUNTERS=1"])
             ])
-
-        ], [
-            AM_CONDITIONAL(USE_CONNTRACK, false)
         ])
 
         dnl NETLINK support
@@ -154,8 +164,6 @@ case "${host_os}" in
                 [Define to enable Netlink socket support.])
             AM_CONDITIONAL(USE_NETLINK, true)
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_NETLINK=1"])
-        ], [
-            AM_CONDITIONAL(USE_NETLINK, false)
         ])
 
         dnl TPACKETv3 Capture Support
@@ -173,8 +181,6 @@ case "${host_os}" in
                 [Define to enable TPACKETv3 capture support.])
             AM_CONDITIONAL(USE_TPACKETV3, true)
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_TPACKETV3=1"])
-        ], [
-            AM_CONDITIONAL(USE_TPACKETV3, false)
         ])
 
         dnl NFQUEUE Capture Support
@@ -182,7 +188,7 @@ case "${host_os}" in
         AC_ARG_ENABLE([nfqueue],
             [AS_HELP_STRING([--enable-nfqueue], [Enable NFQUEUE capture support [default=no]])],
             [],
-            [enable_nfqueue=no])
+            [enable_nfqueue=yes])
 
         AS_IF([test "x$enable_nfqueue" = "xyes"], [
             PKG_CHECK_MODULES([LIBNETFILTER_QUEUE], [libnetfilter_queue >= 1.0.4])
@@ -190,8 +196,6 @@ case "${host_os}" in
                 [Define to enable NFQUEUE capture support.])
             AM_CONDITIONAL(USE_NFQUEUE, true)
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_NFQUEUE=1"])
-        ], [
-            AM_CONDITIONAL(USE_NFQUEUE, false)
         ])
 
         dnl UCI integration
@@ -206,8 +210,6 @@ case "${host_os}" in
                 [Enable to build OpenWrt UCI integration.])
             AM_CONDITIONAL(USE_UCI, true)
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_UCI=1"])
-        ], [
-            AM_CONDITIONAL(USE_UCI, false)
         ])
 
         dnl UBUS integration
@@ -222,18 +224,7 @@ case "${host_os}" in
                 [Enable to build OpenWrt UBUS integration.])
             AM_CONDITIONAL(USE_UBUS, true)
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_UBUS=1"])
-        ], [
-            AM_CONDITIONAL(USE_UBUS, false)
         ])
-        ;;
-
-    *)
-        AM_CONDITIONAL(USE_CONNTRACK, false)
-        AM_CONDITIONAL(USE_NETLINK, false)
-        AM_CONDITIONAL(USE_NFQUEUE, false)
-        AM_CONDITIONAL(USE_TPACKETV3, false)
-        AM_CONDITIONAL(USE_UCI, false)
-        AM_CONDITIONAL(USE_UBUS, false)
         ;;
 esac
 
@@ -273,7 +264,7 @@ AS_IF([test "x$with_systemdsystemunitdir" = "xyes" -o "x$with_systemdsystemunitd
 
 AS_IF([test "x$with_systemdsystemunitdir" != "xno"],
       [AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])])
-AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$with_systemdsystemunitdir" != "xno"])
+AM_CONDITIONAL(HAVE_SYSTEMD, [test "x$with_systemdsystemunitdir" != "xno"])
 
 AC_ARG_WITH([tmpfilesdir],
      [AS_HELP_STRING([--with-tmpfilesdir=DIR], [Directory for systemd tmpfiles configuration])],,
@@ -326,8 +317,6 @@ AS_IF([test "x$with_plugin_libdir" = "xyes" -o "x$with_plugin_libdir" = "xauto"]
     AC_SUBST([plugin_libdir], [$with_plugin_libdir])
 )
 
-AM_CONDITIONAL(USE_LIBGCRYPT_SYSTEM, false)
-
 AC_ARG_WITH([local-libgcrypt],
     [AS_HELP_STRING([--with-local-libgcrypt],
       [Link nDPI against the local system libgcrypt instead of the bundled libgcrypt light])],,
@@ -344,9 +333,6 @@ AC_ARG_ENABLE([libtcmalloc],
     [AS_HELP_STRING([--enable-libtcmalloc], [Enable Thread Caching malloc support [default=yes]])],
     [],
     [enable_libtcmalloc=yes])
-
-AM_CONDITIONAL(USE_LIBTCMALLOC, false)
-AM_CONDITIONAL(USE_LIBTCMALLOC_BUNDLED, false)
 
 AS_IF([test "x$enable_libtcmalloc" = "xyes"], [
 
@@ -386,8 +372,6 @@ AS_IF([test "x$enable_lean_and_mean" = "xyes"], [
         [Define to build smallest possible binary.])
     AS_VAR_APPEND([ND_DEFINES], [" -D_ND_LEAN_AND_MEAN=1"])
     AM_CONDITIONAL(ENABLE_LEAN_AND_MEAN, true)
-], [
-    AM_CONDITIONAL(ENABLE_LEAN_AND_MEAN, false)
 ])
 
 AC_ARG_ENABLE([extended-stats],
@@ -400,8 +384,6 @@ AS_IF([test "x$enable_extended_stats" = "xyes"], [
         [Define to enable the collection of additional flow statistics.])
     AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_EXTENDED_STATS=1"])
     AM_CONDITIONAL(ENABLE_EXTENDED_STATS, true)
-], [
-    AM_CONDITIONAL(ENABLE_EXTENDED_STATS, false)
 ])
 
 AC_ARG_ENABLE([ndpi-debug],
@@ -425,8 +407,6 @@ AS_IF([test "x$enable_debug_stats" = "xyes"], [
         [Define to enable the output of debug statistics.])
     AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_DEBUG_STATS=1"])
     AM_CONDITIONAL(ENABLE_DEBUG_STATS, true)
-], [
-    AM_CONDITIONAL(ENABLE_DEBUG_STATS, false)
 ])
 
 # Checks for required header files.

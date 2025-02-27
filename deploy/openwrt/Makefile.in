@@ -23,7 +23,12 @@ PKG_MIRROR_HASH:=whatever
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_NETIFYD_BUILD_SHARED_LIBRARY \
-	CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT
+	CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT \
+	CONFIG_NETIFYD_ENABLE_LEAN_AND_MEAN \
+	CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA \
+	CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS \
+	CONFIG_NETIFYD_ENABLE_TPACKETV3 \
+	CONFIG_NETIFYD_ENABLE_EXTENDED_STATS
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -32,7 +37,9 @@ define Package/@PACKAGE_TARNAME@
   CATEGORY:=Network
   TITLE:=Netify Agent
   URL:=http://www.netify.ai/
-  DEPENDS:=+ca-bundle +libatomic +libcurl +libmnl +libnetfilter-conntrack +libpcap +zlib +libpthread @!USE_UCLIBC
+  DEPENDS:=+ca-bundle +libatomic +libblobmsg-json +libcurl +libjson-c +libmnl \
+	+libnetfilter-conntrack +libpcap +libpthread +libubox +libubus +libuci \
+	+zlib @!USE_UCLIBC
   # Explicitly depend on libstdcpp rather than $(CXX_DEPENDS).  At the moment
   # std::unordered_map is only available via libstdcpp which is required for
   # performance reasons.
@@ -69,12 +76,17 @@ TARGET_LDFLAGS+=-Wl,--gc-sections
 CONFIGURE_ARGS+= \
 	$(if $(CONFIG_NETIFYD_BUILD_SHARED_LIBRARY),--enable-shared,--disable-shared) \
 	$(if $(CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT),--with-local-libgcrypt,--without-local-libgcrypt) \
+	$(if $(CONFIG_NETIFYD_ENABLE_LEAN_AND_MEAN),--enable-lean-and-mean,--disable-lean-and-mean) \
+	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA),--enable-conntrack-mdata,--disable-conntrack-mdata) \
+	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS),--enable-conntrack-counters,--disable-conntrack-counters) \
+	$(if $(CONFIG_NETIFYD_ENABLE_TPACKETV3),--enable-tpacketv3,--disable-tpacketv3) \
+	$(if $(CONFIG_NETIFYD_ENABLE_EXTENDED_STATS),--enable-extended-stats,--disable-extended-stats) \
 	--sharedstatedir=/var/run \
-	--enable-lean-and-mean \
 	--disable-libtcmalloc \
-	--disable-jemalloc \
 	--without-systemdsystemunitdir \
-	--without-tmpfilesdir
+	--without-tmpfilesdir \
+	--enable-uci \
+	--enable-ubus
 
 ifneq ($(CONFIG_LIBCURL_ZLIB),y)
 CONFIGURE_ARGS+= \
@@ -82,22 +94,22 @@ CONFIGURE_ARGS+= \
 endif
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include/@PACKAGE_TARNAME@
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/@PACKAGE_TARNAME@/*.h $(1)/usr/include/@PACKAGE_TARNAME@
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/@PACKAGE_TARNAME@/*.hpp $(1)/usr/include/@PACKAGE_TARNAME@
-	$(INSTALL_DIR) $(1)/usr/include/netifyd/pcap-compat
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/netifyd/pcap-compat/*.h $(1)/usr/include/netifyd/pcap-compat
-	$(INSTALL_DIR) $(1)/usr/include/netifyd/nlohmann
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/netifyd/nlohmann/*.hpp $(1)/usr/include/netifyd/nlohmann
-	$(INSTALL_DIR) $(1)/usr/include/netifyd/radix
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/netifyd/radix/*.hpp $(1)/usr/include/netifyd/radix
-	$(INSTALL_DIR) $(1)/usr/include/ndpi
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/ndpi/*.h $(1)/usr/include/ndpi
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib@PACKAGE_TARNAME@.a $(1)/usr/lib
-	$(if $(CONFIG_NETIFYD_BUILD_SHARED_LIBRARY),$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib@PACKAGE_TARNAME@.so.* $(1)/usr/lib,)
-	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib@PACKAGE_TARNAME@.pc $(1)/usr/lib/pkgconfig
+	$(INSTALL_DIR) $(STAGING_DIR)/usr/include/@PACKAGE_TARNAME@
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/@PACKAGE_TARNAME@/*.h $(STAGING_DIR)/usr/include/@PACKAGE_TARNAME@
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/@PACKAGE_TARNAME@/*.hpp $(STAGING_DIR)/usr/include/@PACKAGE_TARNAME@
+	$(INSTALL_DIR) $(STAGING_DIR)/usr/include/netifyd/pcap-compat
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/netifyd/pcap-compat/*.h $(STAGING_DIR)/usr/include/netifyd/pcap-compat
+	$(INSTALL_DIR) $(STAGING_DIR)/usr/include/netifyd/nlohmann
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/netifyd/nlohmann/*.hpp $(STAGING_DIR)/usr/include/netifyd/nlohmann
+	$(INSTALL_DIR) $(STAGING_DIR)/usr/include/netifyd/radix
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/netifyd/radix/*.hpp $(STAGING_DIR)/usr/include/netifyd/radix
+	$(INSTALL_DIR) $(STAGING_DIR)/usr/include/ndpi
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/ndpi/*.h $(STAGING_DIR)/usr/include/ndpi
+	$(INSTALL_DIR) $(STAGING_DIR)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib@PACKAGE_TARNAME@.a $(STAGING_DIR)/usr/lib
+	$(if $(CONFIG_NETIFYD_BUILD_SHARED_LIBRARY),$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib@PACKAGE_TARNAME@.so.* $(STAGING_DIR)/usr/lib,)
+	$(INSTALL_DIR) $(STAGING_DIR)/usr/lib/pkgconfig
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib@PACKAGE_TARNAME@.pc $(STAGING_DIR)/usr/lib/pkgconfig
 endef
 
 define Package/@PACKAGE_TARNAME@/install
