@@ -3384,7 +3384,7 @@ yyreduce:
             string search((yyvsp[0].buffer));
             string app(_NDFP_flow->detected_application_name);
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(
@@ -3414,7 +3414,7 @@ yyreduce:
             string search((yyvsp[0].buffer));
             string app(_NDFP_flow->detected_application_name);
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(
@@ -3440,7 +3440,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         if (_NDFP_flow->category.application != ND_CAT_UNKNOWN) {
@@ -3481,7 +3481,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -3538,7 +3538,7 @@ yyreduce:
         size_t p;
         string risk((yyvsp[0].buffer));
 
-        while ((p = risk.find_first_of("'")) != string::npos)
+        while ((p = risk.find_first_of("'\"")) != string::npos)
             risk.erase(p, 1);
 
         ndRisk::Id id = ndRisk::GetId(risk);
@@ -3561,7 +3561,7 @@ yyreduce:
         size_t p;
         string risk((yyvsp[0].buffer));
 
-        while ((p = risk.find_first_of("'")) != string::npos)
+        while ((p = risk.find_first_of("'\"")) != string::npos)
             risk.erase(p, 1);
 
         ndRisk::Id id = ndRisk::GetId(risk);
@@ -3836,7 +3836,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -3857,7 +3857,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -3878,7 +3878,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -3899,7 +3899,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -3920,7 +3920,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -3941,7 +3941,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -4009,7 +4009,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             _NDFP_result = ((yyval.bool_result) = (strncasecmp(
@@ -4033,7 +4033,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             _NDFP_result = ((yyval.bool_result) = (strncasecmp(
@@ -4053,7 +4053,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -4075,7 +4075,7 @@ yyreduce:
         size_t p;
         string category((yyvsp[0].buffer));
 
-        while ((p = category.find_first_of("'")) != string::npos)
+        while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
         _NDFP_result = (
@@ -4123,7 +4123,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(search.c_str(),
@@ -4146,7 +4146,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(search.c_str(),
@@ -4223,7 +4223,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(search.c_str(),
@@ -4246,7 +4246,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(search.c_str(),
@@ -4715,7 +4715,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(search.c_str(),
@@ -4738,7 +4738,7 @@ yyreduce:
             size_t p;
             string search((yyvsp[0].buffer));
 
-            while ((p = search.find_first_of("'")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(search.c_str(),
@@ -5144,9 +5144,9 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow, const string &expr)
 bool ndFlowParser::RegExSearch(std::string &expr, const std::string &search) {
     size_t p;
 
-    if ((p = expr.find_first_of("'")) != string::npos)
+    if ((p = expr.find_first_of("'\"")) != string::npos)
         expr.erase(p, 1);
-    if ((p = expr.find_last_of("'")) != string::npos)
+    if ((p = expr.find_last_of("'\"")) != string::npos)
         expr.erase(p, 1);
     if ((p = expr.find_first_of(":")) != string::npos)
         expr.erase(0, p + 1);

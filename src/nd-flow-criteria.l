@@ -105,6 +105,8 @@ fwmark                  return FLOW_CT_MARK;
 [a-fA-F0-9]{1,4}[:]{1,2}[a-fA-F0-9:]* strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_IPV6;
 \'[a-zA-Z0-9][a-zA-Z0-9:\/\._+() -]+\' strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_NAME;
 \'rx:.*\'               strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_REGEX;
+\"[a-zA-Z0-9][a-zA-Z0-9:\/\._+() -]+\" strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_NAME;
+\"rx:.*\"               strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_REGEX;
 0x[a-fA-F0-9]+          yylval->ul_number=(unsigned long)strtold(yytext, NULL); return VALUE_NUMBER;
 [0-9]+                  yylval->ul_number=(unsigned long)strtold(yytext, NULL); return VALUE_NUMBER;
 ==                      return CMP_EQUAL;
