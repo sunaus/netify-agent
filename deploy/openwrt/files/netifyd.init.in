@@ -86,6 +86,10 @@ start_@PACKAGE_TARNAME@() {
 	procd_close_instance
 }
 
+service_data() {
+	$PROG --version
+}
+
 start_service() {
 	[ ! -d /var/run/@PACKAGE_TARNAME@ ] && mkdir -p /var/run/@PACKAGE_TARNAME@
 
