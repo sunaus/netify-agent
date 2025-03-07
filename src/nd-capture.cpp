@@ -32,7 +32,6 @@
 #endif
 
 #include <net/ethernet.h>
-#include <net/if.h>
 #include <pcap/pcap.h>
 #include <resolv.h>
 
@@ -1091,53 +1090,16 @@ nd_process_ip:
         if (ndCT_TYPE(
             iface->capture_type.flags) == ndCaptureType::NFQ) {
 
-            string ifname_src, ifname_dst;
-
-            if (packet->ifidx_src != -1) {
-                char buffer[IFNAMSIZ] = { '\0' };
-
-                if (! iface_index_cache.Lookup(packet->ifidx_src, ifname_src)) {
-                    if (if_indextoname(packet->ifidx_src, buffer) == nullptr) {
-                        nd_dprintf("%s: %s: if_indextoname(%d): %s\n",
-                            tag.c_str(), __PRETTY_FUNCTION__,
-                            packet->ifidx_src, strerror(errno));
-                    }
-                    else {
-                        ifname_src.assign(buffer);
-                        iface_index_cache.Insert(packet->ifidx_src, ifname_src);
-                    }
-                }
-            }
-
-            if (packet->ifidx_dst != -1) {
-                char buffer[IFNAMSIZ] = { '\0' };
-
-                if (! iface_index_cache.Lookup(packet->ifidx_dst, ifname_dst)) {
-                    if (if_indextoname(packet->ifidx_dst, buffer) == nullptr) {
-                        nd_dprintf("%s: %s: if_indextoname(%d): %s\n",
-                            tag.c_str(), __PRETTY_FUNCTION__,
-                            packet->ifidx_dst, strerror(errno));
-                    }
-                    else {
-                        ifname_dst.assign(buffer);
-                        iface_index_cache.Insert(packet->ifidx_dst, ifname_dst);
-                    }
-                }
-            }
-
-            if (! ifname_src.empty()) {
-                if (addr_cmp < 0)
-                    flow.lower_iface = ifname_src;
-                else
-                    flow.upper_iface = ifname_src;
-            }
-
-            if (! ifname_dst.empty()) {
-                if (addr_cmp < 0)
-                    flow.upper_iface = ifname_dst;
-                else
-                    flow.lower_iface = ifname_dst;
-            }
+            ndi.addr_lookup.LookupLinkName(packet->ifidx_src,
+                (addr_cmp < 0) ? nf->lower_iface : nf->upper_iface);
+            ndi.addr_lookup.LookupLinkName(packet->ifidx_dst,
+                (addr_cmp < 0) ? nf->upper_iface : nf->lower_iface);
+#ifdef _ND_LOG_NFQ_DEBUG
+            nd_dprintf("%s: lower_iface: %s, upper_iface: %s\n", tag.c_str(),
+                (nf->lower_iface.empty()) ? "???" : nf->lower_iface.c_str(),
+                (nf->upper_iface.empty()) ? "???" : nf->upper_iface.c_str()
+            );
+#endif
         }
 #endif
         if (! ndi.flow_buckets->InsertUnlocked(flow_digest, nf))

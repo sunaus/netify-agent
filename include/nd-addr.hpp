@@ -657,6 +657,10 @@ public:
     bool RemoveLinkAddress(unsigned index);
     bool LookupLinkAddress(unsigned index, ndAddr &addr);
 
+    bool AddLinkName(unsigned index, const std::string &name);
+    bool RemoveLinkName(unsigned index);
+    bool LookupLinkName(unsigned index, std::string &name);
+
     bool AddNeighbor(const ndAddr &addr, const ndAddr &lladdr);
     bool RemoveNeighbor(const ndAddr &addr);
     bool LookupNeighbor(const ndAddr &addr, ndAddr &lladdr);
@@ -679,13 +683,16 @@ protected:
     mutable std::mutex lock_ipv6_reserved;
     nd_rn6_atype ipv6_reserved;
 
-    mutable std::mutex lock_ipv4_iface;
-    std::unordered_map<std::string, nd_rn4_atype> ipv4_iface;
-    mutable std::mutex lock_ipv6_iface;
-    std::unordered_map<std::string, nd_rn6_atype> ipv6_iface;
+    mutable std::mutex lock_ipv4_ifaces;
+    std::unordered_map<std::string, nd_rn4_atype> ipv4_ifaces;
+    mutable std::mutex lock_ipv6_ifaces;
+    std::unordered_map<std::string, nd_rn6_atype> ipv6_ifaces;
 
-    mutable std::mutex lock_lla_iface;
-    std::unordered_map<unsigned, ndAddr> lla_iface;
+    mutable std::mutex lock_link_addrs;
+    std::unordered_map<unsigned, ndAddr> link_addrs;
+
+    mutable std::mutex lock_link_names;
+    std::unordered_map<unsigned, std::string> link_names;
 
     mutable std::mutex lock_neighbors;
     typedef std::unordered_map<

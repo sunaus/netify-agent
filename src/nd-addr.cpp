@@ -593,9 +593,9 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr))
             {
-                lock_guard<mutex> ul(lock_ipv4_iface);
+                lock_guard<mutex> ul(lock_ipv4_ifaces);
 
-                ipv4_iface[ifname][entry] = type;
+                ipv4_ifaces[ifname][entry] = type;
                 return true;
             }
         }
@@ -604,9 +604,9 @@ bool ndAddrLookup::AddAddress(ndAddr::Type type,
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr))
             {
-                lock_guard<mutex> ul(lock_ipv6_iface);
+                lock_guard<mutex> ul(lock_ipv6_ifaces);
 
-                ipv6_iface[ifname][entry] = type;
+                ipv6_ifaces[ifname][entry] = type;
                 return true;
             }
         }
@@ -669,10 +669,10 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr))
             {
-                lock_guard<mutex> ul(lock_ipv4_iface);
+                lock_guard<mutex> ul(lock_ipv4_ifaces);
 
-                auto it = ipv4_iface.find(ifname);
-                if (it != ipv4_iface.end())
+                auto it = ipv4_ifaces.find(ifname);
+                if (it != ipv4_ifaces.end())
                     return it->second.erase(entry);
                 return false;
             }
@@ -682,10 +682,10 @@ bool ndAddrLookup::RemoveAddress(const ndAddr &addr,
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr))
             {
-                lock_guard<mutex> ul(lock_ipv6_iface);
+                lock_guard<mutex> ul(lock_ipv6_ifaces);
 
-                auto it = ipv6_iface.find(ifname);
-                if (it != ipv6_iface.end())
+                auto it = ipv6_ifaces.find(ifname);
+                if (it != ipv6_ifaces.end())
                     return it->second.erase(entry);
                 return false;
             }
@@ -704,31 +704,63 @@ bool ndAddrLookup::AddLinkAddress(
     unsigned index, const ndAddr &addr) {
     if (! (addr.IsValid() && addr.IsEthernet())) return false;
 
-    lock_guard<mutex> ul(lock_lla_iface);
+    lock_guard<mutex> ul(lock_link_addrs);
 
-    auto result = lla_iface.insert(make_pair(index, addr));
+    auto result = link_addrs.insert(make_pair(index, addr));
 
     return result.second;
 }
 
 bool ndAddrLookup::RemoveLinkAddress(unsigned index) {
-    lock_guard<mutex> ul(lock_lla_iface);
+    lock_guard<mutex> ul(lock_link_addrs);
 
-    auto result = lla_iface.find(index);
-    if (result == lla_iface.end()) return false;
+    auto result = link_addrs.find(index);
+    if (result == link_addrs.end()) return false;
 
-    lla_iface.erase(result);
+    link_addrs.erase(result);
 
     return true;
 }
 
 bool ndAddrLookup::LookupLinkAddress(unsigned index, ndAddr &addr) {
-    lock_guard<mutex> ul(lock_lla_iface);
+    lock_guard<mutex> ul(lock_link_addrs);
 
-    auto result = lla_iface.find(index);
-    if (result == lla_iface.end()) return false;
+    auto result = link_addrs.find(index);
+    if (result == link_addrs.end()) return false;
 
     addr = result->second;
+
+    return true;
+}
+
+bool ndAddrLookup::AddLinkName(
+    unsigned index, const string &name) {
+
+    lock_guard<mutex> ul(lock_link_names);
+
+    auto result = link_names.insert(make_pair(index, name));
+
+    return result.second;
+}
+
+bool ndAddrLookup::RemoveLinkName(unsigned index) {
+    lock_guard<mutex> ul(lock_link_names);
+
+    auto result = link_names.find(index);
+    if (result == link_names.end()) return false;
+
+    link_names.erase(result);
+
+    return true;
+}
+
+bool ndAddrLookup::LookupLinkName(unsigned index, string &name) {
+    lock_guard<mutex> ul(lock_link_names);
+
+    auto result = link_names.find(index);
+    if (result == link_names.end()) return false;
+
+    name = result->second;
 
     return true;
 }
@@ -877,10 +909,10 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
             return;
         }
 
-        lock_guard<mutex> ul_ipv4_iface(lock_ipv4_iface);
+        lock_guard<mutex> ul_ipv4_ifaces(lock_ipv4_ifaces);
         lock_guard<mutex> ul_ipv4_reserved(lock_ipv4_reserved);
 
-        for (auto &iface : ipv4_iface) {
+        for (auto &iface : ipv4_ifaces) {
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
                   entry, addr))
@@ -915,10 +947,10 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         }
     }
     else if (addr.IsIPv6()) {
-        lock_guard<mutex> ul_ipv6_iface(lock_ipv6_iface);
+        lock_guard<mutex> ul_ipv6_ifaces(lock_ipv6_ifaces);
         lock_guard<mutex> ul_ipv6_reserved(lock_ipv6_reserved);
 
-        for (auto &iface : ipv6_iface) {
+        for (auto &iface : ipv6_ifaces) {
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
                   entry, addr))
@@ -958,10 +990,10 @@ size_t ndAddrLookup::GetInterfaceAddresses(const string &iface,
   set<string> &result, sa_family_t family) {
 
     if (family == AF_UNSPEC || family == AF_INET) {
-        lock_guard<mutex> ul(lock_ipv4_iface);
+        lock_guard<mutex> ul(lock_ipv4_ifaces);
 
-        auto rn = ipv4_iface.find(iface);
-        if (rn == ipv4_iface.end()) return result.size();
+        auto rn = ipv4_ifaces.find(iface);
+        if (rn == ipv4_ifaces.end()) return result.size();
 
         for (auto &it : rn->second) {
             string ip;
@@ -970,10 +1002,10 @@ size_t ndAddrLookup::GetInterfaceAddresses(const string &iface,
     }
 
     if (family == AF_UNSPEC || family == AF_INET6) {
-        lock_guard<mutex> ul(lock_ipv6_iface);
+        lock_guard<mutex> ul(lock_ipv6_ifaces);
 
-        auto rn = ipv6_iface.find(iface);
-        if (rn == ipv6_iface.end()) return result.size();
+        auto rn = ipv6_ifaces.find(iface);
+        if (rn == ipv6_ifaces.end()) return result.size();
 
         for (auto &it : rn->second) {
             string ip;

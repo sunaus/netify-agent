@@ -555,7 +555,7 @@ int ndNetlinkRouteThread::AddRemoveNetwork(const struct nlmsghdr *nlh, bool add)
 }
 
 int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
-    const struct ifinfomsg *ifm = static_cast<const struct ifinfomsg *>(
+    const struct ifinfomsg *ifi = static_cast<const struct ifinfomsg *>(
         mnl_nlmsg_get_payload(nlh)
     );
 
@@ -565,7 +565,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
     if (add) {
         AttrsLink attrs = { 0 };
 
-        if (mnl_attr_parse(nlh, sizeof(*ifm),
+        if (mnl_attr_parse(nlh, sizeof(*ifi),
             ndNetlinkRoute_attr_parse_ifla, attrs.data()) != MNL_CB_OK)
             return -1;
 
@@ -579,19 +579,29 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
 
 #ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: adding link: %u: %s\n", TAG,
-            ifm->ifi_index,
+            ifi->ifi_index,
             addr.GetString().c_str()
         );
 #endif
-        if (ndi.addr_lookup.AddLinkAddress(ifm->ifi_index, addr)) rc = 1;
+        if (ndi.addr_lookup.AddLinkAddress(ifi->ifi_index, addr)) rc = 1;
+
+        char ifname[IFNAMSIZ] = { '\0' };
+        if (if_indextoname(ifi->ifi_index, ifname) == nullptr) {
+            nd_dprintf("%s: %s: if_indextoname(%d): %s\n",
+                TAG, __PRETTY_FUNCTION__, ifi->ifi_index, strerror(errno));
+            return -1;
+        }
+
+        if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
     }
     else {
 #ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: removing link: %d\n", TAG,
-            ifm->ifi_index
+            ifi->ifi_index
         );
 #endif
-        if (ndi.addr_lookup.RemoveNeighbor(ifm->ifi_index)) rc = 1;
+        if (ndi.addr_lookup.RemoveLinkAddress(ifi->ifi_index)) rc = 1;
+        if (ndi.addr_lookup.RemoveLinkName(ifi->ifi_index)) rc = 1;
     }
 
     return rc;

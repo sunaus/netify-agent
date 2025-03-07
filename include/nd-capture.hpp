@@ -80,21 +80,4 @@ protected:
       const uint8_t *pkt, uint16_t pkt_len, ndProto::Id proto);
 
     std::atomic<State> capture_state = { State::INIT };
-
-    class IfaceIndexCache : public ndLRUCache<int, std::string>
-    {
-    public:
-
-        IfaceIndexCache(size_t cache_size = 32) :
-            ndLRUCache<int, std::string>(cache_size, true) { }
-
-        inline void Insert(int index, const std::string &name) {
-            CacheInsert(index, name);
-        }
-        inline bool Lookup(int index, std::string &name) {
-            return CacheLookup(index, name);
-        }
-    };
-
-    IfaceIndexCache iface_index_cache;
 };

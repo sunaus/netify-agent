@@ -26,6 +26,7 @@
 #include <iomanip>
 #include <locale>
 #include <mutex>
+#include <sstream>
 
 #include "nd-apps.hpp"
 #include "nd-category.hpp"
@@ -312,7 +313,20 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
 
     lock_guard<recursive_mutex> lg(lock);
 
-    const string &p = (prefix.empty()) ? iface->ifname : prefix;
+    string p;
+    if (! prefix.empty()) p = prefix;
+#if defined(_ND_ENABLE_NFQUEUE)
+    if (p.size() == 0 && (! lower_iface.empty() || ! upper_iface.empty())) {
+        ostringstream os;
+        os << ((lower_iface.empty()) ? "???" : lower_iface) << " "
+          << ((origin == Origin::LOWER || origin == Origin::UNKNOWN) ? '-' : '<')
+          << ((origin == Origin::UNKNOWN) ? '?' : '-')
+          << ((origin == Origin::UPPER || origin == Origin::UNKNOWN) ? '-' : '>')
+          << " " << ((upper_iface.empty()) ? "???" : upper_iface);
+        p = os.str();
+    }
+#endif
+    if (p.empty()) p = iface->ifname;
     size_t plen = p.size();
 
     nd_output_lock();
