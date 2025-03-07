@@ -44,9 +44,17 @@ public:
 
     ndPacket(const ndFlags<StatusFlags> &status,
       const uint16_t &length, const uint16_t &caplen,
-      uint8_t *data, const struct timeval &tv)
+      uint8_t *data, const struct timeval &tv
+#if defined(_ND_ENABLE_NFQUEUE)
+      , int ifidx_src = -1, int ifidx_dst = -1
+#endif
+      )
       : status(status), length(length), caplen(caplen),
-        data(data), tv_sec(tv.tv_sec), tv_usec(tv.tv_usec) { }
+        data(data), tv_sec(tv.tv_sec), tv_usec(tv.tv_usec)
+#if defined(_ND_ENABLE_NFQUEUE)
+        , ifidx_src(ifidx_src), ifidx_dst(ifidx_dst)
+#endif
+        { }
 
     virtual ~ndPacket() {
         if (data != nullptr) delete[] data;
@@ -75,6 +83,10 @@ protected:
     const uint8_t *data;
     time_t tv_sec;
     time_t tv_usec;
+#if defined(_ND_ENABLE_NFQUEUE)
+    int ifidx_src;
+    int ifidx_dst;
+#endif
 };
 
 class ndPacketStats : public ndSerializer

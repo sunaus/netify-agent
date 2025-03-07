@@ -90,8 +90,7 @@ public:
       ndFlowHashCacheEntry &entry) {
         const std::string key(digest_lower.begin(),
           digest_lower.end());
-        if (! CacheLookup(key, entry)) return false;
-        return true;
+        return CacheLookup(key, entry);
     }
 
     void Load(void);

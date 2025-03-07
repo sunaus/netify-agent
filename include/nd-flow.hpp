@@ -140,7 +140,10 @@ public:
     typedef std::shared_ptr<ndFlow> Ptr;
 
     nd_iface_ptr iface;
-
+#if defined(_ND_ENABLE_NFQUEUE)
+    std::string lower_iface;
+    std::string upper_iface;
+#endif
     ndAddr lower_mac;
     ndAddr upper_mac;
 

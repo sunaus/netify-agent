@@ -240,7 +240,7 @@ static int ndCaptureNFQueue_Callback(
     ndPacket *pkt = new ndPacket(pkt_status,
       static_cast<uint16_t>(hdr_eth_size + pkt_len),
       static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
-      pkt_data, pkt_tv);
+      pkt_data, pkt_tv, ifidx_in, ifidx_out);
 
     nfq->PushPacket(pkt);
 
