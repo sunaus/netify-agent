@@ -313,26 +313,25 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
 
     lock_guard<recursive_mutex> lg(lock);
 
-    string p;
-    if (! prefix.empty()) p = prefix;
+    ostringstream os;
+    if (! prefix.empty()) os << prefix << ": ";
+    os << iface->ifname;
+    size_t plen = 4;
+
 #if defined(_ND_ENABLE_NFQUEUE)
-    if (p.size() == 0 && (! lower_iface.empty() || ! upper_iface.empty())) {
-        ostringstream os;
-        os << ((lower_iface.empty()) ? "???" : lower_iface) << " "
+    if (! lower_iface.empty() || ! upper_iface.empty()) {
+        os << ": "
+          << ((lower_iface.empty()) ? "???" : lower_iface) << " "
           << ((origin == Origin::LOWER || origin == Origin::UNKNOWN) ? '-' : '<')
           << ((origin == Origin::UNKNOWN) ? '?' : '-')
           << ((origin == Origin::UPPER || origin == Origin::UNKNOWN) ? '-' : '>')
           << " " << ((upper_iface.empty()) ? "???" : upper_iface);
-        p = os.str();
     }
 #endif
-    if (p.empty()) p = iface->ifname;
-    size_t plen = p.size();
-
     nd_output_lock();
 
     try {
-        dls << p << ": ";
+        dls << os.str() << ": ";
 
         if (ndFlagBoolean(pflags, PrintFlags::HASHES)) {
             for (unsigned i = 0; i < 5; i++) {

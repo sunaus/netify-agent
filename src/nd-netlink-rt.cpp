@@ -563,6 +563,15 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
     ndInstance &ndi = ndInstance::GetInstance();
 
     if (add) {
+        char ifname[IFNAMSIZ] = { '\0' };
+        if (if_indextoname(ifi->ifi_index, ifname) == nullptr) {
+            nd_dprintf("%s: %s: if_indextoname(%d): %s\n",
+                TAG, __PRETTY_FUNCTION__, ifi->ifi_index, strerror(errno));
+            return -1;
+        }
+
+        if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
+
         AttrsLink attrs = { 0 };
 
         if (mnl_attr_parse(nlh, sizeof(*ifi),
@@ -584,15 +593,6 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
         );
 #endif
         if (ndi.addr_lookup.AddLinkAddress(ifi->ifi_index, addr)) rc = 1;
-
-        char ifname[IFNAMSIZ] = { '\0' };
-        if (if_indextoname(ifi->ifi_index, ifname) == nullptr) {
-            nd_dprintf("%s: %s: if_indextoname(%d): %s\n",
-                TAG, __PRETTY_FUNCTION__, ifi->ifi_index, strerror(errno));
-            return -1;
-        }
-
-        if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
     }
     else {
 #ifdef _ND_DEBUG_LOG
