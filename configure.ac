@@ -191,7 +191,10 @@ case "${host_os}" in
             [enable_nfqueue=yes])
 
         AS_IF([test "x$enable_nfqueue" = "xyes"], [
-            PKG_CHECK_MODULES([LIBNETFILTER_QUEUE], [libnetfilter_queue >= 1.0.4])
+            PKG_CHECK_MODULES([LIBNETFILTER_QUEUE], [libnetfilter_queue >= 1.0.3])
+            AC_CHECK_LIB([netfilter_queue], [nfq_nlmsg_put],
+                AC_DEFINE([HAVE_NFQ_NLMSG_PUT], [1], [Define if nfq_nlmsg_put is available.])
+            )
             AC_DEFINE([_ND_ENABLE_NFQUEUE], [1],
                 [Define to enable NFQUEUE capture support.])
             AM_CONDITIONAL(USE_NFQUEUE, true)

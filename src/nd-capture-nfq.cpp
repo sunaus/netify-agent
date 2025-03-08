@@ -44,6 +44,24 @@
 // #define _ND_LOG_WARNINGS 1
 // #define _ND_LOG_DEBUG 1
 
+// XXX: To support libnetfilter_queue < 1.0.4, supply our own nfq_nlmsg_put().
+#ifndef HAVE_NFQ_NLMSG_PUT
+static struct nlmsghdr *nfq_nlmsg_put(char *buffer, int type, uint32_t queue_num) {
+    struct nlmsghdr *nlh = mnl_nlmsg_put_header(buffer);
+    nlh->nlmsg_type = (NFNL_SUBSYS_QUEUE << 8) | type;
+    nlh->nlmsg_flags = NLM_F_REQUEST;
+
+    struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
+        mnl_nlmsg_put_extra_header(nlh, sizeof(*nfg))
+    );
+    nfg->nfgen_family = AF_UNSPEC;
+    nfg->version = NFNETLINK_V0;
+    nfg->res_id = htons(queue_num);
+
+    return nlh;
+}
+#endif
+
 #ifdef _ND_LOG_DEBUG
 static void ndCaptureNFQueue_PrintAttrs(const char *tag, struct nlattr **attr) {
     for (unsigned i = 0; i < NFQA_MAX; i++) {
