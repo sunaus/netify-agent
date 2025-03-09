@@ -65,8 +65,6 @@ Debian/11/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 Debian/11/x86-32:
   extends: .debian_build
@@ -84,8 +82,6 @@ Debian/11/x86-32:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: byacc flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 Debian/11/ARM-32v5:
   extends: .debian_build
@@ -104,8 +100,6 @@ Debian/11/ARM-32v5:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: byacc flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 Debian/11/ARM-32v7:
   extends: .debian_build
@@ -124,8 +118,6 @@ Debian/11/ARM-32v7:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: byacc flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 Debian/11/ARM-64v8:
   extends: .debian_build
@@ -144,8 +136,6 @@ Debian/11/ARM-64v8:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: byacc flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 Debian/12/x86-64:
   extends: .debian_build
@@ -162,8 +152,6 @@ Debian/12/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 # Ubuntu Targets
 
@@ -201,8 +189,6 @@ Ubuntu/22.04/x86-64:
       value: binary-$OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: byacc flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 Ubuntu/24.04/x86-64:
   extends: .debian_build
@@ -220,8 +206,6 @@ Ubuntu/24.04/x86-64:
       value: binary-$OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: byacc flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 # RedHat Targets
 
@@ -241,8 +225,6 @@ CentOS/7/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 Rocky Linux/8/x86-64:
   extends: .rhel_build
@@ -261,7 +243,6 @@ Rocky Linux/8/x86-64:
       expand: true
     OS_REPOS: --enablerepo=powertools,epel
     CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
       --disable-libtcmalloc
 
 Rocky Linux/9/x86-64:
@@ -280,8 +261,6 @@ Rocky Linux/9/x86-64:
       value: $OS_ARCH
       expand: true
     OS_REPOS: --enablerepo=crb
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 AlmaLinux/8/x86-64:
   extends: .rhel_build
@@ -300,7 +279,6 @@ AlmaLinux/8/x86-64:
       expand: true
     OS_REPOS: --enablerepo=powertools,epel
     CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
       --disable-libtcmalloc
 
 AlmaLinux/9/x86-64:
@@ -319,8 +297,6 @@ AlmaLinux/9/x86-64:
       value: $OS_ARCH
       expand: true
     OS_REPOS: --enablerepo=crb
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-nfqueue
 
 OpenSUSE/15.5/x86-64:
   extends: .opensuse_build
@@ -339,8 +315,6 @@ OpenSUSE/15.5/x86-64:
       expand: true
     OS_REPOS:
     OS_EXTRA_PACKAGES: systemd gperftools-devel flex bison
-    CONFIGURE_EXTRA_FLAGS: >
-      --disable-nfqueue
 
 # FreeBSD Targets
 
@@ -514,4 +488,3 @@ Source Archive:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: zlib1g-dev libpcap-dev
-      libgoogle-perftools-dev
