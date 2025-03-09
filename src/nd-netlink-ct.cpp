@@ -43,6 +43,9 @@ static int ndNetlinkConntrack_attr_parse(
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
     int type = mnl_attr_get_type(attr);
 
+    if (mnl_attr_type_valid(attr, CTA_MAX) < 0)
+        return MNL_CB_OK;
+
     switch(type) {
     case CTA_ID:
     case CTA_MARK:
@@ -72,8 +75,10 @@ static int ndNetlinkConntrack_attr_parse(
 static int ndNetlinkConntrack_attr_parse_tuple(
     const struct nlattr *attr, void *data) {
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
-
     int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, CTA_TUPLE_MAX) < 0)
+        return MNL_CB_OK;
 
     switch(type) {
     case CTA_TUPLE_IP:
@@ -100,8 +105,10 @@ static int ndNetlinkConntrack_attr_parse_tuple(
 static int ndNetlinkConntrack_attr_parse_ip(
     const struct nlattr *attr, void *data) {
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
-
     int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, CTA_IP_MAX) < 0)
+        return MNL_CB_OK;
 
     switch(type) {
     case CTA_IP_V4_SRC:
@@ -131,8 +138,10 @@ static int ndNetlinkConntrack_attr_parse_ip(
 static int ndNetlinkConntrack_attr_parse_proto(
     const struct nlattr *attr, void *data) {
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
-
     int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, CTA_PROTO_MAX) < 0)
+        return MNL_CB_OK;
 
     switch(type) {
     case CTA_PROTO_NUM:
@@ -160,8 +169,10 @@ static int ndNetlinkConntrack_attr_parse_proto(
 static int ndNetlinkConntrack_attr_parse_counters(
     const struct nlattr *attr, void *data) {
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
-
     int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, CTA_COUNTERS_MAX) < 0)
+        return MNL_CB_OK;
 
     switch(type) {
     case CTA_COUNTERS_PACKETS:

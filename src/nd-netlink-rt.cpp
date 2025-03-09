@@ -29,6 +29,7 @@
 
 #include <linux/if.h>
 #include <linux/if_link.h>
+#include <linux/wireless.h>
 
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
@@ -45,6 +46,9 @@ static int ndNetlinkRoute_attr_parse_ifav4(
     const struct nlattr *attr, void *data) {
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
     int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, IFA_MAX) < 0)
+        return MNL_CB_OK;
 
     switch(type) {
     case IFA_LOCAL:
@@ -68,6 +72,9 @@ static int ndNetlinkRoute_attr_parse_ifav6(
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
     int type = mnl_attr_get_type(attr);
 
+    if (mnl_attr_type_valid(attr, IFA_MAX) < 0)
+        return MNL_CB_OK;
+
     switch(type) {
     case IFA_LOCAL:
     case IFA_ADDRESS:
@@ -90,6 +97,9 @@ static int ndNetlinkRoute_attr_parse_rtav4(
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
     int type = mnl_attr_get_type(attr);
 
+    if (mnl_attr_type_valid(attr, RTA_MAX) < 0)
+        return MNL_CB_OK;
+
     switch(type) {
     case RTA_DST:
     case RTA_OIF:
@@ -110,6 +120,9 @@ static int ndNetlinkRoute_attr_parse_rtav6(
     const struct nlattr *attr, void *data) {
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
     int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, RTA_MAX) < 0)
+        return MNL_CB_OK;
 
     switch(type) {
     case RTA_DST:
@@ -139,8 +152,19 @@ static int ndNetlinkRoute_attr_parse_ifla(
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
     int type = mnl_attr_get_type(attr);
 
+    if (mnl_attr_type_valid(attr, IFLA_MAX) < 0)
+        return MNL_CB_OK;
+
     switch(type) {
     case IFLA_ADDRESS:
+        if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
+            nd_dprintf("%s: invalid attribute type, expected: %s\n",
+                TAG, "BINARY");
+            return MNL_CB_ERROR;
+        }
+        break;
+
+    case IFLA_WIRELESS:
         if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "BINARY");
@@ -158,6 +182,9 @@ static int ndNetlinkRoute_attr_parse_nda(
     const struct nlattr *attr, void *data) {
     const struct nlattr **tb = static_cast<const struct nlattr **>(data);
     int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, NDA_MAX) < 0)
+        return MNL_CB_OK;
 
     switch(type) {
     case NDA_DST:
@@ -577,6 +604,17 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
         if (mnl_attr_parse(nlh, sizeof(*ifi),
             ndNetlinkRoute_attr_parse_ifla, attrs.data()) != MNL_CB_OK)
             return -1;
+
+        if (attrs[IFLA_WIRELESS]) {
+            const iw_event *iwe = static_cast<const iw_event *>(
+                mnl_attr_get_payload(attrs[IFLA_WIRELESS])
+            );
+
+            nd_dprintf("%s: %s: iw_event: len: %hu, cmd: %hu, "
+                "u.length: %hu, u.pointer: %p\n", TAG,
+                ifname, iwe->len, iwe->cmd,
+                iwe->u.essid.length, iwe->u.essid.pointer);
+        }
 
         _ND_NLRT_CHECK_ATTR(TAG, attrs[IFLA_ADDRESS], -1);
 

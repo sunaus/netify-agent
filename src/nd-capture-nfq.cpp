@@ -44,9 +44,9 @@
 // #define _ND_LOG_WARNINGS 1
 // #define _ND_LOG_DEBUG 1
 
-// XXX: To support libnetfilter_queue < 1.0.4, supply our own nfq_nlmsg_put().
 #ifndef HAVE_NFQ_NLMSG_PUT
-static struct nlmsghdr *nfq_nlmsg_put(char *buffer, int type, uint32_t queue_num) {
+// XXX: To support libnetfilter_queue < 1.0.4, supply our own nfq_nlmsg_put().
+static struct nlmsghdr *nfq_nlmsg_put(char *buffer, int type, uint32_t queue_id) {
     struct nlmsghdr *nlh = mnl_nlmsg_put_header(buffer);
     nlh->nlmsg_type = (NFNL_SUBSYS_QUEUE << 8) | type;
     nlh->nlmsg_flags = NLM_F_REQUEST;
@@ -56,7 +56,7 @@ static struct nlmsghdr *nfq_nlmsg_put(char *buffer, int type, uint32_t queue_num
     );
     nfg->nfgen_family = AF_UNSPEC;
     nfg->version = NFNETLINK_V0;
-    nfg->res_id = htons(queue_num);
+    nfg->res_id = htons(queue_id);
 
     return nlh;
 }
