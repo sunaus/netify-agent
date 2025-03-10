@@ -41,6 +41,9 @@
 #include <sys/sysctl.h>
 #include <sys/user.h>
 #endif
+#if defined(__linux__)
+#include <linux/wireless.h>
+#endif
 #include <syslog.h>
 #include <unistd.h>
 #include <zlib.h>
@@ -1670,6 +1673,11 @@ void nd_time_ago(time_t seconds, string &ago) {
       ((plural) ? "s" : "");
 }
 
+std::ostream &operator<<(std::ostream &stream, ndApp::Id id) {
+    stream << static_cast<unsigned>(id);
+    return stream;
+}
+
 #if defined(__linux__)
 int nd_set_netns(const string &ns) {
     string path = "/var/run/netns/" + ns;
@@ -1693,9 +1701,40 @@ int nd_set_netns(const string &ns) {
 
     return rc;
 }
-#endif
 
-std::ostream &operator<<(std::ostream &stream, ndApp::Id id) {
-    stream << static_cast<unsigned>(id);
-    return stream;
+bool nd_get_essid(const char *ifname, string &essid) {
+    int fd;
+    array<char, IW_ESSID_MAX_SIZE + 1> id;
+
+    struct iwreq wreq = { 0 };
+    wreq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
+
+    sprintf(wreq.ifr_name, "%s", ifname);
+
+    if((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        nd_dprintf("%s: %s: error: %s [%d]\n",
+            __func__, ifname, strerror(errno), errno);
+        return false;
+    }
+
+    wreq.u.essid.pointer = id.data();
+    int rc = ioctl(fd, SIOCGIWESSID, &wreq);
+
+    close(fd);
+
+    if (rc < 0) {
+        if (errno != EOPNOTSUPP) {
+            nd_dprintf("%s: %s: error: %s [%d]\n",
+                __func__, ifname, strerror(errno), errno);
+        }
+        return false;
+    }
+
+    if (wreq.u.essid.length > 1) {
+        essid.assign(static_cast<const char *>(wreq.u.essid.pointer));
+        return true;
+    }
+
+    return false;
 }
+#endif // __linux__

@@ -29,11 +29,11 @@
 
 #include <linux/if.h>
 #include <linux/if_link.h>
-#include <linux/wireless.h>
 
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-netlink-rt.hpp"
+#include "nd-util.hpp"
 
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_LOG   1
@@ -157,14 +157,6 @@ static int ndNetlinkRoute_attr_parse_ifla(
 
     switch(type) {
     case IFLA_ADDRESS:
-        if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
-            nd_dprintf("%s: invalid attribute type, expected: %s\n",
-                TAG, "BINARY");
-            return MNL_CB_ERROR;
-        }
-        break;
-
-    case IFLA_WIRELESS:
         if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "BINARY");
@@ -599,22 +591,16 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
 
         if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
 
+        string essid;
+        if (nd_get_essid(ifname, essid)) {
+            // TODO: Save ESSID...
+        }
+
         AttrsLink attrs = { 0 };
 
         if (mnl_attr_parse(nlh, sizeof(*ifi),
             ndNetlinkRoute_attr_parse_ifla, attrs.data()) != MNL_CB_OK)
             return -1;
-
-        if (attrs[IFLA_WIRELESS]) {
-            const iw_event *iwe = static_cast<const iw_event *>(
-                mnl_attr_get_payload(attrs[IFLA_WIRELESS])
-            );
-
-            nd_dprintf("%s: %s: iw_event: len: %hu, cmd: %hu, "
-                "u.length: %hu, u.pointer: %p\n", TAG,
-                ifname, iwe->len, iwe->cmd,
-                iwe->u.essid.length, iwe->u.essid.pointer);
-        }
 
         _ND_NLRT_CHECK_ATTR(TAG, attrs[IFLA_ADDRESS], -1);
 
