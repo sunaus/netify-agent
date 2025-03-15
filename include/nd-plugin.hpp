@@ -95,10 +95,11 @@ public:
     enum class DispatchFlags : uint8_t {
         NONE = 0,
         FORMAT_JSON = (1 << 0),
-        FORMAT_MSGPACK = (1 << 1),
-        ADD_CR = (1 << 2),
-        ADD_HEADER = (1 << 3),
-        GZ_DEFLATE = (1 << 4),
+        FORMAT_JSON_OBJECT = (1 << 1),
+        FORMAT_MSGPACK = (1 << 2),
+        ADD_CR = (1 << 3),
+        ADD_HEADER = (1 << 4),
+        GZ_DEFLATE = (1 << 5),
     };
 
     static void DispatchSinkPayload(const std::string &target,
@@ -188,6 +189,10 @@ public:
     inline static Ptr Create(const nlohmann::json &j,
       const ndPlugin::Channels &channels,
       ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
+        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::FORMAT_JSON_OBJECT)) {
+            return Create(j, channels, flags);
+        }
+
         std::string output;
         nd_json_to_string(j, output, ndGC_DEBUG);
         return Create(output.size(),
@@ -207,6 +212,12 @@ public:
         memcpy(const_cast<uint8_t *>(this->data), data, length);
     }
 
+    ndPluginSinkPayload(const nlohmann::json &jdata,
+      const ndPlugin::Channels &channels,
+      ndFlags<ndPlugin::DispatchFlags> flags)
+      : length(0), data(nullptr), jdata(jdata), channels(channels),
+        flags(flags) { }
+
     virtual ~ndPluginSinkPayload() {
         if (data) {
             delete[] data;
@@ -217,6 +228,7 @@ public:
 
     size_t length;
     const uint8_t *data;
+    const nlohmann::json jdata;
     ndPlugin::Channels channels;
     ndFlags<ndPlugin::DispatchFlags> flags;
 };

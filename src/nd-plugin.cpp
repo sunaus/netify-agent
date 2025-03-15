@@ -97,6 +97,17 @@ void ndPlugin::DispatchSinkPayload(const string &target,
         ndPlugin::DispatchSinkPayload(target, channels,
           output, flags);
     }
+    else if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::FORMAT_JSON_OBJECT))
+    {
+        ndInstance &ndi = ndInstance::GetInstance();
+
+        ndPluginSinkPayload::Ptr p = ndPluginSinkPayload::Create(
+          j, channels, flags);
+
+        if (ndi.plugins.DispatchSinkPayload(target, p)) return;
+
+        throw ndException("%s: sink target not found", target.c_str());
+    }
     else {
         string output;
         nd_json_to_string(j, output, ndGC_DEBUG);
