@@ -1739,16 +1739,3 @@ bool nd_get_essid(const char *ifname, string &essid) {
     return false;
 }
 #endif // __linux__
-
-template<typename... Args>
-void nd_sprintf(string &dst, const char *format, Args... args) {
-    int length = std::snprintf(nullptr, 0, format, args...);
-    if (length == 0)
-        throw ndException("format string is zero length");
-
-    char *buffer = new char[length + 1];
-    std::snprintf(buffer, length + 1, format, args...);
-
-    dst.assign(buffer);
-    delete[] buffer;
-}

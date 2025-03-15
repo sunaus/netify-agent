@@ -612,5 +612,19 @@ int nd_set_netns(const std::string &ns);
 bool nd_get_essid(const char *ifname, std::string &essid);
 #endif
 
+inline void nd_sprintf(std::string &dst, const char *format) {
+    dst.assign(format);
+}
+
 template<typename... Args>
-void nd_sprintf(std::string &dst, const char *format, Args... args);
+void nd_sprintf(std::string &dst, const char *format, Args... args) {
+    int length = std::snprintf(nullptr, 0, format, args...);
+    if (length == 0)
+        throw ndException("format string is zero length");
+
+    char *buffer = new char[length + 1];
+    std::snprintf(buffer, length + 1, format, args...);
+
+    dst.assign(buffer);
+    delete[] buffer;
+}
