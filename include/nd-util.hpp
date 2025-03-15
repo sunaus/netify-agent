@@ -611,3 +611,6 @@ std::ostream &operator<<(std::ostream &stream, ndApp::Id id);
 int nd_set_netns(const std::string &ns);
 bool nd_get_essid(const char *ifname, std::string &essid);
 #endif
+
+template<typename... Args>
+void nd_sprintf(std::string &dst, const char *format, Args... args);
