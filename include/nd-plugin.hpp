@@ -190,7 +190,7 @@ public:
       const ndPlugin::Channels &channels,
       ndFlags<ndPlugin::DispatchFlags> flags = ndPlugin::DispatchFlags::NONE) {
         if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::FORMAT_JSON_OBJECT)) {
-            return Create(j, channels, flags);
+            return make_shared<ndPluginSinkPayload>(j, channels, flags);
         }
 
         std::string output;
