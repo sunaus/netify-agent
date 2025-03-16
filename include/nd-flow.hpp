@@ -139,11 +139,8 @@ class ndFlow : public ndSerializer
 public:
     typedef std::shared_ptr<ndFlow> Ptr;
 
-    nd_iface_ptr iface;
-#if defined(_ND_ENABLE_NFQUEUE)
-    std::string lower_iface;
-    std::string upper_iface;
-#endif
+    ndInterface::Ptr iface;
+
     ndAddr lower_mac;
     ndAddr upper_mac;
 
@@ -231,10 +228,19 @@ public:
         uint32_t id = { 0 };
 #ifdef _ND_ENABLE_CONNTRACK_MDATA
         uint32_t mark = { 0 };
+        ndAddr reply_src_addr;
+        ndAddr reply_dst_addr;
 #endif
     } conntrack;
 #endif
-
+#if defined(_ND_ENABLE_NFQUEUE)
+    struct {
+        int src_ifindex = { -1 };
+        int dst_ifindex = { -1 };
+        std::string src_iface;
+        std::string dst_iface;
+    } nfq;
+#endif
     struct {
         uint8_t version = { 0xFF };
         uint8_t ip_version = { 0 };
@@ -334,7 +340,7 @@ public:
 
     struct ndpi_flow_struct *ndpi_flow = { nullptr };
 
-    ndFlow(nd_iface_ptr &iface);
+    ndFlow(ndInterface::Ptr &iface);
     ndFlow(const ndFlow &flow);
     virtual ~ndFlow();
 
@@ -599,8 +605,28 @@ public:
             serialize(output, { "conntrack", "id" }, conntrack.id);
 #ifdef _ND_ENABLE_CONNTRACK_MDATA
             serialize(output, { "conntrack", "mark" }, conntrack.mark);
-#endif
-#endif
+            if (conntrack.reply_src_addr.IsValid()) {
+                serialize(output, { "conntrack", "reply_src_ip" },
+                  conntrack.reply_src_addr.GetString());
+                serialize(output, { "conntrack", "reply_src_port" },
+                  (unsigned)conntrack.reply_src_addr.GetPort());
+            }
+            if (conntrack.reply_dst_addr.IsValid()) {
+                serialize(output, { "conntrack", "reply_dst_ip" },
+                  conntrack.reply_dst_addr.GetString());
+                serialize(output, { "conntrack", "reply_dst_port" },
+                  (unsigned)conntrack.reply_dst_addr.GetPort());
+            }
+#endif // _ND_ENABLE_CONNTRACK_MDATA
+#endif // _ND_ENABLE_CONNTRACK
+#if defined(_ND_ENABLE_NFQUEUE)
+            if (! nfq.src_iface.empty()) {
+                serialize(output, { "nfq", "src_iface" }, nfq.src_iface);
+            }
+            if (! nfq.dst_iface.empty()) {
+                serialize(output, { "nfq", "dst_iface" }, nfq.dst_iface);
+            }
+#endif // _ND_ENABLE_NFQUEUE
             if (! dns_host_name.empty())
                 serialize(output, { "dns_host_name" }, dns_host_name);
 

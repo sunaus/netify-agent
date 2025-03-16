@@ -249,7 +249,7 @@ struct __attribute__((packed)) nd_dns_header_t {
 };
 
 ndCaptureThread::ndCaptureThread(ndFlags<ndCaptureType> cs_type,
-  int16_t cpu, nd_iface_ptr &iface,
+  int16_t cpu, ndInterface::Ptr &iface,
   const ndDetectionThreads &threads_dpi,
   ndDNSHintCache *dhc, uint8_t private_addr)
   : ndThread(iface->ifname, (long)cpu, /* IPC? */ false),
@@ -1090,16 +1090,17 @@ nd_process_ip:
         if (ndCT_TYPE(
             iface->capture_type.flags) == ndCaptureType::NFQ) {
 
-            ndi.addr_lookup.LookupLinkName(packet->ifidx_src,
-                (addr_cmp < 0) ? nf->lower_iface : nf->upper_iface);
-            ndi.addr_lookup.LookupLinkName(packet->ifidx_dst,
-                (addr_cmp < 0) ? nf->upper_iface : nf->lower_iface);
-#ifdef _ND_LOG_NFQ_DEBUG
-            nd_dprintf("%s: lower_iface: %s, upper_iface: %s\n", tag.c_str(),
-                (nf->lower_iface.empty()) ? "???" : nf->lower_iface.c_str(),
-                (nf->upper_iface.empty()) ? "???" : nf->upper_iface.c_str()
-            );
-#endif
+            nf->nfq.src_ifindex = packet->ifidx_src;
+            nf->nfq.dst_ifindex = packet->ifidx_dst;
+
+            if (nf->nfq.src_ifindex != -1) {
+                ndi.addr_lookup.LookupLinkName(
+                    nf->nfq.src_ifindex, nf->nfq.src_iface);
+            }
+            if (nf->nfq.dst_ifindex != -1) {
+                ndi.addr_lookup.LookupLinkName(
+                    nf->nfq.dst_ifindex, nf->nfq.dst_iface);
+            }
         }
 #endif
         if (! ndi.flow_buckets->InsertUnlocked(flow_digest, nf))

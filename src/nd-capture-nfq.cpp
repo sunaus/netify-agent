@@ -285,7 +285,7 @@ static int ndCaptureNFQueue_Callback(
 }
 
 ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
-  nd_iface_ptr &iface, const ndDetectionThreads &threads_dpi,
+  ndInterface::Ptr &iface, const ndDetectionThreads &threads_dpi,
   unsigned instance_id, ndDNSHintCache *dhc, uint8_t private_addr)
   : ndCaptureThread(ndCaptureType::NFQ, cpu, iface,
       threads_dpi, dhc, private_addr),

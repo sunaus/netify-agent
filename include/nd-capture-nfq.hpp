@@ -25,7 +25,7 @@
 class ndCaptureNFQueue : public ndCaptureThread
 {
 public:
-    ndCaptureNFQueue(int16_t cpu, nd_iface_ptr &iface,
+    ndCaptureNFQueue(int16_t cpu, ndInterface::Ptr &iface,
       const ndDetectionThreads &threads_dpi,
       unsigned instance_id = 0, ndDNSHintCache *dhc = NULL,
       uint8_t private_addr = 0);

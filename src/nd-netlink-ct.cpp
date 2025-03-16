@@ -480,6 +480,10 @@ void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
         flow->conntrack.id = ct_flow.id;
 #ifdef _ND_ENABLE_CONNTRACK_MDATA
         flow->conntrack.mark = ct_flow.mark;
+        flow->conntrack.reply_src_addr = digest_flow->second->reply_addr[
+            static_cast<int>(ndConntrackFlow::Direction::SRC)];
+        flow->conntrack.reply_dst_addr = digest_flow->second->reply_addr[
+            static_cast<int>(ndConntrackFlow::Direction::DST)];
 #endif
         if (flow->iface->role != ndInterfaceRole::WAN) return;
 

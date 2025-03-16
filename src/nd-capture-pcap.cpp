@@ -28,7 +28,7 @@
 #include "nd-capture-pcap.hpp"
 
 ndCapturePcap::ndCapturePcap(int16_t cpu,
-  nd_iface_ptr &iface, const ndDetectionThreads &threads_dpi,
+  ndInterface::Ptr &iface, const ndDetectionThreads &threads_dpi,
   ndDNSHintCache *dhc, uint8_t private_addr)
   : ndCaptureThread(iface->capture_type, cpu, iface,
       threads_dpi, dhc, private_addr),
@@ -235,6 +235,13 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
         nd_printf("%s: pcap_open: %s\n", tag.c_str(), pcap_errbuf);
     else {
         capture_state = State::ONLINE;
+
+        unsigned ifindex = if_nametoindex(tag.c_str());
+        if (ifindex == 0) {
+            nd_dprintf("%s: if_nametoindex: %s\n", tag.c_str(), strerror(errno));
+            iface->ifindex = -1;
+        }
+        else iface->ifindex = (int)ifindex;
 
         if (ndCT_TYPE(iface->capture_type.flags) !=
           ndCaptureType::PCAP_OFFLINE)

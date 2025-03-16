@@ -65,7 +65,7 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
     rate = (divisor > 0) ? ((float)total / (float)divisor) : 0.0f;
 }
 
-ndFlow::ndFlow(nd_iface_ptr &iface)
+ndFlow::ndFlow(ndInterface::Ptr &iface)
   : iface(iface), detected_protocol_name("Unknown") {
 }
 
@@ -318,16 +318,6 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
     os << iface->ifname;
     size_t plen = 4;
 
-#if defined(_ND_ENABLE_NFQUEUE)
-    if (! lower_iface.empty() || ! upper_iface.empty()) {
-        os << ": "
-          << ((lower_iface.empty()) ? "???" : lower_iface) << " "
-          << ((origin == Origin::LOWER || origin == Origin::UNKNOWN) ? '-' : '<')
-          << ((origin == Origin::UNKNOWN) ? '?' : '-')
-          << ((origin == Origin::UPPER || origin == Origin::UNKNOWN) ? '-' : '>')
-          << " " << ((upper_iface.empty()) ? "???" : upper_iface);
-    }
-#endif
     nd_output_lock();
 
     try {
@@ -456,7 +446,42 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
               << ((! detected_application_name.empty()) ?
                      detected_application_name :
                      "");
+#ifdef _ND_ENABLE_CONNTRACK
+            dls << endl
+                << setw(plen) << " " << ":"
+                << " CT ID: " << conntrack.id;
+#ifdef _ND_ENABLE_CONNTRACK_MDATA
+            dls << ":"
+                << " MARK: " << conntrack.mark;
 
+            if (conntrack.reply_src_addr.IsValid() ||
+                conntrack.reply_dst_addr.IsValid()) {
+                dls << endl
+                    << setw(plen) << " " << ": CT REPLY";
+                if (conntrack.reply_src_addr.IsValid()) {
+                    dls << " SRC: "
+                        << conntrack.reply_src_addr.GetString() << ":"
+                        << conntrack.reply_src_addr.GetPort();
+                }
+                if (conntrack.reply_dst_addr.IsValid()) {
+                    dls << " DST: "
+                        << conntrack.reply_dst_addr.GetString() << ":"
+                        << conntrack.reply_dst_addr.GetPort();
+                }
+            }
+#endif // _ND_ENABLE_CONNTRACK_MDATA
+#endif // _ND_ENABLE_CONNTRACK
+#ifdef _ND_ENABLE_NFQUEUE
+            if (! nfq.src_iface.empty() || ! nfq.dst_iface.empty()) {
+                dls << endl
+                    << setw(plen) << " "
+                    << ": NFQ";
+                if (! nfq.src_iface.empty())
+                    dls << " SRC: " << nfq.src_iface;
+                if (! nfq.dst_iface.empty())
+                    dls << " DST: " << nfq.dst_iface;
+            }
+#endif
             if (! dns_host_name.empty() ||
               ! host_server_name.empty())
             {

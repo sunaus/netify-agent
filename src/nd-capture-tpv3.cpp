@@ -549,7 +549,7 @@ ndPacket *ndPacketRing::CopyPacket(const void *entry,
 }
 
 ndCaptureTPv3::ndCaptureTPv3(int16_t cpu,
-  nd_iface_ptr &iface, const ndDetectionThreads &threads_dpi,
+  ndInterface::Ptr &iface, const ndDetectionThreads &threads_dpi,
   ndDNSHintCache *dhc, uint8_t private_addr)
   : ndCaptureThread(ndCaptureType::TPV3, cpu, iface,
       threads_dpi, dhc, private_addr),
@@ -590,6 +590,13 @@ void *ndCaptureTPv3::Entry(void) {
     pkt_queue.reserve(iface->config_tpv3.rb_blocks);
 
     capture_state = State::ONLINE;
+
+    unsigned ifindex = if_nametoindex(tag.c_str());
+    if (ifindex == 0) {
+        nd_dprintf("%s: if_nametoindex: %s\n", tag.c_str(), strerror(errno));
+        iface->ifindex = -1;
+    }
+    else iface->ifindex = (int)ifindex;
 
     bool warnings = true;
 
@@ -637,6 +644,14 @@ void *ndCaptureTPv3::Entry(void) {
             rc = 0;
             warnings = true;
             capture_state = State::ONLINE;
+
+            ifindex = if_nametoindex(tag.c_str());
+            if (ifindex == 0) {
+                nd_dprintf("%s: if_nametoindex: %s\n",
+                    tag.c_str(), strerror(errno));
+                iface->ifindex = -1;
+            }
+            else iface->ifindex = (int)ifindex;
         }
 
         entry->ProcessPackets(_ring, pkt_queue);

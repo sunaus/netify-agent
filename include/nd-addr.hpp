@@ -968,6 +968,7 @@ public:
         return true;
     }
 
+    int ifindex = { -1 };
     std::string ifname;
     std::string ifname_peer;
     ndFlags<ndCaptureType> capture_type;
@@ -983,11 +984,12 @@ public:
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
     bool conntrack_counters = { false };
 #endif
+
+    typedef std::shared_ptr<ndInterface> Ptr;
+
 protected:
     ndInterfaceAddr addrs;
     ndInterfaceEndpoints endpoints[2];
     std::atomic<bool> endpoint_snapshot;
     mutable std::mutex lock;
 };
-
-typedef std::shared_ptr<ndInterface> nd_iface_ptr;
