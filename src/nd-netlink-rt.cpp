@@ -163,6 +163,14 @@ static int ndNetlinkRoute_attr_parse_ifla(
             return MNL_CB_ERROR;
         }
         break;
+
+    case IFLA_WIRELESS:
+        if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
+            nd_dprintf("%s: invalid attribute type, expected: %s\n",
+                TAG, "BINARY");
+            return MNL_CB_ERROR;
+        }
+        break;
     }
 
     tb[type] = attr;
@@ -589,18 +597,25 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             return -1;
         }
 
-        if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
+        nd_dprintf("%s: RTM_NEWLINK: %s\n", TAG, ifname);
 
-        string essid;
-        if (nd_get_essid(ifname, essid)) {
-            // TODO: Save ESSID...
-        }
+        if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
 
         AttrsLink attrs = { 0 };
 
         if (mnl_attr_parse(nlh, sizeof(*ifi),
             ndNetlinkRoute_attr_parse_ifla, attrs.data()) != MNL_CB_OK)
             return -1;
+
+        if (attrs[IFLA_WIRELESS] != nullptr) {
+            string essid;
+            if (nd_get_essid(ifname, essid)) {
+                bool added = ndi.addr_lookup.AddUpdateLinkESSID(
+                    ifi->ifi_index, essid);
+                nd_dprintf("%s: %s: ESSID %s: %s\n",
+                    TAG, ifname, (added) ? "added" : "updated", essid.c_str());
+            }
+        }
 
         _ND_NLRT_CHECK_ATTR(TAG, attrs[IFLA_ADDRESS], -1);
 
