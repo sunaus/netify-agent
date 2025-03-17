@@ -1623,13 +1623,13 @@ expr_detected_hostname:
             ));
         }
 
-        _NDFP_debugf("Detected hostname == %s? %s\n",
+        _NDFP_debugf("Detected hostname (RX) == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_REGEX {
         _NDFP_result = ($$ = true);
 
-        _NDFP_debugf("Detected hostname != %s? %s\n",
+        _NDFP_debugf("Detected hostname (RX) != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -1696,13 +1696,13 @@ expr_dns_hostname:
             ));
         }
 
-        _NDFP_debugf("DNS hostname == %s? %s\n",
+        _NDFP_debugf("DNS hostname (RX) == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_DNS_HOSTNAME CMP_NOTEQUAL VALUE_REGEX {
         _NDFP_result = ($$ = true);
 
-        _NDFP_debugf("DNS hostname != %s? %s\n",
+        _NDFP_debugf("DNS hostname (RX) != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -1976,13 +1976,13 @@ expr_tls_ja4:
             ));
         }
 
-        _NDFP_debugf("TLS client JA4 == %s? %s\n",
+        _NDFP_debugf("TLS client JA4 (RX) == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_TLS_JA4 CMP_NOTEQUAL VALUE_REGEX {
         _NDFP_result = ($$ = true);
 
-        _NDFP_debugf("TLS client JA4 != %s? %s\n",
+        _NDFP_debugf("TLS client JA4 (RX) != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;

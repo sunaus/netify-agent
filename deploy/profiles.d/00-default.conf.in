@@ -86,6 +86,16 @@ capture_type = pcap
 # retrying.  The default value of 500ms is appropriate in almost all cases.
 read_timeout = 500
 
+# Threading Options
+##############################################################################
+[threads]
+# Base CPU ID to start capture threads from.
+#capture_base = 0
+# Base CPU ID to start detection threads from.
+#detection_base = 8
+# Number of detection cores to start.
+#detection_cores = 8
+
 # Flow Hash Cache
 ############################################################################
 

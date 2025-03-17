@@ -4174,7 +4174,7 @@ yyreduce:
             ));
         }
 
-        _NDFP_debugf("Detected hostname == %s? %s\n",
+        _NDFP_debugf("Detected hostname (RX) == %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4181 "nd-flow-expr.cpp"
@@ -4185,7 +4185,7 @@ yyreduce:
                                                       {
         _NDFP_result = ((yyval.bool_result) = true);
 
-        _NDFP_debugf("Detected hostname != %s? %s\n",
+        _NDFP_debugf("Detected hostname (RX) != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4192 "nd-flow-expr.cpp"
@@ -4274,7 +4274,7 @@ yyreduce:
             ));
         }
 
-        _NDFP_debugf("DNS hostname == %s? %s\n",
+        _NDFP_debugf("DNS hostname (RX) == %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4281 "nd-flow-expr.cpp"
@@ -4285,7 +4285,7 @@ yyreduce:
                                                  {
         _NDFP_result = ((yyval.bool_result) = true);
 
-        _NDFP_debugf("DNS hostname != %s? %s\n",
+        _NDFP_debugf("DNS hostname (RX) != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4292 "nd-flow-expr.cpp"
@@ -4766,7 +4766,7 @@ yyreduce:
             ));
         }
 
-        _NDFP_debugf("TLS client JA4 == %s? %s\n",
+        _NDFP_debugf("TLS client JA4 (RX) == %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4773 "nd-flow-expr.cpp"
@@ -4777,7 +4777,7 @@ yyreduce:
                                             {
         _NDFP_result = ((yyval.bool_result) = true);
 
-        _NDFP_debugf("TLS client JA4 != %s? %s\n",
+        _NDFP_debugf("TLS client JA4 (RX) != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4784 "nd-flow-expr.cpp"
@@ -5150,6 +5150,8 @@ bool ndFlowParser::RegExSearch(std::string &expr, const std::string &search) {
         expr.erase(p, 1);
     if ((p = expr.find_first_of(":")) != string::npos)
         expr.erase(0, p + 1);
+
+    nd_dprintf("%s: expr: %s\n", __func__, expr.c_str());
 
     auto rx = rx_cache.find(expr);
 
