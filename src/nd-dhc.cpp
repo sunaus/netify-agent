@@ -131,6 +131,8 @@ void ndDNSHintCache::Load(void) {
     default: return;
     }
 
+    if (! nd_file_exists(filename)) return;
+
     ifstream ifs(filename);
 
     if (! ifs.is_open()) {
