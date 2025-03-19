@@ -89,7 +89,7 @@ enum class Id : uint32_t {
     MAIL_IMAPS = 51,
     ICECAST = 52,
     DEPR53 = 53,  // Deprecated: PPLive
-    IQIYI = 54,  // Renamed from: PPStream
+    DEPR54 = 54,  // Deprecated: PPStream
     ZATTOO = 55,
     DEPR56 = 56,  // Deprecated: Shoutcast
     DEPR57 = 57,  // Deprecated: Sopcast
@@ -459,6 +459,7 @@ enum class Id : uint32_t {
     PALTALK = 428,  // paltalk video chat: https://www.paltalk.com/
     MIKROTIK_NDP = 429,  // MikroTik Neighbor Discovery Protocol: https://help.mikrotik.com/docs/spaces/ROS/pages/24805517/Neighbor+discovery/
     DICOM = 430,  // Digital Imaging and Communications in Medicine: https://en.wikipedia.org/wiki/DICOM/
+    IQIYI = 431,  // IQIYI (Baidu) video streaming protocol.
 
     MAX,
     TODO = 0xffffffff

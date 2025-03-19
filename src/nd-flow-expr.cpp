@@ -5151,8 +5151,6 @@ bool ndFlowParser::RegExSearch(std::string &expr, const std::string &search) {
     if ((p = expr.find_first_of(":")) != string::npos)
         expr.erase(0, p + 1);
 
-    nd_dprintf("%s: expr: %s\n", __func__, expr.c_str());
-
     auto rx = rx_cache.find(expr);
 
     if (rx == rx_cache.end()) {
