@@ -122,7 +122,7 @@ class ndInstance : public ndThread, public ndSerializer
 {
 public:
     static ndInstance &
-    Create(const std::string &tag = "nd-instance");
+    Create(const std::string &tag = "instance");
 
     static void Destroy(void);
 
@@ -344,7 +344,7 @@ protected:
     std::string conf_filename;
 
 private:
-    ndInstance(const std::string &tag = "nd-instance");
+    ndInstance(const std::string &tag = "instance");
     virtual ~ndInstance();
 };
 

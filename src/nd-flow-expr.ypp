@@ -121,11 +121,11 @@ typedef void* yyscan_t;
 %token FLOW_DETECTION_INIT FLOW_DETECTION_UPDATED
 %token FLOW_DHC_HIT FLOW_FHC_HIT FLOW_IP_NAT
 %token FLOW_EXPIRING FLOW_EXPIRED FLOW_SOFT_DISSECTOR
-%token FLOW_CATEGORY
 %token FLOW_RISKS FLOW_NDPI_RISK_SCORE FLOW_NDPI_RISK_SCORE_CLIENT FLOW_NDPI_RISK_SCORE_SERVER
-%token FLOW_DOMAIN_CATEGORY FLOW_NETWORK_CATEGORY
-%token FLOW_APPLICATION FLOW_APPLICATION_CATEGORY
-%token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY
+%token FLOW_CATEGORY FLOW_CATEGORY_ID
+%token FLOW_APPLICATION FLOW_APPLICATION_CATEGORY FLOW_APPLICATION_CATEGORY_ID
+%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID 
+%token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY FLOW_PROTOCOL_CATEGORY_ID
 %token FLOW_DETECTED_HOSTNAME FLOW_DNS_HOSTNAME FLOW_ORIGIN FLOW_CT_MARK
 %token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_ESNI FLOW_TLS_JA4
 
@@ -158,11 +158,11 @@ typedef void* yyscan_t;
 %type <bool_result> expr_detection_init expr_detection_updated
 %type <bool_result> expr_dhc_hit expr_fhc_hit expr_ip_nat
 %type <bool_result> expr_expiring expr_expired expr_soft_dissector
-%type <bool_result> expr_category
+%type <bool_result> expr_category expr_category_id
+%type <bool_result> expr_app expr_app_id expr_app_name expr_app_category expr_app_category_id
+%type <bool_result> expr_domain_category expr_domain_category_id expr_network_category expr_network_category_id
 %type <bool_result> expr_risks expr_risk_ndpi_score expr_risk_ndpi_score_client expr_risk_ndpi_score_server
-%type <bool_result> expr_app expr_app_id expr_app_name expr_app_category
-%type <bool_result> expr_domain_category expr_network_category
-%type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category
+%type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category expr_proto_category_id
 %type <bool_result> expr_detected_hostname expr_dns_hostname expr_origin expr_fwmark
 %type <bool_result> expr_tls_version expr_tls_cipher expr_tls_ech expr_tls_esni expr_tls_ja4
 
@@ -197,18 +197,23 @@ expr:
     | expr_expired
     | expr_soft_dissector
     | expr_category
+    | expr_category_id
+    | expr_app
+    | expr_app_category
+    | expr_app_category_id
+    | expr_domain_category
+    | expr_domain_category_id
+    | expr_network_category
+    | expr_network_category_id
+    | expr_proto
+    | expr_proto_category
+    | expr_proto_category_id
+    | expr_detected_hostname
+    | expr_dns_hostname
     | expr_risks
     | expr_risk_ndpi_score
     | expr_risk_ndpi_score_client
     | expr_risk_ndpi_score_server
-    | expr_app
-    | expr_app_category
-    | expr_domain_category
-    | expr_network_category
-    | expr_proto
-    | expr_proto_category
-    | expr_detected_hostname
-    | expr_dns_hostname
     | expr_tls_version
     | expr_tls_cipher
     | expr_tls_ech
@@ -1132,7 +1137,7 @@ expr_category:
             );
         }
 
-        _NDFP_debugf("App/domain category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("App/domain/network category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_CATEGORY CMP_NOTEQUAL VALUE_NAME {
         size_t p;
@@ -1166,7 +1171,483 @@ expr_category:
             );
         }
 
-        _NDFP_debugf("App/domain category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("App/domain/network category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_category_id:
+      FLOW_CATEGORY_ID CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.application) == $3
+        ));
+        _NDFP_debugf("App category ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.domain) == $3
+            ));
+            _NDFP_debugf("Domain category ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        }
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.network) == $3
+            ));
+            _NDFP_debugf("Network category ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        }
+
+        _NDFP_debugf("App/domain/network category ID == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_CATEGORY_ID CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.application) != $3
+        ));
+        _NDFP_debugf("App category ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.domain) != $3
+            ));
+            _NDFP_debugf("Domain category ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        }
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.network) != $3
+            ));
+            _NDFP_debugf("Network category ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        }
+
+        _NDFP_debugf("App/domain/network category ID != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_app_category:
+      FLOW_APPLICATION_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.application
+            )
+        );
+
+        _NDFP_debugf("App category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_APPLICATION_CATEGORY_ID CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.application
+            )
+        );
+
+        _NDFP_debugf("App category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_app_category_id:
+      FLOW_APPLICATION_CATEGORY_ID CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.application) == $3
+        ));
+
+        _NDFP_debugf("App category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_APPLICATION_CATEGORY_ID CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.application) != $3
+        ));
+
+        _NDFP_debugf("App category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_domain_category:
+      FLOW_DOMAIN_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.domain
+            )
+        );
+
+        _NDFP_debugf("Domain category ID == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DOMAIN_CATEGORY CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.domain
+            )
+        );
+
+        _NDFP_debugf("Domain category ID != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_domain_category_id:
+      FLOW_DOMAIN_CATEGORY_ID CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.domain) == $3
+        ));
+
+        _NDFP_debugf("Domain category ID == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DOMAIN_CATEGORY_ID CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.domain) != $3
+        ));
+
+        _NDFP_debugf("Domain category ID != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_network_category:
+      FLOW_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.network
+            )
+        );
+
+        _NDFP_debugf("Network category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.network
+            )
+        );
+
+        _NDFP_debugf("Network category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_network_category_id:
+      FLOW_NETWORK_CATEGORY_ID CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.network) == $3
+        ));
+
+        _NDFP_debugf("Network category ID == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_NETWORK_CATEGORY_ID CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.network) != $3
+        ));
+
+        _NDFP_debugf("Network category ID != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_proto:
+      FLOW_PROTOCOL {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->detected_protocol != ndProto::Id::UNKNOWN
+        ));
+        _NDFP_debugf("Protocol detected? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_PROTOCOL {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->detected_protocol == ndProto::Id::UNKNOWN
+        ));
+        _NDFP_debugf("Protocol not detected? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | expr_proto_id
+    | expr_proto_name
+
+expr_proto_id:
+      FLOW_PROTOCOL CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->detected_protocol) == $3
+        ));
+        _NDFP_debugf("Protocol ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->detected_protocol) != $3
+        ));
+        _NDFP_debugf("Protocol ID != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_proto_name:
+      FLOW_PROTOCOL CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->detected_protocol_name.empty()) {
+
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            _NDFP_result = ($$ = (strncasecmp(
+                _NDFP_flow->detected_protocol_name.c_str(), search.c_str(), _NDFP_MAX_BUFLEN
+            ) == 0));
+        }
+
+        _NDFP_debugf(
+            "Protocol name == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    | FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->detected_protocol_name.empty()) {
+
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            _NDFP_result = ($$ = (strncasecmp(
+                _NDFP_flow->detected_protocol_name.c_str(), search.c_str(), _NDFP_MAX_BUFLEN
+            )));
+        }
+        _NDFP_debugf(
+            "Protocol name != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no"
+        );
+    }
+    ;
+
+expr_proto_category:
+      FLOW_PROTOCOL_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::PROTO, category) == _NDFP_flow->category.protocol
+            )
+        );
+
+        _NDFP_debugf("Protocol category == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_PROTOCOL_CATEGORY CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::PROTO, category) != _NDFP_flow->category.protocol
+            )
+        );
+
+        _NDFP_debugf("Protocol category != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_proto_category_id:
+      FLOW_PROTOCOL_CATEGORY_ID CMP_EQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.protocol) == $3
+        ));
+
+        _NDFP_debugf("Protocol category ID == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_PROTOCOL_CATEGORY_ID CMP_NOTEQUAL VALUE_NUMBER {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_flow->category.protocol) != $3
+        ));
+
+        _NDFP_debugf("Protocol category ID != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_detected_hostname:
+      FLOW_DETECTED_HOSTNAME {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->host_server_name.empty() == false
+        ));
+        _NDFP_debugf("Detected hostname detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_DETECTED_HOSTNAME {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->host_server_name.empty() == true
+        ));
+        _NDFP_debugf("Detected hostname not detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->host_server_name.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->host_server_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+
+        _NDFP_debugf("Detected hostname == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->host_server_name.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->host_server_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+
+        _NDFP_debugf("Detected hostname != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+
+        if (! _NDFP_flow->host_server_name.empty()) {
+            string rx($3);
+
+            _NDFP_result = ($$ = _NDFP_regex_search(
+                rx, _NDFP_flow->host_server_name
+            ));
+        }
+
+        _NDFP_debugf("Detected hostname (RX) == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+
+        _NDFP_debugf("Detected hostname (RX) != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_dns_hostname:
+      FLOW_DNS_HOSTNAME {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->dns_host_name.empty() == false
+        ));
+        _NDFP_debugf("DNS hostname detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_DNS_HOSTNAME {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->dns_host_name.empty() == true
+        ));
+        _NDFP_debugf("DNS hostname not detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DNS_HOSTNAME CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->dns_host_name.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->dns_host_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+
+        _NDFP_debugf("DNS hostname == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DNS_HOSTNAME CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->dns_host_name.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->dns_host_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+
+        _NDFP_debugf("DNS hostname != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DNS_HOSTNAME CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+
+        if (! _NDFP_flow->dns_host_name.empty()) {
+            string rx($3);
+
+            _NDFP_result = ($$ = _NDFP_regex_search(
+                rx, _NDFP_flow->dns_host_name
+            ));
+        }
+
+        _NDFP_debugf("DNS hostname (RX) == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DNS_HOSTNAME CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+
+        _NDFP_debugf("DNS hostname (RX) != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -1345,365 +1826,6 @@ expr_risk_ndpi_score_server:
     | FLOW_NDPI_RISK_SCORE_SERVER '<' VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->risk.ndpi_score_server < $3));
         _NDFP_debugf("nDPI risk server score > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_app_category:
-      FLOW_APPLICATION_CATEGORY CMP_EQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) == _NDFP_flow->category.application
-            )
-        );
-
-        _NDFP_debugf("App category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_APPLICATION_CATEGORY CMP_NOTEQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) != _NDFP_flow->category.application
-            )
-        );
-
-        _NDFP_debugf("App category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_domain_category:
-      FLOW_DOMAIN_CATEGORY CMP_EQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) == _NDFP_flow->category.domain
-            )
-        );
-
-        _NDFP_debugf("Domain category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DOMAIN_CATEGORY CMP_NOTEQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) != _NDFP_flow->category.domain
-            )
-        );
-
-        _NDFP_debugf("Domain category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_network_category:
-      FLOW_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) == _NDFP_flow->category.network
-            )
-        );
-
-        _NDFP_debugf("Network category == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) != _NDFP_flow->category.network
-            )
-        );
-
-        _NDFP_debugf("Network category != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_proto:
-      FLOW_PROTOCOL {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->detected_protocol != ndProto::Id::UNKNOWN
-        ));
-        _NDFP_debugf("Protocol detected? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | '!' FLOW_PROTOCOL {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->detected_protocol == ndProto::Id::UNKNOWN
-        ));
-        _NDFP_debugf("Protocol not detected? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | expr_proto_id
-    | expr_proto_name
-
-expr_proto_id:
-      FLOW_PROTOCOL CMP_EQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (
-            static_cast<unsigned>(_NDFP_flow->detected_protocol) == $3
-        ));
-        _NDFP_debugf("Protocol ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (
-            static_cast<unsigned>(_NDFP_flow->detected_protocol) != $3
-        ));
-        _NDFP_debugf("Protocol ID != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_proto_name:
-      FLOW_PROTOCOL CMP_EQUAL VALUE_NAME {
-        _NDFP_result = ($$ = false);
-        if (! _NDFP_flow->detected_protocol_name.empty()) {
-
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            _NDFP_result = ($$ = (strncasecmp(
-                _NDFP_flow->detected_protocol_name.c_str(), search.c_str(), _NDFP_MAX_BUFLEN
-            ) == 0));
-        }
-
-        _NDFP_debugf(
-            "Protocol name == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no"
-        );
-    }
-    | FLOW_PROTOCOL CMP_NOTEQUAL VALUE_NAME {
-        _NDFP_result = ($$ = true);
-        if (! _NDFP_flow->detected_protocol_name.empty()) {
-
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            _NDFP_result = ($$ = (strncasecmp(
-                _NDFP_flow->detected_protocol_name.c_str(), search.c_str(), _NDFP_MAX_BUFLEN
-            )));
-        }
-        _NDFP_debugf(
-            "Protocol name != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no"
-        );
-    }
-    ;
-
-expr_proto_category:
-      FLOW_PROTOCOL_CATEGORY CMP_EQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::PROTO, category) == _NDFP_flow->category.protocol
-            )
-        );
-
-        _NDFP_debugf("Protocol category == %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_PROTOCOL_CATEGORY CMP_NOTEQUAL VALUE_NAME {
-        size_t p;
-        string category($3);
-
-        while ((p = category.find_first_of("'\"")) != string::npos)
-            category.erase(p, 1);
-
-        _NDFP_result = (
-            $$ = (
-                _NDFP_categories.LookupTag(
-                    ndCategories::Type::PROTO, category) != _NDFP_flow->category.protocol
-            )
-        );
-
-        _NDFP_debugf("Protocol category != %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_detected_hostname:
-      FLOW_DETECTED_HOSTNAME {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->host_server_name.empty() == false
-        ));
-        _NDFP_debugf("Detected hostname detected? %s\n",
-            (_NDFP_result) ? "yes" : "no");
-    }
-    | '!' FLOW_DETECTED_HOSTNAME {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->host_server_name.empty() == true
-        ));
-        _NDFP_debugf("Detected hostname not detected? %s\n",
-            (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_NAME {
-        _NDFP_result = ($$ = false);
-        if (! _NDFP_flow->host_server_name.empty()) {
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            if (strncasecmp(search.c_str(),
-                _NDFP_flow->host_server_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
-                _NDFP_result = ($$ = true);
-            }
-        }
-
-        _NDFP_debugf("Detected hostname == %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_NAME {
-        _NDFP_result = ($$ = true);
-        if (! _NDFP_flow->host_server_name.empty()) {
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            if (strncasecmp(search.c_str(),
-                _NDFP_flow->host_server_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
-                _NDFP_result = ($$ = false);
-            }
-        }
-
-        _NDFP_debugf("Detected hostname != %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DETECTED_HOSTNAME CMP_EQUAL VALUE_REGEX {
-        _NDFP_result = ($$ = false);
-
-        if (! _NDFP_flow->host_server_name.empty()) {
-            string rx($3);
-
-            _NDFP_result = ($$ = _NDFP_regex_search(
-                rx, _NDFP_flow->host_server_name
-            ));
-        }
-
-        _NDFP_debugf("Detected hostname (RX) == %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DETECTED_HOSTNAME CMP_NOTEQUAL VALUE_REGEX {
-        _NDFP_result = ($$ = true);
-
-        _NDFP_debugf("Detected hostname (RX) != %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_dns_hostname:
-      FLOW_DNS_HOSTNAME {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->dns_host_name.empty() == false
-        ));
-        _NDFP_debugf("DNS hostname detected? %s\n",
-            (_NDFP_result) ? "yes" : "no");
-    }
-    | '!' FLOW_DNS_HOSTNAME {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->dns_host_name.empty() == true
-        ));
-        _NDFP_debugf("DNS hostname not detected? %s\n",
-            (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DNS_HOSTNAME CMP_EQUAL VALUE_NAME {
-        _NDFP_result = ($$ = false);
-        if (! _NDFP_flow->dns_host_name.empty()) {
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            if (strncasecmp(search.c_str(),
-                _NDFP_flow->dns_host_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
-                _NDFP_result = ($$ = true);
-            }
-        }
-
-        _NDFP_debugf("DNS hostname == %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DNS_HOSTNAME CMP_NOTEQUAL VALUE_NAME {
-        _NDFP_result = ($$ = true);
-        if (! _NDFP_flow->dns_host_name.empty()) {
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            if (strncasecmp(search.c_str(),
-                _NDFP_flow->dns_host_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
-                _NDFP_result = ($$ = false);
-            }
-        }
-
-        _NDFP_debugf("DNS hostname != %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DNS_HOSTNAME CMP_EQUAL VALUE_REGEX {
-        _NDFP_result = ($$ = false);
-
-        if (! _NDFP_flow->dns_host_name.empty()) {
-            string rx($3);
-
-            _NDFP_result = ($$ = _NDFP_regex_search(
-                rx, _NDFP_flow->dns_host_name
-            ));
-        }
-
-        _NDFP_debugf("DNS hostname (RX) == %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_DNS_HOSTNAME CMP_NOTEQUAL VALUE_REGEX {
-        _NDFP_result = ($$ = true);
-
-        _NDFP_debugf("DNS hostname (RX) != %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 

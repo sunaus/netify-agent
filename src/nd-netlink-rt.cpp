@@ -40,7 +40,7 @@
 
 using namespace std;
 
-constexpr const char *TAG = { "nd-netlink-rt" };
+constexpr const char *TAG = { "netlink-rt" };
 
 static int ndNetlinkRoute_attr_parse_ifav4(
     const struct nlattr *attr, void *data) {

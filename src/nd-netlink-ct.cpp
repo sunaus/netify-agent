@@ -36,7 +36,7 @@
 
 using namespace std;
 
-constexpr const char *TAG = { "nd-netlink-ct" };
+constexpr const char *TAG = { "netlink-ct" };
 
 static int ndNetlinkConntrack_attr_parse(
     const struct nlattr *attr, void *data) {
