@@ -460,7 +460,7 @@ void ndApplications::Reset(bool free_only) {
     soft_dissectors.clear();
 }
 
-void ndApplications::Get(nd_apps_t &apps_copy) {
+void ndApplications::Get(nd_apps_t &apps_copy) const {
     apps_copy.clear();
 
     lock_guard<recursive_mutex> ul(lock);

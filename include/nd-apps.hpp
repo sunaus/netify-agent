@@ -94,7 +94,7 @@ public:
     bool Lookup(const std::string &tag, ndApplication &app);
     bool Lookup(ndApp::Id id, ndApplication &app);
 
-    void Get(nd_apps_t &apps_copy);
+    void Get(nd_apps_t &apps_copy) const;
 
     bool SoftDissectorMatch(ndFlow::Ptr const &flow,
       ndFlowParser *parser,
@@ -113,7 +113,7 @@ public:
     };
 
 protected:
-    std::recursive_mutex lock;
+    mutable std::recursive_mutex lock;
     nd_app_id_map apps;
     nd_app_tag_map app_tags;
     nd_tlds_t tlds;
