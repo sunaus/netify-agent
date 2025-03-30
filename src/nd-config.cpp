@@ -47,6 +47,7 @@ using json = nlohmann::json;
 ndGlobalConfig::ndGlobalConfig()
   : napi_tls_verify(true), napi_vendor(ND_API_VENDOR),
     path_agent_status(ND_AGENT_STATUS_PATH),
+    path_app_config(ND_CONF_APP_PATH),
     path_cat_config(ND_CONF_CAT_PATH),
     path_categories(ND_CATEGORIES_PATH),
     path_config(ND_CONF_FILE_NAME),
