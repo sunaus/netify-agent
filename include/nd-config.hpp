@@ -288,6 +288,7 @@ public:
     std::string path_plugins;
     std::string path_plugin_libdir;
     std::string path_profile;
+    std::string path_proto_config;
     std::string path_shared_data;
     std::string path_state_persistent;
     std::string path_state_volatile;
@@ -385,6 +386,8 @@ public:
     void GetUUID(ndUUID which, std::string &uuid);
 
     bool ForceReset(void);
+
+    bool LoadProtocols(void);
 
     bool LoadInterfaces(const std::string &filename);
 

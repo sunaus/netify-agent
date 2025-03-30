@@ -172,6 +172,10 @@
 #define ND_CONF_APP_PATH \
     ND_PERSISTENT_STATEDIR "/" ND_CONF_APP_BASE
 
+#define ND_CONF_PROTO_BASE   "netify-protocols.json"
+#define ND_CONF_PROTO_PATH \
+    ND_PERSISTENT_STATEDIR "/" ND_CONF_PROTO_BASE
+
 #define ND_CONF_CAT_BASE "netify-categories.json"
 #define ND_CONF_CAT_PATH \
     ND_PERSISTENT_STATEDIR "/" ND_CONF_CAT_BASE

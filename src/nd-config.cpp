@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include <cstring>
+#include <fstream>
 #include <list>
 
 #include "INIReader.h"
@@ -36,15 +37,16 @@
 #include "nd-config.hpp"
 #include "nd-except.hpp"
 #include "nd-plugin.hpp"
+#include "nd-protos.hpp"
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
 using namespace std;
+using json = nlohmann::json;
 
 ndGlobalConfig::ndGlobalConfig()
   : napi_tls_verify(true), napi_vendor(ND_API_VENDOR),
     path_agent_status(ND_AGENT_STATUS_PATH),
-    path_app_config(ND_CONF_APP_PATH),
     path_cat_config(ND_CONF_CAT_PATH),
     path_categories(ND_CATEGORIES_PATH),
     path_config(ND_CONF_FILE_NAME),
@@ -53,6 +55,7 @@ ndGlobalConfig::ndGlobalConfig()
     path_legacy_config(ND_CONF_LEGACY_PATH),
     path_pid_file(ND_PID_FILE_NAME), path_plugins(ND_PLUGINS_PATH),
     path_plugin_libdir(ND_PLUGIN_LIBDIR),
+    path_proto_config(ND_CONF_PROTO_PATH),
     path_shared_data(ND_SHARED_DATADIR),
     path_state_persistent(ND_PERSISTENT_STATEDIR),
     path_state_volatile(ND_VOLATILE_STATEDIR),
@@ -465,6 +468,10 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
         protocols[i.first] = i.second;
     }
 
+    LoadProtocols();
+
+    // Load plugins
+
     if (! profile) {
         // Add plugins
         vector<string> files;
@@ -635,6 +642,53 @@ bool ndGlobalConfig::ForceReset(void) {
     if (rc == 0) fprintf(stdout, "Reset successful.\n");
 
     return success;
+}
+
+bool ndGlobalConfig::LoadProtocols(void) {
+    if (! nd_file_exists(path_proto_config)) return false;
+
+    ifstream ifs(path_proto_config);
+    if (! ifs.is_open()) {
+        nd_dprintf("error opening protocols config: %s\n",
+            path_proto_config.c_str());
+        return false;
+    }
+
+    json jprotos;
+
+    try {
+        ifs >> jprotos;
+    }
+    catch (exception &e) {
+        nd_printf(
+          "Error loading protocols: %s: JSON parse error\n",
+          path_proto_config.c_str());
+        nd_dprintf("%s: %s\n", path_proto_config.c_str(), e.what());
+
+        return false;
+    }
+
+    unsigned count = 0;
+    auto jp = jprotos.find("protocols");
+    for (auto &p : jp->get<json::array_t>()) {
+
+        auto jid = p.find("id");
+        if (jid == p.end() || ! jid->is_number())
+            continue;
+
+        auto jenable = p.find("enable");
+        if (jenable == p.end() || ! jenable->is_boolean())
+            continue;
+
+        auto tag = ndProto::Tags.find(
+            static_cast<ndProto::Id>(jid->get<unsigned>())
+        );
+
+        protocols[tag->second] = (jenable->get<bool>()) ? "include" : "exclude";
+        count++;
+    }
+
+    return (count > 0);
 }
 
 bool ndGlobalConfig::LoadInterfaces(const string &filename) {
@@ -1219,6 +1273,8 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
 void ndGlobalConfig::UpdatePaths(void) {
     path_app_config = path_state_persistent + "/" + ND_CONF_APP_BASE;
 
+    path_proto_config = path_state_persistent + "/" + ND_CONF_PROTO_BASE;
+
     path_cat_config = path_state_persistent + "/" + ND_CONF_CAT_BASE;
 
     path_legacy_config = path_state_persistent + "/" +
@@ -1246,6 +1302,8 @@ void ndGlobalConfig::UpdateConfigVars(void) {
       ndGC.path_state_volatile));
     conf_vars.insert(
       make_pair("${path_app_config}", path_app_config));
+    conf_vars.insert(
+      make_pair("${path_proto_config}", path_proto_config));
     conf_vars.insert(
       make_pair("${path_category_config}", path_cat_config));
     conf_vars.insert(make_pair("${path_plugins}", path_plugins));
