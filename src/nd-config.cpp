@@ -671,6 +671,12 @@ bool ndGlobalConfig::LoadProtocols(void) {
 
     unsigned count = 0;
     auto jp = jprotos.find("protocols");
+    if (jp == jprotos.end()) {
+        nd_dprintf("%s: invalid schema: %s not found.\n",
+            path_proto_config.c_str(), "protocols");
+        return false;
+    }
+
     for (auto &p : jp->get<json::array_t>()) {
 
         auto jid = p.find("id");
