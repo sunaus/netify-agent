@@ -162,7 +162,7 @@ enum class Id : uint32_t {
     FREE124 = 124,
     DEPR125 = 125,  // Deprecated: Skype
     FREE126 = 126,
-    MS_RPCH = 127,  // Renamed: DCERPC -> RPC -> MS_RPCH
+    DCERPC = 127,  // Distributed Computing Environment / Remote Procedure Calls
     NETFLOW = 128,
     SFLOW = 129,
     HTTP_CONNECT = 130,
@@ -398,7 +398,7 @@ enum class Id : uint32_t {
     ANSI_C1222 = 337,  // Protocol Specification for Interfacing to Data Communication Networks (ANSI C12.22)
     CEPH = 338,  // CEPH Network Protocol: https://docs.ceph.com/en/latest/dev/network-protocol/
     CIP = 339,  // Common Industrial Protocol: https://en.wikipedia.org/wiki/Common_Industrial_Protocol
-    DCERPC = 340,  // Distributed Computing Environment / Remote Procedure Calls
+    MS_RPCH = 340,  // Microsoft RPC
     DLEP = 341,  // Dynamic Link Exchange Protocol (RFC 8175): https://datatracker.ietf.org/doc/rfc8175/
     ETHERSBUS = 342,  // Ether-S-Bus protocol: https://wiki.wireshark.org/EtherSBus
     ETHERSIO = 343,  // Ether-S-IO protocol: https://wiki.wireshark.org/EtherSIO
