@@ -1738,4 +1738,23 @@ bool nd_get_essid(const char *ifname, string &essid) {
 
     return false;
 }
+
+void nd_get_memusage(const string &process, size_t &vm_kb, size_t &rss_kb) {
+    string pid, comm, state, ppid, pgrp, session, tty_nr;
+    string tpgid, flags, minflt, cminflt, majflt, cmajflt;
+    string utime, stime, cutime, cstime, priority, nice;
+    string O, itrealvalue, starttime;
+    size_t vsize, rss;
+
+    ifstream ifs("/proc/" + process + "/stat", ios_base::in);
+    ifs >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr
+        >> tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt
+        >> utime >> stime >> cutime >> cstime >> priority >> nice
+        >> O >> itrealvalue >> starttime >> vsize >> rss;
+
+    static long page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024;
+
+    vm_kb = vsize / 1024;
+    rss_kb = rss * page_size_kb;
+}
 #endif // __linux__

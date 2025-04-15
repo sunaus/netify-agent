@@ -364,8 +364,8 @@ bool ndNetlinkConntrackThread::NewFlow(uint32_t id, const Attrs &attrs) {
         make_pair(
             flow->digest[ndEnumCast(ndConntrackFlow::Origin, ORIG)], flow));
 
-    if (orig_digest_flow.second == false)
-        throw ndException("ORIG flow digest exists");
+    //if (orig_digest_flow.second == false)
+    //    throw ndException("ORIG flow digest exists");
 
     // XXX: It's OK if this fails on duplicate entries...
     // All non-NAT flows will have the same reply hash.

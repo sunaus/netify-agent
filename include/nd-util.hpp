@@ -628,3 +628,7 @@ void nd_sprintf(std::string &dst, const char *format, Args... args) {
     dst.assign(buffer);
     delete[] buffer;
 }
+
+#if defined(__linux__)
+void nd_get_memusage(const std::string &process, size_t &vm_kb, size_t &rss_kb);
+#endif

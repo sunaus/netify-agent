@@ -69,6 +69,8 @@ public:
     double cpu_system_prev = { 0 };
     size_t maxrss_kb = { 0 };
     size_t maxrss_kb_prev = { 0 };
+    size_t memrss_kb = { 0 };
+    size_t memrss_kb_prev = { 0 };
 #ifdef _ND_ENABLE_LIBTCMALLOC
     size_t tcm_alloc_kb = { 0 };
     size_t tcm_alloc_kb_prev = { 0 };
@@ -97,6 +99,8 @@ public:
         serialize(output, { "flows_in_use" }, flows_in_use);
         serialize(output, { "maxrss_kb" }, maxrss_kb);
         serialize(output, { "maxrss_kb_prev" }, maxrss_kb_prev);
+        serialize(output, { "memrss_kb" }, memrss_kb);
+        serialize(output, { "memrss_kb_prev" }, memrss_kb_prev);
 #ifdef _ND_ENABLE_LIBTCMALLOC
         serialize(output, { "tcm_kb" }, tcm_alloc_kb);
         serialize(output, { "tcm_kb_prev" }, tcm_alloc_kb_prev);

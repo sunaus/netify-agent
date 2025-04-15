@@ -1731,9 +1731,10 @@ bool ndInstance::DisplayAgentStatus(void) {
           ndTerm::Attr::RESET, jstatus["tcm_kb"].get<unsigned>());
 #endif  // _ND_ENABLE_LIBTCMALLOC
         fprintf(stdout,
-          "%s%s%s maximum memory usage: %u kB\n",
+          "%s%s%s memory RSS: %u kB, maximum memory RSS: %u kB\n",
           ndTerm::Color::GREEN, ndTerm::Icon::INFO,
           ndTerm::Attr::RESET,
+          jstatus["memrss_kb"].get<unsigned>(),
           jstatus["maxrss_kb"].get<unsigned>());
 
         if (jstatus.find("interfaces") == jstatus.end() ||
@@ -2713,6 +2714,11 @@ void ndInstance::UpdateStatus(void) {
       "generic.current_allocated_bytes", &tcm_alloc_bytes);
     status.tcm_alloc_kb_prev = status.tcm_alloc_kb;
     status.tcm_alloc_kb = tcm_alloc_bytes / 1024;
+#endif
+#ifdef __linux__
+    status.memrss_kb_prev = status.memrss_kb;
+    size_t vm_kb;
+    nd_get_memusage("self", vm_kb, status.memrss_kb);
 #endif
     struct rusage rusage_data;
     getrusage(RUSAGE_SELF, &rusage_data);
