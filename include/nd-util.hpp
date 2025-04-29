@@ -288,10 +288,10 @@ bool nd_is_ipaddr(const char *ip);
 
 void nd_private_ipaddr(uint8_t index, struct sockaddr_storage &addr);
 
-bool nd_load_uuid(std::string &uuid,
-  const std::string &path, size_t length);
-bool nd_save_uuid(const std::string &uuid,
-  const std::string &path, size_t length);
+bool nd_load_uuid(
+  std::string &uuid, const std::string &path, size_t length);
+bool nd_save_uuid(
+  const std::string &uuid, const std::string &path, size_t length);
 
 void nd_seed_rng(void);
 

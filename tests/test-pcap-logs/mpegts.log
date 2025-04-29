@@ -1,4 +1,5 @@
 offline0: i4pc----------- UDP [L] 10.1.16.48:40737 --> [OM] 230.200.201.23:1234
-        : MPEGTS
-        : DP: 1
+    : MPEGTS
+    : CT ID: 0: MARK: 0
+    : DP: 1
 

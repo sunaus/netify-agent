@@ -306,6 +306,11 @@ bool ndFlow::HasMDNSDomainName(void) const {
       ! mdns.domain_name.empty());
 }
 
+bool ndFlow::HasSTUNAddress(void) const {
+    return (stun.mapped.IsValid() || stun.peer.IsValid() ||
+      stun.relayed.IsValid() || stun.response.IsValid() || stun.other.IsValid());
+}
+
 void ndFlow::Print(ndFlags<PrintFlags> pflags,
   const string &prefix) const {
     bool multiline = false;
@@ -544,6 +549,44 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                     dls << " SSH/CA: " << ssh.client_agent;
                 if (HasSSHServerAgent())
                     dls << " SSH/SA: " << ssh.server_agent;
+            }
+
+            if (HasSTUNAddress()) {
+                if (stun.mapped.IsValid()) {
+                    dls << endl
+                        << setw(plen) << " "
+                        << ":";
+                    dls << " STUN/MAPPED: " << stun.mapped.GetString()
+                        << ":" << stun.mapped.GetPort();
+                }
+                if (stun.peer.IsValid()) {
+                    dls << endl
+                        << setw(plen) << " "
+                        << ":";
+                    dls << " STUN/PEER: " << stun.peer.GetString()
+                        << ":" << stun.peer.GetPort();
+                }
+                if (stun.relayed.IsValid()) {
+                    dls << endl
+                        << setw(plen) << " "
+                        << ":";
+                    dls << " STUN/RELAYED: " << stun.relayed.GetString()
+                        << ":" << stun.relayed.GetPort();
+                }
+                if (stun.response.IsValid()) {
+                    dls << endl
+                        << setw(plen) << " "
+                        << ":";
+                    dls << " STUN/RESPONSE: " << stun.response.GetString()
+                        << ":" << stun.response.GetPort();
+                }
+                if (stun.other.IsValid()) {
+                    dls << endl
+                        << setw(plen) << " "
+                        << ":";
+                    dls << " STUN/OTHER: " << stun.other.GetString()
+                        << ":" << stun.other.GetPort();
+                }
             }
 
             if ((GetMasterProtocol() == ndProto::Id::TLS ||

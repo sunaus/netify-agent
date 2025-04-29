@@ -143,6 +143,7 @@ protected:
         BOOTSTRAP,
         DOWNLOAD_CONFIG,
         DOWNLOAD_CATEGORIES,
+        DOWNLOAD_INTELLIGENCE,
     };
 
     typedef std::unordered_map<Request, ndNetifyApiThread *, RequestHash> Requests;

@@ -51,7 +51,8 @@ public:
 #if defined(_ND_ENABLE_CONNTRACK_COUNTERS)
     void UpdateFlowStats(ndFlow::Ptr &flow, const struct timeval &stamp) const;
 #endif
-    typedef struct {
+    class Stats {
+    public:
         uint32_t created = { 0 };
         uint32_t updated = { 0 };
         uint32_t destroyed = { 0 };
@@ -59,7 +60,7 @@ public:
         uint32_t matches = { 0 };
         uint32_t total_ids = { 0 };
         uint32_t total_flows = { 0 };
-    } Stats;
+    };
 
     void GetStats(Stats &stats) {
         std::lock_guard<std::mutex> lg(map_lock);

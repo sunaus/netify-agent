@@ -493,7 +493,7 @@ void nd_private_ipaddr(uint8_t index, struct sockaddr_storage &addr) {
 
 bool nd_load_uuid(string &uuid, const string &path, size_t length) {
     struct stat sb;
-    char _uuid[length + 1];
+    unique_ptr<char[]> _uuid(new char[length + 1]);
 
     if (stat(path.c_str(), &sb) == -1) {
         if (errno != ENOENT) {
@@ -523,7 +523,7 @@ bool nd_load_uuid(string &uuid, const string &path, size_t length) {
 
         size_t bytes = 0;
 
-        bytes = fread((void *)_uuid, 1, length, ph);
+        bytes = fread((void *)_uuid.get(), 1, length, ph);
 
         int rc = pclose(ph);
 
@@ -548,7 +548,7 @@ bool nd_load_uuid(string &uuid, const string &path, size_t length) {
             return false;
         }
 
-        if (fread((void *)_uuid, 1, length, fh) != length) {
+        if (fread((void *)_uuid.get(), 1, length, fh) != length) {
             fclose(fh);
             nd_printf(
               "Error reading uuid from file: %s: %s\n",
@@ -561,7 +561,7 @@ bool nd_load_uuid(string &uuid, const string &path, size_t length) {
         _uuid[length] = '\0';
     }
 
-    uuid.assign(_uuid);
+    uuid.assign(_uuid.get());
 
     nd_rtrim(uuid);
 
@@ -1707,7 +1707,7 @@ bool nd_get_essid(const char *ifname, string &essid) {
     int fd;
     array<char, IW_ESSID_MAX_SIZE + 1> id;
 
-    struct iwreq wreq = { 0 };
+    struct iwreq wreq = { { 0 } };
     wreq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
 
     sprintf(wreq.ifr_name, "%s", ifname);

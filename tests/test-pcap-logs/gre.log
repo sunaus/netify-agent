@@ -1,5 +1,6 @@
 offline0: i4pc-------r--- GRE [L] 10.177.98.84:0 <-- [OR] 109.105.228.253:0
-        : GRE
-        : RID 46: Unidirectional Traffic
-        : DP: 1
+    : GRE
+    : CT ID: 0: MARK: 0
+    : RID 46: Unidirectional Traffic
+    : DP: 1
 

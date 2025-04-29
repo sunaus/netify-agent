@@ -46,7 +46,8 @@ int main(int argc, char *argv[]) {
               id) != ndProto::nDPI::Free.end())
             continue;
 
-        ndpi_protocol proto = { id, 0 };
+        ndpi_protocol proto = { { 0 } };
+        proto.proto.master_protocol = id;
         ndpi_protocol2name(ndpi, proto, proto_name,
           sizeof(proto_name));
 

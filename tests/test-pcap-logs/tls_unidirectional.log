@@ -1,5 +1,5 @@
-offline0: i4pc-gx----r-F- TCP [L] 192.168.2.1:443 <-- [OL] 192.168.2.198:50548
-        : HTTP/S
-        : RID 56: Probing Attempt
-        : DP: 8
+offline0: i4pc-gx------F- TCP [L] 192.168.2.1:443 <-- [OL] 192.168.2.198:50548
+    : HTTP/S
+    : CT ID: 0: MARK: 0
+    : DP: 8
 

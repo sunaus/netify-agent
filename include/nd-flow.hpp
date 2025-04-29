@@ -260,6 +260,7 @@ public:
 
     ndProto::Id detected_protocol = { ndProto::Id::UNKNOWN };
     std::string detected_protocol_name;
+    ndpi_protocol detected_ndpi_protocol = { { 0 } };
 
     ndApp::Id detected_application = { ndApp::Id::UNKNOWN };
     std::string detected_application_name;
@@ -323,6 +324,10 @@ public:
     } mdns;
 
     struct {
+        ndAddr mapped, peer, relayed, response, other;
+    } stun;
+
+    struct {
         uint16_t ndpi_score = { 0 };
         uint16_t ndpi_score_client = { 0 };
         uint16_t ndpi_score_server = { 0 };
@@ -372,6 +377,7 @@ public:
     bool HasBTInfoHash(void) const;
     bool HasSSDPUserAgent(void) const;
     bool HasMDNSDomainName(void) const;
+    bool HasSTUNAddress(void) const;
 
     enum class PrintFlags : uint8_t {
         NONE = 0,
@@ -739,6 +745,29 @@ public:
             if (HasMDNSDomainName()) {
                 serialize(output, { "mdns", "answer" },
                   mdns.domain_name);
+            }
+
+            if (HasSTUNAddress()) {
+                if (stun.mapped.IsValid()) {
+                    serialize(output, { "stun", "mapped" },
+                      stun.mapped.GetString(ndAddr::MakeFlags::PORT));
+                }
+                if (stun.peer.IsValid()) {
+                    serialize(output, { "stun", "peer" },
+                      stun.peer.GetString(ndAddr::MakeFlags::PORT));
+                }
+                if (stun.relayed.IsValid()) {
+                    serialize(output, { "stun", "relayed" },
+                      stun.relayed.GetString(ndAddr::MakeFlags::PORT));
+                }
+                if (stun.response.IsValid()) {
+                    serialize(output, { "stun", "response" },
+                      stun.response.GetString(ndAddr::MakeFlags::PORT));
+                }
+                if (stun.other.IsValid()) {
+                    serialize(output, { "stun", "other" },
+                      stun.other.GetString(ndAddr::MakeFlags::PORT));
+                }
             }
 
             serialize(output, { "first_seen_at" }, ts_first_seen);

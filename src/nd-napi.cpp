@@ -411,7 +411,7 @@ void *ndNetifyApiDownload::Entry(void) {
                 }
                 else {
                     nd_dprintf(
-                      "%s: file has changed, downloadig "
+                      "%s: file has changed, downloading "
                       "update...\n",
                       tag.c_str());
                     Perform(ndNetifyApiThread::Method::GET,
@@ -469,6 +469,7 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
     static vector<Request> types = {
         Request::DOWNLOAD_CONFIG,
         Request::DOWNLOAD_CATEGORIES,
+        Request::DOWNLOAD_INTELLIGENCE,
     };
 
     for (auto &type : types) {
@@ -528,6 +529,8 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
                     filename = ndGC.path_app_config;
                 else if (url.first == Request::DOWNLOAD_CATEGORIES)
                     filename = ndGC.path_cat_config;
+                else if (url.first == Request::DOWNLOAD_INTELLIGENCE)
+                    filename = ndGC.path_intel_config;
 
                 ndNetifyApiDownload *download = new ndNetifyApiDownload(
                   token, url.second, filename);
@@ -746,6 +749,12 @@ ndNetifyApiManager::ProcessBootstrapRequest(
 
         urls[Request::DOWNLOAD_CONFIG] = japps->get<string>();
         urls[Request::DOWNLOAD_CATEGORIES] = jcats->get<string>();
+
+        auto jintel = jsigs->find("intelligence_endpoint");
+        if (jintel != jsigs->end() &&
+          jintel->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_INTELLIGENCE] = jintel->get<string>();
+        }
     }
     catch (json::exception &e) {
         jstatus["bootstrap"]["code"] = -1;
@@ -772,6 +781,9 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         break;
     case Request::DOWNLOAD_CATEGORIES:
         status_type = "categories";
+        break;
+    case Request::DOWNLOAD_INTELLIGENCE:
+        status_type = "intelligence";
         break;
     default:
         nd_dprintf("netify-api: invalid download type: %d", type);
@@ -834,6 +846,11 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     else if (type == Request::DOWNLOAD_CATEGORIES) {
         return nd_copy_file(download->content_filename,
           ndGC.path_cat_config,
+          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    }
+    else if (type == Request::DOWNLOAD_INTELLIGENCE) {
+        return nd_copy_file(download->content_filename,
+          ndGC.path_intel_config,
           S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     }
 

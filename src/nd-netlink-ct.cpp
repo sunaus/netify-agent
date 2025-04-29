@@ -360,7 +360,7 @@ bool ndNetlinkConntrackThread::NewFlow(uint32_t id, const Attrs &attrs) {
 
     shared_ptr<ndConntrackFlow> flow = make_shared<ndConntrackFlow>(id, attrs);
 
-    auto orig_digest_flow = digest_flows.insert(
+    /* auto orig_digest_flow = */ digest_flows.insert(
         make_pair(
             flow->digest[ndEnumCast(ndConntrackFlow::Origin, ORIG)], flow));
 
@@ -791,7 +791,7 @@ void ndConntrackFlow::Hash(void) {
             src = &orig_addr[static_cast<int>(Direction::SRC)];
             dst = &orig_addr[static_cast<int>(Direction::DST)];
         }
-        else if (i == static_cast<uint8_t>(Origin::REPLY)) {
+        else {
             src = &reply_addr[static_cast<int>(Direction::SRC)];
             dst = &reply_addr[static_cast<int>(Direction::DST)];
         }

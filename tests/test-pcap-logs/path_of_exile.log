@@ -1,4 +1,5 @@
 offline0: i4pc----------- TCP [L] 192.168.88.231:36262 --> [OR] 198.50.120.150:6112
-        : PathOfExile
-        : DP: 4
+    : PathOfExile
+    : CT ID: 0: MARK: 0
+    : DP: 4
 

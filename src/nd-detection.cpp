@@ -51,7 +51,7 @@ using namespace std;
 // #define _ND_LOG_FLOW_DEBUG_TLS 1
 
 // Enable extra STUN flow debug logging
-// #define _ND_LOG_DEBUG STUN 1
+// #define _ND_LOG_DEBUG_STUN 1
 
 #define ndEF    entry->flow
 #define ndEFNF  entry->flow->ndpi_flow
@@ -367,50 +367,22 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
         memset(ndEFNF, 0, sizeof(ndpi_flow_struct));
     }
 
-    ndpi_protocol ndpi_rc = ndpi_detection_process_packet(ndpi,
+    ndEF->detected_ndpi_protocol = ndpi_detection_process_packet(ndpi,
       ndEFNF, entry->data, entry->length,
       ndEF->ts_last_seen.load(), nullptr);
 
     lock_guard<recursive_mutex> lg(ndEF->lock);
 
-    if (ndpi_rc.proto.master_protocol == NDPI_PROTOCOL_STUN &&
-      ndpi_rc.proto.app_protocol != NDPI_PROTOCOL_UNKNOWN)
-    {
-#ifdef _ND_LOG_DEBUG_STUN
-        nd_dprintf(
-          "%s: STUN[%lu]: master: %hu, app: %hu, stack[0]: "
-          "%hu, stack[1]: %hu, detected_protocol: %hu\n",
-          tag.c_str(), ndEF->stats.detection_packets.load(),
-          ndpi_rc.proto.master_protocol, ndpi_rc.app_protocol,
-          ndEFNF->detected_protocol_stack[0],
-          ndEFNF->detected_protocol_stack[1],
-          ndEF->detected_protocol);
-#endif
-        ndProto::Id id = ProtocolLookup(
-          ndpi_rc.proto.app_protocol, entry);
-
-        if (id != ndProto::Id::TODO) {
-            SetDetectedProtocol(entry, id);
-#ifdef _ND_LOG_DEBUG_STUN
-            nd_dprintf(
-              "%s: STUN[%lu]: refined detected protocol: %hu\n",
-              tag.c_str(),
-              ndEF->stats.detection_packets.load(),
-              ndEF->detected_protocol);
-#endif
-        }
-    }
-
     if (ndEF->detected_protocol == ndProto::Id::UNKNOWN) {
-        if (ndpi_rc.proto.master_protocol != NDPI_PROTOCOL_UNKNOWN)
+        if (ndEF->detected_ndpi_protocol.proto.master_protocol != NDPI_PROTOCOL_UNKNOWN)
         {
             SetDetectedProtocol(entry,
-              ProtocolLookup(ndpi_rc.proto.master_protocol, entry));
+              ProtocolLookup(ndEF->detected_ndpi_protocol.proto.master_protocol, entry));
         }
-        else if (ndpi_rc.proto.app_protocol != NDPI_PROTOCOL_UNKNOWN)
+        else if (ndEF->detected_ndpi_protocol.proto.app_protocol != NDPI_PROTOCOL_UNKNOWN)
         {
             SetDetectedProtocol(entry,
-              ProtocolLookup(ndpi_rc.proto.app_protocol, entry));
+              ProtocolLookup(ndEF->detected_ndpi_protocol.proto.app_protocol, entry));
         }
     }
 
@@ -422,13 +394,12 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
 
     if (ndEF->detected_protocol == ndProto::Id::TODO) {
         char proto_name[64];
-        ndpi_protocol2name(ndpi, ndpi_rc, proto_name,
+        ndpi_protocol2name(ndpi, ndEF->detected_ndpi_protocol, proto_name,
           sizeof(proto_name));
         nd_dprintf(
-          "%s: unmapped protocol detected: ID #%hu/%hu "
-          "(%s)\n",
-          tag.c_str(), ndpi_rc.proto.master_protocol,
-          ndpi_rc.proto.app_protocol, proto_name);
+          "%s: unmapped protocol detected: ID #%hu/%hu (%s)\n", tag.c_str(),
+          ndEF->detected_ndpi_protocol.proto.master_protocol,
+          ndEF->detected_ndpi_protocol.proto.app_protocol, proto_name);
 
         DetectionComplete(entry);
         return;
@@ -784,7 +755,38 @@ void ndDetectionThread::DispatchEvent(ndDetectionQueueEntry *entry) {
 
 void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
 
-    if (ndEF->flags.detection_init.load() == false) {
+    bool refined = false;
+
+    if (ndEF->detected_ndpi_protocol.proto.master_protocol == NDPI_PROTOCOL_STUN &&
+      ndEF->detected_ndpi_protocol.proto.app_protocol != NDPI_PROTOCOL_UNKNOWN) {
+#ifdef _ND_LOG_DEBUG_STUN
+        nd_dprintf(
+          "%s: STUN[%lu]: master: %hu, app: %hu, stack[0]: "
+          "%hu, stack[1]: %hu, detected_protocol: %hu\n",
+          tag.c_str(), ndEF->stats.detection_packets.load(),
+          ndEF->detected_ndpi_protocol.proto.master_protocol,
+          ndEF->detected_ndpi_protocol.proto.app_protocol,
+          ndEFNF->detected_protocol_stack[0],
+          ndEFNF->detected_protocol_stack[1],
+          ndEF->detected_protocol);
+#endif
+        ndProto::Id id = ProtocolLookup(
+          ndEF->detected_ndpi_protocol.proto.app_protocol, entry);
+
+        if (id != ndProto::Id::TODO && id != ndEF->detected_protocol) {
+            refined = true;
+            SetDetectedProtocol(entry, id);
+#ifdef _ND_LOG_DEBUG_STUN
+            nd_dprintf(
+              "%s: STUN[%lu]: refined detected protocol: %hu\n",
+              tag.c_str(),
+              ndEF->stats.detection_packets.load(),
+              ndEF->detected_protocol);
+#endif
+        }
+    }
+
+    if (refined || ndEF->flags.detection_init.load() == false) {
         // Determine application based on master protocol metadata
         // for Protocol / Application "Twins"
         ndApp::Id app_twin = ndApp::Id::UNKNOWN;
@@ -1132,6 +1134,127 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
         default: break;
         }
 
+        if (ndEF->detected_ndpi_protocol.proto.master_protocol == NDPI_PROTOCOL_STUN) {
+#ifdef _ND_LOG_DEBUG_STUN
+            nd_dprintf("%s: STUN: maybe_dtls: %s, rtcp_seen: %s, "
+                "is_turn: %s, is_client_controlling: %s\n",
+                tag.c_str(),
+                (ndEFNF->stun.maybe_dtls) ? "yes" : "no",
+                (ndEFNF->stun.rtcp_seen) ? "yes" : "no",
+                (ndEFNF->stun.is_turn) ? "yes" : "no",
+                (ndEFNF->stun.is_client_controlling) ? "yes" : "no"
+            );
+#endif
+            enum class STUN_AddrType : uint8_t {
+                MAPPED, PEER, RELAYED, RESPONSE, OTHER
+            };
+
+#ifdef _ND_LOG_DEBUG_STUN
+            auto STUN_Addr = [this, entry] (
+#else
+            auto STUN_Addr = [entry] (
+#endif
+                STUN_AddrType type, const ndpi_address_port &addr) {
+
+                ndAddr *_addr = nullptr;
+
+                switch (type) {
+                case STUN_AddrType::MAPPED:
+                    _addr = &ndEF->stun.mapped;
+                    break;
+                case STUN_AddrType::PEER:
+                    _addr = &ndEF->stun.peer;
+                    break;
+                case STUN_AddrType::RELAYED:
+                    _addr = &ndEF->stun.relayed;
+                    break;
+                case STUN_AddrType::RESPONSE:
+                    _addr = &ndEF->stun.response;
+                    break;
+                case STUN_AddrType::OTHER:
+                    _addr = &ndEF->stun.other;
+                    break;
+                }
+
+                if (addr.is_ipv6) {
+                    bool valid = false;
+                    struct sockaddr_in6 sin6 = {
+                        .sin6_family = AF_INET6
+                    };
+
+                    for (auto i = 0; i < 8; i++) {
+                        if (addr.address.v6[i]) valid = true;
+                        sin6.sin6_addr.s6_addr[i] = addr.address.v6[i];
+                    }
+
+                    if (! valid) return;
+
+                    ndAddr::Create(*_addr, &sin6);
+                }
+                else if (addr.address.v4) {
+                    struct sockaddr_in sin = {
+                        .sin_family = AF_INET
+                    };
+
+                    sin.sin_addr.s_addr = addr.address.v4;
+
+                    ndAddr::Create(*_addr, &sin);
+                }
+                else return;
+
+                _addr->SetPort(htons(addr.port));
+
+#ifdef _ND_LOG_DEBUG_STUN
+                string address;
+                ndAddr::MakeString(*_addr, address);
+
+                switch (type) {
+                case STUN_AddrType::MAPPED:
+                    nd_printf("%s: STUN: mapped: %s\n",
+                        tag.c_str(), address.c_str());
+                    break;
+                case STUN_AddrType::PEER:
+                    nd_printf("%s: STUN: peer: %s\n",
+                        tag.c_str(), address.c_str());
+                    break;
+                case STUN_AddrType::RELAYED:
+                    nd_printf("%s: STUN: relayed: %s\n",
+                        tag.c_str(), address.c_str());
+                    break;
+                case STUN_AddrType::RESPONSE:
+                    nd_printf("%s: STUN: response: %s\n",
+                        tag.c_str(), address.c_str());
+                    break;
+                case STUN_AddrType::OTHER:
+                    nd_printf("%s: STUN: other: %s\n",
+                        tag.c_str(), address.c_str());
+                    break;
+                }
+#endif
+            };
+
+            if (! ndEF->stun.mapped.IsValid()) {
+                STUN_Addr(STUN_AddrType::MAPPED, ndEFNF->stun.mapped_address);
+                if (! updated) updated = ndEF->stun.mapped.IsValid();
+            }
+            if (! ndEF->stun.peer.IsValid()) {
+                STUN_Addr(STUN_AddrType::PEER, ndEFNF->stun.peer_address);
+                if (! updated) updated = ndEF->stun.peer.IsValid();
+            }
+            if (! ndEF->stun.relayed.IsValid()) {
+                STUN_Addr(STUN_AddrType::RELAYED, ndEFNF->stun.relayed_address);
+                if (! updated) updated = ndEF->stun.relayed.IsValid();
+            }
+            if (! ndEF->stun.response.IsValid()) {
+                STUN_Addr(STUN_AddrType::RESPONSE, ndEFNF->stun.response_origin);
+                if (! updated) updated = ndEF->stun.response.IsValid();
+            }
+            if (! ndEF->stun.other.IsValid()) {
+                STUN_Addr(STUN_AddrType::OTHER, ndEFNF->stun.other_address);
+                if (! updated) updated = ndEF->stun.other.IsValid();
+            }
+        }
+
         if (ndEF->flags.detection_init.load()) {
             if (updated) {
                 ndEF->flags.detection_updated = true;
@@ -1152,15 +1275,16 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
 
 void ndDetectionThread::DetectionGuess(ndDetectionQueueEntry *entry) {
     uint8_t guessed = 0;
-    ndpi_protocol ndpi_rc = ndpi_detection_giveup(ndpi,
+    ndEF->detected_ndpi_protocol = ndpi_detection_giveup(ndpi,
       ndEFNF, &guessed);
 
     if (guessed) {
         ndProto::Id id = ProtocolLookup(
-          ndpi_rc.proto.master_protocol, entry);
+          ndEF->detected_ndpi_protocol.proto.master_protocol, entry);
 
         if (id == ndProto::Id::UNKNOWN) {
-            id = ProtocolLookup(ndpi_rc.proto.app_protocol, entry);
+            id = ProtocolLookup(
+              ndEF->detected_ndpi_protocol.proto.app_protocol, entry);
             if (id != ndProto::Id::UNKNOWN) {
                 SetDetectedProtocol(entry, id);
             }

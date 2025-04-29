@@ -1,5 +1,6 @@
 offline0: i4pc--x----r--- UDP [OR] 26.83.9.81:57567 --> [L] 33.35.223.103:540
-        : STUN
-        : RID 46: Unidirectional Traffic
-        : DP: 6
+    : STUN
+    : CT ID: 0: MARK: 0
+    : RID 46: Unidirectional Traffic
+    : DP: 6
 

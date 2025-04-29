@@ -282,6 +282,7 @@ public:
     std::string path_config;
     std::string path_export_json;
     std::string path_functions;
+    std::string path_intel_config;
     std::string path_interfaces;
     std::string path_legacy_config;
     std::string path_pid_file;

@@ -1,5 +1,6 @@
 offline0: i4pc-g-----r--- UDP [L] 10.10.214.6:5093 <-- [OL] 10.13.129.30:56295
-        : Unknown
-        : RID 28: Suspicious Entropy
-        : DP: 32
+    : Unknown
+    : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
+    : DP: 32
 

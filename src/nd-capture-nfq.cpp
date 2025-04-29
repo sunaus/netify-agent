@@ -266,7 +266,7 @@ static int ndCaptureNFQueue_Callback(
     struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
       mnl_nlmsg_get_payload(nlh));
 
-    uint8_t buffer[MNL_SOCKET_BUFFER_SIZE];
+    uint8_t buffer[ND_NETLINK_BUFFER_SOCKET_SIZE];
     struct nlmsghdr *nlh_verdict = nfq_nlmsg_put(
       (char *)buffer, NFQNL_MSG_VERDICT, ntohs(nfg->res_id));
 
@@ -290,7 +290,7 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
   : ndCaptureThread(ndCaptureType::NFQ, cpu, iface,
       threads_dpi, dhc, private_addr),
     nl(nullptr), port_id(0),
-    buffer_size(0xffff + (MNL_SOCKET_BUFFER_SIZE / 2)),
+    buffer_size(0xffff + (ND_NETLINK_BUFFER_SOCKET_SIZE / 2)),
     buffer(nullptr), dropped(0) {
     dl_type = DLT_EN10MB;
 

@@ -52,6 +52,7 @@ ndGlobalConfig::ndGlobalConfig()
     path_categories(ND_CATEGORIES_PATH),
     path_config(ND_CONF_FILE_NAME),
     path_functions(ND_FUNCTIONS_PATH),
+    path_intel_config(ND_CONF_INTEL_PATH),
     path_interfaces(ND_INTERFACES_PATH),
     path_legacy_config(ND_CONF_LEGACY_PATH),
     path_pid_file(ND_PID_FILE_NAME), path_plugins(ND_PLUGINS_PATH),
@@ -1298,6 +1299,8 @@ void ndGlobalConfig::UpdatePaths(void) {
     path_functions = path_shared_data + "/" + ND_FUNCTIONS_BASE;
 
     path_interfaces = path_state_persistent + "/" + ND_INTERFACES_BASE;
+
+    path_intel_config = path_state_persistent + "/" + ND_CONF_INTEL_BASE;
 }
 
 void ndGlobalConfig::UpdateConfigVars(void) {
@@ -1318,6 +1321,8 @@ void ndGlobalConfig::UpdateConfigVars(void) {
       make_pair("${path_plugin_libdir}", path_plugin_libdir));
     conf_vars.insert(
       make_pair("${path_categories}", path_categories));
+    conf_vars.insert(
+      make_pair("${path_intelligence_config}", path_intel_config));
     conf_vars.insert(
       make_pair("${path_interfaces}", path_interfaces));
 }

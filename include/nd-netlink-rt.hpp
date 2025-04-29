@@ -39,7 +39,8 @@ public:
 
     void Dump(void);
 
-    typedef struct {
+    class Stats {
+    public:
         struct {
             std::atomic<uint32_t> added;
             std::atomic<uint32_t> removed;
@@ -60,7 +61,7 @@ public:
             std::atomic<uint32_t> removed;
             std::atomic<uint32_t> error;
         } neigh;
-    } Stats;
+    };
 
     void GetStats(Stats &stats);
     void PrintStats(const Stats &stats) const;
