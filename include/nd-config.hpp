@@ -280,6 +280,8 @@ public:
     std::string path_cat_config;
     std::string path_categories;
     std::string path_config;
+    std::string path_debug_log;
+    std::string path_debug_log_flow;
     std::string path_export_json;
     std::string path_functions;
     std::string path_intel_config;
@@ -302,7 +304,8 @@ public:
     ndFlags<ndCaptureType> capture_type;
     unsigned capture_read_timeout;
     nd_config_tpv3 tpv3_defaults;
-    FILE *h_flow;
+    FILE *h_debug_log;
+    FILE *h_debug_log_flow;
     int16_t ca_capture_base;
     int16_t ca_detection_base;
     int16_t ca_detection_cores;

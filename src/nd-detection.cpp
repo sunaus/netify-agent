@@ -697,7 +697,7 @@ void ndDetectionThread::DispatchEvent(ndDetectionQueueEntry *entry) {
 
     ndi.plugins.BroadcastProcessorEvent(event, ndEF);
 
-    if (ndGC_DEBUG || ndGC.h_flow != stderr) {
+    if (ndGC_DEBUG || ndGC.h_debug_log_flow != stderr) {
         bool flow_print = false;
         ndFlags<ndFlow::PrintFlags> flags = ndFlow::PrintFlags::METADATA;
 
@@ -727,7 +727,7 @@ void ndDetectionThread::DispatchEvent(ndDetectionQueueEntry *entry) {
                 }
             }
         }
-        else if (ndGC_VERBOSE || ndGC.h_flow != stderr)
+        else if (ndGC_VERBOSE || ndGC.h_debug_log_flow != stderr)
             flow_print = true;
 
         switch (event) {

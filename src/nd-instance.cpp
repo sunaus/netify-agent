@@ -177,7 +177,9 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
     static struct option options[] = { { "config", 1, 0, 'c' },
         { "debug", 0, 0, 'd' }, { "debug-ndpi", 0, 0, 'n' },
         { "debug-curl", 0, 0, 'D' },
+        { "debug-log", 1, 0, 'L' },
         { "debug-flow-expression", 1, 0, 'x' },
+        { "debug-flow-log", 1, 0, 'T' },
         { "device-address", 1, 0, 'A' },
         { "device-filter", 1, 0, 'F' }, { "device-peer", 1, 0, 'N' },
         { "disable-conntrack", 0, 0, 't' },
@@ -188,7 +190,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         { "ndpi-config", 1, 0, 'f' }, { "provision", 0, 0, 'p' },
         { "remain-in-foreground", 0, 0, 'R' },
         { "replay-delay", 0, 0, 'r' },
-        { "status", 0, 0, 's' }, { "test-output", 1, 0, 'T' },
+        { "status", 0, 0, 's' },
         { "uuid", 1, 0, 'u' }, { "uuidgen", 0, 0, 'U' },
         { "verbose", 0, 0, 'v' }, { "version", 0, 0, 'V' },
 #define _ND_LO_ENABLE_PLUGIN  1
@@ -247,15 +249,15 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 #define _ND_LO_VERBOSE_FLAG 25
         { "verbose-flag", 1, 0, _ND_LO_VERBOSE_FLAG },
 
-        { NULL, 0, 0, 0 } };
+        { nullptr, 0, 0, 0 } };
 
     static const char *flags = {
-        "?A:c:DdE:F:f:hI:i:j:lN:nPpRrS:stT:Uu:Vvx:"
+        "?A:c:dDE:F:f:hI:i:j:lL:N:nPprRsS:tT:uU:vVx:"
     };
 
     int rc;
     while (true) {
-        if ((rc = getopt_long(argc, argv, flags, options, NULL)) == -1)
+        if ((rc = getopt_long(argc, argv, flags, options, nullptr)) == -1)
             break;
 
         switch (rc) {
@@ -275,7 +277,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 
     optind = 1;
     while (true) {
-        if ((rc = getopt_long(argc, argv, flags, options, NULL)) == -1)
+        if ((rc = getopt_long(argc, argv, flags, options, nullptr)) == -1)
             break;
 
         switch (rc) {
@@ -318,7 +320,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 
     optind = 1;
     while (true) {
-        if ((rc = getopt_long(argc, argv, flags, options, NULL)) == -1)
+        if ((rc = getopt_long(argc, argv, flags, options, nullptr)) == -1)
             break;
 
         switch (rc) {
@@ -450,6 +452,15 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case 'l':
             ndGC_SetFlag(ndGlobalFlags::USE_NETLINK, false);
             break;
+        case 'L':
+            if ((ndGC.h_debug_log = fopen(optarg, "a")) == nullptr) {
+                cerr
+                  << "Error while opening debug log: " << optarg
+                  << ": " << strerror(errno) << endl;
+                return ndEnumCast(ConfigResult, INVALID_VALUE);
+            }
+            ndGC.path_debug_log = optarg;
+            break;
         case 'n':
             ndGC_SetFlag(ndGlobalFlags::DEBUG_NDPI, true);
             break;
@@ -495,12 +506,13 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             ndGC_SetFlag(ndGlobalFlags::USE_CONNTRACK, false);
             break;
         case 'T':
-            if ((ndGC.h_flow = fopen(optarg, "w")) == NULL) {
+            if ((ndGC.h_debug_log_flow = fopen(optarg, "w")) == nullptr) {
                 cerr
-                  << "Error while opening test output log: " << optarg
+                  << "Error while opening flow debug log: " << optarg
                   << ": " << strerror(errno) << endl;
                 return ndEnumCast(ConfigResult, INVALID_VALUE);
             }
+            ndGC.path_debug_log_flow = optarg;
             break;
         case 'U':
         {
@@ -539,7 +551,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 
     optind = 1;
     while (true) {
-        if ((rc = getopt_long(argc, argv, flags, options, NULL)) == -1)
+        if ((rc = getopt_long(argc, argv, flags, options, nullptr)) == -1)
             break;
 
         switch (rc) {
@@ -621,7 +633,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 #endif
     // Test mode enabled?  Override certain config
     // parameters
-    if (ndGC.h_flow != stderr) {
+    if (ndGC.h_debug_log_flow != stderr) {
         ndGC_SetFlag(ndGlobalFlags::USE_FHC, true);
         ndGC_SetFlag(ndGlobalFlags::REMAIN_IN_FOREGROUND, true);
 
@@ -644,7 +656,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
              << (curl_version->version_num & 0xff) << endl;
 #if (LIBCURL_VERSION_NUM >= 0x075600)
         const curl_ssl_backend **curl_ssl_backends;
-        curl_global_sslset((curl_sslbackend)-1, NULL,
+        curl_global_sslset((curl_sslbackend)-1, nullptr,
           &curl_ssl_backends);
 
         for (int i = 0; curl_ssl_backends[i]; i++) {
@@ -2129,7 +2141,24 @@ bool ndInstance::SendSignal(const siginfo_t &si) {
         if (flow_hash_cache != nullptr)
             flow_hash_cache->Save();
         break;
-    case SIGUSR2: break;
+    case SIGUSR2:
+        if (! ndGC.path_debug_log.empty()) {
+            nd_output_lock();
+            if (ndGC.h_debug_log != stderr) {
+                if (ndGC.h_debug_log != nullptr) fclose(ndGC.h_debug_log);
+                ndGC.h_debug_log = stderr;
+            }
+            else {
+                if ((ndGC.h_debug_log = fopen(
+                    ndGC.path_debug_log.c_str(), "a")) == nullptr) {
+                    nd_printf("%s: Error opening debug log: %s: %s\n",
+                        tag.c_str(), ndGC.path_debug_log.c_str(),
+                        strerror(errno));
+                }
+            }
+            nd_output_unlock();
+        }
+        break;
     default:
         if (timer_update.GetSignal() >= 0 &&
           si.si_signo == timer_update.GetSignal())
@@ -2677,7 +2706,7 @@ uint32_t ndInstance::WaitForIPC(int timeout) {
         struct timeval tv = { 1, 0 };
 
         rc = select(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)] + 1,
-          &fds_read, NULL, NULL, &tv);
+          &fds_read, nullptr, nullptr, &tv);
 
         if (rc == -1) {
             throw ndExceptionSystemError(__PRETTY_FUNCTION__,
@@ -2862,7 +2891,7 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
 }
 
 void ndInstance::ProcessFlows(void) {
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
     size_t buckets = flow_buckets->GetBuckets();
 #ifdef _ND_PROCESS_FLOW_DEBUG
     size_t tcp = 0, tcp_fin = 0, tcp_fin_ack_1 = 0,

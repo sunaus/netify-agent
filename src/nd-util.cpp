@@ -117,7 +117,7 @@ void nd_output_unlock(void) {
 }
 
 void nd_printf(const char *format, ...) {
-    if (ndGC_QUIET) return;
+    if (ndGC_QUIET && ndGC.h_debug_log == stderr) return;
 
     va_list ap;
     va_start(ap, format);
@@ -126,15 +126,20 @@ void nd_printf(const char *format, ...) {
 }
 
 void nd_printf(const char *format, va_list ap) {
-    if (ndGC_QUIET) return;
+    if (ndGC_QUIET && ndGC.h_debug_log == stderr) return;
 
     lock_guard<mutex> lock(nd_printf_mutex);
 
     vsyslog(LOG_DAEMON | LOG_INFO, format, ap);
+
+    if (ndGC.h_debug_log != stderr) {
+        vfprintf(ndGC.h_debug_log, format, ap);
+        fflush(ndGC.h_debug_log);
+    }
 }
 
 void nd_dprintf(const char *format, ...) {
-    if (! ndGC_DEBUG) return;
+    if (! ndGC_DEBUG && ndGC.h_debug_log == stderr) return;
 
     va_list ap;
     va_start(ap, format);
@@ -143,11 +148,13 @@ void nd_dprintf(const char *format, ...) {
 }
 
 void nd_dprintf(const char *format, va_list ap) {
-    if (! ndGC_DEBUG) return;
+    if (! ndGC_DEBUG && ndGC.h_debug_log == stderr) return;
 
     lock_guard<mutex> lock(nd_printf_mutex);
 
-    vfprintf(stderr, format, ap);
+    vfprintf(ndGC.h_debug_log, format, ap);
+
+    if (ndGC.h_debug_log != stderr) fflush(ndGC.h_debug_log);
 }
 
 void nd_flow_printf(const char *format, ...) {
@@ -155,8 +162,10 @@ void nd_flow_printf(const char *format, ...) {
 
     va_list ap;
     va_start(ap, format);
-    vfprintf(ndGC.h_flow, format, ap);
+    vfprintf(ndGC.h_debug_log_flow, format, ap);
     va_end(ap);
+
+    fflush(ndGC.h_debug_log_flow);
 }
 
 int ndLogBuffer::overflow(int ch) {
@@ -187,8 +196,10 @@ int ndDebugLogBuffer::sync() {
 
 int ndDebugLogBufferUnlocked::sync() {
     if (! os.str().empty()) {
-        if (ndGC_DEBUG)
-            fprintf(stderr, "%s", os.str().c_str());
+        if (ndGC_DEBUG || ndGC.h_debug_log != stderr) {
+            fprintf(ndGC.h_debug_log, "%s", os.str().c_str());
+            if (ndGC.h_debug_log != stderr) fflush(ndGC.h_debug_log);
+        }
         os.str("");
     }
 
@@ -197,8 +208,10 @@ int ndDebugLogBufferUnlocked::sync() {
 
 int ndDebugLogBufferFlow::sync() {
     if (! os.str().empty()) {
-        if (ndGC_DEBUG || ndGC.h_flow != stderr)
-            fprintf(ndGC.h_flow, "%s", os.str().c_str());
+        if (ndGC_DEBUG || ndGC.h_debug_log_flow != stderr) {
+            fprintf(ndGC.h_debug_log_flow, "%s", os.str().c_str());
+            if (ndGC.h_debug_log_flow != stderr) fflush(ndGC.h_debug_log_flow);
+        }
         os.str("");
     }
 
