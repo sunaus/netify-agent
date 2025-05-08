@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <curl/curl.h>
 #include <unistd.h>
 
 #include <ctime>
@@ -63,19 +62,15 @@ protected:
       const Headers &headers,
       const std::string &payload = "");
 
-    CURL *ch;
-
-    CURLcode curl_rc;
-    long http_rc;
-
     Headers headers_rx;
-    struct curl_slist *headers_tx;
 
     std::string payload;
 
     std::string content;
     std::string content_type;
     std::string content_filename;
+
+    void *curl_private = { nullptr };
 };
 
 class ndNetifyApiBootstrap : public ndNetifyApiThread
@@ -146,7 +141,8 @@ protected:
         DOWNLOAD_INTELLIGENCE,
     };
 
-    typedef std::unordered_map<Request, ndNetifyApiThread *, RequestHash> Requests;
+    typedef std::unordered_map<
+        Request, ndNetifyApiThread *, RequestHash> Requests;
 
     Requests requests;
 

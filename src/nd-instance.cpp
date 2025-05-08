@@ -26,6 +26,8 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
+#include <curl/curl.h>
+
 #include <algorithm>
 #include <cerrno>
 #include <cstdlib>

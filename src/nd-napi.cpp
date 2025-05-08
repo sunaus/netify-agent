@@ -27,6 +27,7 @@
 #include "nd-config.hpp"
 #include "nd-except.hpp"
 #include "nd-napi.hpp"
+#include "nd-napi-curl.hpp"
 #include "nd-sha1.h"
 #include "nd-util.hpp"
 
@@ -129,10 +130,7 @@ static int ndNetifyApiThread_progress(void *user,
     return 0;
 }
 
-ndNetifyApiThread::ndNetifyApiThread()
-  : ndThread("netify-api"), ch(nullptr), curl_rc(CURLE_OK),
-    http_rc(-1), headers_tx(nullptr) {
-
+ndNetifyApiCurl::ndNetifyApiCurl() {
     if ((ch = curl_easy_init()) == nullptr) {
         throw ndException(__PRETTY_FUNCTION__,
           "curl_easy_init");
@@ -143,47 +141,58 @@ ndNetifyApiThread::ndNetifyApiThread()
     curl_easy_setopt(ch, CURLOPT_CONNECTTIMEOUT, 20);
     curl_easy_setopt(ch, CURLOPT_TIMEOUT, 60);
     curl_easy_setopt(ch, CURLOPT_NOSIGNAL, 1);
+    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
+    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, ndGC.napi_tls_verify);
+    // curl_easy_setopt(ch, CURLOPT_SSLVERSION,
+    // CURL_SSLVERSION_TLSv1);
 
-    curl_easy_setopt(ch, CURLOPT_WRITEFUNCTION,
-      ndNetifyApiThread_read_data);
-    curl_easy_setopt(ch, CURLOPT_WRITEDATA,
-      static_cast<void *>(this));
-
-    curl_easy_setopt(ch, CURLOPT_HEADERFUNCTION,
-      ndNetifyApiThread_parse_header);
-    curl_easy_setopt(ch, CURLOPT_HEADERDATA,
-      static_cast<void *>(this));
-
-    curl_easy_setopt(ch, CURLOPT_NOPROGRESS, 0);
-#if (LIBCURL_VERSION_NUM < 0x073200)
-    curl_easy_setopt(ch, CURLOPT_PROGRESSFUNCTION,
-      ndNetifyApiThread_progress);
-    curl_easy_setopt(ch, CURLOPT_PROGRESSDATA,
-      static_cast<void *>(this));
-#else
-    curl_easy_setopt(ch, CURLOPT_XFERINFOFUNCTION,
-      ndNetifyApiThread_progress);
-    curl_easy_setopt(ch, CURLOPT_XFERINFODATA,
-      static_cast<void *>(this));
-#endif
 #ifdef _ND_WITH_LIBCURL_ZLIB
 #if (LIBCURL_VERSION_NUM >= 0x072106)
     curl_easy_setopt(ch, CURLOPT_ACCEPT_ENCODING, "gzip");
 #endif
 #endif  // _ND_WITH_LIBCURL_ZLIB
+}
+
+ndNetifyApiCurl::~ndNetifyApiCurl() {
+    if (ch != nullptr) {
+        curl_easy_cleanup(ch);
+        ch = nullptr;
+    }
+}
+
+ndNetifyApiThread::ndNetifyApiThread()
+  : ndThread("netify-api") {
+    curl_private = static_cast<void *>(new ndNetifyApiCurl);
+
+    curl_easy_setopt(ndCurl->ch, CURLOPT_WRITEFUNCTION,
+      ndNetifyApiThread_read_data);
+    curl_easy_setopt(ndCurl->ch, CURLOPT_WRITEDATA,
+      static_cast<void *>(this));
+
+    curl_easy_setopt(ndCurl->ch, CURLOPT_HEADERFUNCTION,
+      ndNetifyApiThread_parse_header);
+    curl_easy_setopt(ndCurl->ch, CURLOPT_HEADERDATA,
+      static_cast<void *>(this));
+
+    curl_easy_setopt(ndCurl->ch, CURLOPT_NOPROGRESS, 0);
+#if (LIBCURL_VERSION_NUM < 0x073200)
+    curl_easy_setopt(ndCurl->ch, CURLOPT_PROGRESSFUNCTION,
+      ndNetifyApiThread_progress);
+    curl_easy_setopt(ndCurl->ch, CURLOPT_PROGRESSDATA,
+      static_cast<void *>(this));
+#else
+    curl_easy_setopt(ndCurl->ch, CURLOPT_XFERINFOFUNCTION,
+      ndNetifyApiThread_progress);
+    curl_easy_setopt(ndCurl->ch, CURLOPT_XFERINFODATA,
+      static_cast<void *>(this));
+#endif
     if (ndGC_DEBUG_CURL) {
-        curl_easy_setopt(ch, CURLOPT_VERBOSE, 1);
-        curl_easy_setopt(ch, CURLOPT_DEBUGFUNCTION,
+        curl_easy_setopt(ndCurl->ch, CURLOPT_VERBOSE, 1);
+        curl_easy_setopt(ndCurl->ch, CURLOPT_DEBUGFUNCTION,
           ndNetifyApiThread_curl_debug);
-        curl_easy_setopt(ch, CURLOPT_DEBUGDATA,
+        curl_easy_setopt(ndCurl->ch, CURLOPT_DEBUGDATA,
           static_cast<void *>(this));
     }
-
-    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
-    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, ndGC.napi_tls_verify);
-
-    //    curl_easy_setopt(ch, CURLOPT_SSLVERSION,
-    //    CURL_SSLVERSION_TLSv1);
 }
 
 ndNetifyApiThread::~ndNetifyApiThread() {
@@ -191,12 +200,12 @@ ndNetifyApiThread::~ndNetifyApiThread() {
     Terminate();
     Join();
 
-    if (ch != nullptr) {
-        curl_easy_cleanup(ch);
-        ch = nullptr;
-    }
-
     DestroyHeaders();
+
+    if (curl_private != nullptr) {
+        delete ndCurl;
+        curl_private = nullptr;
+    }
 }
 
 void ndNetifyApiThread::AppendContent(const char *data,
@@ -246,59 +255,59 @@ void ndNetifyApiThread::CreateHeaders(const Headers &headers) {
 
     string header("User-Agent: ");
     header.append(nd_get_version_and_features());
-    headers_tx = curl_slist_append(headers_tx, header.c_str());
+    ndCurl->headers_tx = curl_slist_append(ndCurl->headers_tx, header.c_str());
 
     header = "X-Vendor-ID: ";
     header.append(ndGC.napi_vendor.c_str());
-    headers_tx = curl_slist_append(headers_tx, header.c_str());
+    ndCurl->headers_tx = curl_slist_append(ndCurl->headers_tx, header.c_str());
 
     for (auto &h : headers) {
         header = h.first;
         header.append(": ");
         header.append(h.second);
-        headers_tx = curl_slist_append(headers_tx, header.c_str());
+        ndCurl->headers_tx = curl_slist_append(ndCurl->headers_tx, header.c_str());
     }
 
-    curl_easy_setopt(ch, CURLOPT_HTTPHEADER, headers_tx);
+    curl_easy_setopt(ndCurl->ch, CURLOPT_HTTPHEADER, ndCurl->headers_tx);
 }
 
 void ndNetifyApiThread::DestroyHeaders(void) {
-    if (headers_tx != nullptr) {
-        curl_slist_free_all(headers_tx);
-        headers_tx = nullptr;
+    if (ndCurl->headers_tx != nullptr) {
+        curl_slist_free_all(ndCurl->headers_tx);
+        ndCurl->headers_tx = nullptr;
     }
 }
 
 void ndNetifyApiThread::Perform(Method method, const string &url,
   const Headers &headers, const string &payload) {
-    curl_rc = CURLE_OK;
-    curl_easy_setopt(ch, CURLOPT_URL, url.c_str());
+    ndCurl->curl_rc = CURLE_OK;
+    curl_easy_setopt(ndCurl->ch, CURLOPT_URL, url.c_str());
 
-    http_rc = -1;
+    ndCurl->http_rc = -1;
     content.clear();
     headers_rx.clear();
 
     CreateHeaders(headers);
 
-    curl_easy_setopt(ch, CURLOPT_NOBODY, 0);
+    curl_easy_setopt(ndCurl->ch, CURLOPT_NOBODY, 0);
 
     switch (method) {
     case Method::GET:
-        curl_easy_setopt(ch, CURLOPT_POST, 0);
+        curl_easy_setopt(ndCurl->ch, CURLOPT_POST, 0);
         nd_dprintf("%s: %s: %s\n", tag.c_str(), "GET", url.c_str());
         break;
     case Method::HEAD:
-        curl_easy_setopt(ch, CURLOPT_POST, 0);
-        curl_easy_setopt(ch, CURLOPT_NOBODY, 1);
+        curl_easy_setopt(ndCurl->ch, CURLOPT_POST, 0);
+        curl_easy_setopt(ndCurl->ch, CURLOPT_NOBODY, 1);
 
         nd_dprintf("%s: %s: %s\n", tag.c_str(), "HEAD",
           url.c_str());
         break;
     case Method::POST:
-        curl_easy_setopt(ch, CURLOPT_POST, 1);
-        curl_easy_setopt(ch, CURLOPT_POSTFIELDSIZE, payload.size());
+        curl_easy_setopt(ndCurl->ch, CURLOPT_POST, 1);
+        curl_easy_setopt(ndCurl->ch, CURLOPT_POSTFIELDSIZE, payload.size());
         if (payload.size()) {
-            curl_easy_setopt(ch, CURLOPT_POSTFIELDS,
+            curl_easy_setopt(ndCurl->ch, CURLOPT_POSTFIELDS,
               payload.c_str());
         }
 
@@ -307,15 +316,15 @@ void ndNetifyApiThread::Perform(Method method, const string &url,
         break;
     }
 
-    if ((curl_rc = curl_easy_perform(ch)) != CURLE_OK)
-        throw curl_rc;
+    if ((ndCurl->curl_rc = curl_easy_perform(ndCurl->ch)) != CURLE_OK)
+        throw ndCurl->curl_rc;
 
-    if ((curl_rc = curl_easy_getinfo(ch,
-           CURLINFO_RESPONSE_CODE, &http_rc)) != CURLE_OK)
-        throw curl_rc;
+    if ((ndCurl->curl_rc = curl_easy_getinfo(ndCurl->ch,
+           CURLINFO_RESPONSE_CODE, &ndCurl->http_rc)) != CURLE_OK)
+        throw ndCurl->curl_rc;
 
     char *ct = nullptr;
-    curl_easy_getinfo(ch, CURLINFO_CONTENT_TYPE, &ct);
+    curl_easy_getinfo(ndCurl->ch, CURLINFO_CONTENT_TYPE, &ct);
     if (ct != nullptr) content_type = ct;
     else {
         auto i = headers_rx.find("content-type");
@@ -386,7 +395,7 @@ void *ndNetifyApiDownload::Entry(void) {
     try {
         Perform(ndNetifyApiThread::Method::HEAD, url, headers);
 
-        if (http_rc == 200) {
+        if (ndCurl->http_rc == 200) {
             auto hdr_sha1 = headers_rx.find("x-sha1-hash");
             if (hdr_sha1 == headers_rx.end()) {
                 nd_dprintf(
@@ -403,7 +412,7 @@ void *ndNetifyApiDownload::Entry(void) {
                 if (old_hash == hdr_sha1->second) {
                     nd_dprintf(
                       "%s: file has not changed.\n", tag.c_str());
-                    http_rc = 304;
+                    ndCurl->http_rc = 304;
                     content =
                       "{\"status_code\":304, "
                       "\"status_message\":\"Not "
@@ -573,16 +582,16 @@ ndNetifyApiManager::ProcessBootstrapRequest(
     jstatus["bootstrap"]["code"] = -1;
     jstatus["bootstrap"]["last_update"] = time(nullptr);
 
-    if (bootstrap->curl_rc != CURLE_OK) {
+    if (ndCurlParent(bootstrap)->curl_rc != CURLE_OK) {
         jstatus["bootstrap"]["message"] = curl_easy_strerror(
-          bootstrap->curl_rc);
+          ndCurlParent(bootstrap)->curl_rc);
         return UpdateResult::ERROR;
     }
     else {
         jstatus["bootstrap"]["message"] = "Unknown result";
     }
 
-    if (bootstrap->http_rc == 0) {
+    if (ndCurlParent(bootstrap)->http_rc == 0) {
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] = "Request failure";
         nd_printf(
@@ -648,11 +657,11 @@ ndNetifyApiManager::ProcessBootstrapRequest(
         jstatus["bootstrap"]["code"] = code;
         jstatus["bootstrap"]["message"] = message;
 
-        if (bootstrap->http_rc != 200 || code != 0) {
+        if (ndCurlParent(bootstrap)->http_rc != 200 || code != 0) {
             nd_printf(
               "netify-api: Bootstrap request failed: HTTP "
               "%ld: %s [%d]\n",
-              bootstrap->http_rc, message.c_str(), code);
+              ndCurlParent(bootstrap)->http_rc, message.c_str(), code);
             return UpdateResult::ERROR;
         }
 
@@ -790,16 +799,16 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         return false;
     }
 
-    jstatus[status_type]["code"] = download->http_rc;
+    jstatus[status_type]["code"] = ndCurlParent(download)->http_rc;
     jstatus[status_type]["last_update"] = time(nullptr);
 
-    if (download->curl_rc != CURLE_OK) {
+    if (ndCurlParent(download)->curl_rc != CURLE_OK) {
         jstatus[status_type]["message"] = curl_easy_strerror(
-          download->curl_rc);
+          ndCurlParent(download)->curl_rc);
         return false;
     }
 
-    switch (download->http_rc) {
+    switch (ndCurlParent(download)->http_rc) {
     case 200:
         jstatus[status_type]["message"] = "Updated";
         break;
@@ -820,14 +829,14 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         break;
     }
 
-    if (download->http_rc != 200) {
+    if (ndCurlParent(download)->http_rc != 200) {
         nd_printf(
           "netify-api: Download request failed: HTTP %ld: "
           "type: %d\n",
-          download->http_rc, type);
+          ndCurlParent(download)->http_rc, type);
 
-        if (download->http_rc == 401 || download->http_rc == 403)
-        {
+        if (ndCurlParent(download)->http_rc == 401 ||
+            ndCurlParent(download)->http_rc == 403) {
             nd_dprintf(
               "netify-api: cleared token on authorization "
               "failure.\n");
