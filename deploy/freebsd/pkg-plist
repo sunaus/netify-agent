@@ -39,6 +39,7 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-flow-parser.hpp
 %%DEVEL%%include/netifyd/nd-instance.hpp
 %%DEVEL%%include/netifyd/nd-napi.hpp
+%%DEVEL%%include/netifyd/nd-napi-curl.hpp
 %%DEVEL%%include/netifyd/nd-ndpi.hpp
 %%DEVEL%%include/netifyd/nd-netlink.hpp
 %%DEVEL%%include/netifyd/nd-netlink-ct.hpp
