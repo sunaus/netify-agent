@@ -3,15 +3,15 @@
 #
 # This is free software, licensed under the GNU General Public License v3.
 
-SYSTEMDFILES = env.sh exec-pre.sh netifyd.conf netifyd.service
-SYSTEMDFILES_IN = env.sh.in exec-pre.sh.in netifyd.conf.in netifyd.service.in
+SYSTEMDFILES = exec-pre.sh netifyd.conf netifyd.service systemd.env
+SYSTEMDFILES_IN = exec-pre.sh.in netifyd.conf.in netifyd.service.in systemd.env.in
 
 sharedatadir = $(datadir)/netifyd
 
 if HAVE_SYSTEMD
 systemdsystemunit_DATA = netifyd.service
 tmpfiles_DATA = netifyd.conf
-sharedata_DATA = env.sh exec-pre.sh
+sharedata_DATA = systemd.env exec-pre.sh
 endif
 
 BUILT_SOURCES = $(SYSTEMDFILES)

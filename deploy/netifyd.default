@@ -9,7 +9,8 @@
 NETIFYD_AUTODETECT="yes"
 
 # Set desired custom options here:
-# NETIFYD_EXTRA_OPTS=""
+NETIFYD_EXTRA_OPTS="--allow-unprivileged"
+# NETIFYD_EXTRA_OPTS+=" --debug-log /var/log/netifyd/debug.log"
 
 # Define internal network interfaces and if needed, corresponding network
 # addresses.  Normally network addresses are discovered via Netlink but for
