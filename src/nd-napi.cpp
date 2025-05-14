@@ -142,7 +142,7 @@ ndNetifyApiCurl::ndNetifyApiCurl() {
     curl_easy_setopt(ch, CURLOPT_TIMEOUT, 60);
     curl_easy_setopt(ch, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
-    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, ndGC.napi_tls_verify);
+    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, (ndGC.napi_tls_verify) ? 2 : 0);
     // curl_easy_setopt(ch, CURLOPT_SSLVERSION,
     // CURL_SSLVERSION_TLSv1);
 

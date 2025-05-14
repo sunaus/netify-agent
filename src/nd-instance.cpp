@@ -661,8 +661,8 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 
         for (int i = 0; curl_ssl_backends[i]; i++) {
             cout << tag << ": libCURL SSL backend #" << i
-                 << ": " << curl_ssl_backends[i]->name
-                 << " (ID: " << curl_ssl_backends[i]->id << endl;
+                 << ": " << curl_ssl_backends[i]->id << ", "
+                 << curl_ssl_backends[i]->name << endl;
         }
 #endif
     }

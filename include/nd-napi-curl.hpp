@@ -34,5 +34,5 @@ public:
     struct curl_slist *headers_tx = { nullptr };
 };
 
-#define ndCurl static_cast<ndNetifyApiCurl *>(curl_private)
-#define ndCurlParent(p) static_cast<ndNetifyApiCurl *>(p->curl_private)
+#define ndCurl (static_cast<ndNetifyApiCurl *>(curl_private))
+#define ndCurlParent(p) (static_cast<ndNetifyApiCurl *>(p->curl_private))
