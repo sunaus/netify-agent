@@ -453,7 +453,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
 #endif
     }
 
-    flow.Reset();
+    flow.Reset(true);
 
     while (true) {
         if (type == ETHERTYPE_VLAN) {
@@ -473,8 +473,8 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             // https://en.wikipedia.org/wiki/IEEE_802.1Q
             vlan_packet = 1;
             flow.vlan_id = ((packet->data[l2_len] << 8) +
-                             packet->data[l2_len + 1]) &
-              0xFFF;
+                             packet->data[l2_len + 1]) & 0xFFF;
+
             type = (packet->data[l2_len + 2] << 8) +
               packet->data[l2_len + 3];
             l2_len += VLAN_TAG_LEN;

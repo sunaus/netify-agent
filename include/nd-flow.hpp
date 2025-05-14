@@ -352,9 +352,9 @@ public:
     void Hash(const std::string &device, bool hash_mdata = false,
       const uint8_t *key = nullptr, size_t key_length = 0);
 
-    inline void Reset(void) {
-        vlan_id = 0;
+    inline void Reset(bool full = false) {
         stats.Reset();
+        if (full) vlan_id = 0;
     }
 
     void Release(void);

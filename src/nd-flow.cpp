@@ -459,6 +459,13 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
             dls << ":"
                 << " MARK: " << conntrack.mark;
 
+            if (vlan_id > 0) {
+                dls
+                  << endl
+                  << setw(plen) << " "
+                  << ": VLAN: " << vlan_id;
+            }
+
             if (conntrack.reply_src_addr.IsValid() ||
                 conntrack.reply_dst_addr.IsValid()) {
                 dls << endl
