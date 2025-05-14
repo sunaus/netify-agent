@@ -248,6 +248,8 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         { "run-without-sources", 0, 0, _ND_LO_RUN_WITHOUT_SOURCES },
 #define _ND_LO_VERBOSE_FLAG 25
         { "verbose-flag", 1, 0, _ND_LO_VERBOSE_FLAG },
+#define _ND_LO_NO_RESTART 26
+        { "no-restart", 0, 0, _ND_LO_NO_RESTART },
 
         { nullptr, 0, 0, 0 } };
 
@@ -263,6 +265,9 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         switch (rc) {
         case _ND_LO_IGNORE_IFACE_CONFIGS:
             ndGC_SetFlag(ndGlobalFlags::IGNORE_IFACE_CONFIGS, true);
+            break;
+        case _ND_LO_NO_RESTART:
+            ndGC_SetFlag(ndGlobalFlags::NO_RESTART, true);
             break;
         case '?':
             cerr << "Try --help for more information.\n";
@@ -737,6 +742,8 @@ bool ndInstance::Daemonize(void) {
 }
 
 bool ndInstance::RestartAgent(bool conditional) const {
+    if (ndGC_NO_RESTART) return true;
+
     if (! ndGC_ALLOW_UNPRIV) {
         // Require UID 0 from this point on...
         if (geteuid() != 0) {
@@ -1157,6 +1164,8 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "Agent as a non-root user.\n"
           "  --run-without-sources\n    Continue running "
           "with no capture sources.\n"
+          "  --no-restart\n    Prevent the "
+          "Agent from being restarted.\n"
 
           "\nConfiguration options:\n"
           "  -u, --uuid <uuid>\n    Set Agent UUID.\n"

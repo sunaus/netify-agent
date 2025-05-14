@@ -130,6 +130,7 @@ enum class ndGlobalFlags : uint32_t {
     RUN_WITHOUT_SOURCES = (1 << 26),
     AUTO_INFORMATICS = (1 << 27),
     USE_GETIFADDRS = (1 << 28),
+    NO_RESTART = (1 << 29),
 };
 
 #define ndGC_DEBUG \
@@ -213,6 +214,9 @@ enum class ndGlobalFlags : uint32_t {
 #define ndGC_USE_GETIFADDRS \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::USE_GETIFADDRS)
+#define ndGC_NO_RESTART \
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::NO_RESTART)
 
 #define ndGC ndGlobalConfig::GetInstance()
 
