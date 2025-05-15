@@ -120,7 +120,7 @@ echo "%config(noreplace) %attr(660,root,root) %{_sysconfdir}/%{name}.conf" > %{E
 %if %{?_have_systemd:1}%{!?_have_systemd:0}
 echo "%{_unitdir}/%{name}.service" >> %{EXTRA_DIST}
 echo "%{_tmpfilesdir}/%{name}.conf" >> %{EXTRA_DIST}
-echo "%config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/env.sh" >> %{EXTRA_DIST}
+echo "%config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/systemd.env" >> %{EXTRA_DIST}
 %endif
 
 # Clean-up
