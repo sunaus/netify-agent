@@ -49,9 +49,10 @@ Debian/10/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: flex
+    OS_EXTRA_PACKAGES: flex libcap-dev
     CONFIGURE_EXTRA_FLAGS: >
       --disable-libtcmalloc
+      --enable-capabilities
 
 Debian/11/x86-64:
   extends: .debian_build
