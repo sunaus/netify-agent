@@ -43,6 +43,10 @@
 #endif
 #if defined(__linux__)
 #include <linux/wireless.h>
+#ifdef _ND_ENABLE_LIBCAP
+#include <sys/capability.h>
+#include <sys/prctl.h>
+#endif // _ND_ENABLE_LIBCAP
 #endif
 #include <syslog.h>
 #include <unistd.h>
@@ -58,6 +62,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <regex>
 #include <sched.h>
@@ -780,8 +785,8 @@ int nd_file_load(const string &filename, string &data) {
 void nd_file_save(const string &filename, const string &data,
   bool append, mode_t mode, const char *user, const char *group) {
     int fd = open(filename.c_str(), O_WRONLY);
-    struct passwd *owner_user = nullptr;
-    struct group *owner_group = nullptr;
+    uid_t owner_user = -1;
+    gid_t owner_group = -1;
 
     if (fd < 0) {
         if (errno != ENOENT) {
@@ -794,26 +799,13 @@ void nd_file_save(const string &filename, const string &data,
               filename.c_str(), strerror(errno));
         }
 
-        if (user != nullptr) {
-            owner_user = getpwnam(user);
-            if (owner_user == nullptr) {
-                throw ndException("%s: getpwnam(%s): %s",
-                  __PRETTY_FUNCTION__, user, strerror(errno));
-            }
-        }
+        if (user != nullptr)
+            owner_user = nd_get_user_id(user);
 
-        if (group != nullptr) {
-            owner_group = getgrnam(group);
-            if (owner_group == nullptr) {
-                throw ndException("%s: getgrnam(%s): %s",
-                  __PRETTY_FUNCTION__, group, strerror(errno));
-            }
-        }
+        if (group != nullptr)
+            owner_group = nd_get_group_id(group);
 
-        if (fchown(fd,
-              (owner_user != nullptr) ? owner_user->pw_uid : -1,
-              (owner_group != nullptr) ? owner_group->gr_gid : -1) < 0)
-        {
+        if (fchown(fd, owner_user, owner_group) < 0) {
             throw ndException("%s: fchown(%s, %s, %s): %s",
               __PRETTY_FUNCTION__, (user != nullptr) ? user : "-1",
               (group != nullptr) ? group : "-1",
@@ -1771,3 +1763,106 @@ void nd_get_memusage(const string &process, size_t &vm_kb, size_t &rss_kb) {
     rss_kb = rss * page_size_kb;
 }
 #endif // __linux__
+
+uid_t nd_get_user_id(const string &name) {
+    const long bufsize = sysconf(_SC_GETPW_R_SIZE_MAX) > 0 ?
+        sysconf(_SC_GETPW_R_SIZE_MAX) : 16384;
+
+    unique_ptr<char[]> buffer(new char[bufsize]);
+
+    struct passwd pwd;
+    struct passwd *result;
+    int rc = getpwnam_r(name.c_str(),
+        &pwd, buffer.get(), bufsize, &result);
+
+    if (result == nullptr) {
+        if (rc == 0) {
+            throw ndException("%s: getpwnam_r(%s): %s",
+                __PRETTY_FUNCTION__, name.c_str(), strerror(ENOENT));
+        }
+
+        errno = rc;
+        throw ndException("%s: getpwnam_r(%s): %s",
+            __PRETTY_FUNCTION__, name.c_str(), strerror(errno));
+    }
+
+    return pwd.pw_uid;
+}
+
+gid_t nd_get_group_id(const string &name) {
+    const long bufsize = sysconf(_SC_GETGR_R_SIZE_MAX) > 0 ?
+        sysconf(_SC_GETGR_R_SIZE_MAX) : 16384;
+
+    unique_ptr<char[]> buffer(new char[bufsize]);
+
+    struct group grp;
+    struct group *result;
+    int rc = getgrnam_r(name.c_str(),
+        &grp, buffer.get(), bufsize, &result);
+
+    if (result == nullptr) {
+        if (rc == 0) {
+            throw ndException("%s: getgrnam_r(%s): %s",
+                __PRETTY_FUNCTION__, name.c_str(), strerror(ENOENT));
+        }
+
+        errno = rc;
+        throw ndException("%s: getgrnam_r(%s): %s",
+            __PRETTY_FUNCTION__, name.c_str(), strerror(errno));
+    }
+
+    return grp.gr_gid;
+}
+
+void nd_drop_privileges(const std::string &user, const std::string &group) {
+#ifdef _ND_ENABLE_LIBCAP
+    cap_t ctx = cap_get_proc();
+
+    const vector<cap_value_t> caps = { CAP_NET_ADMIN, CAP_NET_RAW };
+
+    cap_set_flag(ctx, CAP_PERMITTED, caps.size(), caps.data(), CAP_SET);
+
+    if (cap_set_proc(ctx)) {
+        throw ndException("%s: cap_set_proc(): %s",
+          __PRETTY_FUNCTION__, strerror(errno));
+    }
+
+    if (prctl(PR_SET_KEEPCAPS, 1L)) {
+        throw ndException("%s: prctl(PR_SET_KEEPCAPS): %s",
+          __PRETTY_FUNCTION__, strerror(errno));
+    }
+
+    cap_free(ctx);
+#endif // _ND_ENABLE_LIBCAP
+
+    uid_t uid = -1;
+    gid_t gid = -1;
+    if (! group.empty()) gid = nd_get_group_id(group);
+
+    if (! user.empty()) {
+        uid = nd_get_user_id(user);
+        initgroups(user.c_str(), gid);
+    }
+
+    if (setgid(gid) > 0) {
+        throw ndException("%s: setgid(%d): %s",
+          __PRETTY_FUNCTION__, gid, strerror(errno));
+    }
+
+    if (setuid(uid) > 0) {
+        throw ndException("%s: setuid(%d): %s",
+          __PRETTY_FUNCTION__, uid, strerror(errno));
+    }
+
+#ifdef _ND_ENABLE_LIBCAP
+    ctx = cap_get_proc();
+    cap_set_flag(ctx, CAP_EFFECTIVE, caps.size(), caps.data(), CAP_SET);
+
+    if (cap_set_proc(ctx)) {
+        throw ndException("%s: cap_set_proc(): %s",
+          __PRETTY_FUNCTION__, strerror(errno));
+    }
+
+    cap_free(ctx);
+#endif //
+}

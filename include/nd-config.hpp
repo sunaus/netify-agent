@@ -276,59 +276,75 @@ typedef struct nd_config_nfq_t {
 class ndGlobalConfig
 {
 public:
-    bool napi_tls_verify;
-    std::string napi_vendor;
+    bool napi_tls_verify = { true };
+
+    std::string group_id;
+    std::string napi_vendor = { ND_API_VENDOR };
     std::string network_namespace;
-    std::string path_agent_status;
-    std::string path_app_config;
-    std::string path_cat_config;
-    std::string path_categories;
-    std::string path_config;
+    std::string path_agent_status = { ND_AGENT_STATUS_PATH };
+    std::string path_app_config = { ND_CONF_APP_PATH };
+    std::string path_cat_config = { ND_CONF_CAT_PATH };
+    std::string path_categories = { ND_CATEGORIES_PATH };
+    std::string path_config = { ND_CONF_FILE_NAME };
     std::string path_debug_log;
     std::string path_debug_log_flow;
     std::string path_export_json;
-    std::string path_functions;
-    std::string path_intel_config;
-    std::string path_interfaces;
-    std::string path_legacy_config;
-    std::string path_pid_file;
-    std::string path_plugins;
-    std::string path_plugin_libdir;
+    std::string path_functions = { ND_FUNCTIONS_PATH } ;
+    std::string path_intel_config = { ND_CONF_INTEL_PATH };
+    std::string path_interfaces = { ND_INTERFACES_PATH };
+    std::string path_legacy_config = { ND_CONF_LEGACY_PATH };
+    std::string path_pid_file = { ND_PID_FILE_NAME };
+    std::string path_plugin_libdir = { ND_PLUGIN_LIBDIR };
+    std::string path_plugins = { ND_PLUGINS_PATH };
     std::string path_profile;
-    std::string path_proto_config;
-    std::string path_shared_data;
-    std::string path_state_persistent;
-    std::string path_state_volatile;
-    std::string path_uuid;
-    std::string path_uuid_serial;
-    std::string path_uuid_site;
-    std::string url_napi_bootstrap;
-    ndDHCStorage dhc_storage;
-    ndFHCStorage fhc_storage;
-    ndFlags<ndCaptureType> capture_type;
-    unsigned capture_read_timeout;
+    std::string path_proto_config = { ND_CONF_PROTO_PATH };
+    std::string path_shared_data = { ND_SHARED_DATADIR };
+    std::string path_state_persistent = { ND_PERSISTENT_STATEDIR };
+    std::string path_state_volatile = { ND_VOLATILE_STATEDIR };
+    std::string path_uuid = { ND_AGENT_UUID_PATH };
+    std::string path_uuid_serial = { ND_AGENT_SERIAL_PATH };
+    std::string path_uuid_site = { ND_SITE_UUID_PATH };
+    std::string url_napi_bootstrap = { ND_URL_API_BOOTSTRAP };
+    std::string user_id;
+
+    ndDHCStorage dhc_storage = { ndDHCStorage::PERSISTENT };
+    ndFHCStorage fhc_storage = { ndFHCStorage::PERSISTENT };
+
+    ndFlags<ndCaptureType> capture_type = { ndCaptureType::NONE };
+
+    unsigned capture_read_timeout = { ND_CAPTURE_READ_TIMEOUT };
+
     nd_config_tpv3 tpv3_defaults;
-    FILE *h_debug_log;
-    FILE *h_debug_log_flow;
-    int16_t ca_capture_base;
-    int16_t ca_detection_base;
-    int16_t ca_detection_cores;
-    uint16_t max_capture_length;
-    ndFlags<ndGlobalFlags> flags;
-    uint8_t verbosity;
-    ndFlags<ndVerbosityFlags> verbosity_flags;
-    unsigned fm_buckets;
-    unsigned max_detection_pkts;
-    unsigned max_dhc;
-    unsigned max_fhc;
-    unsigned max_flows;
-    unsigned ttl_capture_delay;
-    unsigned ttl_idle_flow;
-    unsigned ttl_idle_tcp_flow;
-    unsigned ttl_napi_tick;
-    unsigned ttl_napi_update;
-    unsigned update_imf;
-    unsigned update_interval;
+
+    FILE *h_debug_log = { stderr };
+    FILE *h_debug_log_flow = { stderr };
+
+    int16_t ca_capture_base = { 0 };
+    int16_t ca_detection_base = { 0 };
+    int16_t ca_detection_cores = { -1 };
+
+    uint16_t max_capture_length = { ND_PCAP_SNAPLEN };
+
+    ndFlags<ndGlobalFlags> flags = { ndGlobalFlags::NONE };
+
+    uint8_t verbosity = { 0 };
+
+    ndFlags<ndVerbosityFlags> verbosity_flags = {
+        ndVerbosityFlags::EVENT_DPI_COMPLETE
+    };
+
+    unsigned fm_buckets = { ND_FLOW_MAP_BUCKETS };
+    unsigned max_detection_pkts = { ND_MAX_DETECTION_PKTS };
+    unsigned max_dhc = { ND_MAX_DHC_ENTRIES };
+    unsigned max_fhc = { ND_MAX_FHC_ENTRIES };
+    unsigned max_flows = { 0 };
+    unsigned ttl_capture_delay = { 0 };
+    unsigned ttl_idle_flow = { ND_TTL_IDLE_FLOW };
+    unsigned ttl_idle_tcp_flow = { ND_TTL_IDLE_TCP_FLOW };
+    unsigned ttl_napi_tick = { ND_TTL_API_TICK };
+    unsigned ttl_napi_update = { ND_TTL_API_UPDATE };
+    unsigned update_imf { 1 };
+    unsigned update_interval { ND_STATS_INTERVAL };
 
     typedef std::vector<std::pair<std::string, std::string>> SocketHosts;
     SocketHosts socket_host;
@@ -413,7 +429,7 @@ public:
       const std::string &filter);
 
 protected:
-    void *reader;
+    void *reader = { nullptr };
     std::mutex lock_uuid;
 
     std::string uuid;

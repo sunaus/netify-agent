@@ -47,6 +47,7 @@ AM_CONDITIONAL(USE_NFQUEUE, false)
 AM_CONDITIONAL(USE_TPACKETV3, false)
 AM_CONDITIONAL(USE_UBUS, false)
 AM_CONDITIONAL(USE_UCI, false)
+AM_CONDITIONAL(USE_LIBCAP, false)
 
 # Checks for programs.
 AC_PROG_CC
@@ -227,6 +228,20 @@ case "${host_os}" in
                 [Enable to build OpenWrt UBUS integration.])
             AM_CONDITIONAL(USE_UBUS, true)
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_UBUS=1"])
+        ])
+
+        dnl Linux Capabilities library
+
+        AC_ARG_ENABLE([capabilities],
+            [AS_HELP_STRING([--enable-capabilities], [Enable support for Linux Capabilities [default=no]])],
+            [],
+            [enable_capabilities=no])
+
+        AS_IF([test "x$enable_capabilities" = "xyes"], [
+            PKG_CHECK_MODULES([LIBCAP], [libcap])
+            AC_DEFINE([_ND_ENABLE_LIBCAP], [1],
+                [Define to enable LIBCAP capabilities support.])
+            AM_CONDITIONAL(USE_LIBCAP, true)
         ])
         ;;
 esac
@@ -505,6 +520,7 @@ case "${host_os}" in
         AC_MSG_NOTICE([NFQUEUE capture support: ${enable_nfqueue}])
         AC_MSG_NOTICE([UCI integration: ${enable_uci}])
         AC_MSG_NOTICE([UBUS integration: ${enable_ubus}])
+        AC_MSG_NOTICE([Linux Capabilities: ${enable_capabilities}])
     ;;
 esac
 

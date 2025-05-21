@@ -636,6 +636,10 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         }
     }
 #endif
+
+    if (! ndGC.user_id.empty() || ! ndGC.group_id.empty())
+        nd_drop_privileges(ndGC.user_id, ndGC.group_id);
+
     // Test mode enabled?  Override certain config
     // parameters
     if (ndGC.h_debug_log_flow != stderr) {

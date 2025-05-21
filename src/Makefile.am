@@ -32,6 +32,10 @@ if USE_NFQUEUE
 AM_CPPFLAGS += $(LIBNETFILTER_QUEUE_CFLAGS)
 endif
 
+if USE_LIBCAP
+AM_CPPFLAGS += $(LIBCAP_CFLAGS)
+endif
+
 lib_LTLIBRARIES = libnetifyd.la
 libnetifyd_la_SOURCES = nd-addr.cpp nd-apps.cpp nd-base64.cpp nd-capture.cpp \
 	nd-category.cpp nd-config.cpp nd-detection.cpp nd-except.cpp nd-dhc.cpp \
@@ -73,6 +77,10 @@ endif
 
 if USE_UBUS
 libnetifyd_la_SOURCES += nd-ubus.cpp
+endif
+
+if USE_LIBCAP
+libnetifyd_la_LIBADD += $(LIBCAP_LIBS)
 endif
 
 sbin_PROGRAMS = netifyd

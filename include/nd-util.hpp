@@ -632,3 +632,8 @@ void nd_sprintf(std::string &dst, const char *format, Args... args) {
 #if defined(__linux__)
 void nd_get_memusage(const std::string &process, size_t &vm_kb, size_t &rss_kb);
 #endif
+
+uid_t nd_get_user_id(const std::string &name);
+gid_t nd_get_group_id(const std::string &name);
+
+void nd_drop_privileges(const std::string &user, const std::string &group);

@@ -17,6 +17,7 @@
 : ${OPTION_PLUGINS:=enable}
 : ${OPTION_LIBTCMALLOC:=enable}
 : ${OPTION_NFQUEUE:=enable}
+: ${OPTION_LIBCAP:=enable}
 
 : ${prefix:=/usr}
 : ${exec_prefix:=${prefix}}
@@ -97,6 +98,7 @@ echo " OPTION_NETLINK: ${OPTION_NETLINK}"
 echo " OPTION_PLUGINS: ${OPTION_PLUGINS}"
 echo " OPTION_LIBTCMALLOC: ${OPTION_LIBTCMALLOC}"
 echo " OPTION_NFQUEUE: ${OPTION_NFQUEUE}"
+echo " OPTION_LIBCAP: ${OPTION_LIBCAP}"
 
 if [ $# -gt 0 -a "x$1" == "xhelp" ]; then exit 0; fi
 
@@ -119,6 +121,7 @@ CONFIGURE_ARGS+=" --${OPTION_NETLINK}-netlink"
 CONFIGURE_ARGS+=" --${OPTION_PLUGINS}-plugins"
 CONFIGURE_ARGS+=" --${OPTION_LIBTCMALLOC}-libtcmalloc"
 CONFIGURE_ARGS+=" --${OPTION_NFQUEUE}-nfqueue"
+CONFIGURE_ARGS+=" --${OPTION_LIBCAP}-capabilities"
 
 if [ "x${OPTION_CONNTRACK}" = "xenable" ]; then
     CONFIGURE_ARGS+=" --${OPTION_CONNTRACK_MDATA}-conntrack-mdata"

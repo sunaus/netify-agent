@@ -44,45 +44,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-ndGlobalConfig::ndGlobalConfig()
-  : napi_tls_verify(true), napi_vendor(ND_API_VENDOR),
-    path_agent_status(ND_AGENT_STATUS_PATH),
-    path_app_config(ND_CONF_APP_PATH),
-    path_cat_config(ND_CONF_CAT_PATH),
-    path_categories(ND_CATEGORIES_PATH),
-    path_config(ND_CONF_FILE_NAME),
-    path_functions(ND_FUNCTIONS_PATH),
-    path_intel_config(ND_CONF_INTEL_PATH),
-    path_interfaces(ND_INTERFACES_PATH),
-    path_legacy_config(ND_CONF_LEGACY_PATH),
-    path_pid_file(ND_PID_FILE_NAME), path_plugins(ND_PLUGINS_PATH),
-    path_plugin_libdir(ND_PLUGIN_LIBDIR),
-    path_proto_config(ND_CONF_PROTO_PATH),
-    path_shared_data(ND_SHARED_DATADIR),
-    path_state_persistent(ND_PERSISTENT_STATEDIR),
-    path_state_volatile(ND_VOLATILE_STATEDIR),
-    path_uuid(ND_AGENT_UUID_PATH),
-    path_uuid_serial(ND_AGENT_SERIAL_PATH),
-    path_uuid_site(ND_SITE_UUID_PATH),
-    url_napi_bootstrap(ND_URL_API_BOOTSTRAP),
-    dhc_storage(ndDHCStorage::PERSISTENT),
-    fhc_storage(ndFHCStorage::PERSISTENT),
-    capture_type(ndCaptureType::NONE),
-    capture_read_timeout(ND_CAPTURE_READ_TIMEOUT),
-    h_debug_log(stderr), h_debug_log_flow(stderr),
-    ca_capture_base(0), ca_detection_base(0), ca_detection_cores(-1),
-    max_capture_length(ND_PCAP_SNAPLEN),
-    flags(ndGlobalFlags::NONE), verbosity(0),
-    verbosity_flags(ndVerbosityFlags::EVENT_DPI_COMPLETE),
-    fm_buckets(ND_FLOW_MAP_BUCKETS),
-    max_detection_pkts(ND_MAX_DETECTION_PKTS),
-    max_dhc(ND_MAX_DHC_ENTRIES),
-    max_fhc(ND_MAX_FHC_ENTRIES), max_flows(0),
-    ttl_capture_delay(0), ttl_idle_flow(ND_TTL_IDLE_FLOW),
-    ttl_idle_tcp_flow(ND_TTL_IDLE_TCP_FLOW),
-    ttl_napi_tick(ND_TTL_API_TICK),
-    ttl_napi_update(ND_TTL_API_UPDATE), update_imf(1),
-    update_interval(ND_STATS_INTERVAL), reader(nullptr) {
+ndGlobalConfig::ndGlobalConfig() {
     flags |= ndGlobalFlags::AUTO_FLOW_EXPIRY;
 #ifdef _ND_ENABLE_CONNTRACK
     flags |= ndGlobalFlags::USE_CONNTRACK;
@@ -277,6 +239,9 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
         (! profile) ? false : ndGC_USE_GETIFADDRS
 #endif
         ));
+
+    user_id = r->Get(ND_NAME_SHORT, "user", "");
+    group_id = r->Get(ND_NAME_SHORT, "group", "");
 
     // Threading section
     ca_capture_base = (int16_t)r->GetInteger("threads",
