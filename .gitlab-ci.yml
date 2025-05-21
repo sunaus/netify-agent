@@ -49,10 +49,9 @@ Debian/10/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: flex libcap-dev
+    OS_EXTRA_PACKAGES: flex
     CONFIGURE_EXTRA_FLAGS: >
       --disable-libtcmalloc
-      --enable-capabilities
 
 Debian/11/x86-64:
   extends: .debian_build
@@ -66,6 +65,9 @@ Debian/11/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
+    OS_EXTRA_PACKAGES: libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
 
 Debian/11/x86-32:
   extends: .debian_build
@@ -136,7 +138,9 @@ Debian/11/ARM-64v8:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex
+    OS_EXTRA_PACKAGES: byacc flex libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
 
 Debian/12/x86-64:
   extends: .debian_build
@@ -153,6 +157,9 @@ Debian/12/x86-64:
     OS_ARCH_PATH:
       value: $OS_ARCH
       expand: true
+    OS_EXTRA_PACKAGES: byacc flex libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
 
 # Ubuntu Targets
 
@@ -171,8 +178,9 @@ Ubuntu/20.04/x86-64:
     OS_ARCH_PATH:
       value: binary-$OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc
-    CONFIGURE_EXTRA_FLAGS: ''
+    OS_EXTRA_PACKAGES: byacc libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
 
 Ubuntu/22.04/x86-64:
   extends: .debian_build
@@ -189,7 +197,9 @@ Ubuntu/22.04/x86-64:
     OS_ARCH_PATH:
       value: binary-$OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex
+    OS_EXTRA_PACKAGES: byacc flex libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
 
 Ubuntu/24.04/x86-64:
   extends: .debian_build
@@ -206,7 +216,9 @@ Ubuntu/24.04/x86-64:
     OS_ARCH_PATH:
       value: binary-$OS_ARCH
       expand: true
-    OS_EXTRA_PACKAGES: byacc flex
+    OS_EXTRA_PACKAGES: byacc flex libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
 
 # RedHat Targets
 
