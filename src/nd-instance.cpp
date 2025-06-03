@@ -643,7 +643,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
     // Test mode enabled?  Override certain config
     // parameters
     if (ndGC.h_debug_log_flow != stderr) {
-        ndGC_SetFlag(ndGlobalFlags::USE_FHC, true);
+        ndGC_SetFlag(ndGlobalFlags::USE_FHC, false);
         ndGC_SetFlag(ndGlobalFlags::REMAIN_IN_FOREGROUND, true);
 
         ndGC.update_interval = 1;
