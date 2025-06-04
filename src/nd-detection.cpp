@@ -801,9 +801,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
             break;
 
         case ndProto::Id::FACEBOOK_VOIP:
-            // TODO: netify.meta-messaging or netify.facebook-messager?
-            app_twin = ndi.apps.Lookup(
-              "netify.meta-messaging");
+            app_twin = ndi.apps.Lookup("netify.meta");
             break;
 
         case ndProto::Id::LINE_CALL:
