@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <pcap/pcap.h>
+
 #include "nd-except.hpp"
 #include "nd-flags.hpp"
 #include "nd-instance.hpp"
@@ -51,6 +53,9 @@ public:
     inline State GetState(void) const {
         return capture_state.load();
     }
+
+    static void CompileFilter(const std::string &filter,
+        struct bpf_program &bpf_filter, pcap_t *pcap = nullptr);
 
 protected:
     int dl_type = { 0 };

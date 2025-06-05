@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <inttypes.h>
+
 #include <ctime>
 #include <memory>
 #include <mutex>
@@ -74,9 +76,10 @@ public:
     };
 
     void PrintStats(const Stats &stats) {
-        nd_dprintf("%s: created: %lu, updated: %lu, destroyed: %lu, "
-            "lookups: %lu, matches: %lu, total ids: %lu, total flows: %lu\n",
-            tag.c_str(),
+        nd_dprintf("%s: created: %" PRIu32 ", updated: %" PRIu32
+            ", destroyed: %" PRIu32 ", lookups: %" PRIu32
+            ", matches: %" PRIu32 ", total ids: %" PRIu32
+            ", total flows: %" PRIu32 "\n", tag.c_str(),
             stats.created, stats.updated, stats.destroyed,
             stats.lookups, stats.matches,
             stats.total_ids, stats.total_flows

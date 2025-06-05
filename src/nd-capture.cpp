@@ -276,6 +276,40 @@ ndCaptureThread::ndCaptureThread(ndFlags<ndCaptureType> cs_type,
     nd_private_ipaddr(private_addr, private_addrs.second);
 }
 
+void ndCaptureThread::CompileFilter(
+    const std::string &filter, struct bpf_program &bpf_filter, pcap_t *pcap) {
+
+    if (pcap == nullptr) {
+#ifdef HAVE_PCAP_OPEN_DEAD
+        pcap = pcap_open_dead(DLT_EN10MB, ndGC.max_capture_length);
+        if (pcap == nullptr) {
+            throw ndException(
+                __PRETTY_FUNCTION__, "error creating PCAP context");
+        }
+
+        if (pcap_compile(pcap, &bpf_filter, filter.c_str(), 1,
+            PCAP_NETMASK_UNKNOWN) == -1) {
+#else
+        if (pcap_compile_nopcap(ndGC.max_capture_length, DLT_EN10MB,
+            &bpf_filter, filter.c_str(), 1, PCAP_NETMASK_UNKNOWN) == -1) {
+#endif
+            throw ndException(__PRETTY_FUNCTION__,
+              "error compiling BPF filter");
+        }
+
+#ifdef HAVE_PCAP_OPEN_DEAD
+        pcap_close(pcap);
+#endif
+    }
+    else {
+        if (pcap_compile(pcap, &bpf_filter, filter.c_str(), 1,
+            PCAP_NETMASK_UNKNOWN) == -1) {
+            throw ndException(__PRETTY_FUNCTION__,
+              "error compiling BPF filter");
+        }
+    }
+}
+
 const ndPacket *
 ndCaptureThread::ProcessPacket(const ndPacket *packet) {
     ndFlow::Ptr nf;

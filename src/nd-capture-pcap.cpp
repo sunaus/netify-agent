@@ -22,10 +22,14 @@
 #include "config.h"
 #endif
 
+#include <stdexcept>
+
 #include <net/if.h>
 #include <sys/ioctl.h>
 
 #include "nd-capture-pcap.hpp"
+
+using namespace std;
 
 ndCapturePcap::ndCapturePcap(int16_t cpu,
   ndInterface::Ptr &iface, const ndDetectionThreads &threads_dpi,
@@ -258,9 +262,9 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
         auto i = ndGC.interface_filters.find(tag);
 
         if (i != ndGC.interface_filters.end()) {
-            if (pcap_compile(pcap_new, &pcap_filter,
-                  i->second.c_str(), 1, PCAP_NETMASK_UNKNOWN) < 0)
-            {
+            try {
+                CompileFilter(i->second, pcap_filter, pcap_new);
+            } catch (exception &e) {
                 nd_printf("%s: pcap_compile: %s\n",
                   tag.c_str(), pcap_geterr(pcap_new));
                 nd_dprintf("%s: expression: %s\n",

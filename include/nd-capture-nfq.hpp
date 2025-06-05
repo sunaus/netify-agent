@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <pcap/pcap.h>
+
 #include "nd-capture.hpp"
 
 class ndCaptureNFQueue : public ndCaptureThread
@@ -43,8 +45,9 @@ public:
         pkt_queue.push_back(pkt);
     }
 
+    struct bpf_program filter = { 0 };
+
 protected:
-    // struct bpf_program pcap_filter;
     unsigned queue_id;
     struct mnl_socket *nl;
     unsigned int port_id;

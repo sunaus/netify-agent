@@ -97,7 +97,9 @@ public:
 
     inline int GetDescriptor(void) { return sd; }
 
-    void SetFilter(const string &expr);
+    inline void SetFilter(const string &expr) {
+        ndCaptureThread::CompileFilter(expr, filter);
+    }
     bool ApplyFilter(const uint8_t *pkt, size_t snaplen,
       size_t length) const;
 
@@ -401,30 +403,6 @@ ndPacketRing::~ndPacketRing() {
     if (buffer) munmap(buffer, tp_ring_size);
     if (sd != -1) close(sd);
     for (auto &i : blocks) delete i;
-}
-
-void ndPacketRing::SetFilter(const string &expr) {
-#ifdef HAVE_PCAP_OPEN_DEAD
-    pcap_t *pcap = pcap_open_dead(DLT_EN10MB, ndGC.max_capture_length);
-    if (pcap == nullptr) {
-        throw ndException(__PRETTY_FUNCTION__,
-          "error creating PCAP context");
-    }
-    if (pcap_compile(pcap, &filter, expr.c_str(), 1,
-          PCAP_NETMASK_UNKNOWN) == -1)
-    {
-#else
-    if (pcap_compile_nopcap(ndGC.max_capture_length, DLT_EN10MB,
-          &filter, expr.c_str(), 1, PCAP_NETMASK_UNKNOWN) == -1)
-    {
-#endif
-        throw ndException(__PRETTY_FUNCTION__,
-          "error compiling BPF filter");
-    }
-
-#ifdef HAVE_PCAP_OPEN_DEAD
-    pcap_close(pcap);
-#endif
 }
 
 bool ndPacketRing::ApplyFilter(const uint8_t *pkt,

@@ -254,13 +254,22 @@ static int ndCaptureNFQueue_Callback(
         }
     }
 
-    // Create and push packet...
-    ndPacket *pkt = new ndPacket(pkt_status,
-      static_cast<uint16_t>(hdr_eth_size + pkt_len),
-      static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
-      pkt_data, pkt_tv, ifidx_in, ifidx_out);
+    // Filtered?
+    if (nfq->filter.bf_insns && bpf_filter(
+        nfq->filter.bf_insns, pkt_data,
+        hdr_eth_size + pkt_len,
+        hdr_eth_size + pkt_caplen) == 0) {
+        delete [] pkt_data;
+    }
+    else {
+        // Create and push packet...
+        ndPacket *pkt = new ndPacket(pkt_status,
+          static_cast<uint16_t>(hdr_eth_size + pkt_len),
+          static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
+          pkt_data, pkt_tv, ifidx_in, ifidx_out);
 
-    nfq->PushPacket(pkt);
+        nfq->PushPacket(pkt);
+    }
 
     // Set NFQUEUE verdict to ACCEPT.
     struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
@@ -366,6 +375,11 @@ void *ndCaptureNFQueue::Entry(void) {
 
     capture_state = State::ONLINE;
 
+    auto it_filter = ndGC.interface_filters.find(tag);
+
+    if (it_filter != ndGC.interface_filters.end())
+        CompileFilter(it_filter->second, filter);
+
     nd_dprintf("%s: NFQ capture started on CPU: %lu\n",
       tag.c_str(), cpu >= 0 ? cpu : 0);
 
@@ -386,6 +400,9 @@ void *ndCaptureNFQueue::Entry(void) {
         if (rc == 0 || ! FD_ISSET(fd, &fds_read)) continue;
 
         rc = mnl_socket_recvfrom(nl, (char *)buffer, buffer_size);
+
+        nd_dprintf("%s: NFQUEUE: mnl_socket_recvfrom: %d (%s)\n",
+            tag.c_str(), rc, (rc == -1) ? strerror(errno) : "No error");
 
         if (rc == -1) {
             if (errno == ENOBUFS) {
