@@ -399,12 +399,12 @@ void *ndCaptureNFQueue::Entry(void) {
 
         if (rc == 0 || ! FD_ISSET(fd, &fds_read)) continue;
 
-        rc = mnl_socket_recvfrom(nl, (char *)buffer, buffer_size);
-
+        ssize_t bytes = mnl_socket_recvfrom(nl, (char *)buffer, buffer_size);
+#ifdef _ND_LOG_DEBUG
         nd_dprintf("%s: NFQUEUE: mnl_socket_recvfrom: %d (%s)\n",
-            tag.c_str(), rc, (rc == -1) ? strerror(errno) : "No error");
-
-        if (rc == -1) {
+            tag.c_str(), bytes, (bytes == -1) ? strerror(errno) : "No error");
+#endif
+        if (bytes == -1) {
             if (errno == ENOBUFS) {
                 dropped++;
                 continue;
@@ -417,14 +417,14 @@ void *ndCaptureNFQueue::Entry(void) {
             }
         }
 
-        rc = mnl_cb_run((char *)buffer, rc, 0, port_id,
+        rc = mnl_cb_run((char *)buffer, (size_t)bytes, 0, port_id,
           ndCaptureNFQueue_Callback, static_cast<void *>(this));
 
         if (rc < 0) {
             nd_printf(
-              "%s: Error processing NFQUEUE data: %s\n",
-              tag.c_str(), strerror(errno));
-            break;
+              "%s: Error processing NFQUEUE data: %s [%d]\n",
+              tag.c_str(), strerror(errno), rc);
+            continue;
         }
 
         if (pkt_queue.size()) {
