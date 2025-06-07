@@ -19,6 +19,12 @@ config NETIFYD_ENABLE_LEAN_AND_MEAN
 	help
 		Enable to reduce the size of the application image as much as possible.  For very small embedded systems.
 
+config NETIFYD_ENABLE_LINUX_CAPABILITIES
+	bool "Enable support for Linux Capabilities?"
+	default n
+	help
+		Enable Linux Capabilities support in order to run as a non-root user.
+
 config NETIFYD_ENABLE_CONNTRACK_MDATA
 	bool "Enable extraction of supplemental conntrack metadata?"
 	default y
