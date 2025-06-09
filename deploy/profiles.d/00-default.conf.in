@@ -5,6 +5,12 @@
 ############################################################################
 
 [netifyd]
+# Switch to non-root user on start-up.  Requires Linux Capabilities support
+# to be enabled at compile time.  When running as a non-root user, the Agent
+# will grant itself two capabilities: CAP_NET_ADMIN, CAP_NET_RAW
+#user = netify
+#group = netify
+
 # On shutdown, force flows to immediately expire?  Otherwise, on shutdown,
 # the Agent will linger until all flows have expired and have been purged,
 # or a second termination request has been received.
