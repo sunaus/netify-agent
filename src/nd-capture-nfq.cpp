@@ -118,6 +118,32 @@ static void ndCaptureNFQueue_PrintAttrs(const char *tag, struct nlattr **attr) {
 }
 #endif
 
+static int ndCaptureNFQueue_SetVerdict(
+    const struct nlmsghdr *nlh, ndCaptureNFQueue *nfq,
+    struct nfqnl_msg_packet_hdr *pkt_hdr) {
+
+    struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
+      mnl_nlmsg_get_payload(nlh));
+
+    uint8_t buffer[ND_NETLINK_BUFFER_SOCKET_SIZE];
+    struct nlmsghdr *nlh_verdict = nfq_nlmsg_put(
+      (char *)buffer, NFQNL_MSG_VERDICT, ntohs(nfg->res_id));
+
+    // Always set verdict to ACCEPT.
+    nfq_nlmsg_verdict_put(nlh_verdict,
+      ntohl(pkt_hdr->packet_id), NF_ACCEPT);
+
+    if (mnl_socket_sendto(nfq->GetSocket(), nlh_verdict,
+          nlh_verdict->nlmsg_len) < 0)
+    {
+        nd_printf("%s: Error setting verdict: %s\n",
+          nfq->GetTag().c_str(), strerror(errno));
+        return MNL_CB_ERROR;
+    }
+
+    return MNL_CB_OK;
+}
+
 static int ndCaptureNFQueue_Callback(
   const struct nlmsghdr *nlh, void *user) {
     ndCaptureNFQueue *nfq = static_cast<ndCaptureNFQueue *>(user);
@@ -148,7 +174,12 @@ static int ndCaptureNFQueue_Callback(
         nd_dprintf("%s: unsupported packet protocol: 0x%04x\n",
             tag, ntohs(pkt_hdr->hw_protocol));
 #endif
-        return MNL_CB_OK;
+        return ndCaptureNFQueue_SetVerdict(nlh, nfq, pkt_hdr);
+    }
+
+    if (attr[NFQA_PAYLOAD] == nullptr) {
+        nd_printf("%s: No packet payload set.\n", tag);
+        return ndCaptureNFQueue_SetVerdict(nlh, nfq, pkt_hdr);
     }
 
     struct nfqnl_msg_packet_timestamp *pkt_ts = nullptr;
@@ -271,26 +302,7 @@ static int ndCaptureNFQueue_Callback(
         nfq->PushPacket(pkt);
     }
 
-    // Set NFQUEUE verdict to ACCEPT.
-    struct nfgenmsg *nfg = static_cast<struct nfgenmsg *>(
-      mnl_nlmsg_get_payload(nlh));
-
-    uint8_t buffer[ND_NETLINK_BUFFER_SOCKET_SIZE];
-    struct nlmsghdr *nlh_verdict = nfq_nlmsg_put(
-      (char *)buffer, NFQNL_MSG_VERDICT, ntohs(nfg->res_id));
-
-    nfq_nlmsg_verdict_put(nlh_verdict,
-      ntohl(pkt_hdr->packet_id), NF_ACCEPT);
-
-    if (mnl_socket_sendto(nfq->GetSocket(), nlh_verdict,
-          nlh_verdict->nlmsg_len) < 0)
-    {
-        nd_printf("%s: Error setting verdict: %s\n", tag,
-          strerror(errno));
-        return MNL_CB_ERROR;
-    }
-
-    return MNL_CB_OK;
+    return ndCaptureNFQueue_SetVerdict(nlh, nfq, pkt_hdr);
 }
 
 ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
@@ -420,11 +432,15 @@ void *ndCaptureNFQueue::Entry(void) {
         rc = mnl_cb_run((char *)buffer, (size_t)bytes, 0, port_id,
           ndCaptureNFQueue_Callback, static_cast<void *>(this));
 
-        if (rc < 0) {
+        if (rc != MNL_CB_OK) {
             nd_printf(
               "%s: Error processing NFQUEUE data: %s [%d]\n",
               tag.c_str(), strerror(errno), rc);
-            continue;
+
+            capture_state = State::OFFLINE;
+
+            throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+              "mnl_cb_run");
         }
 
         if (pkt_queue.size()) {
