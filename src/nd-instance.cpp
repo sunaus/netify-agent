@@ -1990,19 +1990,22 @@ int ndInstance::Run(void) {
     try {
         plugins.Load();
 
+        ndCPUSet cpu_set(false);
+
         int16_t cpu =
           (ndGC.ca_detection_base > -1 &&
-            ndGC.ca_detection_base < (int16_t)status.cpus) ?
+            ndGC.ca_detection_base < (int16_t)cpu_set.cpu_set.size()) ?
           ndGC.ca_detection_base :
           0;
         int16_t cpus =
-          (ndGC.ca_detection_cores > (int16_t)status.cpus ||
+          (ndGC.ca_detection_cores > (int16_t)cpu_set.cpu_set.size() ||
             ndGC.ca_detection_cores <= 0) ?
-          (int16_t)status.cpus :
+          (int16_t)cpu_set.cpu_set.size() :
           ndGC.ca_detection_cores;
 
         for (int16_t i = 0; i < cpus; i++) {
-            thread_detection[i] = new ndDetectionThread(cpu,
+            thread_detection[i] = new ndDetectionThread(
+              cpu_set.cpu_set.at(cpu),
               string("dpi") + to_string(cpu),
 #ifdef _ND_ENABLE_NETLINK
               netlink,
@@ -2014,8 +2017,14 @@ int ndInstance::Run(void) {
 
             thread_detection[i]->Create();
 
-            if (++cpu == cpus) cpu = 0;
-        }
+            if (++cpu == cpus) {
+                cpu =
+                  (ndGC.ca_detection_base > -1 &&
+                    ndGC.ca_detection_base < (int16_t)cpu_set.cpu_set.size()) ?
+                  ndGC.ca_detection_base :
+                  0;
+                }
+            }
     }
     catch (exception &e) {
         nd_printf("%s: Fatal exception: %s\n", tag.c_str(),
@@ -2331,9 +2340,11 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
     static uint8_t private_addr = 0;
     vector<ndCaptureThread *> thread_group;
 
+    ndCPUSet cpu_set(false);
+
     static int16_t cpu =
       (ndGC.ca_capture_base > -1 &&
-        ndGC.ca_capture_base < (int16_t)status.cpus) ?
+        ndGC.ca_capture_base < (int16_t)cpu_set.cpu_set.size()) ?
       ndGC.ca_capture_base :
       0;
 
@@ -2343,7 +2354,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
         case ndCaptureType::PCAP_OFFLINE:
         {
             auto thread = new ndCapturePcap(
-              (interfaces.size() > 1) ? cpu++ : -1,
+              (ifaces.size() > 1) ? cpu_set.cpu_set.at(cpu++) : -1,
               it.second, thread_detection, dns_hint_cache,
               (it.second->role == ndInterfaceRole::LAN) ? 0 : ++private_addr);
 
@@ -2361,7 +2372,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 
             for (unsigned i = 0; i < instances; i++) {
                 auto thread = new ndCaptureTPv3(
-                  (instances > 1) ? cpu++ : -1, it.second,
+                  (instances > 1) ? cpu_set.cpu_set.at(cpu++) : -1, it.second,
                   thread_detection, dns_hint_cache,
                   (it.second->role == ndInterfaceRole::LAN) ?
                     0 :
@@ -2369,7 +2380,12 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 
                 thread_group.push_back(thread);
 
-                if (cpu == (int16_t)status.cpus) cpu = 0;
+                if (cpu == (int16_t)cpu_set.cpu_set.size()) {
+                    (ndGC.ca_capture_base > -1 &&
+                      ndGC.ca_capture_base < (int16_t)cpu_set.cpu_set.size()) ?
+                    ndGC.ca_capture_base :
+                      0;
+                }
             }
 
             break;
@@ -2384,7 +2400,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 
             for (unsigned i = 0; i < instances; i++) {
                 auto thread = new ndCaptureNFQueue(
-                  (instances > 1) ? cpu++ : -1, it.second,
+                  (instances > 1) ? cpu_set.cpu_set.at(cpu++) : -1, it.second,
                   thread_detection,
                   i,  // instance_id
                   dns_hint_cache,
@@ -2394,7 +2410,12 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 
                 thread_group.push_back(thread);
 
-                if (cpu == (int16_t)status.cpus) cpu = 0;
+                if (cpu == (int16_t)cpu_set.cpu_set.size()) {
+                    (ndGC.ca_capture_base > -1 &&
+                      ndGC.ca_capture_base < (int16_t)cpu_set.cpu_set.size()) ?
+                    ndGC.ca_capture_base :
+                      0;
+                }
             }
 
             break;
@@ -2415,7 +2436,12 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
 
         thread_group.clear();
 
-        if (cpu == (int16_t)status.cpus) cpu = 0;
+        if (cpu == (int16_t)cpu_set.cpu_set.size()) {
+            (ndGC.ca_capture_base > -1 &&
+              ndGC.ca_capture_base < (int16_t)cpu_set.cpu_set.size()) ?
+            ndGC.ca_capture_base :
+              0;
+        }
     }
 
     for (auto &it : threads) {

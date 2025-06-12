@@ -23,6 +23,8 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 
+#include <sched.h>
+
 #include <array>
 #include <atomic>
 #include <cstddef>
@@ -400,6 +402,17 @@ protected:
     int sig;
     bool valid;
     timer_t id;
+};
+
+class ndCPUSet
+{
+public:
+    ndCPUSet(bool empty = false);
+    ndCPUSet(const std::string &cpu_list);
+
+    void Get(cpu_set_t &cpu_set);
+
+    std::vector<int> cpu_set;
 };
 
 void nd_get_ip_protocol_name(int protocol, std::string &result);
