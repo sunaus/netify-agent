@@ -1509,6 +1509,30 @@ void ndTimer::Set(const struct itimerspec &itspec) {
     }
 }
 
+ndCPUSet::ndCPUSet(bool empty) {
+    if (empty) return;
+
+    cpu_set_t mask;
+    if (sched_getaffinity(0, sizeof(mask), &mask) == -1) {
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+          "sched_getaffinity");
+    }
+
+    for (int i = 0; i < CPU_SETSIZE; i++) {
+        if (! CPU_ISSET(i, &mask)) continue;
+        cpu_set.push_back(i);
+    }
+}
+
+ndCPUSet::ndCPUSet(const std::string &cpu_list) {
+}
+
+void ndCPUSet::Get(cpu_set_t &cpu_set) {
+    CPU_ZERO(&cpu_set);
+    for (auto& cpu : this->cpu_set)
+        CPU_SET(cpu, &cpu_set);
+}
+
 void nd_get_ip_protocol_name(int protocol, string &result) {
     static mutex lock;
     static unordered_map<int, string> cache;
