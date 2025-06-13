@@ -100,42 +100,43 @@ typedef void* yyscan_t;
     FLOW_PROTOCOL_CATEGORY_ID = 295, /* FLOW_PROTOCOL_CATEGORY_ID  */
     FLOW_DETECTED_HOSTNAME = 296,  /* FLOW_DETECTED_HOSTNAME  */
     FLOW_DNS_HOSTNAME = 297,       /* FLOW_DNS_HOSTNAME  */
-    FLOW_ORIGIN = 298,             /* FLOW_ORIGIN  */
-    FLOW_CT_MARK = 299,            /* FLOW_CT_MARK  */
-    FLOW_TLS_VERSION = 300,        /* FLOW_TLS_VERSION  */
-    FLOW_TLS_CIPHER = 301,         /* FLOW_TLS_CIPHER  */
-    FLOW_TLS_ECH = 302,            /* FLOW_TLS_ECH  */
-    FLOW_TLS_ESNI = 303,           /* FLOW_TLS_ESNI  */
-    FLOW_TLS_JA4 = 304,            /* FLOW_TLS_JA4  */
-    FLOW_OTHER_UNKNOWN = 305,      /* FLOW_OTHER_UNKNOWN  */
-    FLOW_OTHER_UNSUPPORTED = 306,  /* FLOW_OTHER_UNSUPPORTED  */
-    FLOW_OTHER_LOCAL = 307,        /* FLOW_OTHER_LOCAL  */
-    FLOW_OTHER_MULTICAST = 308,    /* FLOW_OTHER_MULTICAST  */
-    FLOW_OTHER_BROADCAST = 309,    /* FLOW_OTHER_BROADCAST  */
-    FLOW_OTHER_REMOTE = 310,       /* FLOW_OTHER_REMOTE  */
-    FLOW_OTHER_ERROR = 311,        /* FLOW_OTHER_ERROR  */
-    FLOW_ORIGIN_LOCAL = 312,       /* FLOW_ORIGIN_LOCAL  */
-    FLOW_ORIGIN_OTHER = 313,       /* FLOW_ORIGIN_OTHER  */
-    FLOW_ORIGIN_UNKNOWN = 314,     /* FLOW_ORIGIN_UNKNOWN  */
-    FLOW_TUNNEL_NONE = 315,        /* FLOW_TUNNEL_NONE  */
-    FLOW_TUNNEL_GTP = 316,         /* FLOW_TUNNEL_GTP  */
-    CMP_EQUAL = 317,               /* CMP_EQUAL  */
-    CMP_NOTEQUAL = 318,            /* CMP_NOTEQUAL  */
-    CMP_GTHANEQUAL = 319,          /* CMP_GTHANEQUAL  */
-    CMP_LTHANEQUAL = 320,          /* CMP_LTHANEQUAL  */
-    BOOL_AND = 321,                /* BOOL_AND  */
-    BOOL_OR = 322,                 /* BOOL_OR  */
-    VALUE_ADDR_IPMASK = 323,       /* VALUE_ADDR_IPMASK  */
-    VALUE_TRUE = 324,              /* VALUE_TRUE  */
-    VALUE_FALSE = 325,             /* VALUE_FALSE  */
-    VALUE_ADDR_MAC = 326,          /* VALUE_ADDR_MAC  */
-    VALUE_NAME = 327,              /* VALUE_NAME  */
-    VALUE_REGEX = 328,             /* VALUE_REGEX  */
-    VALUE_ADDR_IPV4 = 329,         /* VALUE_ADDR_IPV4  */
-    VALUE_ADDR_IPV4_CIDR = 330,    /* VALUE_ADDR_IPV4_CIDR  */
-    VALUE_ADDR_IPV6 = 331,         /* VALUE_ADDR_IPV6  */
-    VALUE_ADDR_IPV6_CIDR = 332,    /* VALUE_ADDR_IPV6_CIDR  */
-    VALUE_NUMBER = 333             /* VALUE_NUMBER  */
+    FLOW_WIFI_ESSID = 298,         /* FLOW_WIFI_ESSID  */
+    FLOW_ORIGIN = 299,             /* FLOW_ORIGIN  */
+    FLOW_CT_MARK = 300,            /* FLOW_CT_MARK  */
+    FLOW_TLS_VERSION = 301,        /* FLOW_TLS_VERSION  */
+    FLOW_TLS_CIPHER = 302,         /* FLOW_TLS_CIPHER  */
+    FLOW_TLS_ECH = 303,            /* FLOW_TLS_ECH  */
+    FLOW_TLS_ESNI = 304,           /* FLOW_TLS_ESNI  */
+    FLOW_TLS_JA4 = 305,            /* FLOW_TLS_JA4  */
+    FLOW_OTHER_UNKNOWN = 306,      /* FLOW_OTHER_UNKNOWN  */
+    FLOW_OTHER_UNSUPPORTED = 307,  /* FLOW_OTHER_UNSUPPORTED  */
+    FLOW_OTHER_LOCAL = 308,        /* FLOW_OTHER_LOCAL  */
+    FLOW_OTHER_MULTICAST = 309,    /* FLOW_OTHER_MULTICAST  */
+    FLOW_OTHER_BROADCAST = 310,    /* FLOW_OTHER_BROADCAST  */
+    FLOW_OTHER_REMOTE = 311,       /* FLOW_OTHER_REMOTE  */
+    FLOW_OTHER_ERROR = 312,        /* FLOW_OTHER_ERROR  */
+    FLOW_ORIGIN_LOCAL = 313,       /* FLOW_ORIGIN_LOCAL  */
+    FLOW_ORIGIN_OTHER = 314,       /* FLOW_ORIGIN_OTHER  */
+    FLOW_ORIGIN_UNKNOWN = 315,     /* FLOW_ORIGIN_UNKNOWN  */
+    FLOW_TUNNEL_NONE = 316,        /* FLOW_TUNNEL_NONE  */
+    FLOW_TUNNEL_GTP = 317,         /* FLOW_TUNNEL_GTP  */
+    CMP_EQUAL = 318,               /* CMP_EQUAL  */
+    CMP_NOTEQUAL = 319,            /* CMP_NOTEQUAL  */
+    CMP_GTHANEQUAL = 320,          /* CMP_GTHANEQUAL  */
+    CMP_LTHANEQUAL = 321,          /* CMP_LTHANEQUAL  */
+    BOOL_AND = 322,                /* BOOL_AND  */
+    BOOL_OR = 323,                 /* BOOL_OR  */
+    VALUE_ADDR_IPMASK = 324,       /* VALUE_ADDR_IPMASK  */
+    VALUE_TRUE = 325,              /* VALUE_TRUE  */
+    VALUE_FALSE = 326,             /* VALUE_FALSE  */
+    VALUE_ADDR_MAC = 327,          /* VALUE_ADDR_MAC  */
+    VALUE_NAME = 328,              /* VALUE_NAME  */
+    VALUE_REGEX = 329,             /* VALUE_REGEX  */
+    VALUE_ADDR_IPV4 = 330,         /* VALUE_ADDR_IPV4  */
+    VALUE_ADDR_IPV4_CIDR = 331,    /* VALUE_ADDR_IPV4_CIDR  */
+    VALUE_ADDR_IPV6 = 332,         /* VALUE_ADDR_IPV6  */
+    VALUE_ADDR_IPV6_CIDR = 333,    /* VALUE_ADDR_IPV6_CIDR  */
+    VALUE_NUMBER = 334             /* VALUE_NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -184,42 +185,43 @@ typedef void* yyscan_t;
 #define FLOW_PROTOCOL_CATEGORY_ID 295
 #define FLOW_DETECTED_HOSTNAME 296
 #define FLOW_DNS_HOSTNAME 297
-#define FLOW_ORIGIN 298
-#define FLOW_CT_MARK 299
-#define FLOW_TLS_VERSION 300
-#define FLOW_TLS_CIPHER 301
-#define FLOW_TLS_ECH 302
-#define FLOW_TLS_ESNI 303
-#define FLOW_TLS_JA4 304
-#define FLOW_OTHER_UNKNOWN 305
-#define FLOW_OTHER_UNSUPPORTED 306
-#define FLOW_OTHER_LOCAL 307
-#define FLOW_OTHER_MULTICAST 308
-#define FLOW_OTHER_BROADCAST 309
-#define FLOW_OTHER_REMOTE 310
-#define FLOW_OTHER_ERROR 311
-#define FLOW_ORIGIN_LOCAL 312
-#define FLOW_ORIGIN_OTHER 313
-#define FLOW_ORIGIN_UNKNOWN 314
-#define FLOW_TUNNEL_NONE 315
-#define FLOW_TUNNEL_GTP 316
-#define CMP_EQUAL 317
-#define CMP_NOTEQUAL 318
-#define CMP_GTHANEQUAL 319
-#define CMP_LTHANEQUAL 320
-#define BOOL_AND 321
-#define BOOL_OR 322
-#define VALUE_ADDR_IPMASK 323
-#define VALUE_TRUE 324
-#define VALUE_FALSE 325
-#define VALUE_ADDR_MAC 326
-#define VALUE_NAME 327
-#define VALUE_REGEX 328
-#define VALUE_ADDR_IPV4 329
-#define VALUE_ADDR_IPV4_CIDR 330
-#define VALUE_ADDR_IPV6 331
-#define VALUE_ADDR_IPV6_CIDR 332
-#define VALUE_NUMBER 333
+#define FLOW_WIFI_ESSID 298
+#define FLOW_ORIGIN 299
+#define FLOW_CT_MARK 300
+#define FLOW_TLS_VERSION 301
+#define FLOW_TLS_CIPHER 302
+#define FLOW_TLS_ECH 303
+#define FLOW_TLS_ESNI 304
+#define FLOW_TLS_JA4 305
+#define FLOW_OTHER_UNKNOWN 306
+#define FLOW_OTHER_UNSUPPORTED 307
+#define FLOW_OTHER_LOCAL 308
+#define FLOW_OTHER_MULTICAST 309
+#define FLOW_OTHER_BROADCAST 310
+#define FLOW_OTHER_REMOTE 311
+#define FLOW_OTHER_ERROR 312
+#define FLOW_ORIGIN_LOCAL 313
+#define FLOW_ORIGIN_OTHER 314
+#define FLOW_ORIGIN_UNKNOWN 315
+#define FLOW_TUNNEL_NONE 316
+#define FLOW_TUNNEL_GTP 317
+#define CMP_EQUAL 318
+#define CMP_NOTEQUAL 319
+#define CMP_GTHANEQUAL 320
+#define CMP_LTHANEQUAL 321
+#define BOOL_AND 322
+#define BOOL_OR 323
+#define VALUE_ADDR_IPMASK 324
+#define VALUE_TRUE 325
+#define VALUE_FALSE 326
+#define VALUE_ADDR_MAC 327
+#define VALUE_NAME 328
+#define VALUE_REGEX 329
+#define VALUE_ADDR_IPV4 330
+#define VALUE_ADDR_IPV4_CIDR 331
+#define VALUE_ADDR_IPV6 332
+#define VALUE_ADDR_IPV6_CIDR 333
+#define VALUE_NUMBER 334
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -235,7 +237,7 @@ union YYSTYPE
 
     bool bool_result;
 
-#line 239 "nd-flow-expr.hpp"
+#line 241 "nd-flow-expr.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
