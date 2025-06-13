@@ -2381,7 +2381,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
                 thread_group.push_back(thread);
 
                 if (cpu == (int16_t)cpu_set.cpu_set.size()) {
-                    (ndGC.ca_capture_base > -1 &&
+                    cpu = (ndGC.ca_capture_base > -1 &&
                       ndGC.ca_capture_base < (int16_t)cpu_set.cpu_set.size()) ?
                     ndGC.ca_capture_base :
                       0;
@@ -2411,7 +2411,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
                 thread_group.push_back(thread);
 
                 if (cpu == (int16_t)cpu_set.cpu_set.size()) {
-                    (ndGC.ca_capture_base > -1 &&
+                    cpu = (ndGC.ca_capture_base > -1 &&
                       ndGC.ca_capture_base < (int16_t)cpu_set.cpu_set.size()) ?
                     ndGC.ca_capture_base :
                       0;
@@ -2437,7 +2437,7 @@ bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
         thread_group.clear();
 
         if (cpu == (int16_t)cpu_set.cpu_set.size()) {
-            (ndGC.ca_capture_base > -1 &&
+            cpu = (ndGC.ca_capture_base > -1 &&
               ndGC.ca_capture_base < (int16_t)cpu_set.cpu_set.size()) ?
             ndGC.ca_capture_base :
               0;
