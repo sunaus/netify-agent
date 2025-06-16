@@ -622,7 +622,6 @@ std::ostream &operator<<(std::ostream &stream, ndApp::Id id);
 
 #if defined(__linux__)
 int nd_set_netns(const std::string &ns);
-bool nd_get_essid(const char *ifname, std::string &essid);
 #endif
 
 inline void nd_sprintf(std::string &dst, const char *format) {

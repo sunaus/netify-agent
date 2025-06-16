@@ -514,13 +514,6 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                 dls << " MDNS/DN: " << mdns.domain_name;
             }
 
-            if (! wifi.essid.empty()) {
-                dls << endl
-                    << setw(plen) << " "
-                    << ":";
-                dls << " ESSID: " << wifi.essid;
-            }
-
             if (HasBTInfoHash()) {
                 string digest;
                 nd_sha1_to_string(bt.info_hash, digest);

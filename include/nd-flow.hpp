@@ -336,10 +336,6 @@ public:
         Risks risks;
     } risk;
 
-    struct {
-        std::string essid;
-    } wifi;
-
     ndFlowStats stats;
 
     mutable std::recursive_mutex lock;
@@ -785,10 +781,6 @@ public:
             serialize(output,
               { "risks", "ndpi_risk_score_server" },
               risk.ndpi_score_server);
-
-            if (! wifi.essid.empty()) {
-                serialize(output, { "wifi", "essid" }, wifi.essid);
-            }
         }
 
         if (ndFlagBoolean(encode_flags, EncodeFlags::TUNNELS))

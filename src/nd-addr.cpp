@@ -765,29 +765,6 @@ bool ndAddrLookup::LookupLinkName(unsigned index, string &name) {
     return true;
 }
 
-bool ndAddrLookup::AddUpdateLinkESSID(
-    unsigned index, const string &essid) {
-
-    lock_guard<mutex> ul(lock_link_essids);
-
-    auto result = link_essids.insert(make_pair(index, essid));
-    if (result.second == false)
-        result.first->second.assign(essid);
-
-    return result.second;
-}
-
-bool ndAddrLookup::LookupLinkESSID(unsigned index, string &essid) {
-    lock_guard<mutex> ul(lock_link_essids);
-
-    auto result = link_essids.find(index);
-    if (result == link_essids.end()) return false;
-
-    essid = result->second;
-
-    return true;
-}
-
 bool ndAddrLookup::AddNeighbor(const ndAddr &addr, const ndAddr &lladdr) {
     if (! (addr.IsValid() && lladdr.IsValid())) return false;
     if (! (addr.IsIP() && lladdr.IsEthernet())) return false;

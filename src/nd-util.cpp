@@ -1732,42 +1732,6 @@ int nd_set_netns(const string &ns) {
     return rc;
 }
 
-bool nd_get_essid(const char *ifname, string &essid) {
-    int fd;
-    array<char, IW_ESSID_MAX_SIZE + 1> id;
-
-    struct iwreq wreq = { { 0 } };
-    wreq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
-
-    sprintf(wreq.ifr_name, "%s", ifname);
-
-    if((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        nd_dprintf("%s: %s: error: %s [%d]\n",
-            __func__, ifname, strerror(errno), errno);
-        return false;
-    }
-
-    wreq.u.essid.pointer = id.data();
-    int rc = ioctl(fd, SIOCGIWESSID, &wreq);
-
-    close(fd);
-
-    if (rc < 0) {
-        if (errno != EOPNOTSUPP) {
-            nd_dprintf("%s: %s: error: %s [%d]\n",
-                __func__, ifname, strerror(errno), errno);
-        }
-        return false;
-    }
-
-    if (wreq.u.essid.length > 1) {
-        essid.assign(static_cast<const char *>(wreq.u.essid.pointer));
-        return true;
-    }
-
-    return false;
-}
-
 void nd_get_memusage(const string &process, size_t &vm_kb, size_t &rss_kb) {
     string pid, comm, state, ppid, pgrp, session, tty_nr;
     string tpgid, flags, minflt, cminflt, majflt, cmajflt;

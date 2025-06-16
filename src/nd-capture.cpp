@@ -1120,13 +1120,10 @@ nd_process_ip:
 
         nf->direction = addr_cmp;
 
-        int ifindex = iface->ifindex;
-
 #if defined(_ND_ENABLE_NFQUEUE)
         if (ndCT_TYPE(
             iface->capture_type.flags) == ndCaptureType::NFQ) {
 
-            ifindex = packet->ifidx_src;
             nf->nfq.src_ifindex = packet->ifidx_src;
             nf->nfq.dst_ifindex = packet->ifidx_dst;
 
@@ -1140,9 +1137,6 @@ nd_process_ip:
             }
         }
 #endif
-        if (ifindex != -1)
-            ndi.addr_lookup.LookupLinkESSID(ifindex, nf->wifi.essid);
-
         if (! ndi.flow_buckets->InsertUnlocked(flow_digest, nf))
         {
             ndi.flow_buckets->Release(flow_digest);

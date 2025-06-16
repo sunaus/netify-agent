@@ -124,9 +124,9 @@ typedef void* yyscan_t;
 %token FLOW_RISKS FLOW_NDPI_RISK_SCORE FLOW_NDPI_RISK_SCORE_CLIENT FLOW_NDPI_RISK_SCORE_SERVER
 %token FLOW_CATEGORY FLOW_CATEGORY_ID
 %token FLOW_APPLICATION FLOW_APPLICATION_CATEGORY FLOW_APPLICATION_CATEGORY_ID
-%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID
+%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID 
 %token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY FLOW_PROTOCOL_CATEGORY_ID
-%token FLOW_DETECTED_HOSTNAME FLOW_DNS_HOSTNAME FLOW_WIFI_ESSID FLOW_ORIGIN FLOW_CT_MARK
+%token FLOW_DETECTED_HOSTNAME FLOW_DNS_HOSTNAME FLOW_ORIGIN FLOW_CT_MARK
 %token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_ESNI FLOW_TLS_JA4
 
 %token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED FLOW_OTHER_LOCAL
@@ -163,7 +163,7 @@ typedef void* yyscan_t;
 %type <bool_result> expr_domain_category expr_domain_category_id expr_network_category expr_network_category_id
 %type <bool_result> expr_risks expr_risk_ndpi_score expr_risk_ndpi_score_client expr_risk_ndpi_score_server
 %type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category expr_proto_category_id
-%type <bool_result> expr_detected_hostname expr_dns_hostname expr_wifi_essid expr_origin expr_fwmark
+%type <bool_result> expr_detected_hostname expr_dns_hostname expr_origin expr_fwmark
 %type <bool_result> expr_tls_version expr_tls_cipher expr_tls_ech expr_tls_esni expr_tls_ja4
 
 %%
@@ -210,7 +210,6 @@ expr:
     | expr_proto_category_id
     | expr_detected_hostname
     | expr_dns_hostname
-    | expr_wifi_essid
     | expr_risks
     | expr_risk_ndpi_score
     | expr_risk_ndpi_score_client
@@ -1648,79 +1647,6 @@ expr_dns_hostname:
         _NDFP_result = ($$ = true);
 
         _NDFP_debugf("DNS hostname (RX) != %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_wifi_essid:
-      FLOW_WIFI_ESSID {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->wifi.essid.empty() == false
-        ));
-        _NDFP_debugf("WiFi ESSID detected? %s\n",
-            (_NDFP_result) ? "yes" : "no");
-    }
-    | '!' FLOW_WIFI_ESSID {
-        _NDFP_result = ($$ = (
-            _NDFP_flow->wifi.essid.empty() == true
-        ));
-        _NDFP_debugf("WiFi ESSID not detected? %s\n",
-            (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_WIFI_ESSID CMP_EQUAL VALUE_NAME {
-        _NDFP_result = ($$ = false);
-        if (! _NDFP_flow->wifi.essid.empty()) {
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            if (strncasecmp(search.c_str(),
-                _NDFP_flow->wifi.essid.c_str(), _NDFP_MAX_BUFLEN) == 0) {
-                _NDFP_result = ($$ = true);
-            }
-        }
-
-        _NDFP_debugf("WiFi ESSID == %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_WIFI_ESSID CMP_NOTEQUAL VALUE_NAME {
-        _NDFP_result = ($$ = true);
-        if (! _NDFP_flow->wifi.essid.empty()) {
-            size_t p;
-            string search($3);
-
-            while ((p = search.find_first_of("'\"")) != string::npos)
-                search.erase(p, 1);
-
-            if (strncasecmp(search.c_str(),
-                _NDFP_flow->wifi.essid.c_str(), _NDFP_MAX_BUFLEN) == 0) {
-                _NDFP_result = ($$ = false);
-            }
-        }
-
-        _NDFP_debugf("WiFi ESSID != %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_WIFI_ESSID CMP_EQUAL VALUE_REGEX {
-        _NDFP_result = ($$ = false);
-
-        if (! _NDFP_flow->wifi.essid.empty()) {
-            string rx($3);
-
-            _NDFP_result = ($$ = _NDFP_regex_search(
-                rx, _NDFP_flow->wifi.essid
-            ));
-        }
-
-        _NDFP_debugf("WiFi ESSID (RX) == %s? %s\n",
-            $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_WIFI_ESSID CMP_NOTEQUAL VALUE_REGEX {
-        _NDFP_result = ($$ = true);
-
-        _NDFP_debugf("WiFi ESSID (RX) != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;

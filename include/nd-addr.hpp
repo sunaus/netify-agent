@@ -661,9 +661,6 @@ public:
     bool RemoveLinkName(unsigned index);
     bool LookupLinkName(unsigned index, std::string &name);
 
-    bool AddUpdateLinkESSID(unsigned index, const std::string &essid);
-    bool LookupLinkESSID(unsigned index, std::string &name);
-
     bool AddNeighbor(const ndAddr &addr, const ndAddr &lladdr);
     bool RemoveNeighbor(const ndAddr &addr);
     bool LookupNeighbor(const ndAddr &addr, ndAddr &lladdr);
@@ -696,9 +693,6 @@ protected:
 
     mutable std::mutex lock_link_names;
     std::unordered_map<unsigned, std::string> link_names;
-
-    mutable std::mutex lock_link_essids;
-    std::unordered_map<unsigned, std::string> link_essids;
 
     mutable std::mutex lock_neighbors;
     typedef std::unordered_map<

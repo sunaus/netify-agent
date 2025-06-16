@@ -95,7 +95,6 @@ protocol_category_id    return FLOW_PROTOCOL_CATEGORY_ID;
 proto_category_id       return FLOW_PROTOCOL_CATEGORY_ID;
 detected_hostname       return FLOW_DETECTED_HOSTNAME;
 dns_hostname            return FLOW_DNS_HOSTNAME;
-essid                   return FLOW_WIFI_ESSID;
 ssl_version             return FLOW_TLS_VERSION;
 ssl_cipher              return FLOW_TLS_CIPHER;
 tls_version             return FLOW_TLS_VERSION;
