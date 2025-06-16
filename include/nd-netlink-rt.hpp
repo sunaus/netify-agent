@@ -69,6 +69,8 @@ public:
     typedef std::array<struct nlattr *, IFA_MAX + 1> AttrsAddr;
     typedef std::array<struct nlattr *, RTA_MAX + 1> AttrsRoute;
     typedef std::array<struct nlattr *, IFLA_MAX + 1> AttrsLink;
+    typedef std::array<struct nlattr *, IFLA_INFO_MAX + 1> AttrsLinkInfo;
+    typedef std::array<struct nlattr *, IFLA_VLAN_MAX + 1> AttrsLinkVLAN;
     typedef std::array<struct nlattr *, NDA_MAX + 1> AttrsNeigh;
 
 protected:

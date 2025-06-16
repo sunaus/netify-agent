@@ -657,6 +657,10 @@ public:
     bool RemoveLinkAddress(unsigned index);
     bool LookupLinkAddress(unsigned index, ndAddr &addr);
 
+    bool AddLinkVLANId(unsigned index, uint16_t id);
+    bool RemoveLinkVLANId(unsigned index);
+    uint16_t LookupLinkVLANId(unsigned index);
+
     bool AddLinkName(unsigned index, const std::string &name);
     bool RemoveLinkName(unsigned index);
     bool LookupLinkName(unsigned index, std::string &name);
@@ -690,6 +694,9 @@ protected:
 
     mutable std::mutex lock_link_addrs;
     std::unordered_map<unsigned, ndAddr> link_addrs;
+
+    mutable std::mutex lock_link_vlan_id;
+    std::unordered_map<unsigned, uint16_t> link_vlan_ids;
 
     mutable std::mutex lock_link_names;
     std::unordered_map<unsigned, std::string> link_names;

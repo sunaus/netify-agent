@@ -649,3 +649,5 @@ uid_t nd_get_user_id(const std::string &name);
 gid_t nd_get_group_id(const std::string &name);
 
 void nd_drop_privileges(const std::string &user, const std::string &group);
+
+void nd_enable_coredumps(bool enable = true);

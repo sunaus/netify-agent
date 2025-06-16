@@ -35,6 +35,7 @@
 #include <pwd.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
+#include <sys/resource.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #if defined(__FreeBSD__)
@@ -1853,4 +1854,16 @@ void nd_drop_privileges(const std::string &user, const std::string &group) {
 
     cap_free(ctx);
 #endif //
+}
+
+void nd_enable_coredumps(bool enable) {
+    struct rlimit limit = {
+        .rlim_cur = (enable) ? RLIM_INFINITY : 0,
+        .rlim_max = (enable) ? RLIM_INFINITY : 0
+    };
+
+    if (setrlimit(RLIMIT_CORE, &limit) < 0) {
+        nd_printf("WARNING: Unable to %s coredumps.\n",
+            (enable) ? "enable" : "disable", strerror(errno));
+    }
 }

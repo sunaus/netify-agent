@@ -163,6 +163,68 @@ static int ndNetlinkRoute_attr_parse_ifla(
             return MNL_CB_ERROR;
         }
         break;
+
+    case IFLA_LINKINFO:
+        if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0) {
+            nd_dprintf("%s: invalid attribute type, expected: %s\n",
+                TAG, "NESTED");
+            return MNL_CB_ERROR;
+        }
+        break;
+    }
+
+    tb[type] = attr;
+
+    return MNL_CB_OK;
+}
+
+static int ndNetlinkRoute_attr_parse_linkinfo(
+    const struct nlattr *attr, void *data) {
+    const struct nlattr **tb = static_cast<const struct nlattr **>(data);
+    int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, IFLA_INFO_MAX) < 0)
+        return MNL_CB_OK;
+
+    switch(type) {
+    case IFLA_INFO_KIND:
+        if (mnl_attr_validate(attr, MNL_TYPE_NUL_STRING) < 0) {
+            nd_dprintf("%s: invalid attribute type, expected: %s\n",
+                TAG, "NUL_STRING");
+            return MNL_CB_ERROR;
+        }
+        break;
+
+    case IFLA_INFO_DATA:
+        if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0) {
+            nd_dprintf("%s: invalid attribute type, expected: %s\n",
+                TAG, "NESTED");
+            return MNL_CB_ERROR;
+        }
+        break;
+    }
+
+    tb[type] = attr;
+
+    return MNL_CB_OK;
+}
+
+static int ndNetlinkRoute_attr_parse_vlan(
+    const struct nlattr *attr, void *data) {
+    const struct nlattr **tb = static_cast<const struct nlattr **>(data);
+    int type = mnl_attr_get_type(attr);
+
+    if (mnl_attr_type_valid(attr, IFLA_VLAN_MAX) < 0)
+        return MNL_CB_OK;
+
+    switch(type) {
+    case IFLA_VLAN_ID:
+        if (mnl_attr_validate(attr, MNL_TYPE_U16) < 0) {
+            nd_dprintf("%s: invalid attribute type, expected: %s\n",
+                TAG, "U16");
+            return MNL_CB_ERROR;
+        }
+        break;
     }
 
     tb[type] = attr;
@@ -599,6 +661,47 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             ndNetlinkRoute_attr_parse_ifla, attrs.data()) != MNL_CB_OK)
             return -1;
 
+        if (attrs[IFLA_LINKINFO]) {
+            AttrsLinkInfo linkinfo_attrs;
+
+            if (mnl_attr_parse_nested(attrs[IFLA_LINKINFO],
+                ndNetlinkRoute_attr_parse_linkinfo,
+                linkinfo_attrs.data()) != MNL_CB_OK) {
+                throw ndException("infolink %s invalid", "IFLA_LINKINFO");
+            }
+
+            if (linkinfo_attrs[IFLA_INFO_KIND] &&
+                // XXX: On some systems, IFLA_INFO_KIND and IFLA_INFO_DATA are 0x1!
+                linkinfo_attrs[IFLA_INFO_KIND] != (void *)0x1 &&
+                linkinfo_attrs[IFLA_INFO_DATA]) {
+                const char *kind = mnl_attr_get_str(
+                    linkinfo_attrs[IFLA_INFO_KIND]
+                );
+
+                if ((int16_t)mnl_attr_get_payload_len(
+                        linkinfo_attrs[IFLA_INFO_KIND]) > 0 &&
+                    ! strncasecmp(kind, "vlan", 4)) {
+
+                    AttrsLinkVLAN vlan_attrs;
+
+                    if (mnl_attr_parse_nested(linkinfo_attrs[IFLA_INFO_DATA],
+                        ndNetlinkRoute_attr_parse_vlan,
+                        vlan_attrs.data()) != MNL_CB_OK) {
+                        throw ndException("vlan %s invalid", "IFLA_INFO_DATA");
+                    }
+
+                    if (vlan_attrs[IFLA_VLAN_ID]) {
+                        uint16_t vlan_id = mnl_attr_get_u16(
+                            vlan_attrs[IFLA_VLAN_ID]
+                        );
+
+                        nd_dprintf("%s: VLAN_ID: %hu\n", ifname, vlan_id);
+                        ndi.addr_lookup.AddLinkVLANId(ifi->ifi_index, vlan_id);
+                    }
+                }
+            }
+        }
+
         _ND_NLRT_CHECK_ATTR(TAG, attrs[IFLA_ADDRESS], -1);
 
         ndAddr addr;
@@ -623,6 +726,8 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
 #endif
         if (ndi.addr_lookup.RemoveLinkAddress(ifi->ifi_index)) rc = 1;
         if (ndi.addr_lookup.RemoveLinkName(ifi->ifi_index)) rc = 1;
+
+        ndi.addr_lookup.RemoveLinkVLANId(ifi->ifi_index);
     }
 
     return rc;

@@ -733,6 +733,34 @@ bool ndAddrLookup::LookupLinkAddress(unsigned index, ndAddr &addr) {
     return true;
 }
 
+bool ndAddrLookup::AddLinkVLANId(unsigned index, uint16_t id) {
+    lock_guard<mutex> ul(lock_link_vlan_id);
+
+    auto result = link_vlan_ids.insert(make_pair(index, id));
+
+    return result.second;
+}
+
+bool ndAddrLookup::RemoveLinkVLANId(unsigned index) {
+    lock_guard<mutex> ul(lock_link_vlan_id);
+
+    auto result = link_vlan_ids.find(index);
+    if (result == link_vlan_ids.end()) return false;
+
+    link_vlan_ids.erase(result);
+
+    return true;
+}
+
+uint16_t ndAddrLookup::LookupLinkVLANId(unsigned index) {
+    lock_guard<mutex> ul(lock_link_vlan_id);
+
+    auto result = link_vlan_ids.find(index);
+    if (result == link_vlan_ids.end()) return 0;
+
+    return result->second;
+}
+
 bool ndAddrLookup::AddLinkName(
     unsigned index, const string &name) {
 

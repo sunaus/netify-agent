@@ -1130,10 +1130,16 @@ nd_process_ip:
             if (nf->nfq.src_ifindex != -1) {
                 ndi.addr_lookup.LookupLinkName(
                     nf->nfq.src_ifindex, nf->nfq.src_iface);
+                nf->vlan_id = ndi.addr_lookup.LookupLinkVLANId(
+                    nf->nfq.src_ifindex);
             }
             if (nf->nfq.dst_ifindex != -1) {
                 ndi.addr_lookup.LookupLinkName(
                     nf->nfq.dst_ifindex, nf->nfq.dst_iface);
+                if (nf->vlan_id == 0) {
+                    nf->vlan_id = ndi.addr_lookup.LookupLinkVLANId(
+                        nf->nfq.dst_ifindex);
+                }
             }
         }
 #endif
