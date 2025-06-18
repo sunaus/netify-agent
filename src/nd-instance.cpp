@@ -250,6 +250,8 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         { "verbose-flag", 1, 0, _ND_LO_VERBOSE_FLAG },
 #define _ND_LO_NO_RESTART 26
         { "no-restart", 0, 0, _ND_LO_NO_RESTART },
+#define _ND_LO_ENABLE_COREDUMPS 27
+        { "enable-coredumps", 0, 0, _ND_LO_ENABLE_COREDUMPS },
 
         { nullptr, 0, 0, 0 } };
 
@@ -268,6 +270,9 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             break;
         case _ND_LO_NO_RESTART:
             ndGC_SetFlag(ndGlobalFlags::NO_RESTART, true);
+            break;
+        case _ND_LO_ENABLE_COREDUMPS:
+            ndGC_SetFlag(ndGlobalFlags::ENABLE_COREDUMPS, true);
             break;
         case '?':
             cerr << "Try --help for more information.\n";
@@ -639,6 +644,8 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
 
     if (! ndGC.user_id.empty() || ! ndGC.group_id.empty())
         nd_drop_privileges(ndGC.user_id, ndGC.group_id);
+
+    if (ndGC_ENABLE_COREDUMPS) nd_enable_coredumps();
 
     // Test mode enabled?  Override certain config
     // parameters
@@ -1170,6 +1177,8 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "with no capture sources.\n"
           "  --no-restart\n    Prevent the "
           "Agent from being restarted.\n"
+          "  --enable-coredumps\n    Enable coredumps "
+          "(ulimit -c unlimited).\n"
 
           "\nConfiguration options:\n"
           "  -u, --uuid <uuid>\n    Set Agent UUID.\n"

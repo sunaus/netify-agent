@@ -36,8 +36,9 @@ radixinclude_HEADERS = radix/radix_tree.hpp radix/radix_tree_it.hpp \
 
 %: %.in
 	$(SED) \
+		-e 's|[@]ND_VERSION@|$(ND_VERSION)|g' \
 		-e 's|[@]PACKAGE_NAME@|$(PACKAGE_NAME)|g' \
+		-e 's|[@]PACKAGE_RELEASE@|$(PACKAGE_RELEASE)|g' \
 		-e 's|[@]PACKAGE_TARNAME@|$(PACKAGE_TARNAME)|g' \
 		-e 's|[@]PACKAGE_VERSION@|$(PACKAGE_VERSION)|g' \
-		-e 's|[@]ND_VERSION@|$(ND_VERSION)|g' \
 		< "$<" > "$@"

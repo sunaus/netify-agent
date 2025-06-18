@@ -108,7 +108,7 @@ enum class ndGlobalFlags : uint32_t {
     QUIET = (1 << 4),
     SYN_SCAN_PROTECTION = (1 << 5),
     PRIVATE_EXTADDR = (1 << 6),
-    FREE_BIT8 = (1 << 7),
+    ENABLE_COREDUMPS = (1 << 7),
     FREE_BIT9 = (1 << 8),
     USE_CONNTRACK = (1 << 9),
     USE_NETLINK = (1 << 10),
@@ -154,6 +154,9 @@ enum class ndGlobalFlags : uint32_t {
 #define ndGC_PRIVATE_EXTADDR \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::PRIVATE_EXTADDR)
+#define ndGC_ENABLE_COREDUMPS \
+    ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
+      ndGlobalFlags::ENABLE_COREDUMPS)
 #define ndGC_USE_CONNTRACK \
     ndFlagBoolean(ndGlobalConfig::GetInstance().flags, \
       ndGlobalFlags::USE_CONNTRACK)

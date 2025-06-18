@@ -227,6 +227,10 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
       r->GetBoolean(ND_NAME_SHORT, "dotd_categories",
         (! profile) ? true : ndGC_DOTD_CATEGORIES));
 
+    ndGC_SetFlag(ndGlobalFlags::ENABLE_COREDUMPS,
+      r->GetBoolean(ND_NAME_SHORT, "enable_coredumps",
+        (! profile) ? true : ndGC_ENABLE_COREDUMPS));
+
     fm_buckets = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "flow_map_buckets",
       (! profile) ? ND_FLOW_MAP_BUCKETS : fm_buckets);
