@@ -21,6 +21,7 @@ EXTRA_DIST = $(DEBFILES_IN)
 		-e 's|[@]mandir@|$(mandir)|g' \
 		-e 's|[@]PACKAGE_BUGREPORT@|$(PACKAGE_BUGREPORT)|g' \
 		-e 's|[@]PACKAGE_NAME@|$(PACKAGE_NAME)|g' \
+		-e 's|[@]PACKAGE_RELEASE@|$(PACKAGE_RELEASE)|g' \
 		-e 's|[@]PACKAGE_TARNAME@|$(PACKAGE_TARNAME)|g' \
 		-e 's|[@]PACKAGE_VERSION@|$(PACKAGE_VERSION)|g' \
 		-e 's|[@]persistentstatedir@|$(persistentstatedir)|g' \

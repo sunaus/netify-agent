@@ -6,7 +6,8 @@ m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
 
 AC_PREREQ([2.69])
-AC_INIT([Netify Agent], [m4_esyscmd_s([head -n 1 VERSION])],
+AC_INIT([Netify Agent],
+    [m4_esyscmd_s([. ./VERSION; echo $PROJECT_VERSION])],
     [https://gitlab.com/netify.ai/public/netify-agent/issues],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
@@ -18,6 +19,12 @@ AC_USE_SYSTEM_EXTENSIONS
 AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED([_ND_HOST_CPU], ["${host_cpu}"], [Defines the canonical host.])
 AC_DEFINE_UNQUOTED([_ND_HOST_OS], ["${host_os}"], [Defines the canonical host OS.])
+
+# Define release and hex version
+AC_SUBST([ND_VERSION],
+    [m4_esyscmd_s([. ./VERSION; echo $PROJECT_VERSION_HEX])])
+AC_SUBST([PACKAGE_RELEASE],
+    [m4_esyscmd_s([. ./VERSION; echo $PROJECT_RELEASE])])
 
 # Library version
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
@@ -420,9 +427,6 @@ AX_RELEASE_QUARTER
 
 # Defines substitution for pkg-config
 AC_SUBST([ND_DEFINES], [$ND_DEFINES])
-
-# Define hex version
-AC_SUBST([ND_VERSION], [m4_esyscmd_s([tail -n 1 VERSION])])
 
 # Output files
 AC_CONFIG_FILES([deploy/openwrt/Makefile deploy/openwrt/files/netifyd.init \
