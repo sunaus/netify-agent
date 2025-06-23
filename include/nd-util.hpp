@@ -651,3 +651,62 @@ gid_t nd_get_group_id(const std::string &name);
 void nd_drop_privileges(const std::string &user, const std::string &group);
 
 void nd_enable_coredumps(bool enable = true);
+
+#define ndTod_to_days(days) static_cast<ndTimeOfDay::Days>(days)
+#define ndTod_to_policy(policy) static_cast<uint8_t>(policy)
+
+class ndTimeOfDay {
+public:
+    typedef uint8_t Days;
+
+    enum class Day : Days {
+        NONE = 0,
+        SUN = (1 << 0),
+        MON = (1 << 1),
+        TUE = (1 << 2),
+        WED = (1 << 3),
+        THU = (1 << 4),
+        FRI = (1 << 5),
+        SAT = (1 << 6),
+        ALL = (SUN | MON | TUE | WED | THU | FRI | SAT),
+    };
+
+    enum class Policy : uint8_t {
+        INCLUDE,
+        EXCLUDE
+    };
+
+    ndTimeOfDay(const nlohmann::json &jconfig) {
+        Load(*this, jconfig);
+    }
+    ndTimeOfDay(
+        const std::string &time_start = "00:00",
+        const std::string &time_end = "23:59",
+        Days days = ndTod_to_days(Day::ALL),
+        Policy policy = Policy::INCLUDE) {
+        Load(*this, time_start, time_end, days, policy);
+    }
+
+    static void Load(ndTimeOfDay &tod,
+        const nlohmann::json &jconfig);
+    static void Load(ndTimeOfDay &tod,
+        const std::string &time_start = "00:00",
+        const std::string &time_end = "23:59",
+        Days days = ndTod_to_days(Day::ALL),
+        Policy policy = Policy::INCLUDE);
+
+    static time_t ParseTime(const std::string &time_string);
+
+    static void Describe(const ndTimeOfDay &tod, std::string &desc);
+
+    bool operator==(const time_t tv) const;
+    bool operator!=(const time_t tv) const {
+        return (! ((*this) == tv));
+    }
+
+    bool valid = { false };
+    time_t time_start = { 0 };
+    time_t time_end = { 3600 * 23 + 59 };
+    Days days = { ndTod_to_days(Day::ALL) };
+    Policy policy = { Policy::INCLUDE };
+};

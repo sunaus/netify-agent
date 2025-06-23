@@ -1867,3 +1867,222 @@ void nd_enable_coredumps(bool enable) {
             (enable) ? "enable" : "disable", strerror(errno));
     }
 }
+
+void ndTimeOfDay::Load(ndTimeOfDay &tod, const json &jconfig) {
+    tod.valid = false;
+
+    // Optional: day, default: all days
+    tod.days = ndTod_to_days(Day::NONE);
+
+    auto jdays = jconfig.find("day");
+    if (jdays != jconfig.end()) {
+        if (! jdays->is_array())
+            throw ndException("day must be an array");
+
+        for (auto &jd : *jdays) {
+            if (! jd.is_string()) continue;
+
+            string day = jd.get<string>().c_str();
+            const char *d = day.c_str();
+
+            if (strncasecmp("all", d, 3) == 0) {
+                tod.days = ndTod_to_days(Day::ALL);
+                break;
+            }
+
+            if (strncasecmp("sun", d, 3) == 0)
+                tod.days |= ndTod_to_days(Day::SUN);
+            else if (strncasecmp("mon", d, 3) == 0)
+                tod.days |= ndTod_to_days(Day::MON);
+            else if (strncasecmp("tue", d, 3) == 0)
+                tod.days |= ndTod_to_days(Day::TUE);
+            else if (strncasecmp("wed", d, 3) == 0)
+                tod.days |= ndTod_to_days(Day::WED);
+            else if (strncasecmp("thu", d, 3) == 0)
+                tod.days |= ndTod_to_days(Day::THU);
+            else if (strncasecmp("fri", d, 3) == 0)
+                tod.days |= ndTod_to_days(Day::FRI);
+            else if (strncasecmp("sat", d, 3) == 0)
+                tod.days |= ndTod_to_days(Day::SAT);
+            else
+                throw ndException("invalid day of the week: %s", d);
+        }
+    }
+    else tod.days = ndTod_to_days(Day::ALL);
+
+    // Mandatory: time_start
+    auto jtime_start = jconfig.find("time_start");
+    if (jtime_start == jconfig.end())
+        throw ndException("time_start not found");
+    if (! jtime_start->is_string())
+        throw ndException("time_start must be a string");
+    tod.time_start = ParseTime(jtime_start->get<string>());
+
+    // Mandatory: time_end
+    auto jtime_end = jconfig.find("time_end");
+    if (jtime_end == jconfig.end())
+        throw ndException("time_end not found");
+    if (! jtime_end->is_string())
+        throw ndException("time_end must be a string");
+    tod.time_end = ParseTime(jtime_end->get<string>());
+
+    // Optional: policy, default: inclusive
+    auto jpolicy = jconfig.find("policy");
+    if (jpolicy != jconfig.end()) {
+        if (! jpolicy->is_string())
+            throw ndException("day must be an string: inclusive, or exclusive");
+
+        string policy = jpolicy->get<string>();
+        if (strncasecmp("inc", policy.c_str(), 3) == 0)
+            tod.policy = Policy::INCLUDE;
+        else if (strncasecmp("exc", policy.c_str(), 3) == 0)
+            tod.policy = Policy::EXCLUDE;
+        else
+            throw ndException("invalid policy: %s", policy.c_str());
+    }
+    else tod.policy = Policy::INCLUDE;
+
+    tod.valid = true;
+}
+
+void ndTimeOfDay::Load(ndTimeOfDay &tod,
+    const string &time_start, const string &time_end,
+    ndTimeOfDay::Days days, ndTimeOfDay::Policy policy) {
+
+    tod.valid = false;
+
+    tod.time_start = ParseTime(time_start);
+    tod.time_end = ParseTime(time_end);
+    tod.days = days;
+    tod.policy = policy;
+
+    if (time_start > time_end)
+        throw ndException("%s: time_start > time_end", __PRETTY_FUNCTION__);
+
+    if (time_start == time_end)
+        throw ndException("%s: time_start == time_end", __PRETTY_FUNCTION__);
+
+    tod.valid = true;
+}
+
+time_t ndTimeOfDay::ParseTime(const string &time_string) {
+    size_t p = time_string.find_first_of(":");
+    if (p == string::npos)
+        throw ndException("%s: invalid time_string", __PRETTY_FUNCTION__);
+
+    time_t time_hour = (time_t)strtold(
+        time_string.substr(0, p).c_str(), nullptr);
+
+    if (time_hour > 23)
+        throw ndException("%s: invalid hour (> 23)", __PRETTY_FUNCTION__);
+
+    time_t time_min = (time_t)strtold(
+        time_string.substr(p + 1).c_str(), nullptr);
+    if (time_hour > 59)
+        throw ndException("%s: invalid minute (> 59)", __PRETTY_FUNCTION__);
+
+    return (time_hour * 3600) + (time_min * 60);
+}
+
+void ndTimeOfDay::Describe(const ndTimeOfDay &tod, string &desc) {
+    ostringstream os;
+
+    if (! tod.valid) os << "[invalid] ";
+
+    os << ((tod.policy == ndTimeOfDay::Policy::INCLUDE) ?
+            "within " : "outside of ");
+    os << tod.time_start << "s and " << tod.time_end << "s, on:";
+
+    if (tod.days == ndTod_to_days(Day::NONE)) os << " no days";
+    else if (tod.days == ndTod_to_days(Day::ALL)) {
+        os << " all days";
+    }
+    else {
+        if (tod.days & ndTod_to_days(Day::SUN)) os << " SUN";
+        if (tod.days & ndTod_to_days(Day::MON)) os << " MON";
+        if (tod.days & ndTod_to_days(Day::TUE)) os << " TUE";
+        if (tod.days & ndTod_to_days(Day::WED)) os << " WED";
+        if (tod.days & ndTod_to_days(Day::THU)) os << " THU";
+        if (tod.days & ndTod_to_days(Day::FRI)) os << " FRI";
+        if (tod.days & ndTod_to_days(Day::SAT)) os << " SAT";
+    }
+
+    desc = os.str();
+}
+
+bool ndTimeOfDay::operator==(const time_t tv) const {
+    if (! valid) return false;
+    if (days == ndTod_to_days(Day::NONE)) return false;
+
+    struct tm tm = { 0 };
+
+    if (localtime_r(&tv, &tm) != &tm) {
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "localtime_r", strerror(errno));
+    }
+
+    if (days != ndTod_to_days(Day::ALL)) {
+        switch (tm.tm_wday) {
+        case 0:
+            if (policy == Policy::INCLUDE && ! (days & ndTod_to_days(Day::SUN)))
+                return false;
+            if (policy == Policy::EXCLUDE && (days & ndTod_to_days(Day::SUN)))
+                return false;
+            break;
+        case 1:
+            if (policy == Policy::INCLUDE && ! (days & ndTod_to_days(Day::MON)))
+                return false;
+            if (policy == Policy::EXCLUDE && (days & ndTod_to_days(Day::MON)))
+                return false;
+            break;
+        case 2:
+            if (policy == Policy::INCLUDE && ! (days & ndTod_to_days(Day::TUE)))
+                return false;
+            if (policy == Policy::EXCLUDE && (days & ndTod_to_days(Day::TUE)))
+                return false;
+            break;
+        case 3:
+            if (policy == Policy::INCLUDE && ! (days & ndTod_to_days(Day::WED)))
+                return false;
+            if (policy == Policy::EXCLUDE && (days & ndTod_to_days(Day::WED)))
+                return false;
+            break;
+        case 4:
+            if (policy == Policy::INCLUDE && ! (days & ndTod_to_days(Day::THU)))
+                return false;
+            if (policy == Policy::EXCLUDE && (days & ndTod_to_days(Day::THU)))
+                return false;
+            break;
+        case 5:
+            if (policy == Policy::INCLUDE && ! (days & ndTod_to_days(Day::FRI)))
+                return false;
+            if (policy == Policy::EXCLUDE && (days & ndTod_to_days(Day::FRI)))
+                return false;
+            break;
+        case 6:
+            if (policy == Policy::INCLUDE && ! (days & ndTod_to_days(Day::SAT)))
+                return false;
+            if (policy == Policy::EXCLUDE && (days & ndTod_to_days(Day::SAT)))
+                return false;
+            break;
+        }
+    }
+
+    tm.tm_sec = tm.tm_min = tm.tm_hour = 0;
+
+    time_t tv_today = mktime(&tm);
+    if (tv_today == (time_t)-1) {
+        throw ndException(
+            "%s: mktime: %s", __PRETTY_FUNCTION__, strerror(errno));
+    }
+
+    time_t tv_seconds = tv - tv_today;
+
+    if (policy == Policy::INCLUDE &&
+        (tv_seconds < time_start || tv_seconds > time_end)) return false;
+
+    if (policy == Policy::EXCLUDE &&
+        tv_seconds >= time_start && tv_seconds <= time_end) return false;
+
+    return true;
+}

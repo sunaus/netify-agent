@@ -662,7 +662,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             return -1;
 
         if (attrs[IFLA_LINKINFO]) {
-            AttrsLinkInfo linkinfo_attrs;
+            AttrsLinkInfo linkinfo_attrs = { 0 };
 
             if (mnl_attr_parse_nested(attrs[IFLA_LINKINFO],
                 ndNetlinkRoute_attr_parse_linkinfo,
@@ -671,18 +671,16 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             }
 
             if (linkinfo_attrs[IFLA_INFO_KIND] &&
-                // XXX: On some systems, IFLA_INFO_KIND and IFLA_INFO_DATA are 0x1!
-                linkinfo_attrs[IFLA_INFO_KIND] != (void *)0x1 &&
                 linkinfo_attrs[IFLA_INFO_DATA]) {
                 const char *kind = mnl_attr_get_str(
                     linkinfo_attrs[IFLA_INFO_KIND]
                 );
 
                 if ((int16_t)mnl_attr_get_payload_len(
-                        linkinfo_attrs[IFLA_INFO_KIND]) > 0 &&
+                    linkinfo_attrs[IFLA_INFO_KIND]) > 0 &&
                     ! strncasecmp(kind, "vlan", 4)) {
 
-                    AttrsLinkVLAN vlan_attrs;
+                    AttrsLinkVLAN vlan_attrs = { 0 };
 
                     if (mnl_attr_parse_nested(linkinfo_attrs[IFLA_INFO_DATA],
                         ndNetlinkRoute_attr_parse_vlan,

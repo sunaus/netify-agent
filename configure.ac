@@ -36,7 +36,6 @@ AC_SUBST([LIBNETIFY_VERSION], [$lt_version])
 
 # Shared object filename: (CURRENT - AGE).AGE.REVISION
 m4_define([lnv_so], m4_eval(lnv_current - lnv_age))
-#m4_define([lnv_so], [m4_eval([lnv_current] - [lnv_age])])
 so_version="so.lnv_so"
 AC_SUBST([LIBNETIFY_VERSION_SO], [$so_version])
 

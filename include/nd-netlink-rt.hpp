@@ -42,24 +42,24 @@ public:
     class Stats {
     public:
         struct {
-            std::atomic<uint32_t> added;
-            std::atomic<uint32_t> removed;
-            std::atomic<uint32_t> error;
+            std::atomic<uint32_t> added = { 0 };
+            std::atomic<uint32_t> removed = { 0 };
+            std::atomic<uint32_t> error = { 0 };
         } addr;
         struct {
-            std::atomic<uint32_t> added;
-            std::atomic<uint32_t> removed;
-            std::atomic<uint32_t> error;
+            std::atomic<uint32_t> added = { 0 };
+            std::atomic<uint32_t> removed = { 0 };
+            std::atomic<uint32_t> error = { 0 };
         } net;
         struct {
-            std::atomic<uint32_t> added;
-            std::atomic<uint32_t> removed;
-            std::atomic<uint32_t> error;
+            std::atomic<uint32_t> added = { 0 };
+            std::atomic<uint32_t> removed = { 0 };
+            std::atomic<uint32_t> error = { 0 };
         } link;
         struct {
-            std::atomic<uint32_t> added;
-            std::atomic<uint32_t> removed;
-            std::atomic<uint32_t> error;
+            std::atomic<uint32_t> added = { 0 };
+            std::atomic<uint32_t> removed = { 0 };
+            std::atomic<uint32_t> error = { 0 };
         } neigh;
     };
 
