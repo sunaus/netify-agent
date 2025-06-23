@@ -124,10 +124,11 @@ typedef void* yyscan_t;
 %token FLOW_RISKS FLOW_NDPI_RISK_SCORE FLOW_NDPI_RISK_SCORE_CLIENT FLOW_NDPI_RISK_SCORE_SERVER
 %token FLOW_CATEGORY FLOW_CATEGORY_ID
 %token FLOW_APPLICATION FLOW_APPLICATION_CATEGORY FLOW_APPLICATION_CATEGORY_ID
-%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID 
+%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID
 %token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY FLOW_PROTOCOL_CATEGORY_ID
 %token FLOW_DETECTED_HOSTNAME FLOW_DNS_HOSTNAME FLOW_ORIGIN FLOW_CT_MARK
 %token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_ESNI FLOW_TLS_JA4
+%token FLOW_IFACE FLOW_IFACE_NFQ_SRC FLOW_IFACE_NFQ_DST
 
 %token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED FLOW_OTHER_LOCAL
 %token <us_number> FLOW_OTHER_MULTICAST FLOW_OTHER_BROADCAST FLOW_OTHER_REMOTE
@@ -165,6 +166,7 @@ typedef void* yyscan_t;
 %type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category expr_proto_category_id
 %type <bool_result> expr_detected_hostname expr_dns_hostname expr_origin expr_fwmark
 %type <bool_result> expr_tls_version expr_tls_cipher expr_tls_ech expr_tls_esni expr_tls_ja4
+%type <bool_result> expr_iface expr_iface_nfq_src expr_iface_nfq_dst
 
 %%
 
@@ -221,6 +223,9 @@ expr:
     | expr_tls_ja4
     | expr_origin
     | expr_fwmark
+    | expr_iface
+    | expr_iface_nfq_src
+    | expr_iface_nfq_dst
     | expr BOOL_OR expr {
         _NDFP_result = ($$ = ($1 || $3));
         _NDFP_debugf("OR (%d || %d == %d)\n", $1, $3, $$);
@@ -1892,6 +1897,261 @@ expr_fwmark:
         _NDFP_debugf("FWMARK < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
+#endif
+    }
+    ;
+
+expr_iface:
+      FLOW_IFACE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->iface->ifname.empty() == false
+        ));
+        _NDFP_debugf("Interface detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_IFACE {
+        _NDFP_result = ($$ = (
+            _NDFP_flow->iface->ifname.empty() == true
+        ));
+        _NDFP_debugf("Interface not detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IFACE CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->iface->ifname.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->iface->ifname.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+
+        _NDFP_debugf("Interface == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IFACE CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->iface->ifname.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->iface->ifname.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+
+        _NDFP_debugf("Interface != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IFACE CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+
+        if (! _NDFP_flow->iface->ifname.empty()) {
+            string rx($3);
+
+            _NDFP_result = ($$ = _NDFP_regex_search(
+                rx, _NDFP_flow->iface->ifname
+            ));
+        }
+
+        _NDFP_debugf("Interface (RX) == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_IFACE CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+
+        _NDFP_debugf("Interface (RX) != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_iface_nfq_src:
+      FLOW_IFACE_NFQ_SRC {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = (
+            _NDFP_flow->nfq.src_iface.empty() == false
+        ));
+        _NDFP_debugf("NFQ SRC interface detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = false);
+#endif
+    }
+    | '!' FLOW_IFACE_NFQ_SRC {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = (
+            _NDFP_flow->nfq.src_iface.empty() == true
+        ));
+        _NDFP_debugf("NFQ SRC interface not detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = true);
+#endif
+    }
+    | FLOW_IFACE_NFQ_SRC CMP_EQUAL VALUE_NAME {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->nfq.src_iface.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->nfq.src_iface.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+
+        _NDFP_debugf("NFQ SRC interface == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = false);
+#endif
+    }
+    | FLOW_IFACE_NFQ_SRC CMP_NOTEQUAL VALUE_NAME {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->nfq.src_iface.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->nfq.src_iface.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+
+        _NDFP_debugf("NFQ SRC interface != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = true);
+#endif
+    }
+    | FLOW_IFACE_NFQ_SRC CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+#if defined(_ND_ENABLE_NFQUEUE)
+        if (! _NDFP_flow->nfq.src_iface.empty()) {
+            string rx($3);
+
+            _NDFP_result = ($$ = _NDFP_regex_search(
+                rx, _NDFP_flow->nfq.src_iface
+            ));
+        }
+
+        _NDFP_debugf("NFQ SRC interface (RX) == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+#endif
+    }
+    | FLOW_IFACE_NFQ_SRC CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_debugf("NFQ SRC interface (RX) != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+#endif
+    }
+    ;
+
+expr_iface_nfq_dst:
+      FLOW_IFACE_NFQ_DST {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = (
+            _NDFP_flow->nfq.dst_iface.empty() == false
+        ));
+        _NDFP_debugf("NFQ DST interface detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = false);
+#endif
+    }
+    | '!' FLOW_IFACE_NFQ_DST {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = (
+            _NDFP_flow->nfq.dst_iface.empty() == true
+        ));
+        _NDFP_debugf("NFQ DST interface not detected? %s\n",
+            (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = true);
+#endif
+    }
+    | FLOW_IFACE_NFQ_DST CMP_EQUAL VALUE_NAME {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->nfq.dst_iface.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->nfq.dst_iface.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+
+        _NDFP_debugf("NFQ DST interface == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = false);
+#endif
+    }
+    | FLOW_IFACE_NFQ_DST CMP_NOTEQUAL VALUE_NAME {
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->nfq.dst_iface.empty()) {
+            size_t p;
+            string search($3);
+
+            while ((p = search.find_first_of("'\"")) != string::npos)
+                search.erase(p, 1);
+
+            if (strncasecmp(search.c_str(),
+                _NDFP_flow->nfq.dst_iface.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+
+        _NDFP_debugf("NFQ DST interface != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = true);
+#endif
+    }
+    | FLOW_IFACE_NFQ_DST CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+#if defined(_ND_ENABLE_NFQUEUE)
+        if (! _NDFP_flow->nfq.dst_iface.empty()) {
+            string rx($3);
+
+            _NDFP_result = ($$ = _NDFP_regex_search(
+                rx, _NDFP_flow->nfq.dst_iface
+            ));
+        }
+
+        _NDFP_debugf("NFQ DST interface (RX) == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+#endif
+    }
+    | FLOW_IFACE_NFQ_DST CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+#if defined(_ND_ENABLE_NFQUEUE)
+        _NDFP_debugf("NFQ DST interface (RX) != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
 #endif
     }
     ;

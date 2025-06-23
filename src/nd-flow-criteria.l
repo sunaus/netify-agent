@@ -107,6 +107,9 @@ origin_local            yylval->us_number = _NDFP_ORIGIN_LOCAL; return FLOW_ORIG
 origin_other            yylval->us_number = _NDFP_ORIGIN_OTHER; return FLOW_ORIGIN_OTHER;
 origin_unknown          yylval->us_number = _NDFP_ORIGIN_UNKNOWN; return FLOW_ORIGIN_UNKNOWN;
 fwmark                  return FLOW_CT_MARK;
+iface                   return FLOW_IFACE;
+iface_nfq_src           return FLOW_IFACE_NFQ_SRC;
+iface_nfq_dst           return FLOW_IFACE_NFQ_DST;
 [t|T][r|R][u|U][e|E]    yylval->bool_number=true; return VALUE_TRUE;
 [f|F][a|A][l|L][s|S][e|E] yylval->bool_number=false; return VALUE_FALSE;
 [a-fA-F0-9]{2}[:]{1}[a-fA-F0-9]{2}[:]{1}[a-fA-F0-9]{2}[:]{1}[a-fA-F0-9]{2}[:]{1}[a-fA-F0-9]{2}[:]{1}[a-fA-F0-9]{2} strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_MAC;
