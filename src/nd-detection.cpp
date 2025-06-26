@@ -786,7 +786,27 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
         }
     }
 
-    if (refined || ndEF->flags.detection_init.load() == false) {
+    ndApp::Id app_id = ndApp::Id::UNKNOWN;
+
+    if (ndEF->lower_type == ndAddr::Type::OTHER) {
+        app_id = ndi.apps.Find(ndEF->lower_addr, true);
+
+        if (ndEF->detected_application == ndApp::Id::UNKNOWN)
+            app_id = ndi.apps.Find(ndEF->upper_addr, true);
+    }
+    else {
+        app_id = ndi.apps.Find(ndEF->upper_addr, true);
+
+        if (ndEF->detected_application == ndApp::Id::UNKNOWN)
+            app_id = ndi.apps.Find(ndEF->lower_addr, true);
+    }
+
+    if (app_id != ndApp::Id::UNKNOWN) {
+        ndEF->flags.app_ip_override = true;
+        SetDetectedApplication(entry, app_id);
+        ndEF->Print(ndFlow::PrintFlags::METADATA, "aio");
+    }
+    else if (refined || ndEF->flags.detection_init.load() == false) {
         // Determine application based on master protocol metadata
         // for Protocol / Application "Twins"
         ndApp::Id app_twin = ndApp::Id::UNKNOWN;
@@ -896,16 +916,10 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                     }
                 }
 
-                if (updated) {
+                if (updated &&
+                    ndEF->detected_application == ndApp::Id::UNKNOWN) {
                     SetDetectedApplication(entry,
                       ndi.apps.Find(ndEF->tls.server_cn));
-/*
-                    ndEF->detected_application = ndApp::Id::UNKNOWN;
-                    ndEF->detected_application_name =
-                      "Unknown";
-                    SetDetectedApplication(entry,
-                      ndi.apps.Find(ndEF->host_server_name));
-*/
                 }
 #ifdef _ND_LOG_FLOW_DEBUG_DNS
                 nd_dprintf("%s: DNS: %s hostname.\n", tag.c_str(),
@@ -961,8 +975,7 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                 nd_dprintf("%s: TLS: set serverCN: %s\n",
                   tag.c_str(), ndEF->tls.server_cn.c_str());
 #endif
-                if (ndEF->detected_application == ndApp::Id::UNKNOWN)
-                {
+                if (ndEF->detected_application == ndApp::Id::UNKNOWN) {
                     SetDetectedApplication(entry,
                       ndi.apps.Find(ndEF->tls.server_cn));
                 }

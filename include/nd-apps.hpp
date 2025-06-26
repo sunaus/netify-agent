@@ -86,7 +86,7 @@ public:
     bool SaveLegacy(const std::string &filename);
 
     ndApp::Id Find(const std::string &domain);
-    ndApp::Id Find(const ndAddr &addr);
+    ndApp::Id Find(const ndAddr &addr, bool app_override = false);
 
     bool Lookup(ndApp::Id id, std::string &dst);
     const char *Lookup(ndApp::Id id);
@@ -122,7 +122,7 @@ protected:
     nd_domain_rx_xforms_t domain_xforms;
 
     struct {
-        size_t ac, dc, nc, sc, xc;
+        size_t ac, dc, nc, oc, sc, xc;
     } stats;
 
     void Reset(bool free_only = false);
@@ -131,10 +131,12 @@ protected:
     bool AddDomain(ndApp::Id id, const std::string &domain);
     bool AddDomainTransform(const std::string &search,
       const std::string &replace);
-    bool AddNetwork(ndApp::Id id, const std::string &network);
+    bool AddNetwork(ndApp::Id id,
+      const std::string &network, bool app_override = false);
     bool AddSoftDissector(signed aid, signed pid,
       const std::string &expr);
 
 private:
     void *app_networks4, *app_networks6;
+    void *app_overrides4, *app_overrides6;
 };
