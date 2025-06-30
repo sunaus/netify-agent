@@ -1881,9 +1881,10 @@ bool ndInstance::DisplayAgentStatus(void) {
 
         json jsig = jstatus["signatures"];
         fprintf(stdout,
-          "%s apps: %u, domains: %u, networks: %u, "
-          "soft-dissectors: %u, transforms: %u\n",
-          ndTerm::Icon::INFO, jsig["apps"].get<unsigned>(),
+          "%s apps: %u, app-IP overrides: %u, domains: %u, networks: %u, "
+          "soft-dissectors: %u, transforms: %u\n", ndTerm::Icon::INFO,
+          jsig["apps"].get<unsigned>(),
+          jsig["app_id_overrides"].get<unsigned>(),
           jsig["domains"].get<unsigned>(),
           jsig["networks"].get<unsigned>(),
           jsig["soft_dissectors"].get<unsigned>(),

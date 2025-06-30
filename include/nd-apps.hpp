@@ -103,6 +103,8 @@ public:
     template <class T>
     void Encode(T &output) const {
         serialize(output, { "signatures", "apps" }, stats.ac);
+        serialize(output, { "signatures", "app_id_overrides" },
+          stats.oc);
         serialize(output, { "signatures", "domains" }, stats.dc);
         serialize(output, { "signatures", "networks" },
           stats.nc);
