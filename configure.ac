@@ -193,7 +193,7 @@ case "${host_os}" in
         dnl NFQUEUE Capture Support
 
         AC_ARG_ENABLE([nfqueue],
-            [AS_HELP_STRING([--enable-nfqueue], [Enable NFQUEUE capture support [default=no]])],
+            [AS_HELP_STRING([--enable-nfqueue], [Enable NFQUEUE capture support [default=yes]])],
             [],
             [enable_nfqueue=yes])
 

@@ -820,6 +820,10 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
             app_twin = ndi.apps.Lookup("netify.avast");
             break;
 
+        case ndProto::Id::DINGTALK:
+            app_twin = ndi.apps.Lookup("netify.dingtalk");
+            break;
+
         case ndProto::Id::FACEBOOK_VOIP:
             app_twin = ndi.apps.Lookup("netify.meta");
             break;
@@ -830,6 +834,14 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
 
         case ndProto::Id::NEST_LOG_SINK:
             app_twin = ndi.apps.Lookup("netify.nest");
+            break;
+
+        case ndProto::Id::NTP:
+            app_twin = ndi.apps.Lookup("netify.ntp");
+            break;
+
+        case ndProto::Id::OOKLA:
+            app_twin = ndi.apps.Lookup("netify.speedtest");
             break;
 
         case ndProto::Id::QQ:
@@ -847,6 +859,10 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
         case ndProto::Id::SKYPE_TEAMS_CALL:
             // TODO: netify.skype or netify.teams?
             app_twin = ndi.apps.Lookup("netify.teams");
+            break;
+
+        case ndProto::Id::SNAPCHAT_CALL:
+            app_twin = ndi.apps.Lookup("netify.snapchat");
             break;
 
         case ndProto::Id::STEAM:
