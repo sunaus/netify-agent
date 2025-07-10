@@ -2016,9 +2016,9 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
 
     struct tm tm = { 0 };
 
-    if (localtime_r(&tv, &tm) != &tm) {
+    if (gmtime_r(&tv, &tm) != &tm) {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
-          "localtime_r", strerror(errno));
+          "gmtime_r", strerror(errno));
     }
 
     if (days != ndTod_to_days(Day::ALL)) {
@@ -2070,10 +2070,10 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
 
     tm.tm_sec = tm.tm_min = tm.tm_hour = 0;
 
-    time_t tv_today = mktime(&tm);
+    time_t tv_today = timegm(&tm);
     if (tv_today == (time_t)-1) {
         throw ndException(
-            "%s: mktime: %s", __PRETTY_FUNCTION__, strerror(errno));
+            "%s: timegm: %s", __PRETTY_FUNCTION__, strerror(errno));
     }
 
     time_t tv_seconds = tv - tv_today;
