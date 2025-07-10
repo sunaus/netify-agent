@@ -1868,11 +1868,13 @@ void nd_enable_coredumps(bool enable) {
     }
 }
 
-void ndTimeOfDay::Load(ndTimeOfDay &tod, const json &jconfig) {
+void ndTimeOfDay::Load(
+    ndTimeOfDay &tod, const json &jconfig, ndTimeOfDay::Clock clock) {
     tod.valid = false;
 
     // Optional: day, default: all days
     tod.days = ndTod_to_days(Day::NONE);
+    tod.clock = clock;
 
     auto jdays = jconfig.find("day");
     if (jdays != jconfig.end()) {
@@ -1947,7 +1949,8 @@ void ndTimeOfDay::Load(ndTimeOfDay &tod, const json &jconfig) {
 
 void ndTimeOfDay::Load(ndTimeOfDay &tod,
     const string &time_start, const string &time_end,
-    ndTimeOfDay::Days days, ndTimeOfDay::Policy policy) {
+    ndTimeOfDay::Days days, ndTimeOfDay::Policy policy,
+    ndTimeOfDay::Clock clock) {
 
     tod.valid = false;
 
@@ -1955,6 +1958,7 @@ void ndTimeOfDay::Load(ndTimeOfDay &tod,
     tod.time_end = ParseTime(time_end);
     tod.days = days;
     tod.policy = policy;
+    tod.clock = clock;
 
     if (time_start > time_end)
         throw ndException("%s: time_start > time_end", __PRETTY_FUNCTION__);
@@ -2016,7 +2020,11 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
 
     struct tm tm = { 0 };
 
-    if (gmtime_r(&tv, &tm) != &tm) {
+    if (clock == Clock::LOCAL && localtime_r(&tv, &tm) != &tm) {
+        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+          "localtime_r", strerror(errno));
+    }
+    else if (clock == Clock::UNIVERSAL && gmtime_r(&tv, &tm) != &tm) {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
           "gmtime_r", strerror(errno));
     }
@@ -2070,13 +2078,31 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
 
     tm.tm_sec = tm.tm_min = tm.tm_hour = 0;
 
-    time_t tv_today = timegm(&tm);
-    if (tv_today == (time_t)-1) {
-        throw ndException(
-            "%s: timegm: %s", __PRETTY_FUNCTION__, strerror(errno));
-    }
+    time_t tv_seconds = 0;
 
-    time_t tv_seconds = tv - tv_today;
+    switch (clock) {
+        time_t tv_today;
+
+    case Clock::LOCAL:
+        tv_today = mktime(&tm);
+        if (tv_today == (time_t)-1) {
+            throw ndException(
+                "%s: mktime: %s", __PRETTY_FUNCTION__, strerror(errno));
+        }
+
+        tv_seconds = tv - tv_today;
+        break;
+
+    case Clock::UNIVERSAL:
+        tv_today = timegm(&tm);
+        if (tv_today == (time_t)-1) {
+            throw ndException(
+                "%s: timegm: %s", __PRETTY_FUNCTION__, strerror(errno));
+        }
+
+        tv_seconds = tv - tv_today;
+        break;
+    }
 
     if (policy == Policy::INCLUDE &&
         (tv_seconds < time_start || tv_seconds > time_end)) return false;

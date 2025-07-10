@@ -676,24 +676,33 @@ public:
         EXCLUDE
     };
 
-    ndTimeOfDay(const nlohmann::json &jconfig) {
-        Load(*this, jconfig);
+    enum class Clock : uint8_t {
+        LOCAL,
+        UNIVERSAL
+    };
+
+    ndTimeOfDay(const nlohmann::json &jconfig,
+        Clock clock = Clock::LOCAL) {
+        Load(*this, jconfig, clock);
     }
     ndTimeOfDay(
         const std::string &time_start = "00:00",
         const std::string &time_end = "23:59",
         Days days = ndTod_to_days(Day::ALL),
-        Policy policy = Policy::INCLUDE) {
-        Load(*this, time_start, time_end, days, policy);
+        Policy policy = Policy::INCLUDE,
+        Clock clock = Clock::LOCAL) {
+        Load(*this, time_start, time_end, days, policy, clock);
     }
 
     static void Load(ndTimeOfDay &tod,
-        const nlohmann::json &jconfig);
+        const nlohmann::json &jconfig,
+        Clock clock = Clock::LOCAL);
     static void Load(ndTimeOfDay &tod,
         const std::string &time_start = "00:00",
         const std::string &time_end = "23:59",
         Days days = ndTod_to_days(Day::ALL),
-        Policy policy = Policy::INCLUDE);
+        Policy policy = Policy::INCLUDE,
+        Clock clock = Clock::LOCAL);
 
     static time_t ParseTime(const std::string &time_string);
 
@@ -709,4 +718,5 @@ public:
     time_t time_end = { 3600 * 23 + 59 };
     Days days = { ndTod_to_days(Day::ALL) };
     Policy policy = { Policy::INCLUDE };
+    Clock clock = { Clock::LOCAL };
 };
