@@ -12,6 +12,7 @@ BUILT_SOURCES = nd-flow-expr.cpp nd-flow-expr.hpp
 AM_CPPFLAGS = $(CPPFLAGS) -D_GNU_SOURCE $(ND_DEFINES) \
 	-I $(top_srcdir)/include \
 	-I $(top_srcdir)/libs/ndpi/src/include -I $(top_srcdir)/libs/inih/cpp \
+	-I $(top_srcdir)/libs/timezone \
 	$(LIBCURL_CFLAGS) $(ZLIB_CFLAGS) \
 	-D'ND_DATADIR="$(datadir)/$(PACKAGE_TARNAME)"' \
 	-D'ND_PID_FILE_NAME="$(volatilestatedir)/$(PACKAGE_TARNAME).pid"' \
@@ -41,7 +42,10 @@ libnetifyd_la_SOURCES = nd-addr.cpp nd-apps.cpp nd-base64.cpp nd-capture.cpp \
 	nd-category.cpp nd-config.cpp nd-detection.cpp nd-except.cpp nd-dhc.cpp \
 	nd-fhc.cpp nd-flow.cpp nd-flow-criteria.l nd-flow-expr.ypp nd-flow-map.cpp \
 	nd-instance.cpp nd-napi.cpp nd-ndpi.cpp nd-plugin.cpp nd-progress.cpp \
-	nd-protos.cpp nd-risks.cpp nd-sha1.c nd-thread.cpp nd-util.cpp
+	nd-protos.cpp nd-risks.cpp nd-sha1.c nd-thread.cpp nd-util.cpp \
+	$(top_srcdir)/libs/timezone/timezone.cpp \
+	$(top_srcdir)/libs/timezone/tz_data.cpp \
+	$(top_srcdir)/libs/timezone/tzdata_make_posix.cpp
 
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 libnetifyd_la_LDFLAGS = -version-info $(LIBNETIFY_VERSION)

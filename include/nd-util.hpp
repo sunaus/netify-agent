@@ -676,37 +676,42 @@ public:
         EXCLUDE
     };
 
-    enum class Clock : uint8_t {
-        LOCAL,
-        UNIVERSAL
-    };
+    ndTimeOfDay(time_t tv_update_freq, const std::string &timezone = "") {
+        SetTimezone(tv_update_freq, timezone);
+    }
 
-    ndTimeOfDay(const nlohmann::json &jconfig,
-        Clock clock = Clock::LOCAL) {
-        Load(*this, jconfig, clock);
+    ndTimeOfDay(const nlohmann::json &jconfig) {
+        Load(*this, jconfig);
     }
     ndTimeOfDay(
         const std::string &time_start = "00:00",
         const std::string &time_end = "23:59",
         Days days = ndTod_to_days(Day::ALL),
-        Policy policy = Policy::INCLUDE,
-        Clock clock = Clock::LOCAL) {
-        Load(*this, time_start, time_end, days, policy, clock);
+        Policy policy = Policy::INCLUDE) {
+        Load(*this, time_start, time_end, days, policy);
     }
 
     static void Load(ndTimeOfDay &tod,
-        const nlohmann::json &jconfig,
-        Clock clock = Clock::LOCAL);
+        const nlohmann::json &jconfig);
     static void Load(ndTimeOfDay &tod,
         const std::string &time_start = "00:00",
         const std::string &time_end = "23:59",
         Days days = ndTod_to_days(Day::ALL),
-        Policy policy = Policy::INCLUDE,
-        Clock clock = Clock::LOCAL);
+        Policy policy = Policy::INCLUDE);
 
     static time_t ParseTime(const std::string &time_string);
 
     static void Describe(const ndTimeOfDay &tod, std::string &desc);
+
+    void SetTimezone(time_t tv_update_freq, const std::string &timezone) {
+        tv_last_update = 0;
+        this->tv_update_freq = tv_update_freq;
+        this->timezone = timezone;
+
+        TickUpdate();
+    }
+
+    time_t TickUpdate(void);
 
     bool operator==(const time_t tv) const;
     bool operator!=(const time_t tv) const {
@@ -718,5 +723,9 @@ public:
     time_t time_end = { 3600 * 23 + 59 };
     Days days = { ndTod_to_days(Day::ALL) };
     Policy policy = { Policy::INCLUDE };
-    Clock clock = { Clock::LOCAL };
+    time_t tv_update_freq = { 0 };
+    time_t tv_last_update = { 0 };
+    time_t tv_tick = { 0 };
+    std::string timezone;
+    int utc_offset = { 0 };
 };

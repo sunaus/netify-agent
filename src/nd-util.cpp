@@ -72,6 +72,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "timezone.hpp"
+
 #include "nd-config.hpp"
 #include "nd-except.hpp"
 #include "nd-util.hpp"
@@ -1868,13 +1870,11 @@ void nd_enable_coredumps(bool enable) {
     }
 }
 
-void ndTimeOfDay::Load(
-    ndTimeOfDay &tod, const json &jconfig, ndTimeOfDay::Clock clock) {
+void ndTimeOfDay::Load(ndTimeOfDay &tod, const json &jconfig) {
     tod.valid = false;
 
     // Optional: day, default: all days
     tod.days = ndTod_to_days(Day::NONE);
-    tod.clock = clock;
 
     auto jdays = jconfig.find("day");
     if (jdays != jconfig.end()) {
@@ -1949,8 +1949,7 @@ void ndTimeOfDay::Load(
 
 void ndTimeOfDay::Load(ndTimeOfDay &tod,
     const string &time_start, const string &time_end,
-    ndTimeOfDay::Days days, ndTimeOfDay::Policy policy,
-    ndTimeOfDay::Clock clock) {
+    ndTimeOfDay::Days days, ndTimeOfDay::Policy policy) {
 
     tod.valid = false;
 
@@ -1958,7 +1957,6 @@ void ndTimeOfDay::Load(ndTimeOfDay &tod,
     tod.time_end = ParseTime(time_end);
     tod.days = days;
     tod.policy = policy;
-    tod.clock = clock;
 
     if (time_start > time_end)
         throw ndException("%s: time_start > time_end", __PRETTY_FUNCTION__);
@@ -2014,17 +2012,35 @@ void ndTimeOfDay::Describe(const ndTimeOfDay &tod, string &desc) {
     desc = os.str();
 }
 
+time_t ndTimeOfDay::TickUpdate(void) {
+    time_t tv_now = nd_time_monotonic();
+
+    if (tv_last_update + tv_update_freq < tv_now) {
+
+        civil_time::timezone tz;
+
+        if (! timezone.empty())
+            tz.switch_to(timezone);
+
+        utc_offset = tz.utc_offset();
+        tv_last_update = tv_now;
+
+        nd_dprintf("%s: %s (%s): utc_offset: %d, is_dst: %s\n",
+            __PRETTY_FUNCTION__,
+            timezone.empty() ? "local" : timezone.c_str(),
+            tz.abbrv(), tz.utc_offset(), (tz.is_dst()) ? "yes" : "no");
+    }
+
+    return time(nullptr) + utc_offset;
+}
+
 bool ndTimeOfDay::operator==(const time_t tv) const {
     if (! valid) return false;
     if (days == ndTod_to_days(Day::NONE)) return false;
 
     struct tm tm = { 0 };
 
-    if (clock == Clock::LOCAL && localtime_r(&tv, &tm) != &tm) {
-        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
-          "localtime_r", strerror(errno));
-    }
-    else if (clock == Clock::UNIVERSAL && gmtime_r(&tv, &tm) != &tm) {
+    if (gmtime_r(&tv, &tm) != &tm) {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
           "gmtime_r", strerror(errno));
     }
@@ -2078,31 +2094,13 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
 
     tm.tm_sec = tm.tm_min = tm.tm_hour = 0;
 
-    time_t tv_seconds = 0;
-
-    switch (clock) {
-        time_t tv_today;
-
-    case Clock::LOCAL:
-        tv_today = mktime(&tm);
-        if (tv_today == (time_t)-1) {
-            throw ndException(
-                "%s: mktime: %s", __PRETTY_FUNCTION__, strerror(errno));
-        }
-
-        tv_seconds = tv - tv_today;
-        break;
-
-    case Clock::UNIVERSAL:
-        tv_today = timegm(&tm);
-        if (tv_today == (time_t)-1) {
-            throw ndException(
-                "%s: timegm: %s", __PRETTY_FUNCTION__, strerror(errno));
-        }
-
-        tv_seconds = tv - tv_today;
-        break;
+    time_t tv_today = timegm(&tm);
+    if (tv_today == (time_t)-1) {
+        throw ndException(
+            "%s: timegm: %s", __PRETTY_FUNCTION__, strerror(errno));
     }
+
+    time_t tv_seconds = tv - tv_today;
 
     if (policy == Policy::INCLUDE &&
         (tv_seconds < time_start || tv_seconds > time_end)) return false;
