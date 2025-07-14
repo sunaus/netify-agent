@@ -123,8 +123,6 @@ void ndThread::SetProcName(void) {
     if (tag.length() >= ND_THREAD_MAX_PROCNAMELEN - 1)
         name[ND_THREAD_MAX_PROCNAMELEN - 2] = '+';
 
-    fprintf(stderr, "%s: tid: %lu, pthread_self: %lu\n",
-        name.data(), id, pthread_self());
     pthread_setname_np(pthread_self(), name.data());
 #endif
 }
