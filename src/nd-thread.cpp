@@ -144,14 +144,16 @@ void ndThread::Create(void) {
 
 int ndThread::Join(void) {
     if (id == 0) {
-        throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
+        nd_dprintf("%s: %s: %s\n", __PRETTY_FUNCTION__,
           "thread ID", strerror(EINVAL));
+        return -1;
     }
 
     int rc;
     if ((rc = pthread_join(id, NULL)) != 0) {
-        throw ndExceptionSystemErrno(__PRETTY_FUNCTION__,
-          "pthread_join", rc);
+        nd_dprintf("%s: %s: %s\n", __PRETTY_FUNCTION__,
+          "pthread_join", strerror(rc));
+        return -1;
     }
 
     id = 0;
