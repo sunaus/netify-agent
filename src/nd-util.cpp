@@ -1968,22 +1968,46 @@ void ndTimeOfDay::Load(ndTimeOfDay &tod,
 }
 
 time_t ndTimeOfDay::ParseTime(const string &time_string) {
-    size_t p = time_string.find_first_of(":");
-    if (p == string::npos)
+    size_t p1 = time_string.find_first_of(":");
+    if (p1 == string::npos)
         throw ndException("%s: invalid time_string", __PRETTY_FUNCTION__);
 
     time_t time_hour = (time_t)strtold(
-        time_string.substr(0, p).c_str(), nullptr);
+        time_string.substr(0, p1).c_str(), nullptr);
 
     if (time_hour > 23)
         throw ndException("%s: invalid hour (> 23)", __PRETTY_FUNCTION__);
 
-    time_t time_min = (time_t)strtold(
-        time_string.substr(p + 1).c_str(), nullptr);
-    if (time_hour > 59)
+    size_t p2 = time_string.find(":", p1 + 1);
+
+    time_t time_min = 0;
+
+    if (p2 == string::npos) {
+        time_min = (time_t)strtold(
+            time_string.substr(p1 + 1).c_str(), nullptr);
+    }
+    else {
+        if (p2 - p1 != 2)
+            throw ndException("%s: minutes must be 2 digits", __PRETTY_FUNCTION__);
+
+        time_min = (time_t)strtold(
+            time_string.substr(p1 + 1, 2).c_str(), nullptr);
+    }
+
+    if (time_min > 59)
         throw ndException("%s: invalid minute (> 59)", __PRETTY_FUNCTION__);
 
-    return (time_hour * 3600) + (time_min * 60);
+    time_t time_sec = 0;
+
+    if (p2 != string::npos) {
+        time_sec = (time_t)strtold(
+            time_string.substr(p2 + 1).c_str(), nullptr);
+
+        if (time_sec > 59)
+            throw ndException("%s: invalid seconds (> 59)", __PRETTY_FUNCTION__);
+    }
+
+    return (time_hour * 3600) + (time_min * 60) + time_sec;
 }
 
 void ndTimeOfDay::Describe(const ndTimeOfDay &tod, string &desc) {
