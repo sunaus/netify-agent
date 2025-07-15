@@ -2012,23 +2012,72 @@ void ndTimeOfDay::Describe(const ndTimeOfDay &tod, string &desc) {
     desc = os.str();
 }
 
+void ndTimeOfDay::UpdateTimezone(void) {
+    try {
+        if (timezone.empty()) {
+            string tz_error;
+
+            try {
+                civil_time::timezone tz;
+
+                timezone = tz.name();
+                timezone_abbrv = tz.abbrv();
+                is_dst = tz.is_dst();
+                utc_offset = tz.utc_offset();
+
+            } catch (runtime_error const &e) {
+                tz_error = "runtime_error: localtime: ";
+                tz_error.append(e.what());
+            } catch (invalid_argument const &e) {
+                tz_error = "invalid_argument: localtime: ";
+                tz_error.append(e.what());
+            }
+
+            if (! tz_error.empty()) {
+
+                nd_dprintf(
+                    "WARNING: unable to set timezone: %s, trying UTC...\n",
+                    tz_error.c_str());
+
+                civil_time::timezone tz("UTC");
+
+                timezone = tz.name();
+                timezone_abbrv = tz.abbrv();
+                is_dst = tz.is_dst();
+                utc_offset = tz.utc_offset();
+            }
+        }
+        else {
+            civil_time::timezone tz(timezone);
+
+            timezone = tz.name();
+            timezone_abbrv = tz.abbrv();
+            is_dst = tz.is_dst();
+            utc_offset = tz.utc_offset();
+        }
+    } catch (runtime_error const &e) {
+        ndException("runtime_error: %s: %s",
+            timezone.empty() ? "UTC" : timezone.c_str(),
+            e.what());
+    } catch (invalid_argument const &e) {
+        throw ndException("invalid_argument: %s: %s",
+            timezone.empty() ? "UTC" : timezone.c_str(),
+            e.what());
+    }
+
+    nd_dprintf("%s: %s (%s): utc_offset: %d, is_dst: %s\n",
+        __PRETTY_FUNCTION__,
+        timezone.empty() ? "local" : timezone.c_str(),
+        timezone_abbrv.empty() ? "???" : timezone_abbrv.c_str(),
+        utc_offset, (is_dst) ? "yes" : "no");
+}
+
 time_t ndTimeOfDay::TickUpdate(void) {
     time_t tv_now = nd_time_monotonic();
 
     if (tv_last_update + tv_update_freq < tv_now) {
-
-        civil_time::timezone tz;
-
-        if (! timezone.empty())
-            tz.switch_to(timezone);
-
-        utc_offset = tz.utc_offset();
-        tv_last_update = tv_now;
-
-        nd_dprintf("%s: %s (%s): utc_offset: %d, is_dst: %s\n",
-            __PRETTY_FUNCTION__,
-            timezone.empty() ? "local" : timezone.c_str(),
-            tz.abbrv(), tz.utc_offset(), (tz.is_dst()) ? "yes" : "no");
+            UpdateTimezone();
+            tv_last_update = tv_now;
     }
 
     return time(nullptr) + utc_offset;

@@ -711,6 +711,8 @@ public:
         TickUpdate();
     }
 
+    void UpdateTimezone(void);
+
     time_t TickUpdate(void);
 
     bool operator==(const time_t tv) const;
@@ -727,5 +729,7 @@ public:
     time_t tv_last_update = { 0 };
     time_t tv_tick = { 0 };
     std::string timezone;
+    std::string timezone_abbrv;
+    bool is_dst = { false };
     int utc_offset = { 0 };
 };
