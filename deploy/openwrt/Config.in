@@ -1,6 +1,12 @@
 menu "Configuration"
 	depends on PACKAGE_netifyd
 
+config NETIFYD_ENABLE_OPENWRT
+	bool "Enable OpenWrt support (UCI, UBUS)?"
+	default y
+	help
+		Enable to include UCI and UBUS integration.
+
 config NETIFYD_BUILD_SHARED_LIBRARY
 	bool "Build the Agent as a shared library?"
 	default y

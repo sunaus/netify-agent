@@ -25,14 +25,15 @@ PKG_MIRROR_HASH:=whatever
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_NETIFYD_BUILD_SHARED_LIBRARY \
-	CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT \
-	CONFIG_NETIFYD_ENABLE_LINUX_CAPABILITIES \
-	CONFIG_NETIFYD_ENABLE_LEAN_AND_MEAN \
-	CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA \
 	CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS \
-	CONFIG_NETIFYD_ENABLE_TPACKETV3 \
+	CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA \
+	CONFIG_NETIFYD_ENABLE_EXTENDED_STATS \
+	CONFIG_NETIFYD_ENABLE_LEAN_AND_MEAN \
+	CONFIG_NETIFYD_ENABLE_LINUX_CAPABILITIES \
 	CONFIG_NETIFYD_ENABLE_NFQUEUE \
-	CONFIG_NETIFYD_ENABLE_EXTENDED_STATS
+	CONFIG_NETIFYD_ENABLE_OPENWRT \
+	CONFIG_NETIFYD_ENABLE_TPACKETV3 \
+	CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -41,16 +42,21 @@ define Package/@PACKAGE_TARNAME@
   CATEGORY:=Network
   TITLE:=Netify Agent
   URL:=http://www.netify.ai/
-  DEPENDS:=+ca-bundle +libatomic +libblobmsg-json +libcurl +libjson-c +libmnl \
-	+libnetfilter-conntrack +libpcap +libpthread +libubox +libubus +libuci \
-	+zlib @!USE_UCLIBC
+  DEPENDS:=+ca-bundle +libatomic +libcurl +libmnl +libnetfilter-conntrack \
+	+libpcap +libpthread +zlib @!USE_UCLIBC
   # Explicitly depend on libstdcpp rather than $(CXX_DEPENDS).  At the moment
   # std::unordered_map is only available via libstdcpp which is required for
   # performance reasons.
   DEPENDS+=+libstdcpp
-  DEPENDS+=+NETIFYD_WITH_LOCAL_LIBGCRYPT:libgcrypt +NETIFYD_WITH_LOCAL_LIBGCRYPT:libgpg-error
+  DEPENDS+=+NETIFYD_WITH_LOCAL_LIBGCRYPT:libgcrypt
+  DEPENDS+=+NETIFYD_WITH_LOCAL_LIBGCRYPT:libgpg-error
   DEPENDS+=+NETIFYD_ENABLE_LINUX_CAPABILITIES:libcap
   DEPENDS+=+NETIFYD_ENABLE_NFQUEUE:libnetfilter-queue
+  DEPENDS+=+NETIFYD_ENABLE_OPENWRT:libubox
+  DEPENDS+=+NETIFYD_ENABLE_OPENWRT:libblobmsg-json
+  DEPENDS+=+NETIFYD_ENABLE_OPENWRT:libjson-c
+  DEPENDS+=+NETIFYD_ENABLE_OPENWRT:libubus
+  DEPENDS+=+NETIFYD_ENABLE_OPENWRT:libuci
 endef
 
 define Package/@PACKAGE_TARNAME@/description
@@ -81,20 +87,20 @@ TARGET_LDFLAGS+=-Wl,--gc-sections
 
 CONFIGURE_ARGS+= \
 	$(if $(CONFIG_NETIFYD_BUILD_SHARED_LIBRARY),--enable-shared,--disable-shared) \
-	$(if $(CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT),--with-local-libgcrypt,--without-local-libgcrypt) \
+	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS),--enable-conntrack-counters,--disable-conntrack-counters) \
+	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA),--enable-conntrack-mdata,--disable-conntrack-mdata) \
+	$(if $(CONFIG_NETIFYD_ENABLE_EXTENDED_STATS),--enable-extended-stats,--disable-extended-stats) \
 	$(if $(CONFIG_NETIFYD_ENABLE_LEAN_AND_MEAN),--enable-lean-and-mean,--disable-lean-and-mean) \
 	$(if $(CONFIG_NETIFYD_ENABLE_LINUX_CAPABILITIES),--enable-capabilities,--disable-capabilities) \
-	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA),--enable-conntrack-mdata,--disable-conntrack-mdata) \
-	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS),--enable-conntrack-counters,--disable-conntrack-counters) \
-	$(if $(CONFIG_NETIFYD_ENABLE_TPACKETV3),--enable-tpacketv3,--disable-tpacketv3) \
 	$(if $(CONFIG_NETIFYD_ENABLE_NFQUEUE),--enable-nfqueue,--disable-nfqueue) \
-	$(if $(CONFIG_NETIFYD_ENABLE_EXTENDED_STATS),--enable-extended-stats,--disable-extended-stats) \
+	$(if $(CONFIG_NETIFYD_ENABLE_OPENWRT),--enable-ubus,--disable-ubus) \
+	$(if $(CONFIG_NETIFYD_ENABLE_OPENWRT),--enable-uci,--disable-uci) \
+	$(if $(CONFIG_NETIFYD_ENABLE_TPACKETV3),--enable-tpacketv3,--disable-tpacketv3) \
+	$(if $(CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT),--with-local-libgcrypt,--without-local-libgcrypt) \
 	--sharedstatedir=/var/run \
 	--disable-libtcmalloc \
 	--without-systemdsystemunitdir \
-	--without-tmpfilesdir \
-	--enable-uci \
-	--enable-ubus
+	--without-tmpfilesdir
 
 ifneq ($(CONFIG_LIBCURL_ZLIB),y)
 CONFIGURE_ARGS+= \
