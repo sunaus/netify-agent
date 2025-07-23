@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [L] 10.220.50.76:21 <-- [OL] 10.238.26.36:62092
+offline0: i4pcu------r---- TCP [L] 10.220.50.76:21 <-- [OL] 10.238.26.36:62092
     : FTP/S
     : CT ID: 0: MARK: 0
     : H: _authorized

@@ -1,4 +1,4 @@
-offline0: i4pcu------r-F- TCP [OR] 151.101.66.49:443 <-- [L] 192.168.1.160:54804
+offline0: i4pcu------r--F- TCP [OR] 151.101.66.49:443 <-- [L] 192.168.1.160:54804
     : HTTP/S.netify.abuse-ch
     : CT ID: 0: MARK: 0
     : H: feodotracker.abuse.ch

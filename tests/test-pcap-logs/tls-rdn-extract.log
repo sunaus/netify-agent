@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [L] 10.0.0.1:31337 --> [OR] 213.199.149.251:443
+offline0: i4pcu------r---- TCP [L] 10.0.0.1:31337 --> [OR] 213.199.149.251:443
     : HTTP/S.netify.office-365
     : CT ID: 0: MARK: 0
     : H: ads1.msads.net

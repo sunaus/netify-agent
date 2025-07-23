@@ -1,10 +1,10 @@
-offline0: i4pc----------- UDP [L] 10.1.0.1:53 <-- [OL] 10.1.0.60:46571
+offline0: i4pc------------ UDP [L] 10.1.0.1:53 <-- [OL] 10.1.0.60:46571
     : DNS.netify.oppo
     : CT ID: 0: MARK: 0
     : H: conn-service-eu-04.allawnos.com
     : DP: 2
 
-offline0: i4pc---------F- TCP [L] 10.1.0.60:49642 --> [OR] 142.250.180.163:80
+offline0: i4pc----------F- TCP [L] 10.1.0.60:49642 --> [OR] 142.250.180.163:80
     : HTTP.netify.google
     : CT ID: 0: MARK: 0
     : H: www.google.eu
@@ -12,7 +12,7 @@ offline0: i4pc---------F- TCP [L] 10.1.0.60:49642 --> [OR] 142.250.180.163:80
     : URL: www.google.eu/generate_204
     : DP: 6
 
-offline0: i4pc---------F- TCP [L] 10.1.0.60:49656 --> [OR] 142.250.180.163:80
+offline0: i4pc----------F- TCP [L] 10.1.0.60:49656 --> [OR] 142.250.180.163:80
     : HTTP.netify.google
     : CT ID: 0: MARK: 0
     : H: www.google.eu
@@ -20,7 +20,7 @@ offline0: i4pc---------F- TCP [L] 10.1.0.60:49656 --> [OR] 142.250.180.163:80
     : URL: www.google.eu/generate_204
     : DP: 6
 
-offline0: i4pc---------F- TCP [L] 10.1.0.60:49658 --> [OR] 142.250.180.163:80
+offline0: i4pc----------F- TCP [L] 10.1.0.60:49658 --> [OR] 142.250.180.163:80
     : HTTP.netify.google
     : CT ID: 0: MARK: 0
     : H: www.google.eu
@@ -28,7 +28,7 @@ offline0: i4pc---------F- TCP [L] 10.1.0.60:49658 --> [OR] 142.250.180.163:80
     : URL: www.google.eu/generate_204
     : DP: 6
 
-offline0: i4pc---------F- TCP [L] 10.1.0.60:38008 --> [OR] 92.123.101.121:80
+offline0: i4pc----------F- TCP [L] 10.1.0.60:38008 --> [OR] 92.123.101.121:80
     : HTTP.netify.oppo
     : CT ID: 0: MARK: 0
     : D: a1947.dscd.akamai.net H: conn-service-eu-04.allawnos.com
@@ -36,7 +36,7 @@ offline0: i4pc---------F- TCP [L] 10.1.0.60:38008 --> [OR] 92.123.101.121:80
     : URL: conn-service-eu-04.allawnos.com/generate204
     : DP: 6
 
-offline0: i4pc---------F- TCP [L] 10.1.0.60:49672 --> [OR] 142.250.180.163:80
+offline0: i4pc----------F- TCP [L] 10.1.0.60:49672 --> [OR] 142.250.180.163:80
     : HTTP.netify.google
     : CT ID: 0: MARK: 0
     : H: www.google.eu
@@ -44,7 +44,7 @@ offline0: i4pc---------F- TCP [L] 10.1.0.60:49672 --> [OR] 142.250.180.163:80
     : URL: www.google.eu/generate_204
     : DP: 6
 
-offline0: i4pc---------F- TCP [L] 10.1.0.60:46980 --> [OR] 92.123.101.153:80
+offline0: i4pc----------F- TCP [L] 10.1.0.60:46980 --> [OR] 92.123.101.153:80
     : HTTP.netify.oppo
     : CT ID: 0: MARK: 0
     : D: a1947.dscd.akamai.net H: conn-service-eu-04.allawnos.com
@@ -52,7 +52,7 @@ offline0: i4pc---------F- TCP [L] 10.1.0.60:46980 --> [OR] 92.123.101.153:80
     : URL: conn-service-eu-04.allawnos.com/generate204
     : DP: 6
 
-offline0: i4pc--x-------- TCP [L] 10.1.0.60:49674 --> [OR] 142.250.180.163:80
+offline0: i4pc--x--------- TCP [L] 10.1.0.60:49674 --> [OR] 142.250.180.163:80
     : HTTP.netify.google
     : CT ID: 0: MARK: 0
     : H: www.google.eu
@@ -60,7 +60,7 @@ offline0: i4pc--x-------- TCP [L] 10.1.0.60:49674 --> [OR] 142.250.180.163:80
     : URL: www.google.eu/generate_204
     : DP: 10
 
-offline0: i4pc--x-------- TCP [L] 10.1.0.70:54612 --> [OR] 142.250.180.138:80
+offline0: i4pc--x--------- TCP [L] 10.1.0.70:54612 --> [OR] 142.250.180.138:80
     : HTTP.netify.google-play
     : CT ID: 0: MARK: 0
     : H: play.googleapis.com
@@ -68,7 +68,7 @@ offline0: i4pc--x-------- TCP [L] 10.1.0.70:54612 --> [OR] 142.250.180.138:80
     : URL: play.googleapis.com/generate_204
     : DP: 9
 
-offline0: i4pc--x-------- TCP [L] 10.1.0.60:38024 --> [OR] 92.123.101.121:80
+offline0: i4pc--x--------- TCP [L] 10.1.0.60:38024 --> [OR] 92.123.101.121:80
     : HTTP.netify.oppo
     : CT ID: 0: MARK: 0
     : D: a1947.dscd.akamai.net H: conn-service-eu-04.allawnos.com

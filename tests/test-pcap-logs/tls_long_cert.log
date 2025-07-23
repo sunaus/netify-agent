@@ -1,4 +1,4 @@
-offline0: i4pcu------r-F- TCP [OR] 104.111.215.93:443 <-- [L] 192.168.2.126:60174
+offline0: i4pcu------r--F- TCP [OR] 104.111.215.93:443 <-- [L] 192.168.2.126:60174
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: www.repubblica.it

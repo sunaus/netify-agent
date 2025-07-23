@@ -1,4 +1,4 @@
-offline0: i4pcu---------- TCP [OR] 173.194.73.101:443 <-- [L] 192.168.88.231:43268
+offline0: i4pcu----------- TCP [OR] 173.194.73.101:443 <-- [L] 192.168.88.231:43268
     : HTTP/S.netify.google-hangouts
     : CT ID: 0: MARK: 0
     : H: meet.google.com
@@ -8,7 +8,7 @@ offline0: i4pcu---------- TCP [OR] 173.194.73.101:443 <-- [L] 192.168.88.231:432
     : JA4: t13d1516h2_8daaf6152771_02713d6af862
     : DP: 6
 
-offline0: i4pc-------r--- UDP [OR] 173.194.73.101:443 <-- [L] 192.168.88.231:59369
+offline0: i4pc-------r---- UDP [OR] 173.194.73.101:443 <-- [L] 192.168.88.231:59369
     : QUIC.netify.google-hangouts
     : CT ID: 0: MARK: 0
     : H: meet.google.com

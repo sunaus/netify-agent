@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [L] 10.0.2.15:42834 --> [OR] 162.159.128.233:443
+offline0: i4pcu------r---- TCP [L] 10.0.2.15:42834 --> [OR] 162.159.128.233:443
     : HTTP/S.netify.discord
     : CT ID: 0: MARK: 0
     : H: discord.com
@@ -9,181 +9,181 @@ offline0: i4pcu------r--- TCP [L] 10.0.2.15:42834 --> [OR] 162.159.128.233:443
     : RID 30: TLS Certificate Expired
     : DP: 5
 
-offline0: i4pc-------r--- UDP [OR] 35.214.238.161:50001 <-- [L] 192.168.2.100:64837
+offline0: i4pc-------r---- UDP [OR] 35.214.238.161:50001 <-- [L] 192.168.2.100:64837
     : RTP.netify.google
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
-    : DP: 5
+    : DP: 14
 
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:55085
+offline0: i4pc-------r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:55085
     : RTP
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
-    : DP: 5
+    : DP: 6
 
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:52283
+offline0: i4pc-------r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:52283
     : RTP
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
-    : DP: 5
+    : DP: 6
 
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:50199
+offline0: i4pc-------r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:50199
     : RTP
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
-    : DP: 5
+    : DP: 6
 
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61435
+offline0: i4pc-------r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61985
     : RTP
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
-    : DP: 5
+    : DP: 6
 
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:63362
-    : RTP
-    : CT ID: 0: MARK: 0
-    : RID 28: Suspicious Entropy
-    : DP: 5
-
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:62844
-    : RTP
-    : CT ID: 0: MARK: 0
-    : RID 28: Suspicious Entropy
-    : DP: 5
-
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61985
-    : RTP
-    : CT ID: 0: MARK: 0
-    : RID 28: Suspicious Entropy
-    : DP: 5
-
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:55432
-    : RTP
-    : CT ID: 0: MARK: 0
-    : RID 28: Suspicious Entropy
-    : DP: 5
-
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:63893
-    : RTP
-    : CT ID: 0: MARK: 0
-    : RID 28: Suspicious Entropy
-    : DP: 5
-
-offline0: i4pc-------r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:62481
-    : RTP
-    : CT ID: 0: MARK: 0
-    : RID 28: Suspicious Entropy
-    : DP: 5
-
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:54950
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:54950
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:52323
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:52323
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.237.138:50004 <-- [L] 192.168.2.100:56271
+offline0: i4pc-gx--------- UDP [OR] 66.22.237.138:50004 <-- [L] 192.168.2.100:56271
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.241.5:50004 <-- [L] 192.168.2.100:56271
+offline0: i4pc-gx--------- UDP [OR] 66.22.241.5:50004 <-- [L] 192.168.2.100:56271
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.244.154:50004 <-- [L] 192.168.2.100:56271
+offline0: i4pc-gx--------- UDP [OR] 66.22.244.154:50004 <-- [L] 192.168.2.100:56271
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.241.7:50004 <-- [L] 192.168.2.100:56271
+offline0: i4pc-gx--------- UDP [OR] 66.22.241.7:50004 <-- [L] 192.168.2.100:56271
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx----r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61060
+offline0: i4pc-gx----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61060
     : Unknown
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:58322
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:58322
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:57956
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:57956
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.244.139:50004 <-- [L] 192.168.2.100:56271
+offline0: i4pc-gx--------- UDP [OR] 66.22.244.139:50004 <-- [L] 192.168.2.100:56271
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:59891
+offline0: i4pc--x----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:62844
+    : RTP
+    : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
+    : DP: 15
+
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:59891
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:58753
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:58753
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:57764
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:57764
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.237.11:50004 <-- [L] 192.168.2.100:56271
+offline0: i4pc--x----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61435
+    : RTP
+    : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
+    : DP: 15
+
+offline0: i4pc-gx--------- UDP [OR] 66.22.237.11:50004 <-- [L] 192.168.2.100:56271
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:62379
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:62379
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:65053
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:65053
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:59240
+offline0: i4pc--x----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:55432
+    : RTP
+    : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
+    : DP: 15
+
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:59240
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:50335
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:50335
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 --> [L] 192.168.2.100:49648
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 --> [L] 192.168.2.100:49648
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx----r--- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:57955
+offline0: i4pc--x----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:63893
+    : RTP
+    : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
+    : DP: 15
+
+offline0: i4pc-gx----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:57955
     : Unknown
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61392
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:61392
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 15
 
-offline0: i4pc-gx-------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:53459
+offline0: i4pc-gx--------- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:53459
     : Unknown
     : CT ID: 0: MARK: 0
+    : DP: 15
+
+offline0: i4pc--x----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:62481
+    : RTP
+    : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
+    : DP: 15
+
+offline0: i4pc--x----r---- UDP [OR] 66.22.196.173:50004 <-- [L] 192.168.2.100:63362
+    : RTP
+    : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
     : DP: 15
 

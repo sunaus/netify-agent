@@ -1,10 +1,10 @@
-offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.140:45520
+offline0: i4pc------------ UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.140:45520
     : DNS.netify.spotify
     : CT ID: 0: MARK: 0
     : H: i.scdn.co
     : DP: 2
 
-offline0: i4pc-------r-F- TCP [OR] 170.33.9.230:80 <-- [L] 192.168.2.140:56011
+offline0: i4pc-------r--F- TCP [OR] 170.33.9.230:80 <-- [L] 192.168.2.140:56011
     : HTTP
     : CT ID: 0: MARK: 0
     : H: www.love.xn--55qx5d
@@ -14,7 +14,7 @@ offline0: i4pc-------r-F- TCP [OR] 170.33.9.230:80 <-- [L] 192.168.2.140:56011
     : RID 21: IDN Domain Name
     : DP: 8
 
-offline0: i4pc--x----r--- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.140:60156
+offline0: i4pc--x----r---- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.140:60156
     : DNS
     : CT ID: 0: MARK: 0
     : H: www.xn--mnich-kva.com

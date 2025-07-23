@@ -1,4 +1,4 @@
-offline0: i4pcu------r-F- TCP [OR] 140.82.114.4:443 <-- [L] 192.168.1.13:55744
+offline0: i4pcu------r--F- TCP [OR] 140.82.114.4:443 <-- [L] 192.168.1.13:55744
     : HTTP/S.netify.github
     : CT ID: 0: MARK: 0
     : H: github.com

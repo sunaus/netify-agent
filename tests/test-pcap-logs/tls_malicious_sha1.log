@@ -1,4 +1,4 @@
-offline0: i6pcu------r--- TCP [OR] 2001:b07:a3d:c112:9726:f643:a838:b0c4:40294 --> [L] 2a00:1450:4002:414::2013:443
+offline0: i6pcu------r---- TCP [OR] 2001:b07:a3d:c112:9726:f643:a838:b0c4:40294 --> [L] 2a00:1450:4002:414::2013:443
     : HTTP/S.netify.google
     : CT ID: 0: MARK: 0
     : H: www.prbtest.dev

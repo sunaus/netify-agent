@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [OR] 80.84.167.206:49100 <-- [L] 192.168.1.245:57490
+offline0: i4pcu------r---- TCP [OR] 80.84.167.206:49100 <-- [L] 192.168.1.245:57490
     : TLS.netify.nvidia
     : CT ID: 0: MARK: 0
     : H: 80-84-167-206.cloudmatchbeta.nvidiagrid.net
@@ -10,7 +10,7 @@ offline0: i4pcu------r--- TCP [OR] 80.84.167.206:49100 <-- [L] 192.168.1.245:574
     : RID 30: TLS Certificate Expired
     : DP: 7
 
-offline0: i4pc-------r--- UDP [OR] 80.84.167.206:18452 <-- [L] 192.168.1.245:52441
+offline0: i4pc-------r---- UDP [OR] 80.84.167.206:18452 <-- [L] 192.168.1.245:52441
     : STUN.netify.nvidia
     : CT ID: 0: MARK: 0
     : RID 30: TLS Certificate Expired

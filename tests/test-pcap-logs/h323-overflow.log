@@ -1,4 +1,4 @@
-offline0: i4pc-gx----r--- TCP [L] 192.168.1.1:31337 --> [OL] 192.168.1.2:80
+offline0: i4pc-gx----r---- TCP [L] 192.168.1.1:31337 --> [OL] 192.168.1.2:80
     : HTTP
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic

@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [OR] 167.99.215.164:993 <-- [L] 192.168.1.8:50506
+offline0: i4pcu------r---- TCP [OR] 167.99.215.164:993 <-- [L] 192.168.1.8:50506
     : IMAP/S
     : CT ID: 0: MARK: 0
     : H: mail.ntop.org
@@ -10,7 +10,7 @@ offline0: i4pcu------r--- TCP [OR] 167.99.215.164:993 <-- [L] 192.168.1.8:50506
     : RID 47: TLS ALPN Not Found
     : DP: 7
 
-offline0: i4pcu-x----r--- TCP [L] 10.10.10.1:993 <-- [OL] 192.168.0.1:51529
+offline0: i4pcu-x----r---- TCP [L] 10.10.10.1:993 <-- [OL] 192.168.0.1:51529
     : IMAP/S.netify.godaddy
     : CT ID: 0: MARK: 0
     : H: imap.asia.secureserver.net

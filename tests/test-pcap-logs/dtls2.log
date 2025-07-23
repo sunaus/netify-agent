@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- UDP [OR] 61.68.110.153:53045 <-- [L] 212.32.214.39:61457
+offline0: i4pcu------r---- UDP [OR] 61.68.110.153:53045 <-- [L] 212.32.214.39:61457
     : DTLS.netify.rockstar-games
     : CT ID: 0: MARK: 0
     : V: 0xfeff CS: 0x0035

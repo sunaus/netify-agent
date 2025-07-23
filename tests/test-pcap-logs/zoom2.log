@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [OR] 144.195.73.154:443 <-- [L] 192.168.1.178:50076
+offline0: i4pcu------r---- TCP [OR] 144.195.73.154:443 <-- [L] 192.168.1.178:50076
     : HTTP/S.netify.zoom
     : CT ID: 0: MARK: 0
     : H: zoomsjccv154mmr.sjc.zoom.us
@@ -10,17 +10,17 @@ offline0: i4pcu------r--- TCP [OR] 144.195.73.154:443 <-- [L] 192.168.1.178:5007
     : RID 47: TLS ALPN Not Found
     : DP: 8
 
-offline0: i4pc----------- UDP [OR] 144.195.73.154:8801 <-- [L] 192.168.1.178:60653
+offline0: i4pc------------ UDP [OR] 144.195.73.154:8801 <-- [L] 192.168.1.178:60653
     : ZOOM.netify.zoom
     : CT ID: 0: MARK: 0
     : DP: 5
 
-offline0: i4pc----------- UDP [OR] 144.195.73.154:8801 <-- [L] 192.168.1.178:58117
+offline0: i4pc------------ UDP [OR] 144.195.73.154:8801 <-- [L] 192.168.1.178:58117
     : ZOOM.netify.zoom
     : CT ID: 0: MARK: 0
     : DP: 5
 
-offline0: i4pc----------- UDP [OR] 144.195.73.154:8801 <-- [L] 192.168.1.178:57953
+offline0: i4pc------------ UDP [OR] 144.195.73.154:8801 <-- [L] 192.168.1.178:57953
     : ZOOM.netify.zoom
     : CT ID: 0: MARK: 0
     : DP: 5
