@@ -1064,19 +1064,6 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
 #endif
             }
 
-            if (ndEF->tls.esni.esni.empty() &&
-              ndEFNFP.tls_quic.encrypted_sni.esni != nullptr)
-            {
-                updated = true;
-                ndEF->tls.esni.cipher_suite =
-                  ndEFNFP.tls_quic.encrypted_sni.cipher_suite;
-                ndEF->tls.esni.esni.assign(
-                  ndEFNFP.tls_quic.encrypted_sni.esni);
-#ifdef _ND_LOG_FLOW_DEBUG_TLS
-                nd_dprintf("%s: TLS: set ESNI.\n", tag.c_str());
-#endif
-            }
-
             if (ndEFNFP.tls_quic.client_hello_processed &&
               ! ndEF->tls.proc_hello.load())
             {

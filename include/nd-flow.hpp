@@ -370,7 +370,6 @@ public:
     bool HasSSHServerAgent(void) const;
     bool HasTLSClientSNI(void) const;
     bool HasTLSEncryptedCH(void) const;
-    bool HasTLSEncryptedSNI(void) const;
     bool HasTLSServerCN(void) const;
     bool HasTLSIssuerDN(void) const;
     bool HasTLSSubjectDN(void) const;
@@ -691,16 +690,6 @@ public:
                     sprintf(tohex, "0x%04hx", tls.ech.version);
                     serialize(output,
                       { "ssl", "encrypted_ch_version" },
-                      tohex);
-                }
-
-                if (HasTLSEncryptedSNI()) {
-                    serialize(output,
-                      { "ssl", "encrypted_sni" },
-                      tls.esni.esni);
-                    sprintf(tohex, "0x%04hx", tls.esni.cipher_suite);
-                    serialize(output,
-                      { "ssl", "esni_cipher_suite" },
                       tohex);
                 }
 

@@ -257,13 +257,6 @@ bool ndFlow::HasTLSEncryptedCH(void) const {
       tls.ech.version != 0);
 }
 
-bool ndFlow::HasTLSEncryptedSNI(void) const {
-    return ((GetMasterProtocol() == ndProto::Id::TLS ||
-              detected_protocol == ndProto::Id::DTLS ||
-              detected_protocol == ndProto::Id::QUIC) &&
-      tls.esni.esni.empty() == false);
-}
-
 bool ndFlow::HasTLSServerCN(void) const {
     return ((GetMasterProtocol() == ndProto::Id::TLS ||
               detected_protocol == ndProto::Id::DTLS ||
@@ -632,15 +625,6 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                     << ": TLS/ECH: 0x" << setfill('0')
                     << setw(4) << hex << tls.ech.version
                     << setfill(' ') << dec;
-            }
-
-            if (HasTLSEncryptedSNI()) {
-                dls << endl
-                    << setw(plen) << " "
-                    << ": TLS/ESNI: 0x" << setfill('0')
-                    << setw(4) << hex
-                    << tls.esni.cipher_suite << setfill(' ')
-                    << dec << ": " << tls.esni.esni;
             }
 
             if (HasTLSIssuerDN() || HasTLSSubjectDN()) {
