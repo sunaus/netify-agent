@@ -1,7 +1,7 @@
 # Netify Agent Autoconf configuration
 
 m4_include([m4/ax_pkg_installdir.m4])
-m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
+m4_include([m4/ax_cxx_compile_stdcxx_17.m4])
 m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
 
@@ -72,8 +72,8 @@ AX_CHECK_PROGS
 ND_DEFINES=""
 
 # Check compiler flags
-AX_CXX_COMPILE_STDCXX_11
-AS_VAR_APPEND([CXXFLAGS], [" -std=gnu++11"])
+AX_CXX_COMPILE_STDCXX_17
+AS_VAR_APPEND([CXXFLAGS], [" -std=gnu++17"])
 
 # Checks for libraries.
 AC_CHECK_LIB([pthread],
