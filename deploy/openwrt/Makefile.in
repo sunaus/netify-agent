@@ -33,7 +33,8 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_NETIFYD_ENABLE_NFQUEUE \
 	CONFIG_NETIFYD_ENABLE_OPENWRT \
 	CONFIG_NETIFYD_ENABLE_TPACKETV3 \
-	CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT
+	CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT \
+	CONFIG_NETIFYD_WITH_STDCPP17
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -97,6 +98,7 @@ CONFIGURE_ARGS+= \
 	$(if $(CONFIG_NETIFYD_ENABLE_OPENWRT),--enable-uci,--disable-uci) \
 	$(if $(CONFIG_NETIFYD_ENABLE_TPACKETV3),--enable-tpacketv3,--disable-tpacketv3) \
 	$(if $(CONFIG_NETIFYD_WITH_LOCAL_LIBGCRYPT),--with-local-libgcrypt,--without-local-libgcrypt) \
+	$(if $(CONFIG_NETIFYD_WITH_STDCPP17),--with-stdcpp=17,--with-stdcpp=11) \
 	--sharedstatedir=/var/run \
 	--disable-libtcmalloc \
 	--without-systemdsystemunitdir \

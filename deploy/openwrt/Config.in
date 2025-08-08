@@ -13,6 +13,12 @@ config NETIFYD_BUILD_SHARED_LIBRARY
 	help
 		Build the Agent as a shared library when enabled, or statically link it otherwise.  Statically linking can make debugging easier.
 
+config NETIFYD_WITH_STDCPP17
+	bool "Compile using the C++17 standard?"
+	default y
+	help
+		Compile using C++17 to support some plugins (proc-intel).
+
 config NETIFYD_WITH_LOCAL_LIBGCRYPT
 	bool "Link nDPI with the local system libgcrypt?"
 	default y
