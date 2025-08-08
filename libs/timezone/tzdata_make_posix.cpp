@@ -419,7 +419,7 @@ string tz_data::make_posix(const string& tzvar)
     // Success:
     //
     *this = std::move(temp);
-    return std::move(string(tzvar, 0, comma1));
+    return string(tzvar, 0, comma1);
 }
 
 } // namespace zoneinfo

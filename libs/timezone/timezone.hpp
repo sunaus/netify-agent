@@ -195,7 +195,7 @@ public:
     std::string posix_tz_env_var() const;
     static std::string posix_tz_env_var(const std::string& zone)
     {
-        return std::move(zoneinfo::tz_data::get_posix_tz(zone));
+        return zoneinfo::tz_data::get_posix_tz(zone);
     }
 
     std::time_t effective_time() const noexcept { return tt; }

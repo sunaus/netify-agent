@@ -484,7 +484,7 @@ tz_data& tz_data::read(const string& fn)
     //
     // The POSIX TZ environment variable:
     //
-    string tzenv_temp(std::move(get_tz_env(fn, istr)));
+    string tzenv_temp(get_tz_env(fn, istr));
     temp.tzenv = new char[tzenv_temp.size() + 1];
     memcpy(temp.tzenv, tzenv_temp.c_str(), tzenv_temp.size() + 1);
 
@@ -531,7 +531,7 @@ string tz_data::get_posix_tz(const string& fn)
         read_err("Error reading", fn);
     }
 
-    return std::move(get_tz_env(fn, istr));
+    return get_tz_env(fn, istr);
 }
 
 } // namespace zoneinfo

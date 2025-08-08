@@ -454,11 +454,11 @@ void timezone::make_fixed(int hrs, int mins, int secs)
     assert(mins > -60 && mins < +60);
     assert(secs > -60 && secs < +60);
 
-    if (hrs < 0 && mins > 0 || hrs > 0 && mins < 0)
+    if ((hrs < 0 && mins > 0) || (hrs > 0 && mins < 0))
     {
         mins = -mins;
     }
-    if (hrs < 0 && secs > 0 || hrs > 0 && secs < 0)
+    if ((hrs < 0 && secs > 0) || (hrs > 0 && secs < 0))
     {
         secs = -secs;
     }
@@ -771,7 +771,7 @@ std::string timezone::posix_tz_env_var() const
 {
     if (data.tzenv != nullptr)
     {
-        return std::move(std::string(data.tzenv));
+        return std::string(data.tzenv);
     }
     return "[unknown TZ]";
 }
