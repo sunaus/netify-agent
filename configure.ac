@@ -1,6 +1,7 @@
 # Netify Agent Autoconf configuration
 
 m4_include([m4/ax_pkg_installdir.m4])
+m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
 m4_include([m4/ax_cxx_compile_stdcxx_17.m4])
 m4_include([m4/ax_git_vars.m4])
 m4_include([m4/ax_check_progs.m4])
@@ -72,8 +73,24 @@ AX_CHECK_PROGS
 ND_DEFINES=""
 
 # Check compiler flags
-AX_CXX_COMPILE_STDCXX_17
-AS_VAR_APPEND([CXXFLAGS], [" -std=gnu++17"])
+AC_ARG_WITH([stdcpp],
+     [AS_HELP_STRING([--with-stdcpp=VERSION], [Standard C++ version: 11, or 17 [default=11]])],,
+     [with_stdcpp=11])
+
+AS_CASE([x$with_stdcpp],
+    [x11], [
+        AX_CXX_COMPILE_STDCXX_11
+        AS_VAR_APPEND([CXXFLAGS], [" -std=gnu++11"])
+        AS_VAR_APPEND([ND_DEFINES], [" -D_ND_STDCPP=11"])
+    ],
+    [x17], [
+        AX_CXX_COMPILE_STDCXX_17
+        AS_VAR_APPEND([CXXFLAGS], [" -std=gnu++17"])
+        AS_VAR_APPEND([ND_DEFINES], [" -D_ND_STDCPP=17"])
+    ], [
+        AC_MSG_ERROR([unsupported C++ standard: $with_stdcpp])
+    ]
+)
 
 # Checks for libraries.
 AC_CHECK_LIB([pthread],
