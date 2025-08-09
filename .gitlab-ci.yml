@@ -34,25 +34,6 @@ variables:
 
 # Debian Targets
 
-Debian/10/x86-64:
-  extends: .debian_build
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  variables:
-    OS_NAME: debian
-    OS_VERSION: 10
-    OS_IMAGE: "debian:10"
-    OS_ARCH: amd64
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-    OS_EXTRA_PACKAGES: flex
-    CONFIGURE_EXTRA_FLAGS: >
-      --disable-libtcmalloc
-
 Debian/11/x86-64:
   extends: .debian_build
   tags:
@@ -66,79 +47,6 @@ Debian/11/x86-64:
       value: $OS_ARCH
       expand: true
     OS_EXTRA_PACKAGES: libcap-dev
-    CONFIGURE_EXTRA_FLAGS: >
-      --enable-capabilities
-
-Debian/11/x86-32:
-  extends: .debian_build
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  variables:
-    OS_NAME: debian
-    OS_VERSION: 11
-    OS_IMAGE: "i386/debian:11"
-    OS_ARCH: i386
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-    OS_EXTRA_PACKAGES: byacc flex
-
-Debian/11/ARM-32v5:
-  extends: .debian_build
-  when: manual
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  variables:
-    OS_NAME: debian
-    OS_VERSION: 11
-    OS_IMAGE: "arm32v5/debian:11"
-    OS_ARCH: "armel"
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-    OS_EXTRA_PACKAGES: byacc flex
-
-Debian/11/ARM-32v7:
-  extends: .debian_build
-  when: manual
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  variables:
-    OS_NAME: debian
-    OS_VERSION: 11
-    OS_IMAGE: "arm32v7/debian:11"
-    OS_ARCH: "armhf"
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-    OS_EXTRA_PACKAGES: byacc flex
-
-Debian/11/ARM-64v8:
-  extends: .debian_build
-  when: manual
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  variables:
-    OS_NAME: debian
-    OS_VERSION: 11
-    OS_IMAGE: "arm64v8/debian:11"
-    OS_ARCH: "arm64"
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-    OS_EXTRA_PACKAGES: byacc flex libcap-dev
     CONFIGURE_EXTRA_FLAGS: >
       --enable-capabilities
 
