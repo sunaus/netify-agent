@@ -127,7 +127,7 @@ typedef void* yyscan_t;
 %token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID
 %token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY FLOW_PROTOCOL_CATEGORY_ID
 %token FLOW_DETECTED_HOSTNAME FLOW_DNS_HOSTNAME FLOW_ORIGIN FLOW_CT_MARK
-%token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_ESNI FLOW_TLS_JA4
+%token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_JA4
 %token FLOW_IFACE FLOW_IFACE_NFQ_SRC FLOW_IFACE_NFQ_DST
 
 %token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED FLOW_OTHER_LOCAL
@@ -165,7 +165,7 @@ typedef void* yyscan_t;
 %type <bool_result> expr_risks expr_risk_ndpi_score expr_risk_ndpi_score_client expr_risk_ndpi_score_server
 %type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category expr_proto_category_id
 %type <bool_result> expr_detected_hostname expr_dns_hostname expr_origin expr_fwmark
-%type <bool_result> expr_tls_version expr_tls_cipher expr_tls_ech expr_tls_esni expr_tls_ja4
+%type <bool_result> expr_tls_version expr_tls_cipher expr_tls_ech expr_tls_ja4
 %type <bool_result> expr_iface expr_iface_nfq_src expr_iface_nfq_dst
 
 %%
@@ -219,7 +219,6 @@ expr:
     | expr_tls_version
     | expr_tls_cipher
     | expr_tls_ech
-    | expr_tls_esni
     | expr_tls_ja4
     | expr_origin
     | expr_fwmark
@@ -2258,41 +2257,6 @@ expr_tls_ech:
     | FLOW_TLS_ECH '<' VALUE_NUMBER {
         _NDFP_result = ($$ = (_NDFP_flow->tls.ech.version < $3));
         _NDFP_debugf("TLS ECH version < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    ;
-
-expr_tls_esni:
-      FLOW_TLS_ESNI {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite != 0));
-        _NDFP_debugf("TLS ESNI cipher suite set? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | '!' FLOW_TLS_ESNI {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite == 0));
-        _NDFP_debugf("TLS ESNI cipher suite not set? %s\n", (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_TLS_ESNI CMP_EQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite == $3));
-        _NDFP_debugf("TLS ESNI cipher suite == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_TLS_ESNI CMP_NOTEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite != $3));
-        _NDFP_debugf("TLS ESNI cipher suite != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_TLS_ESNI CMP_GTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite >= $3));
-        _NDFP_debugf("TLS ESNI cipher suite >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_TLS_ESNI CMP_LTHANEQUAL VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite <= $3));
-        _NDFP_debugf("TLS ESNI cipher suite <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_TLS_ESNI '>' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite > $3));
-        _NDFP_debugf("TLS ESNI cipher suite > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
-    }
-    | FLOW_TLS_ESNI '<' VALUE_NUMBER {
-        _NDFP_result = ($$ = (_NDFP_flow->tls.esni.cipher_suite < $3));
-        _NDFP_debugf("TLS ESNI cipher suite < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 

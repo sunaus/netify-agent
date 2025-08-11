@@ -303,11 +303,6 @@ public:
             uint16_t version = { 0 };
         } ech;
 
-        struct {
-            uint16_t cipher_suite = { 0 };
-            std::string esni;
-        } esni;
-
         std::atomic<bool> proc_hello = { false };
         std::atomic<bool> proc_certificate = { false };
     } tls;
@@ -691,16 +686,6 @@ public:
                     sprintf(tohex, "0x%04hx", tls.ech.version);
                     serialize(output,
                       { "ssl", "encrypted_ch_version" },
-                      tohex);
-                }
-
-                if (HasTLSEncryptedSNI()) {
-                    serialize(output,
-                      { "ssl", "encrypted_sni" },
-                      tls.esni.esni);
-                    sprintf(tohex, "0x%04hx", tls.esni.cipher_suite);
-                    serialize(output,
-                      { "ssl", "esni_cipher_suite" },
                       tohex);
                 }
 

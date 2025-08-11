@@ -931,12 +931,6 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                         ndEF->host_server_name = hostname;
                     }
                 }
-
-                if (updated &&
-                    ndEF->detected_application == ndApp::Id::UNKNOWN) {
-                    SetDetectedApplication(entry,
-                      ndi.apps.Find(ndEF->tls.server_cn));
-                }
 #ifdef _ND_LOG_FLOW_DEBUG_DNS
                 nd_dprintf("%s: DNS: %s hostname.\n", tag.c_str(),
                     (updated) ? "updated" : "set");
@@ -1061,19 +1055,6 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
                   ndEFNFP.tls_quic.encrypted_ch.version;
 #ifdef _ND_LOG_FLOW_DEBUG_TLS
                 nd_dprintf("%s: TLS: set ECH.\n", tag.c_str());
-#endif
-            }
-
-            if (ndEF->tls.esni.esni.empty() &&
-              ndEFNFP.tls_quic.encrypted_sni.esni != nullptr)
-            {
-                updated = true;
-                ndEF->tls.esni.cipher_suite =
-                  ndEFNFP.tls_quic.encrypted_sni.cipher_suite;
-                ndEF->tls.esni.esni.assign(
-                  ndEFNFP.tls_quic.encrypted_sni.esni);
-#ifdef _ND_LOG_FLOW_DEBUG_TLS
-                nd_dprintf("%s: TLS: set ESNI.\n", tag.c_str());
 #endif
             }
 

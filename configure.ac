@@ -13,7 +13,6 @@ AC_INIT([Netify Agent],
     [netifyd], [https://www.netify.ai/])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
 AC_CONFIG_SRCDIR([src/netifyd.cpp])
-AC_CONFIG_SUBDIRS([libs/inih libs/ndpi])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_USE_SYSTEM_EXTENSIONS
@@ -56,22 +55,6 @@ AM_CONDITIONAL(USE_UBUS, false)
 AM_CONDITIONAL(USE_UCI, false)
 AM_CONDITIONAL(USE_LIBCAP, false)
 
-# Checks for programs.
-AC_PROG_CC
-AC_PROG_CXX
-AC_PROG_INSTALL
-AM_PROG_LEX([yywrap])
-AC_PROG_YACC
-AC_PROG_EGREP
-AC_CHECK_TOOL([STRIP], [strip])
-LT_INIT
-PKG_PROG_PKG_CONFIG([0.23])
-AX_PKG_INSTALLDIR
-AX_CHECK_PROGS
-
-# Defines we will pass to pkg-config:
-ND_DEFINES=""
-
 # Check compiler flags
 AC_ARG_WITH([stdcpp],
      [AS_HELP_STRING([--with-stdcpp=VERSION], [Standard C++ version: 11, or 17 [default=11]])],,
@@ -91,6 +74,26 @@ AS_CASE([x$with_stdcpp],
         AC_MSG_ERROR([unsupported C++ standard: $with_stdcpp])
     ]
 )
+
+AX_UNPRECIOUS([CFLAGS])
+AX_UNPRECIOUS([CXXFLAGS])
+export CFLAGS CXXFLAGS
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AM_PROG_LEX([yywrap])
+AC_PROG_YACC
+AC_PROG_EGREP
+AC_CHECK_TOOL([STRIP], [strip])
+LT_INIT
+PKG_PROG_PKG_CONFIG([0.23])
+AX_PKG_INSTALLDIR
+AX_CHECK_PROGS
+
+# Defines we will pass to pkg-config:
+ND_DEFINES=""
 
 # Checks for libraries.
 AC_CHECK_LIB([pthread],
@@ -508,6 +511,7 @@ AX_RELEASE_QUARTER
 AC_SUBST([ND_DEFINES], [$ND_DEFINES])
 
 # Output files
+AC_CONFIG_SUBDIRS([libs/inih libs/ndpi])
 AC_CONFIG_FILES([deploy/openwrt/Makefile deploy/openwrt/files/netifyd.init \
     deploy/openwrt/files/netifyd.config])
 AC_CONFIG_FILES([libnetifyd.pc])
