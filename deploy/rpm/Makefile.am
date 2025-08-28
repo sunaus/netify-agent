@@ -10,7 +10,6 @@ EXTRA_DIST = $(RPMFILES_IN)
 
 %: %.in
 	$(SED) \
-		-e 's|[@]PACKAGE_RELEASE@|$(PACKAGE_RELEASE)|g' \
 		-e 's|[@]PACKAGE_BUGREPORT@|$(PACKAGE_BUGREPORT)|g' \
 		-e 's|[@]PACKAGE_NAME@|$(PACKAGE_NAME)|g' \
 		-e 's|[@]PACKAGE_TARNAME@|$(PACKAGE_TARNAME)|g' \

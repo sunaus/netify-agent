@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-#NETIFYD_VERSION = v@PACKAGE_VERSION@-@PACKAGE_RELEASE@
+#NETIFYD_VERSION = v@PACKAGE_VERSION@
 NETIFYD_VERSION = @GIT_LAST_COMMIT_HASH@
 NETIFYD_SITE = @GIT_SOURCE_URL@
 NETIFYD_SITE_METHOD=git
