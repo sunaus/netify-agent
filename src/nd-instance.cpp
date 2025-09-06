@@ -2852,7 +2852,9 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
 
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
     if (ndGC_USE_CONNTRACK) {
+        nd_dprintf("%s: dumping CT counters...\n", tag.c_str());
         thread_conntrack->Dump(true);
+        nd_dprintf("%s: dumped CT counters.\n", tag.c_str());
 
         set<string> ct_counter_ifnames;
 

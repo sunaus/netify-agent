@@ -44,12 +44,16 @@ ndNetlink::ndNetlink(int bus, unsigned int groups) {
 
 bool ndNetlink::Recv(void)
 {
-    int rc;
-    ssize_t bytes;
+    int rc = MNL_CB_ERROR;
 
     do {
-        bytes = mnl_socket_recvfrom(
+        ssize_t bytes = mnl_socket_recvfrom(
             socket_nl, socket_buffer.data(), socket_buffer.size());
+
+        if (dump) {
+            nd_dprintf("%s: recv %ld byte(s), seq_id: %u, port_id: %u\n",
+                __PRETTY_FUNCTION__, bytes, seq_id, port_id);
+        }
 
         if (bytes < 0)
             throw ndException("mnl_socket_recvfrom: %s", strerror(errno));
@@ -76,8 +80,15 @@ bool ndNetlink::Send(nlmsghdr *nlh)
         nlh->nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP;
     }
 
-    if (mnl_socket_sendto(socket_nl, nlh, nlh->nlmsg_len) < 0)
+    ssize_t bytes = mnl_socket_sendto(socket_nl, nlh, nlh->nlmsg_len);
+
+    if (dump) {
+        nd_dprintf("%s: send %ld byte(s), seq_id: %u, port_id: %u\n",
+            __PRETTY_FUNCTION__, bytes, seq_id, port_id);
+    }
+
+    if (bytes < 0)
         throw ndException("mnl_socket_sendto: %s", strerror(errno));
 
-    return true;
+    return (bytes > 0);
 }
