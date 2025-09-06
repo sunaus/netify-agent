@@ -443,7 +443,7 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
 
     if (request != requests.end()) {
         ndNetifyApiBootstrap *bootstrap =
-          dynamic_cast<ndNetifyApiBootstrap *>(request->second);
+          static_cast<ndNetifyApiBootstrap *>(request->second);
 
         if (bootstrap->HasTerminated()) {
             result = ProcessBootstrapRequest(bootstrap);
@@ -487,7 +487,7 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
         if (request != requests.end()) {
             downloads++;
             ndNetifyApiDownload *download =
-              dynamic_cast<ndNetifyApiDownload *>(request->second);
+              static_cast<ndNetifyApiDownload *>(request->second);
 
             if (download->HasTerminated()) {
                 download_results[type] =
