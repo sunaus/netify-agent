@@ -276,10 +276,30 @@ public:
         struct nlmsghdr *nlh = mnl_nlmsg_put_header(socket_buffer.data());
         nlh->nlmsg_type = type;
 
-        struct ndmsg *ndh = static_cast<struct ndmsg *>(
-            mnl_nlmsg_put_extra_header(nlh, sizeof(struct ndmsg))
-        );
-        ndh->ndm_family = family;
+        if (type == RTM_GETADDR) {
+            struct rtgenmsg *rtgh = static_cast<struct rtgenmsg *>(
+                mnl_nlmsg_put_extra_header(nlh, sizeof(struct rtgenmsg))
+            );
+            rtgh->rtgen_family = family;
+        }
+        else if (type == RTM_GETROUTE) {
+            struct rtmsg *rth = static_cast<struct rtmsg *>(
+                mnl_nlmsg_put_extra_header(nlh, sizeof(struct rtmsg))
+            );
+            rth->rtm_family = family;
+        }
+        else if (type == RTM_GETLINK) {
+            struct rtgenmsg *rtgh = static_cast<struct rtgenmsg *>(
+                mnl_nlmsg_put_extra_header(nlh, sizeof(struct rtgenmsg))
+            );
+            rtgh->rtgen_family = AF_PACKET;
+        }
+        else if (type == RTM_GETNEIGH) {
+            struct ndmsg *ndh = static_cast<struct ndmsg *>(
+                mnl_nlmsg_put_extra_header(nlh, sizeof(struct ndmsg))
+            );
+            ndh->ndm_family = family;
+        }
 
         try {
             if (Send(nlh)) return (Recv());
