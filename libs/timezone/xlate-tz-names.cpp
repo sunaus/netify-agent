@@ -360,7 +360,7 @@ bool read_tzdata()
 
                 links[move(input.substr(linkbeg, linkend - linkbeg))]
                     .assign(move(input.substr(namebeg, nameend - namebeg)));
-            } 
+            }
         }
     }
 

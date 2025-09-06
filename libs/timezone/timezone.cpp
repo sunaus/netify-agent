@@ -565,7 +565,7 @@ void timezone::make_offsets() noexcept
     if (data.hdr.tzh_typecnt == 2)
     {
         zoneinfo::tz_data::ttinfo const * beg = data.info;
-        zoneinfo::tz_data::ttinfo const * const end = beg + 2; 
+        zoneinfo::tz_data::ttinfo const * const end = beg + 2;
 
         for ( ; beg != end; ++beg)
         {
@@ -745,7 +745,7 @@ timezone::trans_type timezone::transition_type() const noexcept
     {
         assert(data.stdind != nullptr && data.utcind != nullptr);
         std::ptrdiff_t indidx = info_ptr - data.info;
-        return data.utcind[indidx] != '\0' ? 
+        return data.utcind[indidx] != '\0' ?
             trans_type::utc :
             (data.stdind[indidx] != '\0' ? trans_type::std : trans_type::wall);
     }
