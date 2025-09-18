@@ -47,6 +47,8 @@
     ((ndFlowParser *)yyget_extra(scanner))->other_port
 #define _NDFP_origin \
     ((ndFlowParser *)yyget_extra(scanner))->origin
+#define _NDFP_params_intel \
+    ((ndFlowParser *)yyget_extra(scanner))->params_intel
 #define _NDFP_result \
     ((ndFlowParser *)yyget_extra(scanner))->expr_result
 #define _NDFP_categories \
@@ -60,7 +62,14 @@ public:
     ndFlowParser();
     virtual ~ndFlowParser();
 
-    bool Parse(ndFlow::Ptr const &flow, const std::string &expr);
+    typedef std::unordered_map<std::string, nlohmann::json> Params;
+
+    bool Parse(
+      ndFlow::Ptr const &flow, const Params &params, const std::string &expr);
+    inline bool Parse(ndFlow::Ptr const &flow, const std::string &expr) {
+        Params params;
+        return Parse(flow, params, expr);
+    }
 
     bool RegExSearch(std::string &expr, const std::string &search);
 
@@ -72,6 +81,7 @@ public:
     uint16_t local_port;
     uint16_t other_port;
     uint16_t origin;
+    const nlohmann::json *params_intel = { nullptr };
 
     bool expr_result;
 

@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 99 "nd-flow-expr.ypp"
+#line 128 "nd-flow-expr.ypp"
 
 typedef void* yyscan_t;
 
@@ -121,23 +121,26 @@ typedef void* yyscan_t;
     FLOW_ORIGIN_UNKNOWN = 316,     /* FLOW_ORIGIN_UNKNOWN  */
     FLOW_TUNNEL_NONE = 317,        /* FLOW_TUNNEL_NONE  */
     FLOW_TUNNEL_GTP = 318,         /* FLOW_TUNNEL_GTP  */
-    CMP_EQUAL = 319,               /* CMP_EQUAL  */
-    CMP_NOTEQUAL = 320,            /* CMP_NOTEQUAL  */
-    CMP_GTHANEQUAL = 321,          /* CMP_GTHANEQUAL  */
-    CMP_LTHANEQUAL = 322,          /* CMP_LTHANEQUAL  */
-    BOOL_AND = 323,                /* BOOL_AND  */
-    BOOL_OR = 324,                 /* BOOL_OR  */
-    VALUE_ADDR_IPMASK = 325,       /* VALUE_ADDR_IPMASK  */
-    VALUE_TRUE = 326,              /* VALUE_TRUE  */
-    VALUE_FALSE = 327,             /* VALUE_FALSE  */
-    VALUE_ADDR_MAC = 328,          /* VALUE_ADDR_MAC  */
-    VALUE_NAME = 329,              /* VALUE_NAME  */
-    VALUE_REGEX = 330,             /* VALUE_REGEX  */
-    VALUE_ADDR_IPV4 = 331,         /* VALUE_ADDR_IPV4  */
-    VALUE_ADDR_IPV4_CIDR = 332,    /* VALUE_ADDR_IPV4_CIDR  */
-    VALUE_ADDR_IPV6 = 333,         /* VALUE_ADDR_IPV6  */
-    VALUE_ADDR_IPV6_CIDR = 334,    /* VALUE_ADDR_IPV6_CIDR  */
-    VALUE_NUMBER = 335             /* VALUE_NUMBER  */
+    FLOW_INTEL = 319,              /* FLOW_INTEL  */
+    CMP_EQUAL = 320,               /* CMP_EQUAL  */
+    CMP_NOTEQUAL = 321,            /* CMP_NOTEQUAL  */
+    CMP_GTHANEQUAL = 322,          /* CMP_GTHANEQUAL  */
+    CMP_LTHANEQUAL = 323,          /* CMP_LTHANEQUAL  */
+    BOOL_AND = 324,                /* BOOL_AND  */
+    BOOL_OR = 325,                 /* BOOL_OR  */
+    VALUE_ADDR_IPMASK = 326,       /* VALUE_ADDR_IPMASK  */
+    VALUE_TRUE = 327,              /* VALUE_TRUE  */
+    VALUE_FALSE = 328,             /* VALUE_FALSE  */
+    VALUE_ADDR_MAC = 329,          /* VALUE_ADDR_MAC  */
+    VALUE_NAME = 330,              /* VALUE_NAME  */
+    VALUE_REGEX = 331,             /* VALUE_REGEX  */
+    VALUE_ADDR_IPV4 = 332,         /* VALUE_ADDR_IPV4  */
+    VALUE_ADDR_IPV4_CIDR = 333,    /* VALUE_ADDR_IPV4_CIDR  */
+    VALUE_ADDR_IPV6 = 334,         /* VALUE_ADDR_IPV6  */
+    VALUE_ADDR_IPV6_CIDR = 335,    /* VALUE_ADDR_IPV6_CIDR  */
+    VALUE_SIGNED = 336,            /* VALUE_SIGNED  */
+    VALUE_UNSIGNED = 337,          /* VALUE_UNSIGNED  */
+    VALUE_FLOAT = 338              /* VALUE_FLOAT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -207,39 +210,44 @@ typedef void* yyscan_t;
 #define FLOW_ORIGIN_UNKNOWN 316
 #define FLOW_TUNNEL_NONE 317
 #define FLOW_TUNNEL_GTP 318
-#define CMP_EQUAL 319
-#define CMP_NOTEQUAL 320
-#define CMP_GTHANEQUAL 321
-#define CMP_LTHANEQUAL 322
-#define BOOL_AND 323
-#define BOOL_OR 324
-#define VALUE_ADDR_IPMASK 325
-#define VALUE_TRUE 326
-#define VALUE_FALSE 327
-#define VALUE_ADDR_MAC 328
-#define VALUE_NAME 329
-#define VALUE_REGEX 330
-#define VALUE_ADDR_IPV4 331
-#define VALUE_ADDR_IPV4_CIDR 332
-#define VALUE_ADDR_IPV6 333
-#define VALUE_ADDR_IPV6_CIDR 334
-#define VALUE_NUMBER 335
+#define FLOW_INTEL 319
+#define CMP_EQUAL 320
+#define CMP_NOTEQUAL 321
+#define CMP_GTHANEQUAL 322
+#define CMP_LTHANEQUAL 323
+#define BOOL_AND 324
+#define BOOL_OR 325
+#define VALUE_ADDR_IPMASK 326
+#define VALUE_TRUE 327
+#define VALUE_FALSE 328
+#define VALUE_ADDR_MAC 329
+#define VALUE_NAME 330
+#define VALUE_REGEX 331
+#define VALUE_ADDR_IPV4 332
+#define VALUE_ADDR_IPV4_CIDR 333
+#define VALUE_ADDR_IPV6 334
+#define VALUE_ADDR_IPV6_CIDR 335
+#define VALUE_SIGNED 336
+#define VALUE_UNSIGNED 337
+#define VALUE_FLOAT 338
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 106 "nd-flow-expr.ypp"
+#line 135 "nd-flow-expr.ypp"
 
     char buffer[_NDFP_MAX_BUFLEN];
 
     bool bool_number;
     unsigned short us_number;
+    long sl_number;
     unsigned long ul_number;
+    float fl_number;
 
     bool bool_result;
 
-#line 243 "nd-flow-expr.hpp"
+#line 251 "nd-flow-expr.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

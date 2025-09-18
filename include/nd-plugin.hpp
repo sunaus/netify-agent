@@ -138,6 +138,7 @@ public:
         FLOW_NEW,  // ndFlow::Ptr
         FLOW_EXPIRING,  // ndFlow::Ptr
         FLOW_EXPIRE,  // ndFlow::Ptr
+        FLOW_INTEL,  // ndFlow::Ptr, nlohmann::json
         DPI_NEW,  // ndFlow::Ptr
         DPI_UPDATE,  // ndFlow::Ptr
         DPI_COMPLETE,  // ndFlow::Ptr
@@ -154,6 +155,9 @@ public:
     DispatchProcessorEvent(Event event, ndFlowMap *flow_map) { }
     virtual void
     DispatchProcessorEvent(Event event, ndFlow::Ptr &flow) { }
+    virtual void
+    DispatchProcessorEvent(Event event,
+      ndFlow::Ptr &flow, nlohmann::json &jargs) { }
     virtual void DispatchProcessorEvent(Event event,
       ndInterfaces *interfaces) { }
     virtual void DispatchProcessorEvent(Event event,
@@ -303,10 +307,29 @@ public:
     bool DispatchSinkPayload(const std::string &target,
       const ndPluginSinkPayload::Ptr &payload);
 
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event, ndFlowMap *flow_map);
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event, ndFlow::Ptr &flow);
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event, ndFlow::Ptr &flow, nlohmann::json &jargs);
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event, ndInterfaces *interfaces);
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event, const std::string &iface, ndPacketStats *stats);
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event, ndPacketStats *stats);
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event, ndInstanceStatus *status);
+    void DispatchProcessorEvent(const std::string &target,
+      ndPluginProcessor::Event event);
+
     void BroadcastProcessorEvent(
       ndPluginProcessor::Event event, ndFlowMap *flow_map);
     void BroadcastProcessorEvent(
       ndPluginProcessor::Event event, ndFlow::Ptr &flow);
+    void BroadcastProcessorEvent(ndPluginProcessor::Event event,
+      ndFlow::Ptr &flow, nlohmann::json &jargs);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
       ndInterfaces *interfaces);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,

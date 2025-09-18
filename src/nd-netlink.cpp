@@ -16,6 +16,8 @@
 
 using namespace std;
 
+//#define _ND_NETLINK_DEBUG   1
+
 static int ndNetlink_ProcessMessageCallback(
     const struct nlmsghdr *nlh, void *data) {
     ndNetlink *nl = reinterpret_cast<ndNetlink *>(data);
@@ -49,15 +51,15 @@ bool ndNetlink::Recv(void)
     do {
         ssize_t bytes = mnl_socket_recvfrom(
             socket_nl, socket_buffer.data(), socket_buffer.size());
-
+#if _ND_NETLINK_DEBUG
         if (dump) {
             nd_dprintf("%s: recv %ld byte(s), seq_id: %u, port_id: %u\n",
                 __PRETTY_FUNCTION__, bytes, seq_id, port_id);
         }
-
+#endif
         if (bytes < 0)
             throw ndException("mnl_socket_recvfrom: %s", strerror(errno));
-#if 0
+#if _ND_NETLINK_DEBUG
         nd_dprintf("%s: read %ld byte(s), seq_id: %u, port_id: %u\n",
             __PRETTY_FUNCTION__, bytes,
             dump ? seq_id : 0, dump ? port_id : 0);
@@ -81,12 +83,12 @@ bool ndNetlink::Send(nlmsghdr *nlh)
     }
 
     ssize_t bytes = mnl_socket_sendto(socket_nl, nlh, nlh->nlmsg_len);
-
+#if _ND_NETLINK_DEBUG
     if (dump) {
         nd_dprintf("%s: send %ld byte(s), seq_id: %u, port_id: %u\n",
             __PRETTY_FUNCTION__, bytes, seq_id, port_id);
     }
-
+#endif
     if (bytes < 0)
         throw ndException("mnl_socket_sendto: %s", strerror(errno));
 

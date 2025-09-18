@@ -629,6 +629,131 @@ bool ndPluginManager::DispatchSinkPayload(const string &target,
     return true;
 }
 
+// Dispatch...
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event, ndFlowMap *flow_map) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event, flow_map);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event, ndFlow::Ptr &flow) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event, flow);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event, ndFlow::Ptr &flow, json &jargs) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event, flow, jargs);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event, ndInterfaces *interfaces) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event, interfaces);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event, const string &iface,
+  ndPacketStats *stats) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event, iface, stats);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event, ndPacketStats *stats) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event, stats);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event, ndInstanceStatus *status) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event, status);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+void ndPluginManager::DispatchProcessorEvent(const string &target,
+  ndPluginProcessor::Event event) {
+    lock_guard<mutex> ul(lock);
+
+    auto p = processors.find(target);
+
+    if (p != processors.end()) {
+        reinterpret_cast<ndPluginProcessor *>(p->second->GetPlugin())
+          ->DispatchProcessorEvent(event);
+        return;
+    }
+
+    throw ndException("%s: %s", target.c_str(), "processor not found");
+}
+
+// Broadcast...
+
 void ndPluginManager::BroadcastProcessorEvent(
   ndPluginProcessor::Event event, ndFlowMap *flow_map) {
     lock_guard<mutex> ul(lock);
@@ -646,6 +771,16 @@ void ndPluginManager::BroadcastProcessorEvent(
     for (auto &p : processors) {
         reinterpret_cast<ndPluginProcessor *>(p.second->GetPlugin())
           ->DispatchProcessorEvent(event, flow);
+    }
+}
+
+void ndPluginManager::BroadcastProcessorEvent(
+  ndPluginProcessor::Event event, ndFlow::Ptr &flow, json &jargs) {
+    lock_guard<mutex> ul(lock);
+
+    for (auto &p : processors) {
+        reinterpret_cast<ndPluginProcessor *>(p.second->GetPlugin())
+          ->DispatchProcessorEvent(event, flow, jargs);
     }
 }
 
