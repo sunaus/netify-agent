@@ -134,19 +134,19 @@ public:
     enum class Event : uint16_t {
         NONE,
 
-        FLOW_MAP,  // ndFlowMap *
-        FLOW_NEW,  // ndFlow::Ptr
-        FLOW_EXPIRING,  // ndFlow::Ptr
-        FLOW_EXPIRE,  // ndFlow::Ptr
-        FLOW_INTEL,  // ndFlow::Ptr, nlohmann::json
-        DPI_NEW,  // ndFlow::Ptr
-        DPI_UPDATE,  // ndFlow::Ptr
-        DPI_COMPLETE,  // ndFlow::Ptr
-        INTERFACES,  // ndInterfaces
-        PKT_CAPTURE_STATS,  // string, ndPacketStats *
-        PKT_GLOBAL_STATS,  // ndPacketStats *
-        UPDATE_INIT,  // ndInstanceStatus *
-        UPDATE_COMPLETE,
+        FLOW_MAP,  // 1: ndFlowMap *
+        FLOW_NEW,  // 2: ndFlow::Ptr
+        FLOW_EXPIRING,  // 3: ndFlow::Ptr
+        FLOW_EXPIRE,  // 4: ndFlow::Ptr
+        FLOW_INTEL,  // 5: ndFlow::Ptr, nlohmann::json
+        DPI_NEW,  // 6: ndFlow::Ptr
+        DPI_UPDATE,  // 7: ndFlow::Ptr
+        DPI_COMPLETE,  // 8: ndFlow::Ptr
+        INTERFACES,  // 9: ndInterfaces
+        PKT_CAPTURE_STATS,  // 10: string, ndPacketStats *
+        PKT_GLOBAL_STATS,  // 11: ndPacketStats *
+        UPDATE_INIT,  // 12: ndInstanceStatus *
+        UPDATE_COMPLETE, // 13
 
         MAX
     };
