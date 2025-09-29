@@ -130,23 +130,6 @@ Ubuntu/24.04/x86-64:
 
 # RedHat Targets
 
-CentOS/7/x86-64:
-  extends: .rhel_build
-  when: manual
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  variables:
-    OS_NAME: centos
-    OS_VERSION: 7
-    OS_IMAGE: "centos:7.9.2009"
-    OS_ARCH: x86_64
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-
 Rocky Linux/8/x86-64:
   extends: .rhel_build
   tags:
@@ -272,25 +255,6 @@ FreeBSD/14.0/x86-64:
 
 # RedHat Targets
 
-CentOS/7/Test:
-  extends: .rhel_test
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  needs:
-    - CentOS/7/x86-64
-  variables:
-    OS_NAME: centos
-    OS_VERSION: 7
-    OS_IMAGE: "centos:7.9.2009"
-    OS_ARCH: x86_64
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-    OS_UUID: NE-CE-07-X1
-
 AlmaLinux/8/Test:
   extends: .rhel_test
   tags:
@@ -315,63 +279,6 @@ AlmaLinux/8/Test:
 # -----------------------------------------------------------
 
 # RedHat Targets
-
-ClearOS/7/x86-64:
-  extends: .rhel_variants
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  needs:
-    - CentOS/7/Test
-  variables:
-    OS_NAME: clearos
-    OS_SOURCE: centos
-    OS_VERSION: 7
-    OS_IMAGE: "centos:7"
-    OS_ARCH: x86_64
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-
-NethServer/7/x86-64:
-  extends: .rhel_variants
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  needs:
-    - CentOS/7/Test
-  variables:
-    OS_NAME: nethserver
-    OS_SOURCE: centos
-    OS_VERSION: 7
-    OS_IMAGE: "centos:7"
-    OS_ARCH: x86_64
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
-
-RHEL/7/x86-64:
-  extends: .rhel_variants
-  tags:
-    - docker
-  only:
-    - tags
-    - web
-  needs:
-    - CentOS/7/Test
-  variables:
-    OS_NAME: rhel
-    OS_SOURCE: centos
-    OS_VERSION: 7
-    OS_IMAGE: "centos:7.9.2009"
-    OS_ARCH: x86_64
-    OS_ARCH_PATH:
-      value: $OS_ARCH
-      expand: true
 
 RHEL/8/x86-64:
   extends: .rhel_variants

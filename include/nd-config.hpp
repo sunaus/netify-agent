@@ -294,6 +294,7 @@ public:
     std::string path_export_json;
     std::string path_functions = { ND_FUNCTIONS_PATH } ;
     std::string path_intel_config = { ND_CONF_INTEL_PATH };
+    std::string path_overlay_config = { ND_CONF_OVERLAY_PATH };
     std::string path_interfaces = { ND_INTERFACES_PATH };
     std::string path_legacy_config = { ND_CONF_LEGACY_PATH };
     std::string path_pid_file = { ND_PID_FILE_NAME };

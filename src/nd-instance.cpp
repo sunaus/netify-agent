@@ -2376,6 +2376,8 @@ bool ndInstance::Reload(bool broadcast, bool silent) {
         result = categories.LoadDotDirectory(ndGC.path_categories);
     }
 
+    overlay_tags.Reload();
+
     if (broadcast) {
         plugins.BroadcastEvent(ndPlugin::Type::BASE,
           ndPlugin::Event::RELOAD);

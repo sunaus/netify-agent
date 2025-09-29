@@ -1270,6 +1270,8 @@ void ndGlobalConfig::UpdatePaths(void) {
     path_interfaces = path_state_persistent + "/" + ND_INTERFACES_BASE;
 
     path_intel_config = path_state_persistent + "/" + ND_CONF_INTEL_BASE;
+
+    path_overlay_config = path_state_persistent + "/" + ND_CONF_OVERLAY_BASE;
 }
 
 void ndGlobalConfig::UpdateConfigVars(void) {
@@ -1292,6 +1294,8 @@ void ndGlobalConfig::UpdateConfigVars(void) {
       make_pair("${path_categories}", path_categories));
     conf_vars.insert(
       make_pair("${path_intelligence_config}", path_intel_config));
+    conf_vars.insert(
+      make_pair("${path_overlay_config}", path_overlay_config));
     conf_vars.insert(
       make_pair("${path_interfaces}", path_interfaces));
 }

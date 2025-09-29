@@ -44,6 +44,7 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-netlink.hpp
 %%DEVEL%%include/netifyd/nd-netlink-ct.hpp
 %%DEVEL%%include/netifyd/nd-netlink-rt.hpp
+%%DEVEL%%include/netifyd/nd-overlay.hpp
 %%DEVEL%%include/netifyd/nd-packet.hpp
 %%DEVEL%%include/netifyd/nd-plugin.hpp
 %%DEVEL%%include/netifyd/nd-protos.hpp

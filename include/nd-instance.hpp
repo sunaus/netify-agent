@@ -33,6 +33,7 @@
 #include "nd-flow-map.hpp"
 #include "nd-napi.hpp"
 #include "nd-ndpi.hpp"
+#include "nd-overlay.hpp"
 #include "nd-packet.hpp"
 #include "nd-plugin.hpp"
 #include "nd-protos.hpp"
@@ -305,6 +306,7 @@ public:
 #endif
     ndDetectionThreads thread_detection;
     ndPluginManager plugins;
+    ndOverlay::Tags overlay_tags;
 
 protected:
     friend class ndInstanceThread;

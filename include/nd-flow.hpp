@@ -137,7 +137,7 @@ public:
 class ndFlow : public ndSerializer
 {
 public:
-    typedef std::shared_ptr<ndFlow> Ptr;
+    using Ptr = std::shared_ptr<ndFlow>;
 
     ndInterface::Ptr iface;
 
@@ -201,7 +201,7 @@ public:
 
     ndDigest digest_lower = { { 0 } };
 
-    typedef std::vector<ndDigest> DigestVec;
+    using DigestVec = std::vector<ndDigest>;
     DigestVec digest_mdata;
 
     struct {
@@ -271,6 +271,7 @@ public:
         nd_cat_id_t protocol = { ND_CAT_UNKNOWN };
         nd_cat_id_t domain = { ND_CAT_UNKNOWN };
         nd_cat_id_t network = { ND_CAT_UNKNOWN };
+        nd_cat_id_t tag = { ND_CAT_UNKNOWN };
     } category;
 
     struct {
@@ -328,11 +329,14 @@ public:
         uint16_t ndpi_score_client = { 0 };
         uint16_t ndpi_score_server = { 0 };
 
-        typedef std::set<ndRisk::Id> Risks;
+        using Risks = std::set<ndRisk::Id>;
         Risks risks;
     } risk;
 
     ndFlowStats stats;
+
+    using Tags = std::set<std::string>;
+    Tags tags;
 
     mutable std::recursive_mutex lock;
 
@@ -604,6 +608,8 @@ public:
               category.domain);
             serialize(output, { "category", "network" },
               category.network);
+            serialize(output, { "category", "tag" },
+              category.tag);
 
 #ifdef _ND_ENABLE_CONNTRACK
             serialize(output, { "conntrack", "id" }, conntrack.id);
@@ -769,6 +775,8 @@ public:
             serialize(output,
               { "risks", "ndpi_risk_score_server" },
               risk.ndpi_score_server);
+
+            serialize(output, { "tags" }, tags);
         }
 
         if (ndFlagBoolean(encode_flags, EncodeFlags::TUNNELS))

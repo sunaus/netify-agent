@@ -1393,6 +1393,8 @@ void ndDetectionThread::DetectionComplete(
         fhc->Insert(ndEF);
     }
 
+    ndi.overlay_tags.MatchFlow(ndEF);
+
     ndEF->flags.detection_complete = true;
 
     if (ndEFNF != nullptr) DetectionUpdate(entry);
