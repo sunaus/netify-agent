@@ -17,7 +17,7 @@ config NETIFYD_WITH_STDCPP17
 	bool "Compile using the C++17 standard?"
 	default y
 	help
-		Compile using C++17 to support some plugins (proc-intel).
+		Compile with the C++17 standard.
 
 config NETIFYD_WITH_LOCAL_LIBGCRYPT
 	bool "Link nDPI with the local system libgcrypt?"

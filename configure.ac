@@ -57,8 +57,8 @@ AM_CONDITIONAL(USE_LIBCAP, false)
 
 # Check compiler flags
 AC_ARG_WITH([stdcpp],
-     [AS_HELP_STRING([--with-stdcpp=VERSION], [Standard C++ version: 11, or 17 [default=11]])],,
-     [with_stdcpp=11])
+     [AS_HELP_STRING([--with-stdcpp=VERSION], [Standard C++ version: 11, or 17 [default=17]])],,
+     [with_stdcpp=17])
 
 AS_CASE([x$with_stdcpp],
     [x11], [
