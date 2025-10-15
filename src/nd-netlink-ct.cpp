@@ -575,6 +575,10 @@ void ndNetlinkConntrackThread::UpdateFlowStats(
     flow->stats.UpdateRate(true, ts_pkt, id_flow->second->bytes[idx_lower]);
     flow->stats.UpdateRate(false, ts_pkt, id_flow->second->bytes[idx_upper]);
 #endif
+    // TODO: Reset packet counters for edge cases were we don't get a
+    // destroy.
+    id_flow->second->packets[idx_lower] = 0;
+    id_flow->second->packets[idx_upper] = 0;
 #ifdef _ND_DEBUG_LOG
     nd_dprintf("%s: updated flow counters.\n", TAG);
 #endif
