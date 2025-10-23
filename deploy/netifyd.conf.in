@@ -24,6 +24,9 @@ path_pid_file = ${path_state_volatile}/netifyd.pid
 # Path to shared data files
 path_shared_data = @sharedatadir@
 
+# Path to License Manager library
+path_license_manager = ${path_plugin_libdir}/libnetify-plm.so
+
 # Enable automatic Netify Informatics integration.  This option is
 # intended to be managed exclusively by the --enable/disable-informatics
 # command-line parameters.

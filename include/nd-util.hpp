@@ -733,3 +733,5 @@ public:
     bool is_dst = { false };
     int utc_offset = { 0 };
 };
+
+std::string nd_change_ext(const std::string &filename, const std::string &ext);

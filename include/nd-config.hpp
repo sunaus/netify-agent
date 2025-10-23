@@ -297,6 +297,7 @@ public:
     std::string path_overlay_config = { ND_CONF_OVERLAY_PATH };
     std::string path_interfaces = { ND_INTERFACES_PATH };
     std::string path_legacy_config = { ND_CONF_LEGACY_PATH };
+    std::string path_license_manager = { ND_LICENSE_MANAGER_PATH };
     std::string path_pid_file = { ND_PID_FILE_NAME };
     std::string path_plugin_libdir = { ND_PLUGIN_LIBDIR };
     std::string path_plugins = { ND_PLUGINS_PATH };

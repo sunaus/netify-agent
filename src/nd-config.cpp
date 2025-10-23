@@ -152,6 +152,9 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
         path_shared_data = r->Get(ND_NAME_SHORT,
           "path_shared_data", ND_SHARED_DATADIR);
 
+        path_plugin_libdir = r->Get(ND_NAME_SHORT,
+          "path_plugin_libdir", ND_PLUGIN_LIBDIR),
+
         UpdatePaths();
         UpdateConfigVars();
 
@@ -163,10 +166,6 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
           path_state_persistent + "/" + ND_PLUGINS_BASE);
         nd_expand_variables(value, path_plugins, conf_vars);
 
-        value = r->Get(ND_NAME_SHORT, "path_plugin_libdir",
-          ND_PLUGIN_LIBDIR),
-        nd_expand_variables(value, path_plugin_libdir, conf_vars);
-
         value = r->Get(ND_NAME_SHORT, "path_categories",
           path_state_persistent + "/" + ND_CATEGORIES_BASE);
         nd_expand_variables(value, path_categories, conf_vars);
@@ -174,6 +173,10 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
         value = r->Get(ND_NAME_SHORT, "path_interfaces",
           path_state_persistent + "/" + ND_INTERFACES_BASE);
         nd_expand_variables(value, path_interfaces, conf_vars);
+
+        value = r->Get(ND_NAME_SHORT, "path_license_manager",
+          path_state_persistent + "/" + ND_LICENSE_MANAGER_BASE);
+        nd_expand_variables(value, path_license_manager, conf_vars);
 
         path_uuid = r->Get(ND_NAME_SHORT, "path_uuid",
           path_state_persistent + "/" + ND_AGENT_UUID_BASE);
@@ -1261,13 +1264,13 @@ void ndGlobalConfig::UpdatePaths(void) {
 
     path_plugins = path_state_persistent + "/" + ND_PLUGINS_BASE;
 
-    path_plugin_libdir = ND_PLUGIN_LIBDIR;
-
     path_categories = path_state_persistent + "/" + ND_CATEGORIES_BASE;
 
     path_functions = path_shared_data + "/" + ND_FUNCTIONS_BASE;
 
     path_interfaces = path_state_persistent + "/" + ND_INTERFACES_BASE;
+
+    path_license_manager = string(ND_PLUGIN_LIBDIR) + "/" + ND_LICENSE_MANAGER_BASE;
 
     path_intel_config = path_state_persistent + "/" + ND_CONF_INTEL_BASE;
 

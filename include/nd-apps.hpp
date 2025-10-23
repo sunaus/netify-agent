@@ -21,9 +21,11 @@
 #pragma once
 
 #include <cstdint>
+#include <istream>
 #include <map>
 #include <memory>
 #include <regex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -80,6 +82,7 @@ public:
     virtual ~ndApplications();
 
     bool Load(const std::string &filename);
+    bool Load(std::istream &stream);
     bool LoadLegacy(const std::string &filename);
 
     bool Save(const std::string &filename);

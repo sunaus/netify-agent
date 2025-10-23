@@ -76,6 +76,7 @@
 
 #include "nd-config.hpp"
 #include "nd-except.hpp"
+#include "nd-license-client.hpp"
 #include "nd-util.hpp"
 #include "netifyd.hpp"
 
@@ -696,6 +697,8 @@ const string &nd_get_version_and_features(bool fancy) {
 #ifdef HAVE_WORKING_REGEX
         ident << "; regex";
 #endif
+        if (ndLicenseClient::IsValid())
+            ident << "; nlm";
         ident << ")";
 
         version = ident.str();
@@ -2201,4 +2204,14 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
         tv_seconds >= time_start && tv_seconds <= time_end) return false;
 
     return true;
+}
+
+string nd_change_ext(const string &filename, const string &ext) {
+    size_t p;
+    string result(filename);
+
+    if ((p = filename.find_last_of(".")) != string::npos)
+        result = filename.substr(0, p + 1) + ext;
+
+    return result;
 }

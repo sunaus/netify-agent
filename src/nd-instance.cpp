@@ -46,6 +46,7 @@
 #include "nd-config.hpp"
 #include "nd-detection.hpp"
 #include "nd-instance.hpp"
+#include "nd-license-client.hpp"
 #include "nd-progress.hpp"
 #include "nd-types.hpp"
 #include "nd-util.hpp"
@@ -556,6 +557,8 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         cerr << "Try --help for more information." << endl;
         return ndEnumCast(ConfigResult, INVALID_OPTION);
     }
+
+    ndLicenseClient::Create();
 
     Reload(false);
 
@@ -1325,6 +1328,7 @@ bool ndInstance::SaveAgentStatus(const ndCaptureThreads &threads,
     try {
         jstatus["type"] = "agent_status";
         jstatus["agent_version"] = ND_VERSION;
+        jstatus["license_manager"] = ndLicenseClient::GetInstance().IsValid();
 
         apps.Encode(jstatus);
         plugins.Encode(jstatus);
@@ -1655,6 +1659,24 @@ bool ndInstance::DisplayAgentStatus(void) {
             DisplayApiStatus(jstatus, "categories",
               "categories update");
         }
+
+        bool nlm_avail = jstatus["license_manager"].get<bool>();
+
+        fprintf(stdout, "%s%s%s license manager available: %s%s%s\n",
+          (nlm_avail) ?
+            ndTerm::Color::GREEN :
+            ndTerm::Color::YELLOW,
+          (nlm_avail) ?
+            ndTerm::Icon::INFO :
+            ndTerm::Icon::WARN,
+          ndTerm::Attr::RESET,
+          (nlm_avail) ?
+            ndTerm::Color::GREEN :
+            ndTerm::Color::YELLOW,
+          (nlm_avail) ?
+            "yes": "no",
+          ndTerm::Attr::RESET
+        );
 
         double flows = jstatus["flow_count"].get<double>();
         double flow_utilization = (ndGC.max_flows > 0) ?
@@ -2212,7 +2234,6 @@ bool ndInstance::SendSignal(const siginfo_t &si) {
 void *ndInstance::ndInstance::Entry(void) {
     size_t proc_plugins = 0;
     ndCaptureThreads thread_capture;
-
 #ifdef _ND_ENABLE_NETLINK
     if (ndGC_USE_NETLINK) thread_netlink->Dump();
 #endif
@@ -2353,6 +2374,8 @@ ndInstance_EntryReturn:
 
     nd_ndpi_global_shutdown();
 
+    ndLicenseClient::Destroy();
+
     if (exit_code == 0)
         nd_printf("%s: Normal exit.\n", tag.c_str());
     else {
@@ -2366,6 +2389,9 @@ bool ndInstance::Reload(bool broadcast, bool silent) {
     bool result = true;
 
     nd_dprintf("%s: reloading configuration...\n", tag.c_str());
+
+    if (! ndLicenseClient::IsValid())
+        ndLicenseClient::GetInstance().Reload(ndGC.path_license_manager);
 
     if (! (result = apps.Load(ndGC.path_app_config)))
         result = apps.LoadLegacy(ndGC.path_legacy_config);

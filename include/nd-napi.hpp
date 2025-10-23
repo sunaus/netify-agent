@@ -136,9 +136,11 @@ protected:
     enum class Request : uint8_t {
         NONE,
         BOOTSTRAP,
-        DOWNLOAD_CONFIG,
+        DOWNLOAD_APPLICATIONS,
+        DOWNLOAD_APPLICATIONS_DAT,
         DOWNLOAD_CATEGORIES,
         DOWNLOAD_INTELLIGENCE,
+        DOWNLOAD_INTELLIGENCE_DAT,
     };
 
     typedef std::unordered_map<

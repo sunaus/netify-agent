@@ -29,6 +29,7 @@
 #include "nd-base64.hpp"
 #include "nd-except.hpp"
 #include "nd-flow-parser.hpp"
+#include "nd-license-client.hpp"
 
 using namespace std;
 
@@ -46,11 +47,26 @@ ndApplications::~ndApplications() {
 }
 
 bool ndApplications::Load(const string &filename) {
-    stats.ac = stats.dc = stats.nc = stats.oc = stats.sc = stats.xc = 0;
+
+    if (ndLicenseClient::IsValid()) {
+        string datfile = nd_change_ext(filename, "dat");
+
+        if (nd_file_exists(datfile)) {
+            stringstream ss;
+            if (ndLicenseClient::GetInstance().LoadData(
+              "application-signatures", datfile, ss) && Load(ss))
+                return true;
+        }
+    }
 
     ifstream ifs(filename);
-
     if (! ifs.is_open()) return false;
+
+    return Load(ifs);
+}
+
+bool ndApplications::Load(istream &ifs) {
+    stats.ac = stats.dc = stats.nc = stats.oc = stats.sc = stats.xc = 0;
 
     lock_guard<recursive_mutex> ul(lock);
 

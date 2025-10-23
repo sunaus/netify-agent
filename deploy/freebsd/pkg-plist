@@ -38,6 +38,7 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-flow-parser.h
 %%DEVEL%%include/netifyd/nd-flow-parser.hpp
 %%DEVEL%%include/netifyd/nd-instance.hpp
+%%DEVEL%%include/netifyd/nd-license-client.hpp
 %%DEVEL%%include/netifyd/nd-napi.hpp
 %%DEVEL%%include/netifyd/nd-napi-curl.hpp
 %%DEVEL%%include/netifyd/nd-ndpi.hpp

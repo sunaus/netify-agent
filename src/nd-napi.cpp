@@ -476,9 +476,11 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
 
     size_t downloads = 0;
     static vector<Request> types = {
-        Request::DOWNLOAD_CONFIG,
+        Request::DOWNLOAD_APPLICATIONS,
+        Request::DOWNLOAD_APPLICATIONS_DAT,
         Request::DOWNLOAD_CATEGORIES,
         Request::DOWNLOAD_INTELLIGENCE,
+        Request::DOWNLOAD_INTELLIGENCE_DAT,
     };
 
     for (auto &type : types) {
@@ -534,12 +536,16 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
             for (auto &url : urls) {
                 string filename;
 
-                if (url.first == Request::DOWNLOAD_CONFIG)
+                if (url.first == Request::DOWNLOAD_APPLICATIONS)
                     filename = ndGC.path_app_config;
+                else if (url.first == Request::DOWNLOAD_APPLICATIONS_DAT)
+                    filename = nd_change_ext(ndGC.path_app_config, "dat");
                 else if (url.first == Request::DOWNLOAD_CATEGORIES)
                     filename = ndGC.path_cat_config;
                 else if (url.first == Request::DOWNLOAD_INTELLIGENCE)
                     filename = ndGC.path_intel_config;
+                else if (url.first == Request::DOWNLOAD_INTELLIGENCE_DAT)
+                    filename = nd_change_ext(ndGC.path_intel_config, "dat");
 
                 ndNetifyApiDownload *download = new ndNetifyApiDownload(
                   token, url.second, filename);
@@ -705,36 +711,6 @@ ndNetifyApiManager::ProcessBootstrapRequest(
             return UpdateResult::ERROR;
         }
 
-        auto japps = jsigs->find("applications_endpoint");
-        if (japps == jsigs->end() ||
-          japps->type() != json::value_t::string)
-        {
-            jstatus["bootstrap"]["code"] = -1;
-            jstatus["bootstrap"]["message"] =
-              "Application signature endpoints not found";
-            nd_dprintf(
-              "netify-api: Malformed bootstrap content: "
-              "%s\n",
-              "applications_endpoint not found or invalid "
-              "type");
-            return UpdateResult::ERROR;
-        }
-
-        auto jcats = jsigs->find("categories_endpoint");
-        if (jcats == jsigs->end() ||
-          jcats->type() != json::value_t::string)
-        {
-            jstatus["bootstrap"]["code"] = -1;
-            jstatus["bootstrap"]["message"] =
-              "Category index endpoints not found";
-            nd_dprintf(
-              "netify-api: Malformed bootstrap content: "
-              "%s\n",
-              "categories_endpoint not found or invalid "
-              "type");
-            return UpdateResult::ERROR;
-        }
-
         auto jtoken = jsigs->find("token");
         if (jtoken == jsigs->end() ||
           jtoken->type() != json::value_t::string)
@@ -756,13 +732,34 @@ ndNetifyApiManager::ProcessBootstrapRequest(
             nd_dprintf("netify-api: new API token set.\n");
         }
 
-        urls[Request::DOWNLOAD_CONFIG] = japps->get<string>();
-        urls[Request::DOWNLOAD_CATEGORIES] = jcats->get<string>();
+        auto japps = jsigs->find("applications_endpoint");
+        if (japps != jsigs->end() ||
+          japps->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_APPLICATIONS] = japps->get<string>();
+        }
+
+        auto japps_dat = jsigs->find("applications_dat_endpoint");
+        if (japps_dat != jsigs->end() &&
+          japps_dat->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_APPLICATIONS_DAT] = japps_dat->get<string>();
+        }
+
+        auto jcats = jsigs->find("categories_endpoint");
+        if (jcats != jsigs->end() ||
+          jcats->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_CATEGORIES] = jcats->get<string>();
+        }
 
         auto jintel = jsigs->find("intelligence_endpoint");
         if (jintel != jsigs->end() &&
           jintel->type() == json::value_t::string) {
             urls[Request::DOWNLOAD_INTELLIGENCE] = jintel->get<string>();
+        }
+
+        auto jintel_dat = jsigs->find("intelligence_dat_endpoint");
+        if (jintel_dat != jsigs->end() &&
+          jintel_dat->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_INTELLIGENCE_DAT] = jintel_dat->get<string>();
         }
     }
     catch (json::exception &e) {
@@ -785,14 +782,20 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     string status_type;
 
     switch (type) {
-    case Request::DOWNLOAD_CONFIG:
+    case Request::DOWNLOAD_APPLICATIONS:
         status_type = "applications";
+        break;
+    case Request::DOWNLOAD_APPLICATIONS_DAT:
+        status_type = "applications (dat)";
         break;
     case Request::DOWNLOAD_CATEGORIES:
         status_type = "categories";
         break;
     case Request::DOWNLOAD_INTELLIGENCE:
         status_type = "intelligence";
+        break;
+    case Request::DOWNLOAD_INTELLIGENCE_DAT:
+        status_type = "intelligence (dat)";
         break;
     default:
         nd_dprintf("netify-api: invalid download type: %d", type);
@@ -847,9 +850,14 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         return false;
     }
 
-    if (type == Request::DOWNLOAD_CONFIG) {
+    if (type == Request::DOWNLOAD_APPLICATIONS) {
         return nd_copy_file(download->content_filename,
           ndGC.path_app_config,
+          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    }
+    else if (type == Request::DOWNLOAD_APPLICATIONS_DAT) {
+        return nd_copy_file(download->content_filename,
+          nd_change_ext(ndGC.path_app_config, "dat"),
           S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     }
     else if (type == Request::DOWNLOAD_CATEGORIES) {
@@ -860,6 +868,11 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     else if (type == Request::DOWNLOAD_INTELLIGENCE) {
         return nd_copy_file(download->content_filename,
           ndGC.path_intel_config,
+          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    }
+    else if (type == Request::DOWNLOAD_INTELLIGENCE_DAT) {
+        return nd_copy_file(download->content_filename,
+          nd_change_ext(ndGC.path_intel_config, "dat"),
           S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     }
 
