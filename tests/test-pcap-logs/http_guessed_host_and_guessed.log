@@ -1,4 +1,4 @@
-offline0: i4pc-gx----r-F- TCP [OR] 170.33.13.5:110 <-- [L] 192.168.0.1:179
+offline0: i4pc-gx----r--F- TCP [OR] 170.33.13.5:110 <-- [L] 192.168.0.1:179
     : POP3
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy

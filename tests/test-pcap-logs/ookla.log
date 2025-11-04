@@ -1,9 +1,9 @@
-offline0: i4pc--------s-- TCP [OR] 185.157.229.246:8080 <-- [L] 192.168.1.192:37790
+offline0: i4pc------------ TCP [OR] 185.157.229.246:8080 <-- [L] 192.168.1.192:37790
     : OOKLA.netify.speedtest
     : CT ID: 0: MARK: 0
     : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 46.44.253.187:80 <-- [L] 192.168.1.7:51207
+offline0: i4pc-------r--F- TCP [OR] 46.44.253.187:80 <-- [L] 192.168.1.7:51207
     : HTTP
     : CT ID: 0: MARK: 0
     : H: massarosa-1.speedtest.welcomeitalia.it
@@ -12,12 +12,12 @@ offline0: i4pc-------r-F- TCP [OR] 46.44.253.187:80 <-- [L] 192.168.1.7:51207
     : RID 48: HTTP Obsolete Server
     : DP: 6
 
-offline0: i4pc--------s-- TCP [OR] 46.44.253.187:8080 <-- [L] 192.168.1.7:51215
+offline0: i4pc------------ TCP [OR] 46.44.253.187:8080 <-- [L] 192.168.1.7:51215
     : OOKLA.netify.speedtest
     : CT ID: 0: MARK: 0
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 104.16.209.12:443 <-- [L] 192.168.1.128:48854
+offline0: i4pcu----------- TCP [OR] 104.16.209.12:443 <-- [L] 192.168.1.128:48854
     : HTTP/S.netify.speedtest
     : CT ID: 0: MARK: 0
     : H: www.speedtest.net
@@ -26,7 +26,7 @@ offline0: i4pcu---------- TCP [OR] 104.16.209.12:443 <-- [L] 192.168.1.128:48854
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 6
 
-offline0: i4pcu------r--- TCP [OR] 89.96.108.170:8080 <-- [L] 192.168.1.128:35830
+offline0: i4pcu------r---- TCP [OR] 89.96.108.170:8080 <-- [L] 192.168.1.128:35830
     : TLS
     : CT ID: 0: MARK: 0
     : H: spd-pub-mi-01-01.fastwebnet.it
@@ -36,8 +36,9 @@ offline0: i4pcu------r--- TCP [OR] 89.96.108.170:8080 <-- [L] 192.168.1.128:3583
     : RID 16: Known Protocol on Non-standard Port
     : DP: 6
 
-offline0: i4pc-gx-----s-- TCP [OR] 89.96.108.170:8080 <-- [L] 192.168.1.192:51156
+offline0: i4pc-gx----rs--- TCP [OR] 89.96.108.170:8080 <-- [L] 192.168.1.192:51156
     : OOKLA.netify.speedtest
     : CT ID: 0: MARK: 0
+    : RID 28: Suspicious Entropy
     : DP: 10
 

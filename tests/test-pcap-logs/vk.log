@@ -1,10 +1,10 @@
-offline0: i4pc-------r--- TCP [OR] 87.240.132.78:443 <-- [L] 192.168.1.249:60436
+offline0: i4pc-------r---- TCP [OR] 87.240.132.78:443 <-- [L] 192.168.1.249:60436
     : HTTP/S
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic
     : DP: 13
 
-offline0: i4pc-------r--- TCP [OR] 87.240.169.10:443 <-- [L] 192.168.1.249:32990
+offline0: i4pc-------r---- TCP [OR] 87.240.169.10:443 <-- [L] 192.168.1.249:32990
     : HTTP/S.netify.vk
     : CT ID: 0: MARK: 0
     : H: sun9-87.userapi.com
@@ -14,7 +14,7 @@ offline0: i4pc-------r--- TCP [OR] 87.240.169.10:443 <-- [L] 192.168.1.249:32990
     : RID 46: Unidirectional Traffic
     : DP: 15
 
-offline0: i4pc-------r--- TCP [OR] 87.240.185.137:443 <-- [L] 192.168.1.249:59154
+offline0: i4pc-------r---- TCP [OR] 87.240.185.137:443 <-- [L] 192.168.1.249:59154
     : HTTP/S.netify.vk
     : CT ID: 0: MARK: 0
     : H: sun9-10.userapi.com
@@ -24,19 +24,19 @@ offline0: i4pc-------r--- TCP [OR] 87.240.185.137:443 <-- [L] 192.168.1.249:5915
     : RID 46: Unidirectional Traffic
     : DP: 15
 
-offline0: i4pc-------r--- TCP [OR] 87.240.129.140:443 <-- [L] 192.168.1.249:40344
+offline0: i4pc-------r---- TCP [OR] 87.240.129.140:443 <-- [L] 192.168.1.249:40344
     : HTTP/S
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic
     : DP: 13
 
-offline0: i4pc-------r--- TCP [OR] 87.240.129.131:443 <-- [L] 192.168.1.249:33904
+offline0: i4pc-------r---- TCP [OR] 87.240.129.131:443 <-- [L] 192.168.1.249:33904
     : HTTP/S
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic
     : DP: 13
 
-offline0: i4pc-------r--- TCP [OR] 87.240.169.3:443 <-- [L] 192.168.1.249:47934
+offline0: i4pc-------r---- TCP [OR] 87.240.169.3:443 <-- [L] 192.168.1.249:47934
     : HTTP/S.netify.vk
     : CT ID: 0: MARK: 0
     : H: sun9-80.userapi.com
@@ -46,7 +46,7 @@ offline0: i4pc-------r--- TCP [OR] 87.240.169.3:443 <-- [L] 192.168.1.249:47934
     : RID 46: Unidirectional Traffic
     : DP: 15
 
-offline0: i4pc-------r--- TCP [OR] 87.240.169.11:443 <-- [L] 192.168.1.249:59722
+offline0: i4pc-------r---- TCP [OR] 87.240.169.11:443 <-- [L] 192.168.1.249:59722
     : HTTP/S.netify.vk
     : CT ID: 0: MARK: 0
     : H: sun9-88.userapi.com
@@ -56,21 +56,18 @@ offline0: i4pc-------r--- TCP [OR] 87.240.169.11:443 <-- [L] 192.168.1.249:59722
     : RID 46: Unidirectional Traffic
     : DP: 15
 
-offline0: i4pc--x----r--- TCP [OR] 87.240.129.135:443 <-- [L] 192.168.1.249:43938
+offline0: i4pc--x--------- TCP [OR] 87.240.129.135:443 <-- [L] 192.168.1.249:43938
     : HTTP/S
     : CT ID: 0: MARK: 0
-    : RID 46: Unidirectional Traffic
     : DP: 2
 
-offline0: i4pc--x----r--- TCP [OR] 87.240.129.135:443 <-- [L] 192.168.1.249:56504
+offline0: i4pc--x--------- TCP [OR] 87.240.129.135:443 <-- [L] 192.168.1.249:56504
     : HTTP/S
     : CT ID: 0: MARK: 0
-    : RID 46: Unidirectional Traffic
     : DP: 4
 
-offline0: i4pc--x----r--- TCP [OR] 87.240.132.67:443 <-- [L] 192.168.1.249:43644
+offline0: i4pc--x--------- TCP [OR] 87.240.132.67:443 <-- [L] 192.168.1.249:43644
     : HTTP/S
     : CT ID: 0: MARK: 0
-    : RID 46: Unidirectional Traffic
     : DP: 2
 

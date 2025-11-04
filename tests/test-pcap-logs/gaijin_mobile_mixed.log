@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [L] 10.215.173.1:47666 --> [OR] 54.75.230.133:443
+offline0: i4pcu------r---- TCP [L] 10.215.173.1:47666 --> [OR] 54.75.230.133:443
     : HTTP/S.netify.gaijin-entertainment
     : CT ID: 0: MARK: 0
     : H: yupmaster.gaijinent.com
@@ -9,7 +9,7 @@ offline0: i4pcu------r--- TCP [L] 10.215.173.1:47666 --> [OR] 54.75.230.133:443
     : RID 30: TLS Certificate Expired
     : DP: 7
 
-offline0: i4pcu------r--- TCP [L] 10.215.173.1:39314 --> [OR] 81.171.31.37:443
+offline0: i4pcu------r---- TCP [L] 10.215.173.1:39314 --> [OR] 81.171.31.37:443
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: ta-receiver-balancer-xom.crossout.net
@@ -21,7 +21,7 @@ offline0: i4pcu------r--- TCP [L] 10.215.173.1:39314 --> [OR] 81.171.31.37:443
     : RID 47: TLS ALPN Not Found
     : DP: 6
 
-offline0: i4pc-------r--- UDP [L] 10.215.173.1:42424 --> [OR] 95.211.246.178:20011
+offline0: i4pc-------r---- UDP [L] 10.215.173.1:42424 --> [OR] 95.211.246.178:20011
     : Gaijin
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic

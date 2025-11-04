@@ -1,4 +1,4 @@
-offline0: i4pcu------r-F- TCP [L] 192.168.1.103:1044 --> [OL] 192.168.1.146:80
+offline0: i4pcu------r--F- TCP [L] 192.168.1.103:1044 --> [OL] 192.168.1.146:80
     : HTTP.netify.internal-network
     : CT ID: 0: MARK: 0
     : H: proxy.wiresharkfest.acropolis.local

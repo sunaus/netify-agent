@@ -735,3 +735,6 @@ public:
 };
 
 std::string nd_change_ext(const std::string &filename, const std::string &ext);
+
+bool nd_has_expired(const std::string &tag,
+  time_t ttl, time_t last_update, bool monotonic = true, time_t now = 0);

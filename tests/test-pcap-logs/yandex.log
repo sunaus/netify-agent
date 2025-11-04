@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [L] 192.168.1.249:40218 --> [OR] 213.180.204.186:443
+offline0: i4pcu------r---- TCP [L] 192.168.1.249:40218 --> [OR] 213.180.204.186:443
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: music.yandex.kz
@@ -9,7 +9,7 @@ offline0: i4pcu------r--- TCP [L] 192.168.1.249:40218 --> [OR] 213.180.204.186:4
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i4pcu---------- TCP [OR] 87.250.250.108:443 <-- [L] 192.168.1.249:57322
+offline0: i4pcu----------- TCP [OR] 87.250.250.108:443 <-- [L] 192.168.1.249:57322
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: cloud.yandex.ru
@@ -18,7 +18,7 @@ offline0: i4pcu---------- TCP [OR] 87.250.250.108:443 <-- [L] 192.168.1.249:5732
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 87.250.250.134:443 <-- [L] 192.168.1.249:58832
+offline0: i4pcu----------- TCP [OR] 87.250.250.134:443 <-- [L] 192.168.1.249:58832
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: direct.yandex.kz
@@ -27,7 +27,7 @@ offline0: i4pcu---------- TCP [OR] 87.250.250.134:443 <-- [L] 192.168.1.249:5883
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
     : DP: 6
 
-offline0: i4pcu------r--- TCP [OR] 77.88.21.127:443 <-- [L] 192.168.1.249:42954
+offline0: i4pcu------r---- TCP [OR] 77.88.21.127:443 <-- [L] 192.168.1.249:42954
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: 1.downloader.disk.yandex.kz
@@ -38,7 +38,7 @@ offline0: i4pcu------r--- TCP [OR] 77.88.21.127:443 <-- [L] 192.168.1.249:42954
     : RID 30: TLS Certificate Expired
     : DP: 8
 
-offline0: i4pcu---------- TCP [OR] 87.250.251.77:443 <-- [L] 192.168.1.249:51462
+offline0: i4pcu----------- TCP [OR] 87.250.251.77:443 <-- [L] 192.168.1.249:51462
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: metrika.yandex.kz
@@ -47,43 +47,39 @@ offline0: i4pcu---------- TCP [OR] 87.250.251.77:443 <-- [L] 192.168.1.249:51462
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
     : DP: 6
 
-offline0: i4pc--x----r--- TCP [OR] 178.154.131.216:443 <-- [L] 192.168.1.249:42102
+offline0: i4pc--x--------- TCP [OR] 178.154.131.216:443 <-- [L] 192.168.1.249:42102
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: yastatic.net
     : V: 0x0303
     : TLS/SNI: yastatic.net
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
-    : RID 46: Unidirectional Traffic
     : DP: 11
 
-offline0: i4pc--x----r--- TCP [OR] 178.154.131.216:443 <-- [L] 192.168.1.249:57126
+offline0: i4pc--x--------- TCP [OR] 178.154.131.216:443 <-- [L] 192.168.1.249:57126
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: yastatic.net
     : V: 0x0303
     : TLS/SNI: yastatic.net
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
-    : RID 46: Unidirectional Traffic
     : DP: 9
 
-offline0: i4pc--x----r--- TCP [OR] 87.250.251.22:443 <-- [L] 192.168.1.249:40870
+offline0: i4pc--x--------- TCP [OR] 87.250.251.22:443 <-- [L] 192.168.1.249:40870
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: fenek.market.yandex.ru
     : V: 0x0303
     : TLS/SNI: fenek.market.yandex.ru
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
-    : RID 46: Unidirectional Traffic
     : DP: 11
 
-offline0: i4pc--x----r--- TCP [OR] 77.88.21.37:443 <-- [L] 192.168.1.249:45224
+offline0: i4pc--x--------- TCP [OR] 77.88.21.37:443 <-- [L] 192.168.1.249:45224
     : HTTP/S.netify.yandex
     : CT ID: 0: MARK: 0
     : H: mail.yandex.kz
     : V: 0x0303
     : TLS/SNI: mail.yandex.kz
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
-    : RID 46: Unidirectional Traffic
     : DP: 11
 

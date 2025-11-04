@@ -1,4 +1,4 @@
-offline0: i6pc-------r--- UDP [L] ::1:4443 <-- [OL] ::1:42086
+offline0: i6pc-------r---- UDP [L] ::1:4443 <-- [OL] ::1:42086
     : QUIC
     : CT ID: 0: MARK: 0
     : H: test

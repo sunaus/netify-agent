@@ -1,19 +1,19 @@
-offline0: i4pc-g--------- UDP [OR] 130.158.6.113:5004 <-- [L] 192.168.2.100:51381
+offline0: i4pc-g---------- UDP [OR] 130.158.6.113:5004 <-- [L] 192.168.2.100:51381
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 32
 
-offline0: i4pc-gx-------- UDP [OR] 130.158.6.112:5004 <-- [L] 192.168.2.100:51381
+offline0: i4pc-gx--------- UDP [OR] 130.158.6.112:5004 <-- [L] 192.168.2.100:51381
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 30
 
-offline0: i4pc-gx-------- UDP [OR] 130.158.6.105:5004 <-- [L] 192.168.2.100:51381
+offline0: i4pc-gx--------- UDP [OR] 130.158.6.105:5004 <-- [L] 192.168.2.100:51381
     : Unknown
     : CT ID: 0: MARK: 0
     : DP: 30
 
-offline0: i4pc--x-------- TCP [OR] 130.158.75.45:80 <-- [L] 192.168.2.100:37504
+offline0: i4pc--x--------- TCP [OR] 130.158.75.45:80 <-- [L] 192.168.2.100:37504
     : HTTP.netify.softether
     : CT ID: 0: MARK: 0
     : H: x0.x0.dev.open.servers.ddns.softether-network.net

@@ -2215,3 +2215,18 @@ string nd_change_ext(const string &filename, const string &ext) {
 
     return result;
 }
+
+bool nd_has_expired(const string &tag,
+  time_t ttl, time_t last_update, bool monotonic, time_t now) {
+
+    if (last_update == 0) return true;
+
+    time_t delta = (now ? now :
+      (monotonic ? nd_time_monotonic() : time(nullptr))) - last_update;
+    bool expired = (delta > ttl);
+#if 0
+    nd_dprintf("%s: expired (delta: %lus > ttl: %lus)? %s\n", tag.c_str(),
+        delta, ttl, (expired) ? "yes" : "no");
+#endif
+    return expired;
+}

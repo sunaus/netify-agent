@@ -1,9 +1,9 @@
-offline0: i4pc----------- UDP [L] 192.168.88.231:27036 --> [OL] 192.168.88.255:27036
+offline0: i4pc------------ UDP [L] 192.168.88.231:27036 --> [OL] 192.168.88.255:27036
     : Steam.netify.steam
     : CT ID: 0: MARK: 0
     : DP: 1
 
-offline0: i4pc---------F- TCP [OR] 2.20.254.25:80 <-- [L] 192.168.88.231:59739
+offline0: i4pc----------F- TCP [OR] 2.20.254.25:80 <-- [L] 192.168.88.231:59739
     : HTTP.netify.steam
     : CT ID: 0: MARK: 0
     : H: test.steampowered.com
@@ -11,7 +11,7 @@ offline0: i4pc---------F- TCP [OR] 2.20.254.25:80 <-- [L] 192.168.88.231:59739
     : URL: test.steampowered.com/204
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 188.114.98.224:443 <-- [L] 192.168.88.231:54243
+offline0: i4pcu----------- TCP [OR] 188.114.98.224:443 <-- [L] 192.168.88.231:54243
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: www.dota2.com
@@ -20,13 +20,13 @@ offline0: i4pcu---------- TCP [OR] 188.114.98.224:443 <-- [L] 192.168.88.231:542
     : JA4: t13d3213ht_85d9c3ed342d_e802cdec6a7f
     : DP: 6
 
-offline0: i4pc-------r--- UDP [OR] 155.133.252.86:27045 <-- [L] 192.168.88.231:46604
+offline0: i4pc-------r---- UDP [OR] 155.133.252.86:27045 <-- [L] 192.168.88.231:46604
     : Valve/SDR
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pcu---------- TCP [OR] 23.52.29.119:443 <-- [L] 192.168.88.231:57749
+offline0: i4pcu----------- TCP [OR] 23.52.29.119:443 <-- [L] 192.168.88.231:57749
     : HTTP/S.netify.steam
     : CT ID: 0: MARK: 0
     : H: api.steampowered.com
@@ -35,7 +35,7 @@ offline0: i4pcu---------- TCP [OR] 23.52.29.119:443 <-- [L] 192.168.88.231:57749
     : JA4: t13d3213h2_85d9c3ed342d_e802cdec6a7f
     : DP: 6
 
-offline0: i4pcu------r--- TCP [OR] 162.254.198.46:27038 <-- [L] 192.168.88.231:50983
+offline0: i4pcu------r---- TCP [OR] 162.254.198.46:27038 <-- [L] 192.168.88.231:50983
     : TLS.netify.steam
     : CT ID: 0: MARK: 0
     : H: ext3-sto1.steamserver.net
@@ -45,7 +45,7 @@ offline0: i4pcu------r--- TCP [OR] 162.254.198.46:27038 <-- [L] 192.168.88.231:5
     : RID 16: Known Protocol on Non-standard Port
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 95.100.141.15:443 <-- [L] 192.168.88.231:42070
+offline0: i4pcu----------- TCP [OR] 95.100.141.15:443 <-- [L] 192.168.88.231:42070
     : HTTP/S.netify.steam
     : CT ID: 0: MARK: 0
     : H: store.steampowered.com

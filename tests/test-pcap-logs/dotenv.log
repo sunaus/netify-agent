@@ -1,4 +1,4 @@
-offline0: i4pc-------r-F- TCP [OR] 89.31.76.10:80 <-- [L] 192.168.2.198:51327
+offline0: i4pc-------r--F- TCP [OR] 89.31.76.10:80 <-- [L] 192.168.2.198:51327
     : HTTP
     : CT ID: 0: MARK: 0
     : H: sevenpitaly.com

@@ -1,4 +1,4 @@
-offline0: i4pcu---------- TCP [OR] 69.171.250.20:443 <-- [L] 192.168.12.169:46160
+offline0: i4pcu----------- TCP [OR] 69.171.250.20:443 <-- [L] 192.168.12.169:46160
     : HTTP/S.netify.meta-messaging
     : CT ID: 0: MARK: 0
     : H: edge-mqtt.facebook.com
@@ -7,7 +7,7 @@ offline0: i4pcu---------- TCP [OR] 69.171.250.20:443 <-- [L] 192.168.12.169:4616
     : JA4: t00d0309h2_55b375c5d22e_2d3f7b9fe3d5
     : DP: 4
 
-offline0: i4pcu--------F- TCP [OR] 92.122.95.99:443 <-- [L] 192.168.1.250:41878
+offline0: i4pcu---------F- TCP [OR] 92.122.95.99:443 <-- [L] 192.168.1.250:41878
     : HTTP/S.netify.tiktok
     : CT ID: 0: MARK: 0
     : H: vcs-va.tiktokv.com
@@ -16,7 +16,7 @@ offline0: i4pcu--------F- TCP [OR] 92.122.95.99:443 <-- [L] 192.168.1.250:41878
     : JA4: t13d1615h2_46e7e9700bed_45f260be83e2
     : DP: 6
 
-offline0: i4pcu------r-F- TCP [OR] 52.73.71.226:443 <-- [L] 192.168.1.227:50071
+offline0: i4pcu------r--F- TCP [OR] 52.73.71.226:443 <-- [L] 192.168.1.227:50071
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: presence.fuze.com
@@ -27,7 +27,7 @@ offline0: i4pcu------r-F- TCP [OR] 52.73.71.226:443 <-- [L] 192.168.1.227:50071
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i4pcu--------F- TCP [OR] 91.198.174.208:443 <-- [L] 192.168.1.128:50620
+offline0: i4pcu---------F- TCP [OR] 91.198.174.208:443 <-- [L] 192.168.1.128:50620
     : HTTP/S.netify.wikimedia
     : CT ID: 0: MARK: 0
     : H: upload.wikimedia.org
@@ -36,7 +36,7 @@ offline0: i4pcu--------F- TCP [OR] 91.198.174.208:443 <-- [L] 192.168.1.128:5062
     : JA4: t13d1815h2_e8a523a41297_3d5424432f57
     : DP: 6
 
-offline0: i4pc---------F- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
+offline0: i4pc----------F- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
     : HTTP.netify.likee
     : CT ID: 0: MARK: 0
     : H: videosnap.like.video
@@ -44,7 +44,7 @@ offline0: i4pc---------F- TCP [OR] 45.82.241.51:80 <-- [L] 192.168.1.250:39890
     : URL: videosnap.like.video/eu_live/5uz/1YOmxT.webp?type=8&resize=1&dw=360
     : DP: 6
 
-offline0: i4pcu------r-F- TCP [L] 192.168.1.128:46724 --> [OR] 199.232.82.109:443
+offline0: i4pcu------r--F- TCP [L] 192.168.1.128:46724 --> [OR] 199.232.82.109:443
     : HTTP/S.netify.vimeo
     : CT ID: 0: MARK: 0
     : H: f.vimeocdn.com
@@ -55,7 +55,7 @@ offline0: i4pcu------r-F- TCP [L] 192.168.1.128:46724 --> [OR] 199.232.82.109:44
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i4pcu--------F- TCP [OR] 143.204.9.65:443 <-- [L] 192.168.1.128:48918
+offline0: i4pcu---------F- TCP [OR] 143.204.9.65:443 <-- [L] 192.168.1.128:48918
     : HTTP/S.netify.disney-plus
     : CT ID: 0: MARK: 0
     : H: prod-static.disney-plus.net
@@ -64,7 +64,7 @@ offline0: i4pcu--------F- TCP [OR] 143.204.9.65:443 <-- [L] 192.168.1.128:48918
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 8
 
-offline0: i4pcu--------F- TCP [OR] 23.12.104.83:443 <-- [L] 192.168.12.169:39248
+offline0: i4pcu---------F- TCP [OR] 23.12.104.83:443 <-- [L] 192.168.12.169:39248
     : HTTP/S.netify.accuweather
     : CT ID: 0: MARK: 0
     : H: api.accuweather.com
@@ -73,7 +73,7 @@ offline0: i4pcu--------F- TCP [OR] 23.12.104.83:443 <-- [L] 192.168.12.169:39248
     : JA4: t13d1713ht_5b57614c22b0_eca864cca44a
     : DP: 6
 
-offline0: i4pc-------r--- UDP [L] 192.168.1.123:59102 --> [OR] 216.58.209.46:443
+offline0: i4pc-------r---- UDP [L] 192.168.1.123:59102 --> [OR] 216.58.209.46:443
     : QUIC.netify.google
     : CT ID: 0: MARK: 0
     : H: classroom.google.com
@@ -82,7 +82,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.123:59102 --> [OR] 216.58.209.46:443
     : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pcu---------- TCP [OR] 31.222.67.112:443 <-- [L] 192.168.1.128:35054
+offline0: i4pcu----------- TCP [OR] 31.222.67.112:443 <-- [L] 192.168.1.128:35054
     : HTTP/S.netify.badoo
     : CT ID: 0: MARK: 0
     : H: www.badoo.com
@@ -91,7 +91,7 @@ offline0: i4pcu---------- TCP [OR] 31.222.67.112:443 <-- [L] 192.168.1.128:35054
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 172.65.251.78:443 <-- [L] 192.168.1.128:53998
+offline0: i4pcu----------- TCP [OR] 172.65.251.78:443 <-- [L] 192.168.1.128:53998
     : HTTP/S.netify.gitlab
     : CT ID: 0: MARK: 0
     : H: www.gitlab.com
@@ -100,7 +100,7 @@ offline0: i4pcu---------- TCP [OR] 172.65.251.78:443 <-- [L] 192.168.1.128:53998
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu------r--- TCP [OR] 2.17.141.128:443 <-- [L] 192.168.1.128:42580
+offline0: i4pcu------r---- TCP [OR] 2.17.141.128:443 <-- [L] 192.168.1.128:42580
     : HTTP/S.netify.activision-blizzard
     : CT ID: 0: MARK: 0
     : H: www.activision.com
@@ -111,7 +111,7 @@ offline0: i4pcu------r--- TCP [OR] 2.17.141.128:443 <-- [L] 192.168.1.128:42580
     : RID 30: TLS Certificate Expired
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 146.75.62.167:443 <-- [L] 192.168.1.128:46084
+offline0: i4pcu----------- TCP [OR] 146.75.62.167:443 <-- [L] 192.168.1.128:46084
     : HTTP/S.netify.twitch
     : CT ID: 0: MARK: 0
     : H: gql.twitch.tv
@@ -120,7 +120,7 @@ offline0: i4pcu---------- TCP [OR] 146.75.62.167:443 <-- [L] 192.168.1.128:46084
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 18.66.196.102:443 <-- [L] 192.168.1.128:51806
+offline0: i4pcu----------- TCP [OR] 18.66.196.102:443 <-- [L] 192.168.1.128:51806
     : HTTP/S.netify.soundcloud
     : CT ID: 0: MARK: 0
     : H: soundcloud.com
@@ -129,7 +129,7 @@ offline0: i4pcu---------- TCP [OR] 18.66.196.102:443 <-- [L] 192.168.1.128:51806
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 23.1.66.79:443 <-- [L] 192.168.1.128:48140
+offline0: i4pcu----------- TCP [OR] 23.1.66.79:443 <-- [L] 192.168.1.128:48140
     : HTTP/S.netify.cnn
     : CT ID: 0: MARK: 0
     : H: cdn.cnn.com
@@ -138,7 +138,7 @@ offline0: i4pcu---------- TCP [OR] 23.1.66.79:443 <-- [L] 192.168.1.128:48140
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 2.17.141.49:443 <-- [L] 192.168.1.128:40832
+offline0: i4pcu----------- TCP [OR] 2.17.141.49:443 <-- [L] 192.168.1.128:40832
     : HTTP/S.netify.ebay
     : CT ID: 0: MARK: 0
     : H: www.ebay.com
@@ -147,7 +147,7 @@ offline0: i4pcu---------- TCP [OR] 2.17.141.49:443 <-- [L] 192.168.1.128:40832
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 185.125.190.21:443 <-- [L] 192.168.1.128:42884
+offline0: i4pcu----------- TCP [OR] 185.125.190.21:443 <-- [L] 192.168.1.128:42884
     : HTTP/S.netify.ubuntu
     : CT ID: 0: MARK: 0
     : H: assets.ubuntu.com
@@ -156,7 +156,7 @@ offline0: i4pcu---------- TCP [OR] 185.125.190.21:443 <-- [L] 192.168.1.128:4288
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 95.101.195.214:443 <-- [L] 192.168.1.128:51432
+offline0: i4pcu----------- TCP [OR] 95.101.195.214:443 <-- [L] 192.168.1.128:51432
     : HTTP/S.netify.hulu
     : CT ID: 0: MARK: 0
     : H: hulu.com
@@ -165,7 +165,7 @@ offline0: i4pcu---------- TCP [OR] 95.101.195.214:443 <-- [L] 192.168.1.128:5143
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 35.201.112.136:443 <-- [L] 192.168.1.128:47122
+offline0: i4pcu----------- TCP [OR] 35.201.112.136:443 <-- [L] 192.168.1.128:47122
     : HTTP/S.netify.last-fm
     : CT ID: 0: MARK: 0
     : H: kerve.last.fm
@@ -174,7 +174,7 @@ offline0: i4pcu---------- TCP [OR] 35.201.112.136:443 <-- [L] 192.168.1.128:4712
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu------r--- TCP [OR] 151.101.193.73:443 <-- [L] 192.168.1.128:43412
+offline0: i4pcu------r---- TCP [OR] 151.101.193.73:443 <-- [L] 192.168.1.128:43412
     : HTTP/S.netify.bloomberg
     : CT ID: 0: MARK: 0
     : H: www.bloomberg.com
@@ -185,7 +185,7 @@ offline0: i4pcu------r--- TCP [OR] 151.101.193.73:443 <-- [L] 192.168.1.128:4341
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 108.139.210.102:443 <-- [L] 192.168.1.128:57014
+offline0: i4pcu----------- TCP [OR] 108.139.210.102:443 <-- [L] 192.168.1.128:57014
     : HTTP/S.netify.bloomberg
     : CT ID: 0: MARK: 0
     : H: sourcepointcmp.bloomberg.com
@@ -194,7 +194,7 @@ offline0: i4pcu---------- TCP [OR] 108.139.210.102:443 <-- [L] 192.168.1.128:570
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pc-------r--- TCP [OR] 13.107.42.14:443 <-- [L] 192.168.1.128:48654
+offline0: i4pc-------r---- TCP [OR] 13.107.42.14:443 <-- [L] 192.168.1.128:48654
     : HTTP/S.netify.linkedin
     : CT ID: 0: MARK: 0
     : H: www.linkedin.com
@@ -205,7 +205,7 @@ offline0: i4pc-------r--- TCP [OR] 13.107.42.14:443 <-- [L] 192.168.1.128:48654
     : RID 30: TLS Certificate Expired
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 104.23.98.190:443 <-- [L] 192.168.1.128:39934
+offline0: i4pcu----------- TCP [OR] 104.23.98.190:443 <-- [L] 192.168.1.128:39934
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: pastebin.com
@@ -214,7 +214,7 @@ offline0: i4pcu---------- TCP [OR] 104.23.98.190:443 <-- [L] 192.168.1.128:39934
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu------r--- TCP [OR] 23.1.68.189:443 <-- [L] 192.168.1.128:57336
+offline0: i4pcu------r---- TCP [OR] 23.1.68.189:443 <-- [L] 192.168.1.128:57336
     : HTTP/S.netify.playstation
     : CT ID: 0: MARK: 0
     : H: www.playstation.com
@@ -225,7 +225,7 @@ offline0: i4pcu------r--- TCP [OR] 23.1.68.189:443 <-- [L] 192.168.1.128:57336
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 23.51.246.65:443 <-- [L] 192.168.1.128:46264
+offline0: i4pcu----------- TCP [OR] 23.51.246.65:443 <-- [L] 192.168.1.128:46264
     : HTTP/S.netify.playstation
     : CT ID: 0: MARK: 0
     : H: static.playstation.com
@@ -234,7 +234,7 @@ offline0: i4pcu---------- TCP [OR] 23.51.246.65:443 <-- [L] 192.168.1.128:46264
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 108.138.199.67:443 <-- [L] 192.168.1.128:43150
+offline0: i4pcu----------- TCP [OR] 108.138.199.67:443 <-- [L] 192.168.1.128:43150
     : HTTP/S.netify.deezer
     : CT ID: 0: MARK: 0
     : H: deezer.com
@@ -243,7 +243,7 @@ offline0: i4pcu---------- TCP [OR] 108.138.199.67:443 <-- [L] 192.168.1.128:4315
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 142.250.180.142:443 <-- [L] 192.168.1.128:38858
+offline0: i4pcu----------- TCP [OR] 142.250.180.142:443 <-- [L] 192.168.1.128:38858
     : HTTP/S.netify.google-maps
     : CT ID: 0: MARK: 0
     : H: maps.google.com
@@ -252,7 +252,7 @@ offline0: i4pcu---------- TCP [OR] 142.250.180.142:443 <-- [L] 192.168.1.128:388
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 2.17.140.63:443 <-- [L] 192.168.1.128:48902
+offline0: i4pcu----------- TCP [OR] 2.17.140.63:443 <-- [L] 192.168.1.128:48902
     : HTTP/S.netify.xbox
     : CT ID: 0: MARK: 0
     : H: account.xbox.com
@@ -261,7 +261,7 @@ offline0: i4pcu---------- TCP [OR] 2.17.140.63:443 <-- [L] 192.168.1.128:48902
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu------r--- TCP [OR] 40.97.160.2:443 <-- [L] 192.168.1.128:39828
+offline0: i4pcu------r---- TCP [OR] 40.97.160.2:443 <-- [L] 192.168.1.128:39828
     : HTTP/S.netify.outlook
     : CT ID: 0: MARK: 0
     : H: outlook.com
@@ -272,7 +272,7 @@ offline0: i4pcu------r--- TCP [OR] 40.97.160.2:443 <-- [L] 192.168.1.128:39828
     : RID 30: TLS Certificate Expired
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 15.160.39.187:443 <-- [L] 192.168.1.128:45898
+offline0: i4pcu----------- TCP [OR] 15.160.39.187:443 <-- [L] 192.168.1.128:45898
     : HTTP/S.netify.apple-siri
     : CT ID: 0: MARK: 0
     : H: guzzoni.apple.com
@@ -281,7 +281,7 @@ offline0: i4pcu---------- TCP [OR] 15.160.39.187:443 <-- [L] 192.168.1.128:45898
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pc-------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.128:57878
+offline0: i4pc-------r---- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.128:57878
     : HTTP/S.netify.teams
     : CT ID: 0: MARK: 0
     : H: teams.office.com
@@ -292,7 +292,7 @@ offline0: i4pc-------r--- TCP [OR] 52.113.194.132:443 <-- [L] 192.168.1.128:5787
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 108.138.185.106:443 <-- [L] 192.168.1.128:33664
+offline0: i4pcu----------- TCP [OR] 108.138.185.106:443 <-- [L] 192.168.1.128:33664
     : HTTP/S.netify.amazon-prime
     : CT ID: 0: MARK: 0
     : H: www.primevideo.com
@@ -301,7 +301,7 @@ offline0: i4pcu---------- TCP [OR] 108.138.185.106:443 <-- [L] 192.168.1.128:336
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pcu---------- TCP [OR] 142.250.185.142:443 <-- [L] 192.168.1.128:56458
+offline0: i4pcu----------- TCP [OR] 142.250.185.142:443 <-- [L] 192.168.1.128:56458
     : HTTP/S.netify.gsuite
     : CT ID: 0: MARK: 0
     : H: drive.google.com
@@ -310,7 +310,7 @@ offline0: i4pcu---------- TCP [OR] 142.250.185.142:443 <-- [L] 192.168.1.128:564
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pc-------r--- TCP [OR] 13.81.118.91:443 <-- [L] 192.168.1.128:33102
+offline0: i4pc-------r---- TCP [OR] 13.81.118.91:443 <-- [L] 192.168.1.128:33102
     : HTTP/S.netify.microsoft-onedrive
     : CT ID: 0: MARK: 0
     : H: onedrive.com
@@ -321,7 +321,7 @@ offline0: i4pc-------r--- TCP [OR] 13.81.118.91:443 <-- [L] 192.168.1.128:33102
     : RID 30: TLS Certificate Expired
     : DP: 7
 
-offline0: i4pc-------r--- TCP [OR] 13.107.42.13:443 <-- [L] 192.168.1.128:56836
+offline0: i4pc-------r---- TCP [OR] 13.107.42.13:443 <-- [L] 192.168.1.128:56836
     : HTTP/S.netify.microsoft-onedrive
     : CT ID: 0: MARK: 0
     : H: onedrive.live.com
@@ -332,7 +332,7 @@ offline0: i4pc-------r--- TCP [OR] 13.107.42.13:443 <-- [L] 192.168.1.128:56836
     : RID 30: TLS Certificate Expired
     : DP: 8
 
-offline0: i4pcu------r--- TCP [OR] 129.226.107.210:443 <-- [L] 192.168.1.128:45014
+offline0: i4pcu------r---- TCP [OR] 129.226.107.210:443 <-- [L] 192.168.1.128:45014
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: www.iflix.com
@@ -343,7 +343,7 @@ offline0: i4pcu------r--- TCP [OR] 129.226.107.210:443 <-- [L] 192.168.1.128:450
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i4pc-------r--- UDP [L] 192.168.1.128:38642 --> [OR] 216.58.212.142:443
+offline0: i4pc-------r---- UDP [L] 192.168.1.128:38642 --> [OR] 216.58.212.142:443
     : QUIC.netify.google-hangouts
     : CT ID: 0: MARK: 0
     : H: hangouts.google.com
@@ -352,7 +352,7 @@ offline0: i4pc-------r--- UDP [L] 192.168.1.128:38642 --> [OR] 216.58.212.142:44
     : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pcu---------- TCP [OR] 142.250.185.206:443 <-- [L] 192.168.1.128:50608
+offline0: i4pcu----------- TCP [OR] 142.250.185.206:443 <-- [L] 192.168.1.128:50608
     : HTTP/S.netify.google
     : CT ID: 0: MARK: 0
     : H: googleplus.com
@@ -361,7 +361,7 @@ offline0: i4pcu---------- TCP [OR] 142.250.185.206:443 <-- [L] 192.168.1.128:506
     : JA4: t13d1715h2_5b57614c22b0_3d5424432f57
     : DP: 4
 
-offline0: i4pc-------r--- UDP [OR] 142.250.181.238:443 <-- [L] 192.168.1.128:36832
+offline0: i4pc-------r---- UDP [OR] 142.250.181.238:443 <-- [L] 192.168.1.128:36832
     : QUIC.netify.gsuite
     : CT ID: 0: MARK: 0
     : H: plus.google.com
@@ -370,7 +370,7 @@ offline0: i4pc-------r--- UDP [OR] 142.250.181.238:443 <-- [L] 192.168.1.128:368
     : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pcu------r--- TCP [L] 192.168.1.128:53978 --> [OR] 208.85.40.158:443
+offline0: i4pcu------r---- TCP [L] 192.168.1.128:53978 --> [OR] 208.85.40.158:443
     : HTTP/S.netify.pandora
     : CT ID: 0: MARK: 0
     : H: pandora.com
@@ -381,7 +381,7 @@ offline0: i4pcu------r--- TCP [L] 192.168.1.128:53978 --> [OR] 208.85.40.158:443
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i4pcu------r--- TCP [OR] 185.5.161.203:443 <-- [L] 192.168.88.231:33920
+offline0: i4pcu------r---- TCP [OR] 185.5.161.203:443 <-- [L] 192.168.88.231:33920
     : HTTP/S.netify.akamai
     : CT ID: 0: MARK: 0
     : H: origin-a.akamaihd.net
@@ -391,7 +391,7 @@ offline0: i4pcu------r--- TCP [OR] 185.5.161.203:443 <-- [L] 192.168.88.231:3392
     : RID 47: TLS ALPN Not Found
     : DP: 6
 
-offline0: i4pcu------r--- TCP [OR] 159.153.191.240:443 <-- [L] 192.168.88.231:49950
+offline0: i4pcu------r---- TCP [OR] 159.153.191.240:443 <-- [L] 192.168.88.231:49950
     : HTTP/S.netify.ea-games
     : CT ID: 0: MARK: 0
     : H: accounts.ea.com
@@ -404,7 +404,7 @@ offline0: i4pcu------r--- TCP [OR] 159.153.191.240:443 <-- [L] 192.168.88.231:49
     : RID 47: TLS ALPN Not Found
     : DP: 10
 
-offline0: i4pc-------r--- TCP [OR] 160.44.196.198:443 <-- [L] 192.168.1.245:54690
+offline0: i4pc-------r---- TCP [OR] 160.44.196.198:443 <-- [L] 192.168.1.245:54690
     : HTTP/S.netify.huawei
     : CT ID: 0: MARK: 0
     : H: cloud.huawei.com
@@ -416,7 +416,7 @@ offline0: i4pc-------r--- TCP [OR] 160.44.196.198:443 <-- [L] 192.168.1.245:5469
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 80.158.42.215:443 <-- [L] 192.168.1.245:49558
+offline0: i4pc-------r--F- TCP [OR] 80.158.42.215:443 <-- [L] 192.168.1.245:49558
     : HTTP/S.netify.huawei
     : CT ID: 0: MARK: 0
     : H: id7.cloud.huawei.com
@@ -428,7 +428,7 @@ offline0: i4pc-------r-F- TCP [OR] 80.158.42.215:443 <-- [L] 192.168.1.245:49558
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2001:b07:a3d:c112:c044:a6d4:80d:5d55:39970 --> [L] 2600:9000:25ea:1200:1:12d8:5a00:93a1:443
+offline0: i6pcu----------- TCP [OR] 2001:b07:a3d:c112:c044:a6d4:80d:5d55:39970 --> [L] 2600:9000:25ea:1200:1:12d8:5a00:93a1:443
     : HTTP/S.netify.huawei
     : CT ID: 0: MARK: 0
     : H: contentcenter-dre.dbankcdn.com
@@ -438,25 +438,25 @@ offline0: i6pcu---------- TCP [OR] 2001:b07:a3d:c112:c044:a6d4:80d:5d55:39970 --
     : JA4: t13d1715h2_5b57614c22b0_5c2c66f702b0
     : DP: 6
 
-offline0: i6pcu-------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48594
+offline0: i6pcu-------s--- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48594
     : Telegram.netify.telegram
     : CT ID: 0: MARK: 0
     : H: web.telegram.org
     : DP: 6
 
-offline0: i6pcu-------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48616
+offline0: i6pcu-------s--- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48616
     : Telegram.netify.telegram
     : CT ID: 0: MARK: 0
     : H: t.me
     : DP: 6
 
-offline0: i6pcu-------s-- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48624
+offline0: i6pcu-------s--- TCP [OR] 2001:67c:4e8:f004::9:443 <-- [L] 2001:b07:a3d:c112:9a00:ba78:86b1:e177:48624
     : Telegram.netify.telegram
     : CT ID: 0: MARK: 0
     : H: telegram.me
     : DP: 6
 
-offline0: i4pc-------r-F- TCP [OR] 5.61.23.30:443 <-- [L] 192.168.1.245:46174
+offline0: i4pc-------r--F- TCP [OR] 5.61.23.30:443 <-- [L] 192.168.1.245:46174
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: 732231.ms.ok.ru
@@ -468,7 +468,7 @@ offline0: i4pc-------r-F- TCP [OR] 5.61.23.30:443 <-- [L] 192.168.1.245:46174
     : RID 30: TLS Certificate Expired
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 116.211.202.129:443 <-- [L] 192.168.88.171:55272
+offline0: i4pcu----------- TCP [OR] 116.211.202.129:443 <-- [L] 192.168.88.171:55272
     : HTTP/S.netify.iqiyi
     : CT ID: 0: MARK: 0
     : H: opportunarch.iqiyi.com
@@ -477,7 +477,7 @@ offline0: i4pcu---------- TCP [OR] 116.211.202.129:443 <-- [L] 192.168.88.171:55
     : JA4: t13d3113h2_e8f1e7e78f70_1b3407e2c936
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 184.86.2.194:443 <-- [L] 192.168.88.171:55468
+offline0: i4pcu----------- TCP [OR] 184.86.2.194:443 <-- [L] 192.168.88.171:55468
     : HTTP/S.netify.iqiyi
     : CT ID: 0: MARK: 0
     : H: stc.iqiyipic.com
@@ -487,7 +487,7 @@ offline0: i4pcu---------- TCP [OR] 184.86.2.194:443 <-- [L] 192.168.88.171:55468
     : JA4: t13d1516h2_8daaf6152771_02713d6af862
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 124.237.225.21:443 <-- [L] 192.168.88.171:55280
+offline0: i4pcu----------- TCP [OR] 124.237.225.21:443 <-- [L] 192.168.88.171:55280
     : HTTP/S.netify.iqiyi
     : CT ID: 0: MARK: 0
     : H: msg.qy.net
@@ -496,7 +496,7 @@ offline0: i4pcu---------- TCP [OR] 124.237.225.21:443 <-- [L] 192.168.88.171:552
     : JA4: t13d3113h2_e8f1e7e78f70_1b3407e2c936
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 54.208.106.218:443 <-- [L] 192.168.88.171:49217
+offline0: i4pcu----------- TCP [OR] 54.208.106.218:443 <-- [L] 192.168.88.171:49217
     : HTTP/S.netify.adobe-ads
     : CT ID: 0: MARK: 0
     : H: meet27083742.adobeconnect.com
@@ -505,7 +505,7 @@ offline0: i4pcu---------- TCP [OR] 54.208.106.218:443 <-- [L] 192.168.88.171:492
     : JA4: t13d1516h2_8daaf6152771_e5627efa2ab1
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 3.136.49.254:443 <-- [L] 192.168.1.245:50142
+offline0: i4pcu----------- TCP [OR] 3.136.49.254:443 <-- [L] 192.168.1.245:50142
     : HTTP/S.netify.bluesky
     : CT ID: 0: MARK: 0
     : H: bsky.app
@@ -515,7 +515,7 @@ offline0: i4pcu---------- TCP [OR] 3.136.49.254:443 <-- [L] 192.168.1.245:50142
     : JA4: t13d1715h2_5b57614c22b0_5c2c66f702b0
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 44.218.3.81:443 <-- [L] 192.168.1.245:55362
+offline0: i4pcu----------- TCP [OR] 44.218.3.81:443 <-- [L] 192.168.1.245:55362
     : HTTP/S.netify.bluesky
     : CT ID: 0: MARK: 0
     : H: bsky.social
@@ -525,7 +525,7 @@ offline0: i4pcu---------- TCP [OR] 44.218.3.81:443 <-- [L] 192.168.1.245:55362
     : JA4: t13d1715h2_5b57614c22b0_5c2c66f702b0
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 15.204.197.32:443 <-- [L] 192.168.1.245:33212
+offline0: i4pcu----------- TCP [OR] 15.204.197.32:443 <-- [L] 192.168.1.245:33212
     : HTTP/S.netify.bluesky
     : CT ID: 0: MARK: 0
     : H: enoki.us-east.host.bsky.network
@@ -535,7 +535,7 @@ offline0: i4pcu---------- TCP [OR] 15.204.197.32:443 <-- [L] 192.168.1.245:33212
     : JA4: t13d1715h2_5b57614c22b0_5c2c66f702b0
     : DP: 5
 
-offline0: i6pcu---------- TCP [OR] 2001:b07:a3d:c112:6ea5:ab52:9230:ba5:35968 --> [L] 2a04:4e42:c00::347:443
+offline0: i6pcu----------- TCP [OR] 2001:b07:a3d:c112:6ea5:ab52:9230:ba5:35968 --> [L] 2a04:4e42:c00::347:443
     : HTTP/S
     : CT ID: 0: MARK: 0
     : H: mastodon.social
@@ -545,7 +545,7 @@ offline0: i6pcu---------- TCP [OR] 2001:b07:a3d:c112:6ea5:ab52:9230:ba5:35968 --
     : JA4: t13d1715h2_5b57614c22b0_5c2c66f702b0
     : DP: 6
 
-offline0: i6pc-------r--- UDP [OR] 2001:b07:a3d:c112:6ea5:ab52:9230:ba5:41590 --> [L] 2a03:2880:f208:c4:face:b00c:0:43fe:443
+offline0: i6pc-------r---- UDP [OR] 2001:b07:a3d:c112:6ea5:ab52:9230:ba5:41590 --> [L] 2a03:2880:f208:c4:face:b00c:0:43fe:443
     : QUIC.netify.meta
     : CT ID: 0: MARK: 0
     : H: www.threads.net
@@ -555,7 +555,7 @@ offline0: i6pc-------r--- UDP [OR] 2001:b07:a3d:c112:6ea5:ab52:9230:ba5:41590 --
     : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pcu---------- TCP [OR] 104.16.156.111:443 <-- [L] 192.168.1.245:58624
+offline0: i4pcu----------- TCP [OR] 104.16.156.111:443 <-- [L] 192.168.1.245:58624
     : HTTP/S.netify.nordvpn
     : CT ID: 0: MARK: 0
     : H: s1.nordcdn.com
@@ -565,7 +565,7 @@ offline0: i4pcu---------- TCP [OR] 104.16.156.111:443 <-- [L] 192.168.1.245:5862
     : JA4: t13d1715h2_5b57614c22b0_7121afd63204
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 146.70.182.51:443 <-- [L] 192.168.1.183:44102
+offline0: i4pcu----------- TCP [OR] 146.70.182.51:443 <-- [L] 192.168.1.183:44102
     : HTTP/S.netify.surfshark
     : CT ID: 0: MARK: 0
     : H: it-mil-v086.prod.surfshark.com
@@ -575,22 +575,42 @@ offline0: i4pcu---------- TCP [OR] 146.70.182.51:443 <-- [L] 192.168.1.183:44102
     : JA4: t13d1517h2_8daaf6152771_b0da82dd1658
     : DP: 7
 
-offline0: i4pc-gx-------- TCP [L] 192.168.1.128:45936 --> [OR] 208.85.40.158:80
+offline0: i4pcu---------F- TCP [OR] 109.238.90.239:443 <-- [L] 192.168.88.98:65086
+    : HTTP/S
+    : CT ID: 0: MARK: 0
+    : H: rutube.ru
+    : V: 0x0303 CS: 0x1302
+    : TLS/SNI: rutube.ru
+    : TLS/ECH: 0xfe0d
+    : JA4: t13d1517h2_8daaf6152771_fca9c764716e
+    : DP: 6
+
+offline0: i4pcu----------- TCP [OR] 3.165.239.54:443 <-- [L] 192.168.1.125:60828
+    : HTTP/S.netify.ubiquiti
+    : CT ID: 0: MARK: 0
+    : H: www.ui.com
+    : V: 0x0303 CS: 0x1301
+    : TLS/SNI: www.ui.com
+    : TLS/ECH: 0xfe0d
+    : JA4: t13d1717h2_5b57614c22b0_3cbfd9057e0d
+    : DP: 7
+
+offline0: i4pc-gx--------- TCP [L] 192.168.1.128:45936 --> [OR] 208.85.40.158:80
     : HTTP
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- TCP [OR] 34.96.123.111:80 <-- [L] 192.168.1.128:44954
+offline0: i4pc-gx--------- TCP [OR] 34.96.123.111:80 <-- [L] 192.168.1.128:44954
     : HTTP
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- TCP [OR] 18.65.82.67:80 <-- [L] 192.168.1.128:52070
+offline0: i4pc-gx--------- TCP [OR] 18.65.82.67:80 <-- [L] 192.168.1.128:52070
     : HTTP
     : CT ID: 0: MARK: 0
     : DP: 2
 
-offline0: i4pc-gx-------- TCP [OR] 69.191.252.15:80 <-- [L] 192.168.1.128:39036
+offline0: i4pc-gx--------- TCP [OR] 69.191.252.15:80 <-- [L] 192.168.1.128:39036
     : HTTP.netify.bloomberg
     : CT ID: 0: MARK: 0
     : DP: 8

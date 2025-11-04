@@ -1,4 +1,4 @@
-offline0: i4pcu---------- TCP [OR] 104.16.248.249:443 <-- [L] 172.20.10.4:49877
+offline0: i4pcu----------- TCP [OR] 104.16.248.249:443 <-- [L] 172.20.10.4:49877
     : HTTP/S.netify.cloudflare-dns
     : CT ID: 0: MARK: 0
     : H: mozilla.cloudflare-dns.com

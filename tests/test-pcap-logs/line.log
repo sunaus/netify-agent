@@ -1,15 +1,15 @@
-offline0: i4pc-------r--- UDP [L] 10.0.2.15:50835 --> [OR] 125.209.252.210:20610
+offline0: i4pc-------r---- UDP [L] 10.0.2.15:50835 --> [OR] 125.209.252.210:20610
     : Line/Call.netify.line
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
     : DP: 9
 
-offline0: i4pc----------- TCP [L] 10.200.3.125:57841 --> [OR] 147.92.165.194:443
+offline0: i4pc------------ TCP [L] 10.200.3.125:57841 --> [OR] 147.92.165.194:443
     : HTTP/S
     : CT ID: 0: MARK: 0
     : DP: 5
 
-offline0: i4pcu------r-F- TCP [L] 10.200.3.125:58160 --> [OR] 147.92.242.232:443
+offline0: i4pcu------r--F- TCP [L] 10.200.3.125:58160 --> [OR] 147.92.242.232:443
     : HTTP/S.netify.line
     : CT ID: 0: MARK: 0
     : H: uts-front.line-apps.com
@@ -21,13 +21,13 @@ offline0: i4pcu------r-F- TCP [L] 10.200.3.125:58160 --> [OR] 147.92.242.232:443
     : RID 47: TLS ALPN Not Found
     : DP: 8
 
-offline0: i4pc-------r--- UDP [L] 10.200.3.125:51161 --> [OR] 147.92.169.90:29070
+offline0: i4pc-------r---- UDP [L] 10.200.3.125:51161 --> [OR] 147.92.169.90:29070
     : Line/Call.netify.line
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy
     : DP: 23
 
-offline0: i4pc-------r--- UDP [L] 10.200.3.125:51170 --> [OR] 147.92.169.90:29070
+offline0: i4pc-------r---- UDP [L] 10.200.3.125:51170 --> [OR] 147.92.169.90:29070
     : Line/Call.netify.line
     : CT ID: 0: MARK: 0
     : RID 28: Suspicious Entropy

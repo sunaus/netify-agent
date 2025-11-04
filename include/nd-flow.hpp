@@ -369,7 +369,6 @@ public:
     bool HasSSHServerAgent(void) const;
     bool HasTLSClientSNI(void) const;
     bool HasTLSEncryptedCH(void) const;
-    bool HasTLSEncryptedSNI(void) const;
     bool HasTLSServerCN(void) const;
     bool HasTLSIssuerDN(void) const;
     bool HasTLSSubjectDN(void) const;

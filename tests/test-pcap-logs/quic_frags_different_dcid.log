@@ -1,4 +1,4 @@
-offline0: i4pcu---------- UDP [OR] 73.185.34.172:443 <-- [L] 129.21.84.33:37229
+offline0: i4pcu----------- UDP [OR] 73.185.34.172:443 <-- [L] 129.21.84.33:37229
     : QUIC.netify.cloudflare
     : CT ID: 0: MARK: 0
     : H: cdnjs.cloudflare.com

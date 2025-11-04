@@ -1,10 +1,10 @@
-offline0: i4pc----------- UDP [L] 192.168.1.2:53 <-- [OL] 192.168.1.146:47767
+offline0: i4pc------------ UDP [L] 192.168.1.2:53 <-- [OL] 192.168.1.146:47767
     : DNS
     : CT ID: 0: MARK: 0
     : H: apache.org
     : DP: 2
 
-offline0: i4pc-------r--- TCP [L] 192.168.1.103:1714 --> [OL] 192.168.1.146:8080
+offline0: i4pc-------r---- TCP [L] 192.168.1.103:1714 --> [OL] 192.168.1.146:8080
     : HTTP/Connect
     : CT ID: 0: MARK: 0
     : H: apache.org
@@ -13,7 +13,7 @@ offline0: i4pc-------r--- TCP [L] 192.168.1.103:1714 --> [OL] 192.168.1.146:8080
     : RID 28: Suspicious Entropy
     : DP: 6
 
-offline0: i4pcu---------- TCP [OR] 151.101.2.132:443 <-- [L] 192.168.1.146:35968
+offline0: i4pcu----------- TCP [OR] 151.101.2.132:443 <-- [L] 192.168.1.146:35968
     : HTTP/S
     : CT ID: 0: MARK: 0
     : D: apache.org

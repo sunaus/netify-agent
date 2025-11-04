@@ -1,17 +1,17 @@
-offline0: i4pc----------- UDP [L] 0.0.0.0:68 --> [OB] 255.255.255.255:67
+offline0: i4pc------------ UDP [L] 0.0.0.0:68 --> [OB] 255.255.255.255:67
     : DHCP
     : CT ID: 0: MARK: 0
     : H: lucas-imac
     : DHCP/FP: 1,121,3,6,15,119,252,95,44,46
     : DP: 1
 
-offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.17:60793
+offline0: i4pc------------ UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.17:60793
     : DNS.netify.apple-itunes
     : CT ID: 0: MARK: 0
     : H: e673.dsce9.akamaiedge.net
     : DP: 2
 
-offline0: i4pcu--------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57018
+offline0: i4pcu---------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57018
     : HTTP/S.netify.apple-itunes
     : CT ID: 0: MARK: 0
     : D: e673.dsce9.akamaiedge.net H: itunes.apple.com
@@ -20,7 +20,7 @@ offline0: i4pcu--------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57018
     : JA4: t13d2613h2_2802a3db6c62_845d286b0d67
     : DP: 6
 
-offline0: i4pcu------r-F- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:49226
+offline0: i4pcu------r--F- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:49226
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -31,7 +31,7 @@ offline0: i4pcu------r-F- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:49226
     : RID 47: TLS ALPN Not Found
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57019
+offline0: i4pcu----------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57019
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -41,7 +41,7 @@ offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57019
     : JA4: t13d1713h2_0633f72d41ca_845d286b0d67
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57021
+offline0: i4pcu----------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57021
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -51,7 +51,7 @@ offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57021
     : JA4: t13d1713h2_0633f72d41ca_845d286b0d67
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57020
+offline0: i4pcu----------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57020
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -61,31 +61,31 @@ offline0: i4pcu---------- TCP [OR] 34.225.240.173:443 <-- [L] 192.168.2.17:57020
     : JA4: t13d1713h2_0633f72d41ca_845d286b0d67
     : DP: 7
 
-offline0: i4pc-------r-F- TCP [OR] 17.248.146.144:443 <-- [L] 192.168.2.17:56996
+offline0: i4pc-------r--F- TCP [OR] 17.248.146.144:443 <-- [L] 192.168.2.17:56996
     : HTTP/S.netify.apple
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic
     : DP: 2
 
-offline0: i4pc-------r-F- TCP [OR] 2.18.232.118:443 <-- [L] 192.168.2.17:57017
+offline0: i4pc-------r--F- TCP [OR] 2.18.232.118:443 <-- [L] 192.168.2.17:57017
     : HTTP/S
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pc----------- UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.17:56263
+offline0: i4pc------------ UDP [L] 192.168.2.1:53 <-- [OL] 192.168.2.17:56263
     : DNS.netify.signal
     : CT ID: 0: MARK: 0
     : H: textsecure-service.whispersystems.org
     : DP: 2
 
-offline0: i4pc-------r--- ICMP [L] 192.168.2.1:0 <-- [OL] 192.168.2.17:0
+offline0: i4pc-------r---- ICMP [L] 192.168.2.1:0 <-- [OL] 192.168.2.17:0
     : ICMP
     : CT ID: 0: MARK: 0
     : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pcu--------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57022
+offline0: i4pcu---------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57022
     : HTTP/S.netify.apple-itunes
     : CT ID: 0: MARK: 0
     : D: e673.dsce9.akamaiedge.net H: itunes.apple.com
@@ -94,7 +94,7 @@ offline0: i4pcu--------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57022
     : JA4: t13d2613h2_2802a3db6c62_845d286b0d67
     : DP: 6
 
-offline0: i4pcu------r--- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:49227
+offline0: i4pcu------r---- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:49227
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -105,7 +105,7 @@ offline0: i4pcu------r--- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:49227
     : RID 47: TLS ALPN Not Found
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57023
+offline0: i4pcu----------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57023
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -115,7 +115,7 @@ offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57023
     : JA4: t13d1713h2_0633f72d41ca_845d286b0d67
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57025
+offline0: i4pcu----------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57025
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -125,7 +125,7 @@ offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57025
     : JA4: t13d1713h2_0633f72d41ca_845d286b0d67
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57024
+offline0: i4pcu----------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57024
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -135,7 +135,7 @@ offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57024
     : JA4: t13d1713h2_0633f72d41ca_845d286b0d67
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57026
+offline0: i4pcu----------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57026
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : D: textsecure-service.whispersystems.org
@@ -145,13 +145,13 @@ offline0: i4pcu---------- TCP [OR] 35.169.3.40:443 <-- [L] 192.168.2.17:57026
     : JA4: t13d1713h2_0633f72d41ca_845d286b0d67
     : DP: 7
 
-offline0: i4pc---------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57016
+offline0: i4pc----------F- TCP [OR] 23.57.24.16:443 <-- [L] 192.168.2.17:57016
     : HTTP/S.netify.apple-itunes
     : CT ID: 0: MARK: 0
     : D: e673.dsce9.akamaiedge.net
     : DP: 7
 
-offline0: i4pcu---------- TCP [OR] 13.35.253.42:443 <-- [L] 192.168.2.17:57027
+offline0: i4pcu----------- TCP [OR] 13.35.253.42:443 <-- [L] 192.168.2.17:57027
     : HTTP/S.netify.signal
     : CT ID: 0: MARK: 0
     : H: cdn.signal.org

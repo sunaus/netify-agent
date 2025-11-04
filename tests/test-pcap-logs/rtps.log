@@ -1,4 +1,4 @@
-offline0: i4pc-------r--- UDP [L] 127.0.0.1:28108 --> [OL] 127.0.0.1:7410
+offline0: i4pc-------r---- UDP [L] 127.0.0.1:28108 --> [OL] 127.0.0.1:7410
     : RTPS
     : CT ID: 0: MARK: 0
     : RID 16: Known Protocol on Non-standard Port

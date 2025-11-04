@@ -1,4 +1,4 @@
-offline0: i4pcu------r-F- TCP [OR] 185.60.216.53:443 <-- [L] 192.168.2.29:49674
+offline0: i4pcu------r--F- TCP [OR] 185.60.216.53:443 <-- [L] 192.168.2.29:49674
     : HTTP/S.netify.whatsapp
     : CT ID: 0: MARK: 0
     : H: mmg-fna.whatsapp.net
@@ -9,7 +9,7 @@ offline0: i4pcu------r-F- TCP [OR] 185.60.216.53:443 <-- [L] 192.168.2.29:49674
     : RID 30: TLS Certificate Expired
     : DP: 8
 
-offline0: i4pc----------- TCP [OR] 185.60.216.53:443 <-- [L] 192.168.2.29:49698
+offline0: i4pc------------ TCP [OR] 185.60.216.53:443 <-- [L] 192.168.2.29:49698
     : HTTP/S.netify.whatsapp
     : CT ID: 0: MARK: 0
     : H: mmg-fna.whatsapp.net

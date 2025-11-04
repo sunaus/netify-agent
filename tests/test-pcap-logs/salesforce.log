@@ -1,4 +1,4 @@
-offline0: i4pcu------r--- TCP [OR] 85.222.142.6:443 <-- [L] 192.168.1.178:54399
+offline0: i4pcu------r---- TCP [OR] 85.222.142.6:443 <-- [L] 192.168.1.178:54399
     : HTTP/S.netify.salesforce
     : CT ID: 0: MARK: 0
     : H: help.salesforce.com

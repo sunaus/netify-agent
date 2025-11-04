@@ -1,4 +1,4 @@
-offline0: i4pc----------- TCP [L] 10.84.1.81:60926 --> [OR] 166.248.152.10:80
+offline0: i4pc------------ TCP [L] 10.84.1.81:60926 --> [OR] 166.248.152.10:80
     : HTTP
     : CT ID: 0: MARK: 0
     : H: gdl.news-cdn.site
@@ -6,16 +6,15 @@ offline0: i4pc----------- TCP [L] 10.84.1.81:60926 --> [OR] 166.248.152.10:80
     : URL: gdl.news-cdn.site/as/bigo-ad-creatives/3s3/2lOTA7.mp4
     : DP: 4
 
-offline0: i4pc--x----r--- TCP [OR] 54.161.101.85:80 <-- [L] 192.168.2.105:59146
+offline0: i4pc--x--------- TCP [OR] 54.161.101.85:80 <-- [L] 192.168.2.105:59146
     : HTTP
     : CT ID: 0: MARK: 0
     : H: livesim.dashif.org
     : HTTP/UA: VLC/3.0.16 LibVLC/3.0.16
     : URL: livesim.dashif.org/livesim/sts_1652783809/sid_40c11e12/chunkdur_1/ato_7/testpic4_8s/V2400/206598099.m4s
-    : RID 46: Unidirectional Traffic
     : DP: 1
 
-offline0: i4pc--x-------- TCP [OR] 54.161.101.85:80 <-- [L] 192.168.2.105:59142
+offline0: i4pc--x--------- TCP [OR] 54.161.101.85:80 <-- [L] 192.168.2.105:59142
     : HTTP
     : CT ID: 0: MARK: 0
     : H: livesim.dashif.org
@@ -23,7 +22,7 @@ offline0: i4pc--x-------- TCP [OR] 54.161.101.85:80 <-- [L] 192.168.2.105:59142
     : URL: livesim.dashif.org/livesim/sts_1652783809/sid_40c11e12/chunkdur_1/ato_7/testpic4_8s/A48/init.mp4
     : DP: 4
 
-offline0: i4pcu-x-------- TCP [OR] 54.161.101.85:80 <-- [L] 192.168.2.105:59144
+offline0: i4pcu-x--------- TCP [OR] 54.161.101.85:80 <-- [L] 192.168.2.105:59144
     : HTTP
     : CT ID: 0: MARK: 0
     : H: livesim.dashif.org

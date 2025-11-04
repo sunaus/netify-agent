@@ -1,4 +1,4 @@
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80a::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40028
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:80a::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40028
     : HTTP/S.netify.google-safe-browsing
     : CT ID: 0: MARK: 0
     : H: safebrowsing.googleapis.com
@@ -7,7 +7,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80a::200a:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56558
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56558
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.reddit.com
@@ -18,7 +18,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 8
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80a::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40030
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:80a::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:40030
     : HTTP/S.netify.google-safe-browsing
     : CT ID: 0: MARK: 0
     : H: safebrowsing.googleapis.com
@@ -27,7 +27,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80a::200a:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56560
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56560
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.reddit.com
@@ -38,7 +38,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56564
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56564
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.redditstatic.com
@@ -49,7 +49,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56562
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56562
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.redditstatic.com
@@ -60,7 +60,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56568
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56568
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.redditstatic.com
@@ -71,7 +71,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56570
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56570
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.redditstatic.com
@@ -82,7 +82,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56566
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56566
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.redditstatic.com
@@ -93,7 +93,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56572
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56572
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: www.redditstatic.com
@@ -104,7 +104,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 11
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56578
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56578
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: styles.redditmedia.com
@@ -115,7 +115,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56576
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56576
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: styles.redditmedia.com
@@ -126,7 +126,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 8
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56574
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56574
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: styles.redditmedia.com
@@ -137,7 +137,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56582
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56582
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: preview.redd.it
@@ -148,7 +148,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56580
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56580
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: styles.redditmedia.com
@@ -159,7 +159,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56584
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56584
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: preview.redd.it
@@ -170,7 +170,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56586
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56586
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: preview.redd.it
@@ -181,7 +181,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56588
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56588
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: preview.redd.it
@@ -192,7 +192,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56592
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56592
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: emoji.redditmedia.com
@@ -203,7 +203,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 8
 
-offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56590
+offline0: i6pcu------r--F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56590
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: emoji.redditmedia.com
@@ -214,7 +214,7 @@ offline0: i6pcu------r-F- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56594
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56594
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: b.thumbs.redditmedia.com
@@ -225,7 +225,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:50960
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:805::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:50960
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: www.googletagservices.com
@@ -234,7 +234,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2002:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::df9:21c6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:43492
+offline0: i6pcu----------- TCP [OR] 64:ff9b::df9:21c6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:43492
     : HTTP/S.netify.amazon-advertising
     : CT ID: 0: MARK: 0
     : H: c.amazon-adsystem.com
@@ -243,7 +243,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::df9:21c6:443 <-- [L] 2a01:cb01:2049:
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::6853:b3b6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38320
+offline0: i6pcu----------- TCP [OR] 64:ff9b::6853:b3b6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38320
     : HTTP/S.netify.aax-media
     : CT ID: 0: MARK: 0
     : H: c.aaxads.com
@@ -252,7 +252,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::6853:b3b6:443 <-- [L] 2a01:cb01:2049
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::acd9:12c2:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51026
+offline0: i6pcu----------- TCP [OR] 64:ff9b::acd9:12c2:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51026
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: securepubads.g.doubleclick.net
@@ -261,7 +261,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::acd9:12c2:443 <-- [L] 2a01:cb01:2049
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:789d:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:48240
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:789d:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:48240
     : HTTP/S.netify.twitter
     : CT ID: 0: MARK: 0
     : H: platform.twitter.com
@@ -272,7 +272,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:789d:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:816::2008:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39520
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:816::2008:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39520
     : HTTP/S.netify.analytics
     : CT ID: 0: MARK: 0
     : H: www.googletagmanager.com
@@ -281,7 +281,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:816::2008:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::6853:b3d1:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:32970
+offline0: i6pcu----------- TCP [OR] 64:ff9b::6853:b3d1:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:32970
     : HTTP/S.netify.aax-media
     : CT ID: 0: MARK: 0
     : H: www.aaxdetect.com
@@ -290,7 +290,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::6853:b3d1:443 <-- [L] 2a01:cb01:2049
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::2278:cf94:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39626
+offline0: i6pcu----------- TCP [OR] 64:ff9b::2278:cf94:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39626
     : HTTP/S.netify.atdata
     : CT ID: 0: MARK: 0
     : H: id.rlcdn.com
@@ -299,7 +299,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::2278:cf94:443 <-- [L] 2a01:cb01:2049
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:806::200e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:54862
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:806::200e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:54862
     : HTTP/S.netify.youtube
     : CT ID: 0: MARK: 0
     : H: www.youtube.com
@@ -308,7 +308,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:806::200e:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::1736:86f1:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:44264
+offline0: i6pcu----------- TCP [OR] 64:ff9b::1736:86f1:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:44264
     : HTTP/S.netify.comscore
     : CT ID: 0: MARK: 0
     : H: sb.scorecardresearch.com
@@ -317,7 +317,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::1736:86f1:443 <-- [L] 2a01:cb01:2049
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 2620:116:800d:21:f916:5049:f87f:108e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:48648
+offline0: i6pcu------r---- TCP [OR] 2620:116:800d:21:f916:5049:f87f:108e:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:48648
     : HTTP/S.netify.quantcast
     : CT ID: 0: MARK: 0
     : H: secure.quantserve.com
@@ -328,7 +328,7 @@ offline0: i6pcu------r--- TCP [OR] 2620:116:800d:21:f916:5049:f87f:108e:443 <-- 
     : RID 30: TLS Certificate Expired
     : DP: 8
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::68f4:2ac8:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56782
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::68f4:2ac8:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56782
     : HTTP/S.netify.twitter
     : CT ID: 0: MARK: 0
     : H: syndication.twitter.com
@@ -339,7 +339,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::68f4:2ac8:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 9
 
-offline0: i6pcu---------- TCP [OR] 64:ff9b::d83a:d1e6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51100
+offline0: i6pcu----------- TCP [OR] 64:ff9b::d83a:d1e6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51100
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: ad.doubleclick.net
@@ -348,7 +348,7 @@ offline0: i6pcu---------- TCP [OR] 64:ff9b::d83a:d1e6:443 <-- [L] 2a01:cb01:2049
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 64:ff9b::d83a:d1e6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51102
+offline0: i6pcu---------F- TCP [OR] 64:ff9b::d83a:d1e6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51102
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: ad.doubleclick.net
@@ -357,7 +357,7 @@ offline0: i6pcu--------F- TCP [OR] 64:ff9b::d83a:d1e6:443 <-- [L] 2a01:cb01:2049
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2600:9000:219c:ee00:6:44e3:f8c0:93a1:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56186
+offline0: i6pcu----------- TCP [OR] 2600:9000:219c:ee00:6:44e3:f8c0:93a1:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56186
     : HTTP/S.netify.quantcast
     : CT ID: 0: MARK: 0
     : H: rules.quantcount.com
@@ -366,7 +366,7 @@ offline0: i6pcu---------- TCP [OR] 2600:9000:219c:ee00:6:44e3:f8c0:93a1:443 <-- 
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2606:2800:134:1a0d:1429:742:782:b6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39736
+offline0: i6pcu----------- TCP [OR] 2606:2800:134:1a0d:1429:742:782:b6:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:39736
     : HTTP/S.netify.twitter
     : CT ID: 0: MARK: 0
     : H: cdn.syndication.twimg.com
@@ -375,7 +375,7 @@ offline0: i6pcu---------- TCP [OR] 2606:2800:134:1a0d:1429:742:782:b6:443 <-- [L
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:808::2006:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:54726
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:808::2006:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:54726
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: static.doubleclick.net
@@ -384,7 +384,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:808::2006:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2004:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:57282
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:805::2004:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:57282
     : HTTP/S.netify.google
     : CT ID: 0: MARK: 0
     : H: www.google.com
@@ -393,7 +393,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2004:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:58122
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:805::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:58122
     : HTTP/S.netify.youtube
     : CT ID: 0: MARK: 0
     : H: yt3.ggpht.com
@@ -402,7 +402,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:815::2016:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:52296
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:815::2016:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:52296
     : HTTP/S.netify.youtube
     : CT ID: 0: MARK: 0
     : H: i.ytimg.com
@@ -411,7 +411,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:815::2016:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80c::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47302
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:80c::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47302
     : HTTP/S.netify.google
     : CT ID: 0: MARK: 0
     : H: fonts.gstatic.com
@@ -420,7 +420,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80c::2003:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80c::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47304
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:80c::2003:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47304
     : HTTP/S.netify.google
     : CT ID: 0: MARK: 0
     : H: fonts.gstatic.com
@@ -429,7 +429,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80c::2003:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56640
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:56640
     : HTTP/S.netify.reddit
     : CT ID: 0: MARK: 0
     : H: gateway.reddit.com
@@ -440,7 +440,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::9765:798c:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 10
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51006
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:805::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:51006
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: adservice.google.fr
@@ -449,7 +449,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:805::2002:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80b::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:59336
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:80b::2002:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:59336
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: adservice.google.com
@@ -458,7 +458,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80b::2002:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 2a00:1450:4007:80b::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:59624
+offline0: i6pcu------r---- TCP [OR] 2a00:1450:4007:80b::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:59624
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: 8a755a3fef0b189d8ab5b0d10758f68a.safeframe.googlesyndication.com
@@ -468,7 +468,7 @@ offline0: i6pcu------r--- TCP [OR] 2a00:1450:4007:80b::2001:443 <-- [L] 2a01:cb0
     : RID 27: Suspicious DGA Domain name
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::345f:7ca5:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46646
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::345f:7ca5:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46646
     : HTTP/S.netify.amazon-advertising
     : CT ID: 0: MARK: 0
     : H: aax-eu.amazon-adsystem.com
@@ -479,7 +479,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::345f:7ca5:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 12
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46806
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46806
     : HTTP/S.netify.amp
     : CT ID: 0: MARK: 0
     : H: cdn.ampproject.org
@@ -488,7 +488,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46808
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46808
     : HTTP/S.netify.amp
     : CT ID: 0: MARK: 0
     : H: cdn.ampproject.org
@@ -497,7 +497,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46810
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46810
     : HTTP/S.netify.amp
     : CT ID: 0: MARK: 0
     : H: cdn.ampproject.org
@@ -506,7 +506,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46812
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46812
     : HTTP/S.netify.amp
     : CT ID: 0: MARK: 0
     : H: cdn.ampproject.org
@@ -515,7 +515,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46814
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:46814
     : HTTP/S.netify.amp
     : CT ID: 0: MARK: 0
     : H: cdn.ampproject.org
@@ -524,7 +524,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:808::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:811::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38166
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:811::200a:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:38166
     : HTTP/S.netify.google
     : CT ID: 0: MARK: 0
     : H: fonts.googleapis.com
@@ -533,7 +533,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:811::200a:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36964
+offline0: i6pcu----------- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36964
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: tpc.googlesyndication.com
@@ -542,7 +542,7 @@ offline0: i6pcu---------- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36966
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36966
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: tpc.googlesyndication.com
@@ -551,7 +551,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36970
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36970
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: tpc.googlesyndication.com
@@ -560,7 +560,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36968
+offline0: i6pcu---------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36968
     : HTTP/S.netify.google-ads
     : CT ID: 0: MARK: 0
     : H: tpc.googlesyndication.com
@@ -569,7 +569,7 @@ offline0: i6pcu--------F- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb0
     : JA4: t13d1515h2_8daaf6152771_de4a06bb82e3
     : DP: 6
 
-offline0: i6pcu------r--- TCP [OR] 64:ff9b::34d3:acec:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47006
+offline0: i6pcu------r---- TCP [OR] 64:ff9b::34d3:acec:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:47006
     : HTTP/S.netify.flashtalking
     : CT ID: 0: MARK: 0
     : H: d9.flashtalking.com
@@ -580,7 +580,7 @@ offline0: i6pcu------r--- TCP [OR] 64:ff9b::34d3:acec:443 <-- [L] 2a01:cb01:2049
     : RID 30: TLS Certificate Expired
     : DP: 12
 
-offline0: i6pc-gx----r--- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36972
+offline0: i6pc-gx----r---- TCP [OR] 2a00:1450:4007:80f::2001:443 <-- [L] 2a01:cb01:2049:8b07:991d:ec85:28df:f629:36972
     : HTTP/S.netify.google
     : CT ID: 0: MARK: 0
     : RID 51: TCP Connection Issues
