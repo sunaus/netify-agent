@@ -270,7 +270,8 @@ public:
         nd_cat_id_t application = { ND_CAT_UNKNOWN };
         nd_cat_id_t protocol = { ND_CAT_UNKNOWN };
         nd_cat_id_t domain = { ND_CAT_UNKNOWN };
-        nd_cat_id_t network = { ND_CAT_UNKNOWN };
+        nd_cat_id_t upper_net = { ND_CAT_UNKNOWN };
+        nd_cat_id_t lower_net = { ND_CAT_UNKNOWN };
         nd_cat_id_t tag = { ND_CAT_UNKNOWN };
     } category;
 
@@ -424,6 +425,8 @@ public:
                     _upper_bytes = "other_bytes";
         std::string _lower_packets = "local_packets",
                     _upper_packets = "other_packets";
+        std::string _lower_net_cat = "local_network";
+        std::string _upper_net_cat = "other_network";
 #ifdef _ND_ENABLE_EXTENDED_STATS
         std::string _lower_rate = "local_rate";
         std::string _upper_rate = "other_rate";
@@ -452,11 +455,13 @@ public:
             _lower_port = "local_port";
             _lower_bytes = "local_bytes";
             _lower_packets = "local_packets";
+            _lower_net_cat = "local_network";
             _upper_mac = "other_mac";
             _upper_ip = "other_ip";
             _upper_port = "other_port";
             _upper_bytes = "other_bytes";
             _upper_packets = "other_packets";
+            _upper_net_cat = "other_network";
 #ifdef _ND_ENABLE_EXTENDED_STATS
             _lower_rate = "local_rate";
             _upper_rate = "other_rate";
@@ -468,11 +473,13 @@ public:
             _lower_port = "other_port";
             _lower_bytes = "other_bytes";
             _lower_packets = "other_packets";
+            _lower_net_cat = "other_network";
             _upper_mac = "local_mac";
             _upper_ip = "local_ip";
             _upper_port = "local_port";
             _upper_bytes = "local_bytes";
             _upper_packets = "local_packets";
+            _upper_net_cat = "local_network";
 #ifdef _ND_ENABLE_EXTENDED_STATS
             _lower_rate = "other_rate";
             _upper_rate = "local_rate";
@@ -605,8 +612,10 @@ public:
               category.protocol);
             serialize(output, { "category", "domain" },
               category.domain);
-            serialize(output, { "category", "network" },
-              category.network);
+            serialize(output, { "category", _lower_net_cat },
+              category.lower_net);
+            serialize(output, { "category", _upper_net_cat },
+              category.upper_net);
             serialize(output, { "category", "tag" },
               category.tag);
 

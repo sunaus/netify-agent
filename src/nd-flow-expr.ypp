@@ -146,7 +146,8 @@ typedef void* yyscan_t;
 
 %token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_IP_DSCP FLOW_VLAN_ID FLOW_OTHER_TYPE
 %token FLOW_LOCAL_MAC FLOW_OTHER_MAC FLOW_LOCAL_IP FLOW_OTHER_IP
-%token FLOW_LOCAL_PORT FLOW_OTHER_PORT
+%token FLOW_SRC_MAC FLOW_DST_MAC FLOW_SRC_IP FLOW_DST_IP
+%token FLOW_LOCAL_PORT FLOW_OTHER_PORT FLOW_SRC_PORT FLOW_DST_PORT
 %token FLOW_TUNNEL_TYPE
 %token FLOW_DETECTION_COMPLETE FLOW_DETECTION_GUESSED
 %token FLOW_DETECTION_INIT FLOW_DETECTION_UPDATED
@@ -155,12 +156,17 @@ typedef void* yyscan_t;
 %token FLOW_RISKS FLOW_NDPI_RISK_SCORE FLOW_NDPI_RISK_SCORE_CLIENT FLOW_NDPI_RISK_SCORE_SERVER
 %token FLOW_CATEGORY FLOW_CATEGORY_ID
 %token FLOW_APPLICATION FLOW_APPLICATION_CATEGORY FLOW_APPLICATION_CATEGORY_ID
-%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID
+%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID
+%token FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID
+%token FLOW_LOCAL_NETWORK_CATEGORY FLOW_LOCAL_NETWORK_CATEGORY_ID
+%token FLOW_OTHER_NETWORK_CATEGORY FLOW_OTHER_NETWORK_CATEGORY_ID
+%token FLOW_SRC_NETWORK_CATEGORY FLOW_SRC_NETWORK_CATEGORY_ID
+%token FLOW_DST_NETWORK_CATEGORY FLOW_DST_NETWORK_CATEGORY_ID
+%token FLOW_TAG FLOW_TAG_CATEGORY FLOW_TAG_CATEGORY_ID
 %token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY FLOW_PROTOCOL_CATEGORY_ID
 %token FLOW_DETECTED_HOSTNAME FLOW_DNS_HOSTNAME FLOW_ORIGIN FLOW_CT_MARK
 %token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_JA4
 %token FLOW_IFACE FLOW_IFACE_NFQ_SRC FLOW_IFACE_NFQ_DST
-%token FLOW_TAG FLOW_TAG_CATEGORY FLOW_TAG_CATEGORY_ID
 
 %token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED FLOW_OTHER_LOCAL
 %token <us_number> FLOW_OTHER_MULTICAST FLOW_OTHER_BROADCAST FLOW_OTHER_REMOTE
@@ -188,8 +194,9 @@ typedef void* yyscan_t;
 %type <us_number> value_tunnel_type
 
 %type <bool_result> expr expr_ip_proto expr_ip_dscp expr_ip_version expr_vlan_id expr_other_type
-%type <bool_result> expr_local_mac expr_other_mac expr_local_ip expr_other_ip
-%type <bool_result> expr_local_port expr_other_port
+%type <bool_result> expr_local_mac expr_other_mac expr_src_mac expr_dst_mac
+%type <bool_result> expr_local_ip expr_other_ip expr_src_ip expr_dst_ip
+%type <bool_result> expr_local_port expr_other_port expr_src_port expr_dst_port
 %type <bool_result> expr_tunnel_type
 %type <bool_result> expr_detection_complete expr_detection_guessed
 %type <bool_result> expr_detection_init expr_detection_updated
@@ -197,7 +204,12 @@ typedef void* yyscan_t;
 %type <bool_result> expr_expiring expr_expired expr_soft_dissector
 %type <bool_result> expr_category expr_category_id
 %type <bool_result> expr_app expr_app_id expr_app_name expr_app_category expr_app_category_id
-%type <bool_result> expr_domain_category expr_domain_category_id expr_network_category expr_network_category_id
+%type <bool_result> expr_domain_category expr_domain_category_id
+%type <bool_result> expr_network_category expr_network_category_id
+%type <bool_result> expr_local_network_category expr_local_network_category_id
+%type <bool_result> expr_other_network_category expr_other_network_category_id
+%type <bool_result> expr_src_network_category expr_src_network_category_id
+%type <bool_result> expr_dst_network_category expr_dst_network_category_id
 %type <bool_result> expr_risks expr_risk_ndpi_score expr_risk_ndpi_score_client expr_risk_ndpi_score_server
 %type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category expr_proto_category_id
 %type <bool_result> expr_detected_hostname expr_dns_hostname expr_origin expr_fwmark
@@ -221,10 +233,16 @@ expr:
     | expr_other_type
     | expr_local_mac
     | expr_other_mac
+    | expr_src_mac
+    | expr_dst_mac
     | expr_local_ip
     | expr_other_ip
+    | expr_src_ip
+    | expr_dst_ip
     | expr_local_port
     | expr_other_port
+    | expr_src_port
+    | expr_dst_port
     | expr_tunnel_type
     | expr_detection_complete
     | expr_detection_guessed
@@ -245,6 +263,14 @@ expr:
     | expr_domain_category_id
     | expr_network_category
     | expr_network_category_id
+    | expr_local_network_category
+    | expr_local_network_category_id
+    | expr_other_network_category
+    | expr_other_network_category_id
+    | expr_src_network_category
+    | expr_src_network_category_id
+    | expr_dst_network_category
+    | expr_dst_network_category_id
     | expr_tag_category
     | expr_tag_category_id
     | expr_proto
@@ -514,6 +540,36 @@ expr_other_mac:
     }
     ;
 
+expr_src_mac:
+      FLOW_SRC_MAC CMP_EQUAL VALUE_ADDR_MAC {
+        _NDFP_result = ($$ = (
+            strncasecmp(_NDFP_src_mac, $3, ND_STR_ETHALEN) == 0
+        ));
+        _NDFP_debugf("Source MAC == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_MAC CMP_NOTEQUAL VALUE_ADDR_MAC {
+        _NDFP_result = ($$ = (
+            strncasecmp(_NDFP_src_mac, $3, ND_STR_ETHALEN) != 0
+        ));
+        _NDFP_debugf("Source MAC != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_dst_mac:
+      FLOW_DST_MAC CMP_EQUAL VALUE_ADDR_MAC {
+        _NDFP_result = ($$ = (
+            strncasecmp(_NDFP_dst_mac, $3, ND_STR_ETHALEN) == 0
+        ));
+        _NDFP_debugf("Destination MAC == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_MAC CMP_NOTEQUAL VALUE_ADDR_MAC {
+        _NDFP_result = ($$ = (
+            strncasecmp(_NDFP_dst_mac, $3, ND_STR_ETHALEN) != 0
+        ));
+        _NDFP_debugf("Destination MAC != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
 expr_local_ip:
       FLOW_LOCAL_IP CMP_EQUAL value_addr_ip {
         _NDFP_result = ($$ = (
@@ -541,6 +597,36 @@ expr_other_ip:
             is_addr_equal(_NDFP_other_ip, $3) == false
         ));
         _NDFP_debugf("Other IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_src_ip:
+      FLOW_SRC_IP CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_src_ip, $3) == true
+        ));
+        _NDFP_debugf("Source IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_IP CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_src_ip, $3) == false
+        ));
+        _NDFP_debugf("Source IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_dst_ip:
+      FLOW_DST_IP CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_dst_ip, $3) == true
+        ));
+        _NDFP_debugf("Destination IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_IP CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_dst_ip, $3) == false
+        ));
+        _NDFP_debugf("Destination IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -618,6 +704,76 @@ expr_other_port:
     | FLOW_OTHER_PORT '<' VALUE_UNSIGNED {
         _NDFP_result = ($$ = (_NDFP_other_port < $3));
         _NDFP_debugf("Other port > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_src_port:
+      FLOW_SRC_PORT {
+        _NDFP_result = ($$ = (_NDFP_src_port != 0));
+        _NDFP_debugf("Source port is true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_SRC_PORT {
+        _NDFP_result = ($$ = (_NDFP_src_port == 0));
+        _NDFP_debugf("Source port is false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_PORT CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_src_port == $3));
+        _NDFP_debugf("Source port == %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_PORT CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_src_port != $3));
+        _NDFP_debugf("Source port != %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_PORT CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_src_port >= $3));
+        _NDFP_debugf("Source port >= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_PORT CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_src_port <= $3));
+        _NDFP_debugf("Source port <= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_PORT '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_src_port > $3));
+        _NDFP_debugf("Source port > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_PORT '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_src_port < $3));
+        _NDFP_debugf("Source port > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_dst_port:
+      FLOW_DST_PORT {
+        _NDFP_result = ($$ = (_NDFP_dst_port != 0));
+        _NDFP_debugf("Destination port is true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_DST_PORT {
+        _NDFP_result = ($$ = (_NDFP_dst_port == 0));
+        _NDFP_debugf("Destination port is false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_PORT CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_dst_port == $3));
+        _NDFP_debugf("Destination port == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_PORT CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_dst_port != $3));
+        _NDFP_debugf("Destination port != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_PORT CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_dst_port >= $3));
+        _NDFP_debugf("Destination port >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_PORT CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_dst_port <= $3));
+        _NDFP_debugf("Destination port <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_PORT '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_dst_port > $3));
+        _NDFP_debugf("Destination port > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_PORT '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_dst_port < $3));
+        _NDFP_debugf("Destination port > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -1180,11 +1336,20 @@ expr_category:
             );
         }
 
-        if (! _NDFP_result && _NDFP_flow->category.network != ND_CAT_UNKNOWN) {
+        if (! _NDFP_result && _NDFP_flow->category.lower_net != ND_CAT_UNKNOWN) {
             _NDFP_result = (
                 $$ = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::Type::APP, category) == _NDFP_flow->category.network
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.lower_net
+                )
+            );
+        }
+
+        if (! _NDFP_result && _NDFP_flow->category.upper_net != ND_CAT_UNKNOWN) {
+            _NDFP_result = (
+                $$ = (
+                    _NDFP_categories.LookupTag(
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.upper_net
                 )
             );
         }
@@ -1228,7 +1393,16 @@ expr_category:
             _NDFP_result = (
                 $$ = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::Type::APP, category) != _NDFP_flow->category.network
+                        ndCategories::Type::APP, category) != _NDFP_flow->category.lower_net
+                )
+            );
+        }
+
+        if (! _NDFP_result) {
+            _NDFP_result = (
+                $$ = (
+                    _NDFP_categories.LookupTag(
+                        ndCategories::Type::APP, category) != _NDFP_flow->category.upper_net
                 )
             );
         }
@@ -1265,9 +1439,17 @@ expr_category_id:
 
         if (! _NDFP_result) {
             _NDFP_result = ($$ = (
-                static_cast<unsigned>(_NDFP_flow->category.network) == $3
+                static_cast<unsigned>(_NDFP_flow->category.lower_net) == $3
             ));
-            _NDFP_debugf("Network category ID == %lu? %s\n",
+            _NDFP_debugf("Network (lower) category ID == %lu? %s\n",
+                $3, (_NDFP_result) ? "yes" : "no");
+        }
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.upper_net) == $3
+            ));
+            _NDFP_debugf("Network (upper) category ID == %lu? %s\n",
                 $3, (_NDFP_result) ? "yes" : "no");
         }
 
@@ -1299,9 +1481,17 @@ expr_category_id:
 
         if (! _NDFP_result) {
             _NDFP_result = ($$ = (
-                static_cast<unsigned>(_NDFP_flow->category.network) != $3
+                static_cast<unsigned>(_NDFP_flow->category.lower_net) != $3
             ));
-            _NDFP_debugf("Network category ID == %lu? %s\n",
+            _NDFP_debugf("Network (lower) category ID == %lu? %s\n",
+                $3, (_NDFP_result) ? "yes" : "no");
+        }
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.upper_net) != $3
+            ));
+            _NDFP_debugf("Network (upper) category ID == %lu? %s\n",
                 $3, (_NDFP_result) ? "yes" : "no");
         }
 
@@ -1439,9 +1629,18 @@ expr_network_category:
         _NDFP_result = (
             $$ = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) == _NDFP_flow->category.network
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.lower_net
             )
         );
+
+        if (! _NDFP_result) {
+            _NDFP_result = (
+                $$ = (
+                    _NDFP_categories.LookupTag(
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.upper_net
+                )
+            );
+        }
 
         _NDFP_debugf("Network category == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
@@ -1456,9 +1655,18 @@ expr_network_category:
         _NDFP_result = (
             $$ = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) != _NDFP_flow->category.network
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.lower_net
             )
         );
+
+        if (! _NDFP_result) {
+            _NDFP_result = (
+                $$ = (
+                    _NDFP_categories.LookupTag(
+                        ndCategories::Type::APP, category) != _NDFP_flow->category.upper_net
+                )
+            );
+        }
 
         _NDFP_debugf("Network category != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
@@ -1468,18 +1676,254 @@ expr_network_category:
 expr_network_category_id:
       FLOW_NETWORK_CATEGORY_ID CMP_EQUAL VALUE_UNSIGNED {
         _NDFP_result = ($$ = (
-            static_cast<unsigned>(_NDFP_flow->category.network) == $3
+            static_cast<unsigned>(_NDFP_flow->category.lower_net) == $3
         ));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.upper_net) == $3
+            ));
+        }
 
         _NDFP_debugf("Network category ID == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_NETWORK_CATEGORY_ID CMP_NOTEQUAL VALUE_UNSIGNED {
         _NDFP_result = ($$ = (
-            static_cast<unsigned>(_NDFP_flow->category.network) != $3
+            static_cast<unsigned>(_NDFP_flow->category.lower_net) != $3
         ));
 
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                static_cast<unsigned>(_NDFP_flow->category.upper_net) != $3
+            ));
+        }
+
         _NDFP_debugf("Network category ID != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_local_network_category:
+      FLOW_LOCAL_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) == _NDFP_local_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (local) category == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_LOCAL_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) != _NDFP_local_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (local) category != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_local_network_category_id:
+      FLOW_LOCAL_NETWORK_CATEGORY_ID CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_local_net_cat) == $3
+        ));
+
+        _NDFP_debugf("Network (local) category ID == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_LOCAL_NETWORK_CATEGORY_ID CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_local_net_cat) != $3
+        ));
+
+        _NDFP_debugf("Network (local) category ID != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_other_network_category:
+      FLOW_OTHER_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) == _NDFP_other_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (other) category == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_OTHER_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) != _NDFP_other_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (other) category != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_other_network_category_id:
+      FLOW_OTHER_NETWORK_CATEGORY_ID CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_other_net_cat) == $3
+        ));
+
+        _NDFP_debugf("Network (other) category ID == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_OTHER_NETWORK_CATEGORY_ID CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_other_net_cat) != $3
+        ));
+
+        _NDFP_debugf("Network (other) category ID != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_src_network_category:
+      FLOW_SRC_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) == _NDFP_src_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (src) category == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) != _NDFP_src_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (src) category != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_src_network_category_id:
+      FLOW_SRC_NETWORK_CATEGORY_ID CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_src_net_cat) == $3
+        ));
+
+        _NDFP_debugf("Network (src) category ID == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_SRC_NETWORK_CATEGORY_ID CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_src_net_cat) != $3
+        ));
+
+        _NDFP_debugf("Network (src) category ID != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_dst_network_category:
+      FLOW_DST_NETWORK_CATEGORY CMP_EQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) == _NDFP_dst_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (dst) category == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_NETWORK_CATEGORY CMP_NOTEQUAL VALUE_NAME {
+        size_t p;
+        string category($3);
+
+        while ((p = category.find_first_of("'\"")) != string::npos)
+            category.erase(p, 1);
+
+        _NDFP_result = (
+            $$ = (
+                _NDFP_categories.LookupTag(
+                    ndCategories::Type::APP, category) != _NDFP_dst_net_cat
+            )
+        );
+
+        _NDFP_debugf("Network (dst) category != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_dst_network_category_id:
+      FLOW_DST_NETWORK_CATEGORY_ID CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_dst_net_cat) == $3
+        ));
+
+        _NDFP_debugf("Network (dst) category ID == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_DST_NETWORK_CATEGORY_ID CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (
+            static_cast<unsigned>(_NDFP_dst_net_cat) != $3
+        ));
+
+        _NDFP_debugf("Network (dst) category ID != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -3006,23 +3450,19 @@ expr_tag:
 
 %%
 
-ndFlowParser::ndFlowParser()
-    : flow(NULL), local_mac{}, other_mac{},
-    local_ip(NULL), other_ip(NULL), local_port(0), other_port(0),
-    origin(0), expr_result(false), scanner(NULL)
-{
+ndFlowParser::ndFlowParser() {
     yyscan_t scanner;
     yylex_init_extra((void *)this, &scanner);
 
-    if (scanner == NULL)
+    if (scanner == nullptr)
         throw string("Error creating scanner context");
 
-    this->scanner = (void *)scanner;
+    this->scanner = static_cast<void *>(&scanner);
 }
 
 ndFlowParser::~ndFlowParser()
 {
-    yylex_destroy((yyscan_t)scanner);
+    yylex_destroy(static_cast<yyscan_t>(scanner));
 }
 
 bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
@@ -3044,6 +3484,9 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
         local_port = flow->lower_addr.GetPort();
         other_port = flow->upper_addr.GetPort();
 
+        local_net_cat = flow->category.lower_net;
+        other_net_cat = flow->category.upper_net;
+
         switch (flow->origin) {
         case ndFlow::Origin::LOWER:
             origin = _NDFP_ORIGIN_LOCAL;
@@ -3055,6 +3498,7 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
             origin = _NDFP_ORIGIN_UNKNOWN;
         }
         break;
+
     case ndFlow::LowerMap::OTHER:
         local_mac = flow->upper_mac.GetString().c_str();
         other_mac = flow->lower_mac.GetString().c_str();
@@ -3065,6 +3509,9 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
         local_port = flow->upper_addr.GetPort();
         other_port = flow->lower_addr.GetPort();
 
+        local_net_cat = flow->category.upper_net;
+        other_net_cat = flow->category.lower_net;
+
         switch (flow->origin) {
         case ndFlow::Origin::LOWER:
             origin = _NDFP_ORIGIN_OTHER;
@@ -3076,8 +3523,45 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
             origin = _NDFP_ORIGIN_UNKNOWN;
         }
         break;
+
     default:
         //nd_dprintf("Bad lower map: %u\n", flow->lower_map);
+        this->flow.reset();
+        return false;
+    }
+
+    switch (flow->origin) {
+    case ndFlow::Origin::LOWER:
+        src_mac = flow->lower_mac.GetString().c_str();
+        dst_mac = flow->upper_mac.GetString().c_str();
+
+        src_ip = &flow->lower_addr;
+        dst_ip = &flow->upper_addr;
+
+        src_port = flow->lower_addr.GetPort();
+        dst_port = flow->upper_addr.GetPort();
+
+        src_net_cat = flow->category.lower_net;
+        dst_net_cat = flow->category.upper_net;
+
+        break;
+
+    case ndFlow::Origin::UPPER:
+        src_mac = flow->upper_mac.GetString().c_str();
+        dst_mac = flow->lower_mac.GetString().c_str();
+
+        src_ip = &flow->upper_addr;
+        dst_ip = &flow->lower_addr;
+
+        src_port = flow->upper_addr.GetPort();
+        dst_port = flow->lower_addr.GetPort();
+
+        src_net_cat = flow->category.upper_net;
+        dst_net_cat = flow->category.lower_net;
+        break;
+
+    default:
+        //nd_dprintf("Unknown origin: %u\n", flow->origin);
         this->flow.reset();
         return false;
     }
@@ -3090,7 +3574,7 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
         expr.c_str(), expr.size(), (yyscan_t)scanner
     );
 
-    if (flow_expr_scan_buffer == NULL)
+    if (flow_expr_scan_buffer == nullptr)
         throw string("Error allocating flow expression scan buffer");
 
     yy_switch_to_buffer(flow_expr_scan_buffer, (yyscan_t)scanner);

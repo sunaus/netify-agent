@@ -37,14 +37,34 @@
     ((ndFlowParser *)yyget_extra(scanner))->local_mac
 #define _NDFP_other_mac \
     ((ndFlowParser *)yyget_extra(scanner))->other_mac
+#define _NDFP_src_mac \
+    ((ndFlowParser *)yyget_extra(scanner))->src_mac
+#define _NDFP_dst_mac \
+    ((ndFlowParser *)yyget_extra(scanner))->dst_mac
 #define _NDFP_local_ip \
     ((ndFlowParser *)yyget_extra(scanner))->local_ip
 #define _NDFP_other_ip \
     ((ndFlowParser *)yyget_extra(scanner))->other_ip
+#define _NDFP_src_ip \
+    ((ndFlowParser *)yyget_extra(scanner))->src_ip
+#define _NDFP_dst_ip \
+    ((ndFlowParser *)yyget_extra(scanner))->dst_ip
 #define _NDFP_local_port \
     ((ndFlowParser *)yyget_extra(scanner))->local_port
 #define _NDFP_other_port \
     ((ndFlowParser *)yyget_extra(scanner))->other_port
+#define _NDFP_src_port \
+    ((ndFlowParser *)yyget_extra(scanner))->src_port
+#define _NDFP_dst_port \
+    ((ndFlowParser *)yyget_extra(scanner))->dst_port
+#define _NDFP_local_net_cat \
+    ((ndFlowParser *)yyget_extra(scanner))->local_net_cat
+#define _NDFP_other_net_cat \
+    ((ndFlowParser *)yyget_extra(scanner))->other_net_cat
+#define _NDFP_src_net_cat \
+    ((ndFlowParser *)yyget_extra(scanner))->src_net_cat
+#define _NDFP_dst_net_cat \
+    ((ndFlowParser *)yyget_extra(scanner))->dst_net_cat
 #define _NDFP_origin \
     ((ndFlowParser *)yyget_extra(scanner))->origin
 #define _NDFP_params_intel \
@@ -73,20 +93,30 @@ public:
 
     bool RegExSearch(std::string &expr, const std::string &search);
 
-    ndFlow::Ptr flow;
-    const char *local_mac;
-    const char *other_mac;
-    const ndAddr *local_ip;
-    const ndAddr *other_ip;
-    uint16_t local_port;
-    uint16_t other_port;
-    uint16_t origin;
+    ndFlow::Ptr flow = { nullptr };
+    const char *local_mac = { nullptr };
+    const char *other_mac = { nullptr };
+    const char *src_mac = { nullptr };
+    const char *dst_mac = { nullptr };
+    const ndAddr *local_ip = { nullptr };
+    const ndAddr *other_ip = { nullptr };
+    const ndAddr *src_ip = { nullptr };
+    const ndAddr *dst_ip = { nullptr };
+    uint16_t local_port = { 0 };
+    uint16_t other_port = { 0 };
+    uint16_t src_port = { 0 };
+    uint16_t dst_port = { 0 };
+    nd_cat_id_t local_net_cat = { ND_CAT_UNKNOWN };
+    nd_cat_id_t other_net_cat = { ND_CAT_UNKNOWN };
+    nd_cat_id_t src_net_cat = { ND_CAT_UNKNOWN };
+    nd_cat_id_t dst_net_cat = { ND_CAT_UNKNOWN };
+    uint16_t origin = { 0 };
     const nlohmann::json *params_intel = { nullptr };
 
-    bool expr_result;
+    bool expr_result = { false };
 
 protected:
-    void *scanner;
+    void *scanner = { nullptr };
 
     typedef std::unordered_map<std::string, std::unique_ptr<std::regex>> rx_cache_map;
     rx_cache_map rx_cache;

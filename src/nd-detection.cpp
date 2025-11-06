@@ -509,14 +509,10 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
 
     ndEF->UpdateLowerMaps();
 
-    if (ndEF->lower_type == ndAddr::Type::OTHER) {
-        ndEF->category.network =
-          ndi.categories.LookupDotDirectory(ndEF->lower_addr);
-    }
-    else if (ndEF->upper_type == ndAddr::Type::OTHER) {
-        ndEF->category.network =
-          ndi.categories.LookupDotDirectory(ndEF->upper_addr);
-    }
+    ndEF->category.lower_net =
+      ndi.categories.LookupDotDirectory(ndEF->lower_addr);
+    ndEF->category.upper_net =
+      ndi.categories.LookupDotDirectory(ndEF->upper_addr);
 
     for (
       vector<uint8_t *>::const_iterator i =
