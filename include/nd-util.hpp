@@ -282,6 +282,8 @@ bool nd_ip_to_string(const sockaddr_storage &ip, std::string &dst);
 
 void nd_json_to_string(const nlohmann::json &j,
   std::string &output, bool pretty = false);
+void nd_ordered_json_to_string(const nlohmann::ordered_json &j,
+  std::string &output, bool pretty = false);
 
 uint8_t nd_netmask_to_prefix(const struct sockaddr_storage *netmask);
 uint8_t nd_netmask_to_prefix(const std::string &netmask);

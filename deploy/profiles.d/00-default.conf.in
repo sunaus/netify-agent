@@ -79,6 +79,14 @@ use_getifaddrs = false
 # full path.
 # network_namespace = netify
 
+# Local command/control socket.  Receive commands and control messages on a
+# local UNIX socket.
+path_server_socket = ${path_state_volatile}/netifyd.sock
+
+# On non-Linux systems (no Netlink support), use_getifaddrs can be enabled
+# to poll for interface addresses.
+use_getifaddrs = false
+
 # Capture Defaults
 ############################################################################
 

@@ -303,6 +303,7 @@ public:
     std::string path_plugins = { ND_PLUGINS_PATH };
     std::string path_profile;
     std::string path_proto_config = { ND_CONF_PROTO_PATH };
+    std::string path_server_socket;
     std::string path_shared_data = { ND_SHARED_DATADIR };
     std::string path_state_persistent = { ND_PERSISTENT_STATEDIR };
     std::string path_state_volatile = { ND_VOLATILE_STATEDIR };

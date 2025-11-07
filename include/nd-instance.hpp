@@ -277,7 +277,7 @@ public:
         RELOAD,
         TERMINATE,
         TIMER_UPDATE,
-        TIMER_UPDATE_NAPI,
+        TIMER_UPDATE_NAPI
     };
 
     inline void SendIPC(InstanceEvent event) {

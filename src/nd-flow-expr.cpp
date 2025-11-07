@@ -7099,7 +7099,7 @@ ndFlowParser::ndFlowParser() {
     if (scanner == nullptr)
         throw string("Error creating scanner context");
 
-    this->scanner = static_cast<void *>(&scanner);
+    this->scanner = static_cast<void *>(scanner);
 }
 
 ndFlowParser::~ndFlowParser()

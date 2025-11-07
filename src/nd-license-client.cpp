@@ -81,4 +81,3 @@ void ndLicenseClient::Close() {
         so_handle = nullptr;
     }
 }
-

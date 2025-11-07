@@ -21,9 +21,9 @@ netifyinclude_HEADERS = nd-addr.hpp nd-apps.hpp nd-base64.hpp nd-capture.hpp \
 	nd-flow-parser.hpp nd-instance.hpp nd-license-client.hpp nd-overlay.hpp \
 	nd-napi.hpp nd-napi-curl.hpp nd-ndpi.hpp nd-netlink.hpp nd-netlink-ct.hpp \
 	nd-netlink-rt.hpp nd-packet.hpp nd-plugin.hpp nd-progress.hpp \
-	nd-protos.hpp nd-risks.hpp nd-serializer.hpp nd-sha1.h nd-signal.hpp \
-	nd-thread.hpp nd-tls-alpn.hpp nd-types.hpp nd-ubus.hpp nd-uci.hpp \
-	nd-util.hpp nd-version.hpp netifyd.hpp
+	nd-protos.hpp nd-risks.hpp nd-serializer.hpp nd-server.hpp nd-sha1.h \
+	nd-signal.hpp nd-socket.hpp nd-thread.hpp nd-tls-alpn.hpp nd-types.hpp \
+	nd-ubus.hpp nd-uci.hpp nd-util.hpp nd-version.hpp netifyd.hpp
 
 nlohmannincludedir = $(includedir)/netifyd/nlohmann
 nlohmanninclude_HEADERS = nlohmann/json.hpp

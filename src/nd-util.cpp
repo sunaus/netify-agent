@@ -82,6 +82,7 @@
 
 using namespace std;
 using json = nlohmann::json;
+using json_ordered = nlohmann::ordered_json;
 
 std::mutex nd_printf_mutex;
 
@@ -424,6 +425,24 @@ void nd_json_to_string(const json &j, string &output, bool pretty) {
     output = j.dump(pretty ? ND_JSON_INDENT : -1, ' ', true,
       json::error_handler_t::replace);
 
+    // TODO: Make this it's own helper function...
+    vector<pair<regex *, string> >::const_iterator i;
+    for (i = ndGC.privacy_regex.begin();
+         i != ndGC.privacy_regex.end();
+         i++)
+    {
+        string result = regex_replace(output, *((*i).first),
+          (*i).second);
+        if (result.size()) output = result;
+    }
+}
+
+void nd_ordered_json_to_string(
+  const json_ordered &j, string &output, bool pretty) {
+    output = j.dump(pretty ? ND_JSON_INDENT : -1, ' ', true,
+      json::error_handler_t::replace);
+
+    // TODO: Make this it's own helper function...
     vector<pair<regex *, string> >::const_iterator i;
     for (i = ndGC.privacy_regex.begin();
          i != ndGC.privacy_regex.end();

@@ -24,6 +24,7 @@
 
 #include <getopt.h>
 #include <sys/resource.h>
+#include <sys/select.h>
 #include <unistd.h>
 
 #include <curl/curl.h>
@@ -48,6 +49,7 @@
 #include "nd-instance.hpp"
 #include "nd-license-client.hpp"
 #include "nd-progress.hpp"
+#include "nd-server.hpp"
 #include "nd-types.hpp"
 #include "nd-util.hpp"
 #ifdef _ND_ENABLE_LIBPCAP
@@ -632,6 +634,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
             return ndEnumCast(ConfigResult, INVALID_PERMS);
         }
     }
+
 #if defined(__linux__)
     if (! ndGC.network_namespace.empty()) {
         // Attempt to enter alternate network namespace...
@@ -2275,6 +2278,9 @@ void *ndInstance::ndInstance::Entry(void) {
         timer_update_napi.Set(itspec);
     }
 
+    ndServer::Create();
+    ndServer::GetInstance().Reload(ndGC.path_server_socket);
+
     for (;;) {
         int ipc = static_cast<int>(InstanceEvent::NONE);
 
@@ -2375,6 +2381,7 @@ ndInstance_EntryReturn:
     nd_ndpi_global_shutdown();
 
     ndLicenseClient::Destroy();
+    ndServer::Destroy();
 
     if (exit_code == 0)
         nd_printf("%s: Normal exit.\n", tag.c_str());
@@ -2405,8 +2412,10 @@ bool ndInstance::Reload(bool broadcast, bool silent) {
     overlay_tags.Reload();
 
     if (broadcast) {
-        plugins.BroadcastEvent(ndPlugin::Type::BASE,
-          ndPlugin::Event::RELOAD);
+        plugins.BroadcastEvent(
+          ndPlugin::Type::BASE, ndPlugin::Event::RELOAD);
+
+        ndServer::GetInstance().Reload(ndGC.path_server_socket);
     }
 
     if (silent) {
@@ -2767,15 +2776,20 @@ uint32_t ndInstance::WaitForIPC(int timeout) {
     int rc;
     uint32_t event = 0;
     fd_set fds_read;
+    int max_fd = fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)];
+    int server_fd = ndServer::GetDescriptor();
+
+    max_fd = max(max_fd, server_fd);
 
     do {
         FD_ZERO(&fds_read);
         FD_SET(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)], &fds_read);
+        if (server_fd != -1)
+            FD_SET(ndServer::GetDescriptor(), &fds_read);
 
         struct timeval tv = { 1, 0 };
 
-        rc = select(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)] + 1,
-          &fds_read, nullptr, nullptr, &tv);
+        rc = select(max_fd + 1, &fds_read, nullptr, nullptr, &tv);
 
         if (rc == -1) {
             throw ndExceptionSystemError(__PRETTY_FUNCTION__,
@@ -2783,17 +2797,16 @@ uint32_t ndInstance::WaitForIPC(int timeout) {
         }
 
         if (rc > 0) {
-            if (! FD_ISSET(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)],
-                  &fds_read))
-            {
-                throw ndException(
-                  "%s: %s: invalid descriptor",
-                  __PRETTY_FUNCTION__, "select");
-            }
+            if (server_fd != -1 && FD_ISSET(server_fd, &fds_read))
+                ndServer::GetInstance().CreateClientSession();
 
-            event = RecvIPC();
-            break;
+            if (FD_ISSET(fd_ipc[ndEnumCast(ndThread::PipeEnd, READ)],
+              &fds_read)) {
+                event = RecvIPC();
+                break;
+            }
         }
+        else ndServer::GetInstance().DestroyClientSessions();
     }
     while (! ShouldTerminate() && timeout < 0 && --timeout != 0);
 

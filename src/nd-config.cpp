@@ -193,6 +193,12 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     }
     else path_profile.clear();
 
+    value = r->Get(ND_NAME_SHORT, "path_server_socket",
+      (! profile) ? "" : path_server_socket);
+    if (! value.empty())
+        nd_expand_variables(value, path_server_socket, conf_vars);
+    nd_dprintf("path_server_socket: %s\n", path_server_socket.c_str());
+
     update_interval = (unsigned)r->GetInteger(ND_NAME_SHORT,
       "update_interval",
       (! profile) ? ND_STATS_INTERVAL : update_interval);

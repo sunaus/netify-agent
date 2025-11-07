@@ -41,9 +41,10 @@ lib_LTLIBRARIES = libnetifyd.la
 libnetifyd_la_SOURCES = nd-addr.cpp nd-apps.cpp nd-base64.cpp nd-capture.cpp \
 	nd-category.cpp nd-config.cpp nd-detection.cpp nd-except.cpp nd-dhc.cpp \
 	nd-fhc.cpp nd-flow.cpp nd-flow-criteria.l nd-flow-expr.ypp nd-flow-map.cpp \
-	nd-instance.cpp nd-license-client.cpp nd-napi.cpp nd-ndpi.cpp nd-overlay.cpp nd-plugin.cpp \
-	nd-progress.cpp nd-protos.cpp nd-risks.cpp nd-sha1.c nd-thread.cpp \
-	nd-util.cpp ../libs/timezone/timezone.cpp ../libs/timezone/tz_data.cpp \
+	nd-instance.cpp nd-license-client.cpp nd-napi.cpp nd-ndpi.cpp \
+	nd-overlay.cpp nd-plugin.cpp nd-progress.cpp nd-protos.cpp nd-risks.cpp \
+	nd-server.cpp nd-sha1.c nd-socket.cpp nd-thread.cpp nd-util.cpp \
+	../libs/timezone/timezone.cpp ../libs/timezone/tz_data.cpp \
 	../libs/timezone/tzdata_make_posix.cpp
 
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
