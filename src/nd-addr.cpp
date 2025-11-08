@@ -859,6 +859,68 @@ bool ndAddrLookup::LookupNeighbor(const ndAddr &addr, ndAddr &lladdr) {
     return true;
 }
 
+bool ndAddrLookup::AddGroupAddress(const string &tag, const ndAddr &addr) {
+    if (! addr.IsValid()) return false;
+    if (! (addr.IsEthernet() || addr.IsIP())) return false;
+
+    lock_guard<mutex> ul(lock_groups);
+
+    auto group = groups.find(tag);
+    if (group == groups.end()) {
+        group_addr_set addr_set({ addr });
+        groups.emplace(tag, addr_set);
+        return true;
+    }
+
+    auto result = group->second.insert(addr);
+
+    return result.second;
+}
+
+bool ndAddrLookup::RemoveGroup(const string &tag) {
+    lock_guard<mutex> ul(lock_groups);
+
+    auto result = groups.find(tag);
+    if (result == groups.end()) return false;
+
+    groups.erase(result);
+
+    return true;
+}
+
+bool ndAddrLookup::RemoveGroupAddress(const string &tag, const ndAddr &addr) {
+    if (! addr.IsValid()) return false;
+    if (! (addr.IsEthernet() || addr.IsIP())) return false;
+
+    lock_guard<mutex> ul(lock_groups);
+
+    auto group = groups.find(tag);
+    if (group == groups.end()) return false;
+
+    auto result = group->second.find(addr);
+    if (result == group->second.end()) return false;
+
+    group->second.erase(addr);
+
+    if (group->second.empty()) groups.erase(group);
+
+    return true;
+}
+
+bool ndAddrLookup::LookupGroupAddress(const string &tag, const ndAddr &addr) {
+    if (! addr.IsValid()) return false;
+    if (! (addr.IsEthernet() || addr.IsIP())) return false;
+
+    lock_guard<mutex> ul(lock_groups);
+
+    auto group = groups.find(tag);
+    if (group == groups.end()) return false;
+
+    if (group->second.find(addr) == group->second.end()) return false;
+
+    return true;
+}
+
 void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
     if (addr.IsValid()) type = ndAddr::Type::OTHER;
     else {

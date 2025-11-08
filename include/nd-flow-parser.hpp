@@ -73,6 +73,8 @@
     ((ndFlowParser *)yyget_extra(scanner))->expr_result
 #define _NDFP_categories \
     ((ndFlowParser *)yyget_extra(scanner))->ndi.categories
+#define _NDFP_addr_lookup \
+    ((ndFlowParser *)yyget_extra(scanner))->ndi.addr_lookup
 #define _NDFP_regex_search(rx, search) \
     ((ndFlowParser *)yyget_extra(scanner))->RegExSearch(rx, search)
 
@@ -94,10 +96,10 @@ public:
     bool RegExSearch(std::string &expr, const std::string &search);
 
     ndFlow::Ptr flow = { nullptr };
-    const char *local_mac = { nullptr };
-    const char *other_mac = { nullptr };
-    const char *src_mac = { nullptr };
-    const char *dst_mac = { nullptr };
+    const ndAddr *local_mac = { nullptr };
+    const ndAddr *other_mac = { nullptr };
+    const ndAddr *src_mac = { nullptr };
+    const ndAddr *dst_mac = { nullptr };
     const ndAddr *local_ip = { nullptr };
     const ndAddr *other_ip = { nullptr };
     const ndAddr *src_ip = { nullptr };

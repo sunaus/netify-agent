@@ -151,13 +151,14 @@ typedef void* yyscan_t;
     VALUE_ADDR_MAC = 346,          /* VALUE_ADDR_MAC  */
     VALUE_NAME = 347,              /* VALUE_NAME  */
     VALUE_REGEX = 348,             /* VALUE_REGEX  */
-    VALUE_ADDR_IPV4 = 349,         /* VALUE_ADDR_IPV4  */
-    VALUE_ADDR_IPV4_CIDR = 350,    /* VALUE_ADDR_IPV4_CIDR  */
-    VALUE_ADDR_IPV6 = 351,         /* VALUE_ADDR_IPV6  */
-    VALUE_ADDR_IPV6_CIDR = 352,    /* VALUE_ADDR_IPV6_CIDR  */
-    VALUE_SIGNED = 353,            /* VALUE_SIGNED  */
-    VALUE_UNSIGNED = 354,          /* VALUE_UNSIGNED  */
-    VALUE_FLOAT = 355              /* VALUE_FLOAT  */
+    VALUE_ADDR_TAG = 349,          /* VALUE_ADDR_TAG  */
+    VALUE_ADDR_IPV4 = 350,         /* VALUE_ADDR_IPV4  */
+    VALUE_ADDR_IPV4_CIDR = 351,    /* VALUE_ADDR_IPV4_CIDR  */
+    VALUE_ADDR_IPV6 = 352,         /* VALUE_ADDR_IPV6  */
+    VALUE_ADDR_IPV6_CIDR = 353,    /* VALUE_ADDR_IPV6_CIDR  */
+    VALUE_SIGNED = 354,            /* VALUE_SIGNED  */
+    VALUE_UNSIGNED = 355,          /* VALUE_UNSIGNED  */
+    VALUE_FLOAT = 356              /* VALUE_FLOAT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -257,13 +258,14 @@ typedef void* yyscan_t;
 #define VALUE_ADDR_MAC 346
 #define VALUE_NAME 347
 #define VALUE_REGEX 348
-#define VALUE_ADDR_IPV4 349
-#define VALUE_ADDR_IPV4_CIDR 350
-#define VALUE_ADDR_IPV6 351
-#define VALUE_ADDR_IPV6_CIDR 352
-#define VALUE_SIGNED 353
-#define VALUE_UNSIGNED 354
-#define VALUE_FLOAT 355
+#define VALUE_ADDR_TAG 349
+#define VALUE_ADDR_IPV4 350
+#define VALUE_ADDR_IPV4_CIDR 351
+#define VALUE_ADDR_IPV6 352
+#define VALUE_ADDR_IPV6_CIDR 353
+#define VALUE_SIGNED 354
+#define VALUE_UNSIGNED 355
+#define VALUE_FLOAT 356
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -281,7 +283,7 @@ union YYSTYPE
 
     bool bool_result;
 
-#line 285 "nd-flow-expr.hpp"
+#line 287 "nd-flow-expr.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -2806,7 +2806,6 @@ uint32_t ndInstance::WaitForIPC(int timeout) {
                 break;
             }
         }
-        else ndServer::GetInstance().DestroyClientSessions();
     }
     while (! ShouldTerminate() && timeout < 0 && --timeout != 0);
 

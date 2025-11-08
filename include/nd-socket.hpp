@@ -23,6 +23,7 @@
 #include <cstdint>
 
 #include <sys/socket.h>
+#include <sys/stat.h>
 
 #include <nd-except.hpp>
 
@@ -154,6 +155,7 @@ public:
     ndSocketServerLocal(const std::string &node);
     virtual ~ndSocketServerLocal();
 
+    virtual void SetPermissions(mode_t mode);
 protected:
 };
 

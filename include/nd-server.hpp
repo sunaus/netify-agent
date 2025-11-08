@@ -20,10 +20,10 @@
 
 #pragma once
 
-#include <string>
 #include <stack>
+#include <string>
 #include <thread>
-//#include <unordered_map>
+#include <unordered_map>
 
 #include <nlohmann/json.hpp>
 
@@ -35,15 +35,20 @@ class ndServer
 {
 public:
     enum class CommandCode : uint16_t {
-        NONE = 0,
-        STATUS = 100,
+        NONE,
+        STATUS,
+        GROUP_ADDR_ADD,
+        GROUP_ADDR_DEL,
+        GROUP_ADDR_FLUSH,
+        GROUP_ADDR_LOOKUP,
+        HANGUP,
     };
 
     enum class ResponseCode : uint16_t {
         OK = 100,
-        HELLO = 101,
         ERROR = 500,
-        PARSE_ERROR = 501
+        PARSE_ERROR = 501,
+        UNIMPLEMENTED = 502,
     };
 
     static ndServer& Create(void);
@@ -71,18 +76,42 @@ public:
         return (skt != nullptr) ? skt->GetDescriptor() : -1; }
 
     void CreateClientSession(void);
-    void DestroyClientSessions(void);
+
+    const char *GetCommandCodeName(CommandCode code) const {
+        static const char *name = "UNKNOWN";
+        try {
+            name = MapCommandCodeName.at(code).c_str();
+        } catch (...) { }
+
+        return name;
+    }
 
 protected:
     static ndServer *instance;
 
     std::string path_socket;
     static ndSocketServer *skt;
-/*
-    using Clients = std::unordered_map<int, std::thread>;
-    Clients clients;
-*/
+
     void Close(void);
+
+    const char *CC_NONE = { "NONE" };
+    const char *CC_STATUS = { "STATUS" };
+    const char *CC_GROUP_ADDR_ADD = { "GROUP_ADDR_ADD" };
+    const char *CC_GROUP_ADDR_DEL = { "GROUP_ADDR_DEL" };
+    const char *CC_GROUP_ADDR_FLUSH = { "GROUP_ADDR_FLUSH" };
+    const char *CC_GROUP_ADDR_LOOKUP = { "GROUP_ADDR_LOOKUP" };
+    const char *CC_HANGUP = { "HANGUP" };
+
+    const std::unordered_map<
+        CommandCode, std::string, ndEnumHasher> MapCommandCodeName = {
+        { CommandCode::NONE, CC_NONE },
+        { CommandCode::STATUS, CC_STATUS },
+        { CommandCode::GROUP_ADDR_ADD, CC_GROUP_ADDR_ADD },
+        { CommandCode::GROUP_ADDR_DEL, CC_GROUP_ADDR_DEL },
+        { CommandCode::GROUP_ADDR_FLUSH, CC_GROUP_ADDR_FLUSH },
+        { CommandCode::GROUP_ADDR_LOOKUP, CC_GROUP_ADDR_LOOKUP },
+        { CommandCode::HANGUP, CC_HANGUP },
+    };
 
 private:
     ndServer() { }
@@ -93,9 +122,16 @@ class ndServerSaxConsumer : public nlohmann::json::json_sax_t
 {
 public:
     std::string key_current;
-    std::stack<std::string> key_stack;
+
+    std::stack<std::string> obj_stack;
+    std::stack<std::string> array_stack;
+
+    uint64_t data_total = 0;
+    uint64_t data_errors = 0;
 
     ndServer::CommandCode command = ndServer::CommandCode::NONE;
+
+    std::string addr_group;
 
     bool null() override {
         return true;
@@ -120,13 +156,9 @@ public:
 
     bool end_object() override;
 
-    bool start_array(std::size_t elements) override {
-        return true;
-    }
+    bool start_array(std::size_t elements) override;
 
-    bool end_array() override {
-        return true;
-    }
+    bool end_array() override;
 
     bool key(std::string& val) override;
 

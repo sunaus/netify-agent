@@ -267,6 +267,12 @@ ndSocketServerLocal::~ndSocketServerLocal() {
     // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
 }
 
+void ndSocketServerLocal::SetPermissions(mode_t mode) {
+    // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
+    if (chmod(node.c_str(), mode) < 0)
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__, "chmod");
+}
+
 ndSocketClientRemote::ndSocketClientRemote(
   const string &node, const string &service)
   : ndSocketClient(this), ndSocketRemote(this, node, service) {

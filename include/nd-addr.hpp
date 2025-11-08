@@ -669,6 +669,11 @@ public:
     bool RemoveNeighbor(const ndAddr &addr);
     bool LookupNeighbor(const ndAddr &addr, ndAddr &lladdr);
 
+    bool AddGroupAddress(const std::string &tag, const ndAddr &addr);
+    bool RemoveGroup(const std::string &tag);
+    bool RemoveGroupAddress(const std::string &tag, const ndAddr &addr);
+    bool LookupGroupAddress(const std::string &tag, const ndAddr &addr);
+
     void Classify(ndAddr::Type &type, const ndAddr &addr);
     inline void
     Classify(ndAddr::Type &type, const std::string &addr) {
@@ -705,6 +710,11 @@ protected:
     typedef std::unordered_map<
         ndAddr, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> neighbor_map;
     neighbor_map neighbors;
+
+    mutable std::mutex lock_groups;
+    typedef std::unordered_set<
+        ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> group_addr_set;
+    std::unordered_map<std::string, group_addr_set> groups;
 };
 
 typedef std::unordered_set<ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceAddrs;

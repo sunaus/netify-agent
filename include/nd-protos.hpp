@@ -148,7 +148,7 @@ enum class Id : uint32_t {
     FREE110 = 110,
     KERBEROS = 111,
     LDAP = 112,
-    MAPLESTORY = 113,
+    DEPR113 = 113, // Deprecated: MapleStory
     MSSQL_TDS = 114,
     PPTP = 115,
     WARCRAFT3 = 116,
@@ -460,6 +460,10 @@ enum class Id : uint32_t {
     MIKROTIK_NDP = 429,  // MikroTik Neighbor Discovery Protocol: https://help.mikrotik.com/docs/spaces/ROS/pages/24805517/Neighbor+discovery/
     DICOM = 430,  // Digital Imaging and Communications in Medicine: https://en.wikipedia.org/wiki/DICOM/
     IQIYI = 431,  // IQIYI (Baidu) video streaming protocol.
+    NEXON = 432,  // South Korean video game developer and publisher specializing in live service games.
+    BLIZZARD = 433,  // Generic Blizzard dissector
+    LAGOFAST= 434,  // LagoFast: Game FPS booster: https://www.lagofast.com/en/
+    GEARUP_BOOSTER = 435,  // GearUP Booster: Game FPS booster: https://www.gearupbooster.com/
 
     MAX,
     TODO = 0xffffffff
@@ -487,6 +491,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::BITCOIN, "Bitcoin" },
     { Id::BITTORRENT, "BitTorrent" },
     { Id::BJNP, "BJNP" },
+    { Id::BLIZZARD, "Blizzard" },
     { Id::CAPWAP, "CAPWAP" },
     { Id::CASSANDRA, "Cassandra" },
     { Id::CEPH, "CEPH" },
@@ -539,6 +544,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::FTPS, "FTP/S" },
     { Id::GAIJIN, "Gaijin" },
     { Id::GEARMAN, "Gearman" },
+    { Id::GEARUP_BOOSTER, "GearUPBooster" },
     { Id::GENSHIN_IMPACT, "Genshin/Impact" },
     { Id::GIT, "Git" },
     { Id::GNUTELLA, "Gnutella" },
@@ -593,6 +599,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::KERBEROS, "Kerberos" },
     { Id::KISMET, "KISMET" },
     { Id::KNXNET_IP, "KNXnet/IP" },
+    { Id::LAGOFAST, "LagoFast" },
     { Id::LDAP, "LDAP" },
     { Id::LDP, "LDP" },
     { Id::LINE_CALL, "Line/Call" },
@@ -607,7 +614,6 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::MAIL_POPS, "POP3/S" },
     { Id::MAIL_SMTP, "SMTP" },
     { Id::MAIL_SMTPS, "SMTP/S" },
-    { Id::MAPLESTORY, "MapleStory" },
     { Id::MDNS, "MDNS" },
     { Id::MEGACO, "Megaco" },
     { Id::MEMCACHED, "Memcached" },
@@ -634,6 +640,7 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::NETBIOS, "NETBIOS" },
     { Id::NETEASE_GAMES, "NetEaseGames" },
     { Id::NETFLOW, "NetFlow" },
+    { Id::NEXON, "Nexon" },
     { Id::NFS, "NFS" },
     { Id::NINTENDO, "Nintendo" },
     { Id::NNTP, "NNTP" },
@@ -825,6 +832,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_BITCOIN, Id::BITCOIN },
     { NDPI_PROTOCOL_BITTORRENT, Id::BITTORRENT },
     { NDPI_PROTOCOL_BJNP, Id::BJNP },
+    { NDPI_PROTOCOL_BLIZZARD, Id::BLIZZARD },
     { NDPI_PROTOCOL_C1222, Id::ANSI_C1222 },
     { NDPI_PROTOCOL_CAN, Id::ISO_11898_1_CAN },
     { NDPI_PROTOCOL_CAPWAP, Id::CAPWAP },
@@ -876,6 +884,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_FTPS, Id::FTPS },
     { NDPI_PROTOCOL_GAIJIN, Id::GAIJIN },
     { NDPI_PROTOCOL_GEARMAN, Id::GEARMAN },
+    { NDPI_PROTOCOL_GEARUP_BOOSTER, Id::GEARUP_BOOSTER },
     { NDPI_PROTOCOL_GENSHIN_IMPACT, Id::GENSHIN_IMPACT },
     { NDPI_PROTOCOL_GIT, Id::GIT },
     { NDPI_PROTOCOL_GNUTELLA, Id::GNUTELLA },
@@ -929,6 +938,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_KERBEROS, Id::KERBEROS },
     { NDPI_PROTOCOL_KISMET, Id::KISMET },
     { NDPI_PROTOCOL_KNXNET_IP, Id::KNXNET_IP },
+    { NDPI_PROTOCOL_LAGOFAST, Id::LAGOFAST },
     { NDPI_PROTOCOL_LDAP, Id::LDAP },
     { NDPI_PROTOCOL_LDP, Id::LDP },
     { NDPI_PROTOCOL_LINE_CALL, Id::LINE_CALL },
@@ -943,7 +953,6 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_MAIL_POPS, Id::MAIL_POPS },
     { NDPI_PROTOCOL_MAIL_SMTP, Id::MAIL_SMTP },
     { NDPI_PROTOCOL_MAIL_SMTPS, Id::MAIL_SMTPS },
-/*    { NDPI_PROTOCOL_MAPLESTORY, Id::MAPLESTORY }, */
     { NDPI_PROTOCOL_MDNS, Id::MDNS },
     { NDPI_PROTOCOL_MEGACO, Id::MEGACO },
     { NDPI_PROTOCOL_MEMCACHED, Id::MEMCACHED },
@@ -959,6 +968,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_MQTT, Id::MQTT },
     { NDPI_PROTOCOL_MS_RPCH, Id::MS_RPCH },
     { NDPI_PROTOCOL_MSSQL_TDS, Id::MSSQL_TDS },
+    { NDPI_PROTOCOL_MSTEAMS_CALL, Id::SKYPE_TEAMS_CALL },
     { NDPI_PROTOCOL_MUMBLE, Id::MUMBLE },
     { NDPI_PROTOCOL_MUNIN, Id::MUNIN },
     { NDPI_PROTOCOL_MYSQL, Id::MYSQL },
@@ -969,6 +979,7 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_NETBIOS, Id::NETBIOS },
     { NDPI_PROTOCOL_NETEASE_GAMES, Id::NETEASE_GAMES },
     { NDPI_PROTOCOL_NETFLOW, Id::NETFLOW },
+    { NDPI_PROTOCOL_NEXON, Id::NEXON },
     { NDPI_PROTOCOL_NFS, Id::NFS },
     { NDPI_PROTOCOL_NINTENDO, Id::NINTENDO },
     { NDPI_PROTOCOL_NOE, Id::NOE },
@@ -1018,7 +1029,6 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_SIGNAL_VOIP, Id::SIGNAL_CALL },
     { NDPI_PROTOCOL_SIP, Id::SIP },
     { NDPI_PROTOCOL_SKINNY, Id::CISCO_SKINNY },
-    { NDPI_PROTOCOL_MSTEAMS_CALL, Id::SKYPE_TEAMS_CALL },
 /*    { NDPI_PROTOCOL_SKYPE_TEAMS, Id::SKYPE_TEAMS }, */
     { NDPI_PROTOCOL_SMBV1, Id::SMBV1 },
     { NDPI_PROTOCOL_SMBV23, Id::SMBV23 },
@@ -1128,6 +1138,7 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_DAILYMOTION,  // Not a protocol: ID# 322 (Dailymotion)
     NDPI_PROTOCOL_DAZN,  // Not a protocol: ID# 292 (Dazn)
     NDPI_PROTOCOL_DEEZER,  // Not a protocol: ID# 210 (Deezer)
+    NDPI_PROTOCOL_DIGITALOCEAN,  // Not a protocol (no dissector): ID# 442 (DigitalOcean)
     NDPI_PROTOCOL_DIRECTV,  // Not a protocol (no dissector): ID# 318 (DirecTV)
     NDPI_PROTOCOL_DISCORD,  // Not a protocol (no dissector): ID# 58 (Discord)
     NDPI_PROTOCOL_DISNEYPLUS,  // Not a protocol: ID# 71 (DisneyPlus)
@@ -1172,10 +1183,12 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_LINE,  // Not a protocol: ID# 315 (Line)
     NDPI_PROTOCOL_LINKEDIN,  // Not a protocol: ID# 233 (LinkedIn)
     NDPI_PROTOCOL_LIVESTREAM,  // Not a protocol: ID# 323 (Livestream)
+    NDPI_PROTOCOL_LLM,  // Not a protocol (no dissector): ID# 446 (LLM)
     NDPI_PROTOCOL_MASTODON,  // Not a protocol: ID# 412
     NDPI_PROTOCOL_MICROSOFT_365,  // Not a protocol: ID# 219 (Microsoft365)
     NDPI_PROTOCOL_MICROSOFT_AZURE,  // Not a protocol (no dissector): ID# 276 (Azure)
     NDPI_PROTOCOL_MICROSOFT,  // Not a protocol: ID# 212 (Microsoft)
+    NDPI_PROTOCOL_MOZILLA,  // Not a protocol (no dissector): ID# 125 (Mozilla)
     NDPI_PROTOCOL_MS_ONE_DRIVE,  // Not a protocol (no dissector): ID# 221 (MS_OneDrive)
     NDPI_PROTOCOL_MS_OUTLOOK,  // Not a protocol: ID# 21 (Outlook)
     NDPI_PROTOCOL_MSTEAMS,  // Not a protocol (see SKYPE_TEAMS_CALL): ID# 250 (Teams)
@@ -1201,6 +1214,7 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_PSIPHON,  // Not a protocol: ID# 303 (Psiphon)
     NDPI_PROTOCOL_REDDIT,  // Not a protocol: ID# 205 (Reddit)
     NDPI_PROTOCOL_ROBLOX,  // Not a protocol: ID# 346 (Roblox)
+    NDPI_PROTOCOL_RUTUBE,  // Not a protocol (no dissector): ID# 441 (Rutube)
     NDPI_PROTOCOL_SALESFORCE,  // Not a protocol: ID# 266 (Salesforce)
     NDPI_PROTOCOL_SHEIN,  // Not a protocol: ID# 434 (Shein)
     NDPI_PROTOCOL_SHOWTIME,  // Not a protocol: ID# 321 (Showtime)
@@ -1227,8 +1241,10 @@ const std::vector<uint16_t> Disabled = {
     NDPI_PROTOCOL_TUNNELBEAR,  // Not a protocol (no dissector): ID# 299 (TunnelBear)
     NDPI_PROTOCOL_TWITCH,  // Not a protocol (no dissector): ID# 195 (Twitch)
     NDPI_PROTOCOL_TWITTER,  // Not a protocol: ID# 120 (Twitter)
+    NDPI_PROTOCOL_UBIQUITY,  // Not a protocol (no dissector): ID# 447 (Ubiquity)
     NDPI_PROTOCOL_UBUNTUONE,  // Not a protocol: ID# 169 (UbuntuONE)
     NDPI_PROTOCOL_VIMEO,  // Not a protocol: ID# 267 (Vimeo)
+    NDPI_PROTOCOL_VIVOX,  // Not a protocol (no dissector): ID# 441 (Vivox)
     NDPI_PROTOCOL_VK,  // Not a protocol: ID# 22 (VK)
     NDPI_PROTOCOL_VUDU,  // Not a protocol: ID# 320 (Vudu)
     NDPI_PROTOCOL_WAZE,  // Not a protocol: ID# 135 (Waze)

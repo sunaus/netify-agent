@@ -147,6 +147,7 @@ tag_category_id         return FLOW_TAG_CATEGORY_ID;
 \"rx:[a-zA-Z0-9:\^\$\/\._+()\[\]\*\{ -]+\"  strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_REGEX;
 \'[a-zA-Z0-9][a-zA-Z0-9:\/\._+() -]+\' strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_NAME;
 \"[a-zA-Z0-9][a-zA-Z0-9:\/\._+() -]+\" strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_NAME;
+@[a-zA-Z0-9][a-zA-Z0-9:\/\._+-]+ strncpy(yylval->buffer, yytext, _NDFP_MAX_BUFLEN); return VALUE_ADDR_TAG;
 0x[a-fA-F0-9-]+         yylval->ul_number=(unsigned long)strtold(yytext, NULL); return VALUE_UNSIGNED;
 [-]+[ ]*[0-9]+          yylval->ul_number=(unsigned long)strtold(yytext, NULL); return VALUE_SIGNED;
 [+]*[0-9]+              yylval->ul_number=(unsigned long)strtold(yytext, NULL); return VALUE_UNSIGNED;

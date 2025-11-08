@@ -92,6 +92,9 @@ static bool ndServer_ClientRequest(FILE *hf) {
         if (result) {
             json jdata;
 
+            nd_dprintf("ndServer: %s\n",
+              ndServer::GetInstance().GetCommandCodeName(ssc.command));
+
             switch (ssc.command) {
             case ndServer::CommandCode::NONE:
                 ndServer_ClientResponse(hf,
@@ -99,20 +102,50 @@ static bool ndServer_ClientRequest(FILE *hf) {
                 break;
 
             case ndServer::CommandCode::STATUS:
+                jdata["agent_version"] = nd_get_version_and_features();
+
                 ndInstance::GetInstance().GetStatus().Encode(jdata);
                 ndServer_ClientResponse(hf,
                   ndServer::ResponseCode::OK, "Ok.", jdata);
                 break;
 
+            case ndServer::CommandCode::GROUP_ADDR_ADD:
+            case ndServer::CommandCode::GROUP_ADDR_DEL:
+                jdata["total"] = ssc.data_total;
+                jdata["errors"] = ssc.data_errors;
+
+                ndServer_ClientResponse(hf,
+                  ndServer::ResponseCode::OK, "Ok.", jdata);
+                break;
+
+            case ndServer::CommandCode::GROUP_ADDR_FLUSH:
+                if (ssc.addr_group.empty()) {
+                    ndServer_ClientResponse(hf,
+                      ndServer::ResponseCode::ERROR, "No group specified.");
+                }
+                else if (ndInstance::GetInstance()
+                  .addr_lookup.RemoveGroup(ssc.addr_group)) {
+                    ndServer_ClientResponse(hf,
+                      ndServer::ResponseCode::OK, "Ok.");
+                }
+                else {
+                    ndServer_ClientResponse(hf,
+                      ndServer::ResponseCode::ERROR, "Group not found.");
+                }
+                break;
+
+            case ndServer::CommandCode::HANGUP:
+                break;
+
             default:
                 ndServer_ClientResponse(hf,
-                  ndServer::ResponseCode::ERROR, "Unimplemented command.");
+                  ndServer::ResponseCode::UNIMPLEMENTED, "Unimplemented.");
                 break;
             }
         }
 
     } catch (exception &e) {
-        nd_dprintf("ndServer: %s\n", e.what());
+        nd_dprintf("ndServer: Exception: %s\n", e.what());
         ndServer_ClientResponse(hf,
           ndServer::ResponseCode::PARSE_ERROR, e.what());
     }
@@ -126,8 +159,10 @@ static void ndServer_ClientEntry(ndSocket *client) {
     int client_fd = client->GetDescriptor();
 
     FILE *hf = fdopen(client_fd, "a+");
-    ndServer_ClientResponse(hf, ndServer::ResponseCode::HELLO,
-        nd_get_version_and_features().c_str());
+    if (hf == nullptr) {
+        throw ndExceptionSystemError(
+          __PRETTY_FUNCTION__, "fdopen");
+    }
 
     while (! ndServer_ClientTerminate.load()) {
         FD_ZERO(&fds_read);
@@ -147,7 +182,7 @@ static void ndServer_ClientEntry(ndSocket *client) {
     }
 
     delete client;
-    nd_dprintf("ndServer: client exit.\n");
+    nd_dprintf("ndServer: Client exit.\n");
 }
 
 ndServer &ndServer::Create(void) {
@@ -174,14 +209,21 @@ void ndServer::Reload(const string &path_socket) {
     if (path_socket.empty() || path_socket != this->path_socket)
         Close();
 
-    if (! path_socket.empty()) {
-        ndSocketServerLocal *server = new ndSocketServerLocal(path_socket);
-        server->SetBlockingMode(false);
-        skt = server;
+    try {
+        if (! path_socket.empty()) {
+            ndSocketServerLocal *server = new ndSocketServerLocal(path_socket);
+            server->SetBlockingMode(false);
+            server->SetPermissions(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+            skt = server;
 
-        this->path_socket = path_socket;
+            this->path_socket = path_socket;
+        }
+        else this->path_socket.clear();
+    } catch (exception &e) {
+        nd_printf("Error creating JSON API server: %s: %s (disabled)\n",
+            this->path_socket.c_str(), e.what());
+        this->path_socket.clear();
     }
-    else this->path_socket.clear();
 }
 
 void ndServer::Close() {
@@ -202,32 +244,12 @@ void ndServer::CreateClientSession() {
         throw;
     }
 
-//    DestroyClientSessions();
-
-//    clients.emplace(
-//      skt_client->GetDescriptor(), thread(ndServer_ClientEntry, skt_client));
     thread(ndServer_ClientEntry, skt_client).detach();
-}
-
-void ndServer::DestroyClientSessions(void) {
-/*
-    for (auto i = clients.begin(); i != clients.end(); ) {
-        void *result __attribute__((unused));
-        if (pthread_tryjoin_np(i->second.native_handle(), &result) == 0) {
-            i->second.join();
-            i = clients.erase(i);
-            continue;
-        }
-
-        i++;
-    }
-*/
 }
 
 ndServer::~ndServer() {
     Close();
     ndServer_ClientTerminate = true;
-    //for (auto &i : clients) i.second.join();
 }
 
 bool ndServerSaxConsumer::number_integer(number_integer_t val) {
@@ -243,15 +265,60 @@ bool ndServerSaxConsumer::number_unsigned(number_unsigned_t val) {
 }
 
 bool ndServerSaxConsumer::string(string_t &val) {
-    if (! key_current.empty()) {
-        if (key_stack.size() == 1 && key_current == "command") {
-            if (command != ndServer::CommandCode::NONE)
-                throw ndException("parse_error: command already set");
+    if (obj_stack.size() == 1 &&
+      strcasecmp(key_current.c_str(), "command") == 0) {
 
-            if (val == "status")
-                command = ndServer::CommandCode::STATUS;
-            else
-                throw ndException("parse_error: invalid command");
+        if (command != ndServer::CommandCode::NONE)
+            throw ndException("command already set");
+
+        if (strcasecmp(val.c_str(), "status") == 0)
+            command = ndServer::CommandCode::STATUS;
+        else if (strcasecmp(val.c_str(), "add-group-address") == 0)
+            command = ndServer::CommandCode::GROUP_ADDR_ADD;
+        else if (strcasecmp(val.c_str(), "remove-group-address") == 0 ||
+            strcasecmp(val.c_str(), "delete-group-address") == 0)
+            command = ndServer::CommandCode::GROUP_ADDR_DEL;
+        else if (strcasecmp(val.c_str(), "flush-group-addresses") == 0)
+            command = ndServer::CommandCode::GROUP_ADDR_FLUSH;
+        else if (strcasecmp(val.c_str(), "lookup-group-address") == 0)
+            command = ndServer::CommandCode::GROUP_ADDR_LOOKUP;
+        else
+            throw ndException("invalid command");
+    }
+    else if (obj_stack.size() == 1 &&
+      strcasecmp(key_current.c_str(), "group") == 0) {
+
+        switch (command) {
+        case ndServer::CommandCode::GROUP_ADDR_ADD:
+        case ndServer::CommandCode::GROUP_ADDR_DEL:
+        case ndServer::CommandCode::GROUP_ADDR_FLUSH:
+        case ndServer::CommandCode::GROUP_ADDR_LOOKUP:
+            addr_group = val;
+            break;
+        default:
+            break;
+        }
+    }
+    else if (obj_stack.size() == 1 &&
+      strcasecmp(key_current.c_str(), "data") == 0) {
+
+        if (command == ndServer::CommandCode::GROUP_ADDR_ADD) {
+            if (addr_group.empty())
+                throw ndException("No address group tag set");
+
+            data_total++;
+            if (! ndInstance::GetInstance()
+              .addr_lookup.AddGroupAddress(addr_group, ndAddr(val)))
+                data_errors++;
+        }
+        else if (command == ndServer::CommandCode::GROUP_ADDR_DEL) {
+            if (addr_group.empty())
+                throw ndException("No address group tag set");
+
+            data_total++;
+            if (! ndInstance::GetInstance()
+              .addr_lookup.RemoveGroupAddress(addr_group, ndAddr(val)))
+                data_errors++;
         }
     }
 
@@ -259,14 +326,22 @@ bool ndServerSaxConsumer::string(string_t &val) {
 }
 
 bool ndServerSaxConsumer::start_object(std::size_t elements) {
-    key_stack.push((key_current.empty()) ? "root" : key_current);
-    nd_dprintf("ndServer: object start: %s\n", key_stack.top().c_str());
+    obj_stack.push((key_current.empty()) ? "root" : key_current);
     return true;
 }
 
 bool ndServerSaxConsumer::end_object() {
-    nd_dprintf("ndServer: object end: %s\n", key_stack.top().c_str());
-    key_stack.pop();
+    obj_stack.pop();
+    return true;
+}
+
+bool ndServerSaxConsumer::start_array(std::size_t elements) {
+    array_stack.push((key_current.empty()) ? "root" : key_current);
+    return true;
+}
+
+bool ndServerSaxConsumer::end_array() {
+    array_stack.pop();
     return true;
 }
 
@@ -275,11 +350,17 @@ bool ndServerSaxConsumer::key(string_t &val) {
     return true;
 }
 
-bool ndServerSaxConsumer::parse_error(std::size_t position,
-  const std::string &last_token,
+bool ndServerSaxConsumer::parse_error(
+  std::size_t position, const std::string &last_token,
   const json::exception &ex) {
+
+    if (position == 1 && last_token.empty()) {
+        command = ndServer::CommandCode::HANGUP;
+        return false;
+    }
+
     throw ndException(
-      "parse_error: position: %u, token: %s, "
+      "parse error at position: %u, token: %s, "
       "reason: %s",
       position, last_token.c_str(), ex.what());
 }

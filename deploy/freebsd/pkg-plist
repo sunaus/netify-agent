@@ -53,6 +53,7 @@ sbin/netifyd
 %%DEVEL%%include/netifyd/nd-serializer.hpp
 %%DEVEL%%include/netifyd/nd-sha1.h
 %%DEVEL%%include/netifyd/nd-signal.hpp
+%%DEVEL%%include/netifyd/nd-socket.hpp
 %%DEVEL%%include/netifyd/nd-thread.hpp
 %%DEVEL%%include/netifyd/nd-tls-alpn.hpp
 %%DEVEL%%include/netifyd/nd-types.hpp
