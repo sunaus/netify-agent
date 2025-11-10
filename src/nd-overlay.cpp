@@ -129,7 +129,7 @@ bool Tag::MatchFlow(ndFlow::Ptr &flow, Result &result) const {
     }
 
     if (matches > 0) {
-        flow->category.tag = category_id;
+        flow->category.overlay = category_id;
         return true;
     }
 
@@ -151,7 +151,7 @@ bool Tags::MatchFlow(ndFlow::Ptr &flow) const {
 bool Tags::Reload(void) {
     const string filename = ndGC.path_overlay_config;
 
-    if (! nd_file_exists(filename)) return true;
+    if (nd_file_exists(filename) != 1) return true;
 
     ifstream ifs(filename);
 

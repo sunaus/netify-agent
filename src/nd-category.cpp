@@ -412,25 +412,8 @@ bool ndCategories::LoadDotDirectory(const string &path) {
     ResetNetworks(false);
 
     for (auto &it : files) {
-        size_t p1 = it.find_first_of("-");
-        if (p1 == string::npos) {
-            nd_dprintf(
-              "Rejecting category file (wrong format; "
-              "missing hyphen): %s\n",
-              it.c_str());
-            continue;
-        }
-
-        size_t p2 = it.find_last_of(".");
-        if (p2 == string::npos) {
-            nd_dprintf(
-              "Rejecting category file (wrong format; "
-              "missing extension): %s\n",
-              it.c_str());
-            continue;
-        }
-
-        string cat_tag = it.substr(p1 + 1, p2 - p1 - 1);
+        string cat_tag;
+        if (! nd_get_dotd_tag(it, cat_tag)) continue;
 
         auto tag = it_apps->second.tag.find(cat_tag);
         if (tag == it_apps->second.tag.end()) {

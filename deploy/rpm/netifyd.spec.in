@@ -163,6 +163,7 @@ exit 0
 %defattr(-,root,root)
 %dir %{_localstatedir}/run/%{name}
 %dir %attr(750,root,root) %{statedir_pdata}
+%dir %attr(750,root,root) %{statedir_pdata}/address-groups.d
 %dir %attr(750,root,root) %{statedir_pdata}/categories.d
 %dir %attr(750,root,root) %{statedir_pdata}/profiles.d
 %{statedir_pdata}/profiles.d/*

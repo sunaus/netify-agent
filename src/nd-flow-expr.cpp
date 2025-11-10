@@ -4269,11 +4269,11 @@ yyreduce:
             );
         }
 
-        if (! _NDFP_result && _NDFP_flow->category.tag != ND_CAT_UNKNOWN) {
+        if (! _NDFP_result && _NDFP_flow->category.overlay != ND_CAT_UNKNOWN) {
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::Type::APP, category) == _NDFP_flow->category.tag
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.overlay
                 )
             );
         }
@@ -4331,7 +4331,7 @@ yyreduce:
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::Type::APP, category) != _NDFP_flow->category.tag
+                        ndCategories::Type::APP, category) != _NDFP_flow->category.overlay
                 )
             );
         }
@@ -4377,9 +4377,9 @@ yyreduce:
 
         if (! _NDFP_result) {
             _NDFP_result = ((yyval.bool_result) = (
-                static_cast<unsigned>(_NDFP_flow->category.tag) == (yyvsp[0].ul_number)
+                static_cast<unsigned>(_NDFP_flow->category.overlay) == (yyvsp[0].ul_number)
             ));
-            _NDFP_debugf("Tag category ID == %lu? %s\n",
+            _NDFP_debugf("Overlay tag category ID == %lu? %s\n",
                 (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
         }
 
@@ -4424,9 +4424,9 @@ yyreduce:
 
         if (! _NDFP_result) {
             _NDFP_result = ((yyval.bool_result) = (
-                static_cast<unsigned>(_NDFP_flow->category.tag) != (yyvsp[0].ul_number)
+                static_cast<unsigned>(_NDFP_flow->category.overlay) != (yyvsp[0].ul_number)
             ));
-            _NDFP_debugf("Tag category ID == %lu? %s\n",
+            _NDFP_debugf("Overlay tag category ID == %lu? %s\n",
                 (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
         }
 
@@ -4966,11 +4966,11 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) == _NDFP_flow->category.tag
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.overlay
             )
         );
 
-        _NDFP_debugf("Tag category == %s? %s\n",
+        _NDFP_debugf("Overlay tag category == %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4977 "nd-flow-expr.cpp"
@@ -4988,11 +4988,11 @@ yyreduce:
         _NDFP_result = (
             (yyval.bool_result) = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) != _NDFP_flow->category.tag
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.overlay
             )
         );
 
-        _NDFP_debugf("Tag category != %s? %s\n",
+        _NDFP_debugf("Overlay tag category != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 4999 "nd-flow-expr.cpp"
@@ -5002,10 +5002,10 @@ yyreduce:
 #line 2120 "nd-flow-expr.ypp"
                                                     {
         _NDFP_result = ((yyval.bool_result) = (
-            static_cast<unsigned>(_NDFP_flow->category.tag) == (yyvsp[0].ul_number)
+            static_cast<unsigned>(_NDFP_flow->category.overlay) == (yyvsp[0].ul_number)
         ));
 
-        _NDFP_debugf("Tag category ID == %s? %s\n",
+        _NDFP_debugf("Overlay tag category ID == %s? %s\n",
             (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
 #line 5012 "nd-flow-expr.cpp"
@@ -5015,10 +5015,10 @@ yyreduce:
 #line 2128 "nd-flow-expr.ypp"
                                                        {
         _NDFP_result = ((yyval.bool_result) = (
-            static_cast<unsigned>(_NDFP_flow->category.tag) != (yyvsp[0].ul_number)
+            static_cast<unsigned>(_NDFP_flow->category.overlay) != (yyvsp[0].ul_number)
         ));
 
-        _NDFP_debugf("Tag category ID != %s? %s\n",
+        _NDFP_debugf("Overlay tag category ID != %s? %s\n",
             (yyvsp[0].ul_number), (_NDFP_result) ? "yes" : "no");
     }
 #line 5025 "nd-flow-expr.cpp"
@@ -7102,7 +7102,7 @@ yyreduce:
             }
         }
 
-        _NDFP_debugf("Tag == %s? %s\n",
+        _NDFP_debugf("Overlay tag == %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 7109 "nd-flow-expr.cpp"
@@ -7135,7 +7135,7 @@ yyreduce:
             }
         }
 
-        _NDFP_debugf("Tag != %s? %s\n",
+        _NDFP_debugf("Overlay tag != %s? %s\n",
             (yyvsp[0].buffer), (_NDFP_result) ? "yes" : "no");
     }
 #line 7142 "nd-flow-expr.cpp"

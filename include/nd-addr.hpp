@@ -221,8 +221,8 @@ public:
 
     inline const std::string &
     GetString(ndFlags<MakeFlags> flags = MakeFlags::NONE) const {
-        static std::recursive_mutex lock;
-        std::lock_guard<std::recursive_mutex> lg(lock);
+        static std::mutex lock;
+        std::lock_guard<std::mutex> lg(lock);
         if (flags != cached_flags || cached_addr.empty()) {
             cached_flags = flags;
             ndAddr::MakeString(*this, cached_addr, cached_flags);
@@ -673,6 +673,12 @@ public:
     bool RemoveGroup(const std::string &tag);
     bool RemoveGroupAddress(const std::string &tag, const ndAddr &addr);
     bool LookupGroupAddress(const std::string &tag, const ndAddr &addr);
+    bool GetGroupFilename(const std::string &tag, std::string &filename);
+    bool SetGroupFilename(const std::string &tag);
+    bool LoadGroupAddress(const std::string &tag, const std::string &filename);
+    bool SaveGroupAddress(const std::string &tag, const std::string &filename);
+    void LoadGroupAddresses(const std::string &path);
+    void SaveGroupAddresses(const std::string &path);
 
     void Classify(ndAddr::Type &type, const ndAddr &addr);
     inline void
@@ -711,10 +717,11 @@ protected:
         ndAddr, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> neighbor_map;
     neighbor_map neighbors;
 
-    mutable std::mutex lock_groups;
+    mutable std::recursive_mutex lock_groups;
     typedef std::unordered_set<
         ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> group_addr_set;
     std::unordered_map<std::string, group_addr_set> groups;
+    std::unordered_map<std::string, std::string> group_filenames;
 };
 
 typedef std::unordered_set<ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceAddrs;

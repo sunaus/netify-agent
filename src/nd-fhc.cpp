@@ -55,7 +55,7 @@ void ndFlowHashCache::Load(void) {
     default: return;
     }
 
-    if (! nd_file_exists(filename)) return;
+    if (nd_file_exists(filename) != 1) return;
 
     ifstream ifs(filename);
 

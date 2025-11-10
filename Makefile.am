@@ -26,11 +26,13 @@ pkgconfig_DATA = lib@PACKAGE_TARNAME@.pc
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(volatilestatedir)
+	$(MKDIR_P) $(DESTDIR)$(persistentstatedir)/address-groups.d
 	$(MKDIR_P) $(DESTDIR)$(persistentstatedir)/categories.d
 	$(MKDIR_P) $(DESTDIR)$(persistentstatedir)/plugins.d
 
 uninstall-local:
 	rmdir $(DESTDIR)$(volatilestatedir)
+	rmdir $(DESTDIR)$(persistentstatedir)/address-groups.d
 	rmdir $(DESTDIR)$(persistentstatedir)/categories.d
 	rmdir $(DESTDIR)$(persistentstatedir)/plugins.d
 

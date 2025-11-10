@@ -166,6 +166,10 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
           path_state_persistent + "/" + ND_PLUGINS_BASE);
         nd_expand_variables(value, path_plugins, conf_vars);
 
+        value = r->Get(ND_NAME_SHORT, "path_address_groups",
+          path_state_persistent + "/" + ND_ADDR_GROUPS_BASE);
+        nd_expand_variables(value, path_addr_groups, conf_vars);
+
         value = r->Get(ND_NAME_SHORT, "path_categories",
           path_state_persistent + "/" + ND_CATEGORIES_BASE);
         nd_expand_variables(value, path_categories, conf_vars);
@@ -624,7 +628,7 @@ bool ndGlobalConfig::ForceReset(void) {
 }
 
 bool ndGlobalConfig::LoadProtocols(void) {
-    if (! nd_file_exists(path_proto_config)) return false;
+    if (nd_file_exists(path_proto_config) != 1) return false;
 
     ifstream ifs(path_proto_config);
     if (! ifs.is_open()) {
@@ -1043,7 +1047,7 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
           "filename", "");
 
         if (! capture_filename.empty()) {
-            if (! nd_file_exists(capture_filename)) {
+            if (nd_file_exists(capture_filename) != 1) {
                 fprintf(stderr,
                   "Capture file not found: %s\n",
                   capture_filename.c_str());
@@ -1264,6 +1268,8 @@ void ndGlobalConfig::UpdatePaths(void) {
 
     path_legacy_config = path_state_persistent + "/" +
       ND_CONF_LEGACY_BASE;
+
+    path_addr_groups = path_state_persistent + "/" + ND_ADDR_GROUPS_BASE;
 
     path_agent_status = path_state_volatile + "/" + ND_AGENT_STATUS_BASE;
 

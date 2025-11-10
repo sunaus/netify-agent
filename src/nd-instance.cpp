@@ -1290,7 +1290,7 @@ bool ndInstance::AddInterface(string &ifname,
 
     if ((ndCT_TYPE(type.flags) == ndCaptureType::PCAP ||
           ndCT_TYPE(type.flags) == ndCaptureType::NONE) &&
-      nd_file_exists(ifname))
+      nd_file_exists(ifname) == 1)
     {
         nd_config_pcap *pcap = new nd_config_pcap;
 
@@ -2162,9 +2162,7 @@ int ndInstance::Run(void) {
     if (clock_gettime(CLOCK_MONOTONIC_RAW, &status.ts_epoch) != 0)
     {
         nd_printf(
-          "%s: Error loading epoch time "
-          "(clock_gettime): "
-          "%s\n",
+          "%s: Error loading epoch time (clock_gettime): %s\n",
           tag.c_str(), strerror(errno));
         goto ndInstance_RunReturn;
     }
@@ -2383,6 +2381,8 @@ ndInstance_EntryReturn:
     ndLicenseClient::Destroy();
     ndServer::Destroy();
 
+    addr_lookup.SaveGroupAddresses(ndGC.path_addr_groups);
+
     if (exit_code == 0)
         nd_printf("%s: Normal exit.\n", tag.c_str());
     else {
@@ -2410,6 +2410,7 @@ bool ndInstance::Reload(bool broadcast, bool silent) {
     }
 
     overlay_tags.Reload();
+    addr_lookup.LoadGroupAddresses(ndGC.path_addr_groups);
 
     if (broadcast) {
         plugins.BroadcastEvent(

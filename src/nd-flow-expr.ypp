@@ -1505,11 +1505,11 @@ expr_category:
             );
         }
 
-        if (! _NDFP_result && _NDFP_flow->category.tag != ND_CAT_UNKNOWN) {
+        if (! _NDFP_result && _NDFP_flow->category.overlay != ND_CAT_UNKNOWN) {
             _NDFP_result = (
                 $$ = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::Type::APP, category) == _NDFP_flow->category.tag
+                        ndCategories::Type::APP, category) == _NDFP_flow->category.overlay
                 )
             );
         }
@@ -1562,7 +1562,7 @@ expr_category:
             _NDFP_result = (
                 $$ = (
                     _NDFP_categories.LookupTag(
-                        ndCategories::Type::APP, category) != _NDFP_flow->category.tag
+                        ndCategories::Type::APP, category) != _NDFP_flow->category.overlay
                 )
             );
         }
@@ -1606,9 +1606,9 @@ expr_category_id:
 
         if (! _NDFP_result) {
             _NDFP_result = ($$ = (
-                static_cast<unsigned>(_NDFP_flow->category.tag) == $3
+                static_cast<unsigned>(_NDFP_flow->category.overlay) == $3
             ));
-            _NDFP_debugf("Tag category ID == %lu? %s\n",
+            _NDFP_debugf("Overlay tag category ID == %lu? %s\n",
                 $3, (_NDFP_result) ? "yes" : "no");
         }
 
@@ -1648,9 +1648,9 @@ expr_category_id:
 
         if (! _NDFP_result) {
             _NDFP_result = ($$ = (
-                static_cast<unsigned>(_NDFP_flow->category.tag) != $3
+                static_cast<unsigned>(_NDFP_flow->category.overlay) != $3
             ));
-            _NDFP_debugf("Tag category ID == %lu? %s\n",
+            _NDFP_debugf("Overlay tag category ID == %lu? %s\n",
                 $3, (_NDFP_result) ? "yes" : "no");
         }
 
@@ -2090,11 +2090,11 @@ expr_tag_category:
         _NDFP_result = (
             $$ = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) == _NDFP_flow->category.tag
+                    ndCategories::Type::APP, category) == _NDFP_flow->category.overlay
             )
         );
 
-        _NDFP_debugf("Tag category == %s? %s\n",
+        _NDFP_debugf("Overlay tag category == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_TAG_CATEGORY CMP_NOTEQUAL VALUE_NAME {
@@ -2107,11 +2107,11 @@ expr_tag_category:
         _NDFP_result = (
             $$ = (
                 _NDFP_categories.LookupTag(
-                    ndCategories::Type::APP, category) != _NDFP_flow->category.tag
+                    ndCategories::Type::APP, category) != _NDFP_flow->category.overlay
             )
         );
 
-        _NDFP_debugf("Tag category != %s? %s\n",
+        _NDFP_debugf("Overlay tag category != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -2119,18 +2119,18 @@ expr_tag_category:
 expr_tag_category_id:
       FLOW_TAG_CATEGORY_ID CMP_EQUAL VALUE_UNSIGNED {
         _NDFP_result = ($$ = (
-            static_cast<unsigned>(_NDFP_flow->category.tag) == $3
+            static_cast<unsigned>(_NDFP_flow->category.overlay) == $3
         ));
 
-        _NDFP_debugf("Tag category ID == %s? %s\n",
+        _NDFP_debugf("Overlay tag category ID == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_TAG_CATEGORY_ID CMP_NOTEQUAL VALUE_UNSIGNED {
         _NDFP_result = ($$ = (
-            static_cast<unsigned>(_NDFP_flow->category.tag) != $3
+            static_cast<unsigned>(_NDFP_flow->category.overlay) != $3
         ));
 
-        _NDFP_debugf("Tag category ID != %s? %s\n",
+        _NDFP_debugf("Overlay tag category ID != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -3566,7 +3566,7 @@ expr_tag:
             }
         }
 
-        _NDFP_debugf("Tag == %s? %s\n",
+        _NDFP_debugf("Overlay tag == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_TAG CMP_NOTEQUAL VALUE_NAME {
@@ -3594,7 +3594,7 @@ expr_tag:
             }
         }
 
-        _NDFP_debugf("Tag != %s? %s\n",
+        _NDFP_debugf("Overlay tag != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;

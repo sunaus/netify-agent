@@ -134,6 +134,86 @@ static bool ndServer_ClientRequest(FILE *hf) {
                 }
                 break;
 
+            case ndServer::CommandCode::GROUP_ADDR_LOAD:
+                if (ssc.addr_group.empty()) {
+                    ndServer_ClientResponse(hf,
+                      ndServer::ResponseCode::ERROR, "No group specified.");
+                }
+                else {
+                    string filename;
+                    if (! ndInstance::GetInstance().addr_lookup
+                      .GetGroupFilename(ssc.addr_group, filename)) {
+                        ndServer_ClientResponse(hf,
+                          ndServer::ResponseCode::ERROR,
+                            "No group filename assigned."
+                        );
+                        break;
+                    }
+
+                    filename = ndGC.path_addr_groups + "/" + filename;
+                    if (! ndInstance::GetInstance().addr_lookup
+                      .LoadGroupAddress(ssc.addr_group, filename)) {
+                        ndServer_ClientResponse(hf,
+                          ndServer::ResponseCode::ERROR,
+                            "Error loading group address(es)."
+                        );
+                    }
+                    else {
+                        ndServer_ClientResponse(hf,
+                          ndServer::ResponseCode::OK,
+                            "Loaded group adress(es)."
+                        );
+                    }
+                }
+                break;
+
+            case ndServer::CommandCode::GROUP_ADDR_SAVE:
+                if (ssc.addr_group.empty()) {
+                    ndServer_ClientResponse(hf,
+                      ndServer::ResponseCode::ERROR, "No group specified.");
+                }
+                else {
+                    string filename;
+                    if (! ndInstance::GetInstance().addr_lookup
+                      .GetGroupFilename(ssc.addr_group, filename)) {
+
+                        if (! ndInstance::GetInstance().addr_lookup
+                          .SetGroupFilename(ssc.addr_group)) {
+
+                            ndServer_ClientResponse(hf,
+                              ndServer::ResponseCode::ERROR,
+                                "Error assigning group filename."
+                            );
+                            break;
+                        }
+                    }
+
+                    if (! ndInstance::GetInstance().addr_lookup
+                      .GetGroupFilename(ssc.addr_group, filename)) {
+                        ndServer_ClientResponse(hf,
+                          ndServer::ResponseCode::ERROR,
+                            "No group filename assigned."
+                        );
+                        break;
+                    }
+
+                    filename = ndGC.path_addr_groups + "/" + filename;
+                    if (! ndInstance::GetInstance().addr_lookup
+                      .SaveGroupAddress(ssc.addr_group, filename)) {
+                        ndServer_ClientResponse(hf,
+                          ndServer::ResponseCode::ERROR,
+                            "Error saving group address(es)."
+                        );
+                    }
+                    else {
+                        ndServer_ClientResponse(hf,
+                          ndServer::ResponseCode::OK,
+                            "Saved group adress(es)."
+                        );
+                    }
+                }
+                break;
+
             case ndServer::CommandCode::HANGUP:
                 break;
 
@@ -278,10 +358,14 @@ bool ndServerSaxConsumer::string(string_t &val) {
         else if (strcasecmp(val.c_str(), "remove-group-address") == 0 ||
             strcasecmp(val.c_str(), "delete-group-address") == 0)
             command = ndServer::CommandCode::GROUP_ADDR_DEL;
-        else if (strcasecmp(val.c_str(), "flush-group-addresses") == 0)
+        else if (strcasecmp(val.c_str(), "flush-address-group") == 0)
             command = ndServer::CommandCode::GROUP_ADDR_FLUSH;
         else if (strcasecmp(val.c_str(), "lookup-group-address") == 0)
             command = ndServer::CommandCode::GROUP_ADDR_LOOKUP;
+        else if (strcasecmp(val.c_str(), "load-address-group") == 0)
+            command = ndServer::CommandCode::GROUP_ADDR_LOAD;
+        else if (strcasecmp(val.c_str(), "save-address-group") == 0)
+            command = ndServer::CommandCode::GROUP_ADDR_SAVE;
         else
             throw ndException("invalid command");
     }
@@ -293,6 +377,8 @@ bool ndServerSaxConsumer::string(string_t &val) {
         case ndServer::CommandCode::GROUP_ADDR_DEL:
         case ndServer::CommandCode::GROUP_ADDR_FLUSH:
         case ndServer::CommandCode::GROUP_ADDR_LOOKUP:
+        case ndServer::CommandCode::GROUP_ADDR_LOAD:
+        case ndServer::CommandCode::GROUP_ADDR_SAVE:
             addr_group = val;
             break;
         default:

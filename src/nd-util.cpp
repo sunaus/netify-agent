@@ -1326,6 +1326,28 @@ bool nd_scan_dotd(const string &path, vector<string> &files) {
     return true;
 }
 
+bool nd_get_dotd_tag(const string &filename, string &tag) {
+    size_t p1 = filename.find_first_of("-");
+    if (p1 == string::npos) {
+        nd_dprintf(
+          "Invalid dotd file (wrong format; missing hyphen): %s\n",
+            filename.c_str());
+        return false;
+    }
+
+    size_t p2 = filename.find_last_of(".");
+    if (p2 == string::npos) {
+        nd_dprintf(
+          "Rejecting dotd file (wrong format; missing extension): %s\n",
+          filename.c_str());
+        return false;
+    }
+
+    tag = filename.substr(p1 + 1, p2 - p1 - 1);
+
+    return true;
+}
+
 void nd_set_hostname(string &dst, bool strict) {
     transform(dst.begin(), dst.end(), dst.begin(),
       [strict](unsigned char c) {

@@ -360,8 +360,8 @@ protected:
 
 void nd_regex_error(const std::regex_error &e, std::string &error);
 
-bool nd_scan_dotd(const std::string &path,
-  std::vector<std::string> &files);
+bool nd_scan_dotd(const std::string &path, std::vector<std::string> &files);
+bool nd_get_dotd_tag(const std::string &filename, std::string &tag);
 
 void nd_set_hostname(std::string &dst, bool strict = true);
 void nd_set_hostname(std::string &dst, const char *src,

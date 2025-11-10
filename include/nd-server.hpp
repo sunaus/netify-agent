@@ -41,6 +41,8 @@ public:
         GROUP_ADDR_DEL,
         GROUP_ADDR_FLUSH,
         GROUP_ADDR_LOOKUP,
+        GROUP_ADDR_LOAD,
+        GROUP_ADDR_SAVE,
         HANGUP,
     };
 
@@ -100,6 +102,8 @@ protected:
     const char *CC_GROUP_ADDR_DEL = { "GROUP_ADDR_DEL" };
     const char *CC_GROUP_ADDR_FLUSH = { "GROUP_ADDR_FLUSH" };
     const char *CC_GROUP_ADDR_LOOKUP = { "GROUP_ADDR_LOOKUP" };
+    const char *CC_GROUP_ADDR_LOAD = { "GROUP_ADDR_LOAD" };
+    const char *CC_GROUP_ADDR_SAVE = { "GROUP_ADDR_SAVE" };
     const char *CC_HANGUP = { "HANGUP" };
 
     const std::unordered_map<
@@ -110,6 +114,8 @@ protected:
         { CommandCode::GROUP_ADDR_DEL, CC_GROUP_ADDR_DEL },
         { CommandCode::GROUP_ADDR_FLUSH, CC_GROUP_ADDR_FLUSH },
         { CommandCode::GROUP_ADDR_LOOKUP, CC_GROUP_ADDR_LOOKUP },
+        { CommandCode::GROUP_ADDR_LOAD, CC_GROUP_ADDR_LOAD },
+        { CommandCode::GROUP_ADDR_SAVE, CC_GROUP_ADDR_SAVE },
         { CommandCode::HANGUP, CC_HANGUP },
     };
 

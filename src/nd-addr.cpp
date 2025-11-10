@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include <fstream>
+
 #include <ifaddrs.h>
 #include <sys/types.h>
 
@@ -863,7 +865,7 @@ bool ndAddrLookup::AddGroupAddress(const string &tag, const ndAddr &addr) {
     if (! addr.IsValid()) return false;
     if (! (addr.IsEthernet() || addr.IsIP())) return false;
 
-    lock_guard<mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_groups);
 
     auto group = groups.find(tag);
     if (group == groups.end()) {
@@ -878,12 +880,19 @@ bool ndAddrLookup::AddGroupAddress(const string &tag, const ndAddr &addr) {
 }
 
 bool ndAddrLookup::RemoveGroup(const string &tag) {
-    lock_guard<mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_groups);
 
-    auto result = groups.find(tag);
-    if (result == groups.end()) return false;
+    auto group = groups.find(tag);
+    if (group == groups.end()) return false;
 
-    groups.erase(result);
+    groups.erase(group);
+
+    auto filename = group_filenames.find(tag);
+    if (filename != group_filenames.end()) {
+        string path = ndGC.path_addr_groups + "/" + filename->second;
+        unlink(path.c_str());
+        group_filenames.erase(filename);
+    }
 
     return true;
 }
@@ -892,7 +901,7 @@ bool ndAddrLookup::RemoveGroupAddress(const string &tag, const ndAddr &addr) {
     if (! addr.IsValid()) return false;
     if (! (addr.IsEthernet() || addr.IsIP())) return false;
 
-    lock_guard<mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_groups);
 
     auto group = groups.find(tag);
     if (group == groups.end()) return false;
@@ -911,7 +920,7 @@ bool ndAddrLookup::LookupGroupAddress(const string &tag, const ndAddr &addr) {
     if (! addr.IsValid()) return false;
     if (! (addr.IsEthernet() || addr.IsIP())) return false;
 
-    lock_guard<mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_groups);
 
     auto group = groups.find(tag);
     if (group == groups.end()) return false;
@@ -919,6 +928,109 @@ bool ndAddrLookup::LookupGroupAddress(const string &tag, const ndAddr &addr) {
     if (group->second.find(addr) == group->second.end()) return false;
 
     return true;
+}
+
+bool ndAddrLookup::GetGroupFilename(const string &tag, string &filename) {
+    lock_guard<recursive_mutex> ul(lock_groups);
+
+    auto group = group_filenames.find(tag);
+    if (group == group_filenames.end()) return false;
+
+    filename = group->second;
+    return true;
+}
+
+bool ndAddrLookup::SetGroupFilename(const string &tag) {
+    lock_guard<recursive_mutex> ul(lock_groups);
+
+    auto group = group_filenames.find(tag);
+    if (group != group_filenames.end()) return false;
+
+    string filename = string("10-") + tag + ".conf";
+    group_filenames.emplace(tag, filename);
+
+    return true;
+}
+
+bool ndAddrLookup::LoadGroupAddress(const string &tag, const string &filename) {
+    ifstream ifs(filename);
+    if (! ifs.is_open()) {
+        nd_printf("Error opening group address file: %s: %s\n",
+          filename.c_str(), strerror(ENOENT));
+        return false;
+    }
+
+    lock_guard<recursive_mutex> ul(lock_groups);
+
+    auto group = groups.find(tag);
+    if (group != groups.end()) groups.erase(group);
+
+    string line;
+    uint32_t addrs = 0;
+
+    while (getline(ifs, line)) {
+        nd_ltrim(line);
+        if (line.empty() || line[0] == '#') continue;
+
+        if (AddGroupAddress(tag, ndAddr(line))) addrs++;
+    }
+
+    nd_dprintf("%s: Loaded %lu group address(es) from: %s\n",
+        tag.c_str(), addrs, filename.c_str());
+
+    return (addrs != 0);
+}
+
+bool ndAddrLookup::SaveGroupAddress(const string &tag, const string &filename) {
+    lock_guard<recursive_mutex> ul(lock_groups);
+
+    ofstream ofs(filename, ofstream::trunc);
+    if (! ofs.is_open()) {
+        nd_printf("Error opening group address file: %s: %s\n",
+          filename.c_str(), strerror(ENOENT));
+        return false;
+    }
+
+    auto group = groups.find(tag);
+    if (group == groups.end()) return false;
+
+    for (auto &i : group->second)
+        ofs << i.GetString() << endl;
+
+    nd_dprintf("%s: Saved %lu group address(es) to: %s.\n",
+        tag.c_str(), group->second.size(), filename.c_str());
+
+    return true;
+}
+
+void ndAddrLookup::LoadGroupAddresses(const string &path) {
+    lock_guard<recursive_mutex> ul(lock_groups);
+
+    for (auto &i : group_filenames) {
+        auto group = groups.find(i.first);
+        if (group != groups.end()) groups.erase(group);
+    }
+
+    group_filenames.clear();
+
+    vector<string> files;
+    if (! nd_scan_dotd(path, files) || files.empty())
+        return;
+
+    for (auto &i : files) {
+        string tag;
+        if (! nd_get_dotd_tag(i, tag)) continue;
+
+        if (LoadGroupAddress(tag, path + "/" + i))
+            group_filenames.emplace(tag, i);
+    }
+}
+
+void ndAddrLookup::SaveGroupAddresses(const string &path) {
+    lock_guard<recursive_mutex> ul(lock_groups);
+
+    for (auto &i : group_filenames)
+        SaveGroupAddress(i.first, path + "/" + i.second);
 }
 
 void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {

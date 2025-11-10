@@ -272,7 +272,7 @@ public:
         nd_cat_id_t domain = { ND_CAT_UNKNOWN };
         nd_cat_id_t upper_net = { ND_CAT_UNKNOWN };
         nd_cat_id_t lower_net = { ND_CAT_UNKNOWN };
-        nd_cat_id_t tag = { ND_CAT_UNKNOWN };
+        nd_cat_id_t overlay = { ND_CAT_UNKNOWN };
     } category;
 
     struct {
@@ -616,8 +616,8 @@ public:
               category.lower_net);
             serialize(output, { "category", _upper_net_cat },
               category.upper_net);
-            serialize(output, { "category", "tag" },
-              category.tag);
+            serialize(output, { "category", "overlay" },
+              category.overlay);
 
 #ifdef _ND_ENABLE_CONNTRACK
             serialize(output, { "conntrack", "id" }, conntrack.id);

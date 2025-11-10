@@ -51,7 +51,7 @@ bool ndApplications::Load(const string &filename) {
     if (ndLicenseClient::IsValid()) {
         string datfile = nd_change_ext(filename, "dat");
 
-        if (nd_file_exists(datfile)) {
+        if (nd_file_exists(datfile) == 1) {
             stringstream ss;
             if (ndLicenseClient::GetInstance().LoadData(
               "application-signatures", datfile, ss) && Load(ss))

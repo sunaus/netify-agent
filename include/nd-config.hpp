@@ -284,6 +284,7 @@ public:
     std::string group_id;
     std::string napi_vendor = { ND_API_VENDOR };
     std::string network_namespace;
+    std::string path_addr_groups = { ND_ADDR_GROUPS_PATH };
     std::string path_agent_status = { ND_AGENT_STATUS_PATH };
     std::string path_app_config = { ND_CONF_APP_PATH };
     std::string path_cat_config = { ND_CONF_CAT_PATH };
@@ -294,10 +295,10 @@ public:
     std::string path_export_json;
     std::string path_functions = { ND_FUNCTIONS_PATH } ;
     std::string path_intel_config = { ND_CONF_INTEL_PATH };
-    std::string path_overlay_config = { ND_CONF_OVERLAY_PATH };
     std::string path_interfaces = { ND_INTERFACES_PATH };
     std::string path_legacy_config = { ND_CONF_LEGACY_PATH };
     std::string path_license_manager = { ND_LICENSE_MANAGER_PATH };
+    std::string path_overlay_config = { ND_CONF_OVERLAY_PATH };
     std::string path_pid_file = { ND_PID_FILE_NAME };
     std::string path_plugin_libdir = { ND_PLUGIN_LIBDIR };
     std::string path_plugins = { ND_PLUGINS_PATH };
