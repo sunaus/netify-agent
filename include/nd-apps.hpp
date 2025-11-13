@@ -98,6 +98,7 @@ public:
     bool Lookup(ndApp::Id id, ndApplication &app);
 
     void Get(nd_apps_t &apps_copy) const;
+    const std::string GetVersion(void) const { return version; }
 
     bool SoftDissectorMatch(ndFlow::Ptr const &flow,
       ndFlowParser *parser,
@@ -105,6 +106,7 @@ public:
 
     template <class T>
     void Encode(T &output) const {
+        serialize(output, { "signatures", "version" }, version);
         serialize(output, { "signatures", "apps" }, stats.ac);
         serialize(output, { "signatures", "app_id_overrides" },
           stats.oc);
@@ -119,12 +121,14 @@ public:
 
 protected:
     mutable std::recursive_mutex lock;
+
     nd_app_id_map apps;
     nd_app_tag_map app_tags;
     nd_tlds_t tlds;
     nd_domains_t domains;
     nd_nsd_t soft_dissectors;
     nd_domain_rx_xforms_t domain_xforms;
+    std::string version = { "-" };
 
     struct {
         size_t ac, dc, nc, oc, sc, xc;

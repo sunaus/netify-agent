@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 
     if (instance.Daemonize() == false) return 1;
 
-    // When using provided timers, ensure they initialized
+    // When using provided timers, ensure they're initialized
     // after Daemonize() is called, otherwise on some
     // platforms, timer IDs are not maintained after fork(2).
     if (instance.InitializeTimers() == false) return 1;

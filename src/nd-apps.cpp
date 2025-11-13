@@ -84,7 +84,7 @@ bool ndApplications::Load(istream &ifs) {
         string type = line.substr(0, p);
 
         if (type != "app" && type != "aio" && type != "dom" &&
-          type != "net" && type != "nsd" && type != "xfm")
+          type != "net" && type != "nsd" && type != "xfm" && type != "ver")
             continue;
 
         line = line.substr(p + 1);
@@ -141,13 +141,17 @@ bool ndApplications::Load(istream &ifs) {
             if (AddSoftDissector(aid, pid, expr))
                 stats.sc++;
         }
+        else if (type == "ver") {
+            version = line;
+        }
     }
 
     if (stats.ac > 0) {
         nd_dprintf(
-          "Loaded %u apps, %u domains, %u networks, "
-          "%u app IP overrides, %u soft-dissectors, %u transforms.\n",
-          stats.ac, stats.dc, stats.nc, stats.oc, stats.sc, stats.xc);
+          "Loaded %u apps, %u domains, %u networks, %u app IP overrides, %u "
+          "soft-dissectors, %u transforms, version: %s\n",
+          stats.ac, stats.dc, stats.nc, stats.oc, stats.sc, stats.xc,
+          version.c_str());
     }
 
     return (stats.ac > 0 && (stats.ac > 0 || stats.nc > 0));

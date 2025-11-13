@@ -289,6 +289,9 @@ void ndServer::Reload(const string &path_socket) {
     if (path_socket.empty() || path_socket != this->path_socket)
         Close();
 
+    if (! path_socket.empty() && path_socket == this->path_socket)
+        return;
+
     try {
         if (! path_socket.empty()) {
             ndSocketServerLocal *server = new ndSocketServerLocal(path_socket);
