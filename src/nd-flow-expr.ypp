@@ -145,9 +145,9 @@ typedef void* yyscan_t;
 }
 
 %token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_IP_DSCP FLOW_VLAN_ID FLOW_OTHER_TYPE
-%token FLOW_LOCAL_MAC FLOW_OTHER_MAC FLOW_LOCAL_IP FLOW_OTHER_IP
-%token FLOW_SRC_MAC FLOW_DST_MAC FLOW_SRC_IP FLOW_DST_IP
-%token FLOW_LOCAL_PORT FLOW_OTHER_PORT FLOW_SRC_PORT FLOW_DST_PORT
+%token FLOW_ANY_MAC FLOW_LOCAL_MAC FLOW_OTHER_MAC FLOW_SRC_MAC FLOW_DST_MAC
+%token FLOW_ANY_IP FLOW_LOCAL_IP FLOW_OTHER_IP FLOW_SRC_IP FLOW_DST_IP
+%token FLOW_ANY_PORT FLOW_LOCAL_PORT FLOW_OTHER_PORT FLOW_SRC_PORT FLOW_DST_PORT
 %token FLOW_TUNNEL_TYPE
 %token FLOW_DETECTION_COMPLETE FLOW_DETECTION_GUESSED
 %token FLOW_DETECTION_INIT FLOW_DETECTION_UPDATED
@@ -194,9 +194,9 @@ typedef void* yyscan_t;
 %type <us_number> value_tunnel_type
 
 %type <bool_result> expr expr_ip_proto expr_ip_dscp expr_ip_version expr_vlan_id expr_other_type
-%type <bool_result> expr_local_mac expr_other_mac expr_src_mac expr_dst_mac
-%type <bool_result> expr_local_ip expr_other_ip expr_src_ip expr_dst_ip
-%type <bool_result> expr_local_port expr_other_port expr_src_port expr_dst_port
+%type <bool_result> expr_any_mac expr_local_mac expr_other_mac expr_src_mac expr_dst_mac
+%type <bool_result> expr_any_ip expr_local_ip expr_other_ip expr_src_ip expr_dst_ip
+%type <bool_result> expr_any_port expr_local_port expr_other_port expr_src_port expr_dst_port
 %type <bool_result> expr_tunnel_type
 %type <bool_result> expr_detection_complete expr_detection_guessed
 %type <bool_result> expr_detection_init expr_detection_updated
@@ -231,14 +231,17 @@ expr:
     | expr_ip_version
     | expr_vlan_id
     | expr_other_type
+    | expr_any_mac
     | expr_local_mac
     | expr_other_mac
     | expr_src_mac
     | expr_dst_mac
+    | expr_any_ip
     | expr_local_ip
     | expr_other_ip
     | expr_src_ip
     | expr_dst_ip
+    | expr_any_port
     | expr_local_port
     | expr_other_port
     | expr_src_port
@@ -510,6 +513,68 @@ value_other_type:
     | FLOW_OTHER_ERROR { $$ = $1; }
     ;
 
+expr_any_mac:
+      FLOW_ANY_MAC CMP_EQUAL VALUE_ADDR_MAC {
+        _NDFP_result = ($$ = (
+            strncasecmp(
+                _NDFP_local_mac->GetString().c_str(), $3, ND_STR_ETHALEN) == 0
+        ));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                strncasecmp(
+                    _NDFP_other_mac->GetString().c_str(), $3, ND_STR_ETHALEN) == 0
+            ));
+        }
+
+        _NDFP_debugf("Any MAC == MAC %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_MAC CMP_NOTEQUAL VALUE_ADDR_MAC {
+        _NDFP_result = ($$ = (
+            strncasecmp(_NDFP_local_mac->GetString().c_str(), $3, ND_STR_ETHALEN) != 0
+        ));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                strncasecmp(_NDFP_other_mac->GetString().c_str(), $3, ND_STR_ETHALEN) != 0
+            ));
+        }
+
+        _NDFP_debugf("Any MAC != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_MAC CMP_EQUAL VALUE_ADDR_TAG {
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_local_mac) == true));
+        _NDFP_debugf("Local MAC == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (_NDFP_addr_lookup
+              .LookupGroupAddress(tag, *_NDFP_other_mac) == true));
+        }
+
+        _NDFP_debugf("Any MAC == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_MAC CMP_NOTEQUAL VALUE_ADDR_TAG {
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_local_mac) == false));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (_NDFP_addr_lookup
+              .LookupGroupAddress(tag, *_NDFP_other_mac) == false));
+        }
+
+        _NDFP_debugf("Any MAC != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
 expr_local_mac:
       FLOW_LOCAL_MAC CMP_EQUAL VALUE_ADDR_MAC {
         _NDFP_result = ($$ = (
@@ -646,6 +711,65 @@ expr_dst_mac:
         _NDFP_result = ($$ = (_NDFP_addr_lookup
           .LookupGroupAddress(tag, *_NDFP_dst_mac) == false));
         _NDFP_debugf("Destination MAC != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_any_ip:
+      FLOW_ANY_IP CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_local_ip, $3) == true
+        ));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                is_addr_equal(_NDFP_local_ip, $3) == true
+            ));
+        }
+
+        _NDFP_debugf("Any IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_IP CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_local_ip, $3) == false
+        ));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (
+                is_addr_equal(_NDFP_other_ip, $3) == false
+            ));
+        }
+
+        _NDFP_debugf("Any IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_IP CMP_EQUAL VALUE_ADDR_TAG {
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_local_ip) == true));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (_NDFP_addr_lookup
+              .LookupGroupAddress(tag, *_NDFP_other_ip) == true));
+        }
+
+        _NDFP_debugf("Any IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_IP CMP_NOTEQUAL VALUE_ADDR_TAG {
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_local_ip) == false));
+
+        if (! _NDFP_result) {
+            _NDFP_result = ($$ = (_NDFP_addr_lookup
+              .LookupGroupAddress(tag, *_NDFP_other_ip) == false));
+        }
+
+        _NDFP_debugf("Any IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -786,6 +910,57 @@ value_addr_ip:
     | VALUE_ADDR_IPV4_CIDR { strncpy($$, $1, _NDFP_MAX_BUFLEN); }
     | VALUE_ADDR_IPV6 { strncpy($$, $1, _NDFP_MAX_BUFLEN); }
     | VALUE_ADDR_IPV6_CIDR { strncpy($$, $1, _NDFP_MAX_BUFLEN); }
+    ;
+
+expr_any_port:
+      FLOW_ANY_PORT {
+        _NDFP_result = ($$ = (_NDFP_local_port != 0));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port != 0));
+        _NDFP_debugf("Any port is true? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | '!' FLOW_ANY_PORT {
+        _NDFP_result = ($$ = (_NDFP_local_port == 0));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port == 0));
+        _NDFP_debugf("Any port is false? %s\n", (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_PORT CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_local_port == $3));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port == $3));
+        _NDFP_debugf("Any port == %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_PORT CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_local_port != $3));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port != $3));
+        _NDFP_debugf("Any port != %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_PORT CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_local_port >= $3));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port >= $3));
+        _NDFP_debugf("Any port >= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_PORT CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_local_port <= $3));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port <= $3));
+        _NDFP_debugf("Any port <= %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_PORT '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_local_port > $3));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port > $3));
+        _NDFP_debugf("Any port > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_ANY_PORT '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_local_port < $3));
+        if (! _NDFP_result)
+            _NDFP_result = ($$ = (_NDFP_other_port < $3));
+        _NDFP_debugf("Any port > %lu %s\n", $3, (_NDFP_result) ? "yes" : "no");
+    }
     ;
 
 expr_local_port:
