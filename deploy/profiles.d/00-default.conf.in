@@ -83,10 +83,6 @@ use_getifaddrs = false
 # local UNIX socket.
 path_server_socket = ${path_state_volatile}/netifyd.sock
 
-# On non-Linux systems (no Netlink support), use_getifaddrs can be enabled
-# to poll for interface addresses.
-use_getifaddrs = false
-
 # Capture Defaults
 ############################################################################
 
