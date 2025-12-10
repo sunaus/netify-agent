@@ -424,6 +424,9 @@ bool ndCategories::GetTag(
 bool ndCategories::LoadDotDirectory(const string &path) {
     lock_guard<mutex> ul(lock);
 
+    ResetDomains();
+    ResetNetworks(false);
+
     auto it_apps = categories.find(Type::APP);
     if (it_apps == categories.end()) return false;
 
@@ -432,9 +435,6 @@ bool ndCategories::LoadDotDirectory(const string &path) {
     // /etc/netifyd/categories.d/{pri}-{cat_tag}.conf
     if (! nd_scan_dotd(path, files) || files.empty())
         return true;
-
-    ResetDomains();
-    ResetNetworks(false);
 
     for (auto &it : files) {
         string cat_tag;

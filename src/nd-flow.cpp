@@ -651,13 +651,13 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                   ndCategories::Type::APP, category.application)
                 << " CAT/PROTO: " << ndi.categories.GetTag(
                   ndCategories::Type::PROTO, category.protocol)
-                << ": CAT/DOMAIN: " << ndi.categories.GetTag(
+                << " CAT/DOMAIN: " << ndi.categories.GetTag(
                   ndCategories::Type::APP, category.domain)
-                << ": CAT/NET/LOWER: " << ndi.categories.GetTag(
+                << " CAT/NET/LOWER: " << ndi.categories.GetTag(
                   ndCategories::Type::APP, category.lower_net)
-                << ": CAT/NET/UPPER: " << ndi.categories.GetTag(
+                << " CAT/NET/UPPER: " << ndi.categories.GetTag(
                   ndCategories::Type::APP, category.upper_net)
-                << ": CAT/OVERLAY: " << ndi.categories.GetTag(
+                << " CAT/OVERLAY: " << ndi.categories.GetTag(
                   ndCategories::Type::APP, category.overlay);
         }
 
