@@ -29,6 +29,9 @@
 #ifndef NF_ACCEPT
 #define NF_ACCEPT 1
 #endif
+#ifndef NF_REPEAT
+#define NF_REPEAT 4
+#endif
 
 #if defined(HAVE_PCAP_DLT_H)
 #include <pcap/dlt.h>
@@ -129,9 +132,8 @@ static int ndCaptureNFQueue_SetVerdict(
     struct nlmsghdr *nlh_verdict = nfq_nlmsg_put(
       (char *)buffer, NFQNL_MSG_VERDICT, ntohs(nfg->res_id));
 
-    // Always set verdict to ACCEPT.
     nfq_nlmsg_verdict_put(nlh_verdict,
-      ntohl(pkt_hdr->packet_id), NF_ACCEPT);
+      ntohl(pkt_hdr->packet_id), nfq->verdict);
 
     if (mnl_socket_sendto(nfq->GetSocket(), nlh_verdict,
           nlh_verdict->nlmsg_len) < 0)
@@ -317,6 +319,18 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
 
     queue_id = iface->config_nfq.queue_id + instance_id;
 
+    const char *verdict_tag = "unknown";
+    switch (iface->config_nfq.verdict) {
+    case ndNFQVerdict::ACCEPT:
+        verdict = NF_ACCEPT;
+        verdict_tag = "NF_ACCEPT";
+        break;
+    case ndNFQVerdict::REPEAT:
+        verdict = NF_REPEAT;
+        verdict_tag = "NF_REPEAT";
+        break;
+    }
+
     nl = mnl_socket_open(NETLINK_NETFILTER);
 
     if (nl == nullptr) {
@@ -364,10 +378,10 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
 
     nd_dprintf(
       "%s: NFQ capture thread created on queue #%u, thread #%u, "
-      "counters: %s, buffer size: %lu\n", tag.c_str(),
+      "counters: %s, buffer size: %lu, verdict: %s\n", tag.c_str(),
       iface->config_nfq.queue_id, instance_id,
       (iface->config_nfq.conntrack_counters) ? "enabled" : "disabled",
-      buffer_size);
+      buffer_size, verdict_tag);
 }
 
 ndCaptureNFQueue::~ndCaptureNFQueue() {

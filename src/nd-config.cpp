@@ -1142,6 +1142,16 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
         nfq->conntrack_counters = conntrack_counters;
 #endif
+        string verdict = r->Get(section, "verdict", "accept");
+        if (strcasecmp(verdict.c_str(), "accept") == 0)
+            nfq->verdict = ndNFQVerdict::ACCEPT;
+        else if (strcasecmp(verdict.c_str(), "repeat") == 0)
+            nfq->verdict = ndNFQVerdict::REPEAT;
+        else {
+            fprintf(stderr,
+              "Invalid verdict type: %s\n", verdict.c_str());
+            return false;
+        }
     }
 
     return true;

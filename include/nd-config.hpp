@@ -99,6 +99,11 @@ enum class ndTPv3FanoutFlags : uint8_t {
     ROLLOVER = (1 << 1),
 };
 
+enum class ndNFQVerdict : uint8_t {
+    ACCEPT,
+    REPEAT
+};
+
 enum class ndGlobalFlags : uint32_t {
     NONE = 0,
     DEBUG = (1 << 0),
@@ -266,12 +271,14 @@ typedef struct nd_config_nfq_t {
     unsigned queue_id{ 0 };
     unsigned instances{ 0 };
     bool conntrack_counters = { false };
+    ndNFQVerdict verdict = { ndNFQVerdict::ACCEPT };
 
     inline bool operator==(const struct nd_config_nfq_t &i) const {
         return (
             queue_id == i.queue_id &&
             instances == i.instances &&
-            conntrack_counters == i.conntrack_counters
+            conntrack_counters == i.conntrack_counters &&
+            verdict == i.verdict
         );
     }
 } nd_config_nfq;

@@ -46,13 +46,14 @@ public:
     }
 
     struct bpf_program filter = { 0 };
+    int verdict = { 0 };
 
 protected:
-    unsigned queue_id;
-    struct mnl_socket *nl;
-    unsigned int port_id;
-    size_t buffer_size;
-    uint8_t *buffer;
-    size_t dropped;
+    unsigned queue_id = { 0 };
+    struct mnl_socket *nl = { nullptr };
+    unsigned int port_id = { 0 };
+    size_t buffer_size = { 0 };
+    uint8_t *buffer = { nullptr };
+    size_t dropped = { 0 };
     std::vector<ndPacket *> pkt_queue;
 };
