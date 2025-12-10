@@ -1023,13 +1023,13 @@ bool ndInstance::DumpList(ndFlags<DumpFlags> flags) {
             ndFlagBoolean(flags, DumpFlags::TYPE_APPS)))
         {
             string tag;
-            nd_cat_id_t cat_id = categories.ResolveTag(
+            ndCategories::Id cat_id = categories.ResolveTag(
               ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) ?
                 ndCategories::Type::PROTO :
                 ndCategories::Type::APP,
               entry.first, tag);
 
-            if (cat_id == ND_CAT_UNKNOWN || tag.empty())
+            if (cat_id == ndCategory::UNKNOWN || tag.empty())
                 tag = "unknown/" + to_string(cat_id);
 
             cout << right << setw(6) << entry.first << left
@@ -1048,13 +1048,13 @@ bool ndInstance::DumpList(ndFlags<DumpFlags> flags) {
             ndFlagBoolean(flags, DumpFlags::TYPE_APPS)))
         {
             string tag;
-            nd_cat_id_t cat_id = categories.ResolveTag(
+            ndCategories::Id cat_id = categories.ResolveTag(
               ndFlagBoolean(flags, DumpFlags::TYPE_PROTOS) ?
                 ndCategories::Type::PROTO :
                 ndCategories::Type::APP,
               entry.second, tag);
 
-            if (cat_id == ND_CAT_UNKNOWN || tag.empty())
+            if (cat_id == ndCategory::UNKNOWN || tag.empty())
                 tag = "unknown/" + to_string(cat_id);
 
             cout << right << setw(6) << entry.second << left
@@ -1079,7 +1079,7 @@ bool ndInstance::LookupAddress(const string &ip) {
     }
 
     ndApp::Id id_app = apps.Find(addr);
-    nd_cat_id_t id_cat = categories.LookupDotDirectory(addr);
+    ndCategories::Id id_cat = categories.LookupDotDirectory(addr);
 
     cout << "Application ID:" << endl;
     cout << right << setw(6) << id_app << ": " << left

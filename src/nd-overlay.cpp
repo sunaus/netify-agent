@@ -105,7 +105,7 @@ bool Group::MatchFlow(const ndFlow::Ptr &flow,
 void Tag::Load(const nlohmann::json &jconfig) {
     auto jcat = jconfig.find("category_id");
     if (jcat != jconfig.end())
-        category_id = jcat->get<nd_cat_id_t>();
+        category_id = jcat->get<ndCategories::Id>();
 
     auto jgroups = jconfig.at("groups");
     if (! jgroups.is_array())

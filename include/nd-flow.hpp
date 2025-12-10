@@ -267,12 +267,12 @@ public:
     std::string detected_application_name;
 
     struct {
-        nd_cat_id_t application = { ND_CAT_UNKNOWN };
-        nd_cat_id_t protocol = { ND_CAT_UNKNOWN };
-        nd_cat_id_t domain = { ND_CAT_UNKNOWN };
-        nd_cat_id_t upper_net = { ND_CAT_UNKNOWN };
-        nd_cat_id_t lower_net = { ND_CAT_UNKNOWN };
-        nd_cat_id_t overlay = { ND_CAT_UNKNOWN };
+        ndCategories::Id application = { ndCategory::UNKNOWN };
+        ndCategories::Id protocol = { ndCategory::UNKNOWN };
+        ndCategories::Id domain = { ndCategory::UNKNOWN };
+        ndCategories::Id upper_net = { ndCategory::UNKNOWN };
+        ndCategories::Id lower_net = { ndCategory::UNKNOWN };
+        ndCategories::Id overlay = { ndCategory::UNKNOWN };
     } category;
 
     struct {

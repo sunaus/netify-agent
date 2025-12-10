@@ -128,9 +128,9 @@ void nd_ndpi_global_init(void) {
             ids.insert(make_pair(it.first, id));
         else {
             const ndInstance &ndi = ndInstance::GetInstance();
-            nd_cat_id_t cat_id = ndi.categories.LookupTag(
+            ndCategories::Id cat_id = ndi.categories.LookupTag(
               ndCategories::Type::PROTO, it.first);
-            if (cat_id == ND_CAT_UNKNOWN) continue;
+            if (cat_id == ndCategory::UNKNOWN) continue;
 
             for (auto &p : ndProto::Tags) {
                 if (ndi.categories.Lookup(ndCategories::Type::PROTO,

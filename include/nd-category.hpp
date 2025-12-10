@@ -29,15 +29,12 @@
 
 #include "nd-addr.hpp"
 
-#define ND_CAT_UNKNOWN 0
-
-typedef unsigned nd_cat_id_t;
-
 class ndCategory;
 
 class ndCategories
 {
 public:
+    using Id = unsigned;
     enum class Type : uint8_t { NONE, APP, PROTO, MAX };
 
     ndCategories();
@@ -50,30 +47,30 @@ public:
 
     bool LoadDotDirectory(const std::string &path);
 
-    bool IsMember(Type type, nd_cat_id_t cat_id, unsigned id);
+    bool IsMember(Type type, Id cat_id, unsigned id);
     bool IsMember(Type type, const std::string &cat_tag, unsigned id);
 
-    nd_cat_id_t Lookup(Type type, unsigned id) const;
-    nd_cat_id_t LookupTag(Type type, const std::string &tag) const;
-    nd_cat_id_t
-    ResolveTag(Type type, unsigned id, std::string &tag) const;
+    Id Lookup(Type type, unsigned id) const;
+    Id LookupTag(Type type, const std::string &tag) const;
+    Id ResolveTag(Type type, unsigned id, std::string &tag) const;
 
-    bool GetTag(Type type, nd_cat_id_t id, std::string &tag) const;
+    std::string GetTag(Type type, Id id) const;
+    bool GetTag(Type type, Id id, std::string &tag) const;
 
-    nd_cat_id_t LookupDotDirectory(const std::string &domain);
-    nd_cat_id_t LookupDotDirectory(const ndAddr &addr);
+    Id LookupDotDirectory(const std::string &domain);
+    Id LookupDotDirectory(const ndAddr &addr);
 
 protected:
     mutable std::mutex lock;
 
-    typedef std::map<Type, ndCategory> cat_map;
-    cat_map categories;
+    using Categories = std::map<Type, ndCategory>;
+    Categories categories;
 
-    typedef std::unordered_map<nd_cat_id_t, std::unordered_set<std::string>> cat_domain_map;
-    cat_domain_map domains;
+    using Domains = std::unordered_map<Id, std::unordered_set<std::string>>;
+    Domains domains;
 
-    typedef std::unordered_map<nd_cat_id_t, std::regex> cat_rx_map;
-    cat_rx_map rxps;
+    using RegExprs = std::unordered_map<Id, std::regex>;
+    RegExprs rxps;
 
     bool LoadLegacy(const nlohmann::json &jdata);
 
@@ -88,16 +85,18 @@ private:
 class ndCategory
 {
 public:
-    typedef std::map<std::string, nd_cat_id_t> index_tag;
-    typedef std::set<unsigned> set_id;
-    typedef std::map<nd_cat_id_t, set_id> index_cat;
-    typedef std::pair<nd_cat_id_t, set_id> index_cat_insert;
+    const static ndCategories::Id UNKNOWN;
+
+    using TagIndex = std::map<std::string, ndCategories::Id>;
+    using IdSet = std::set<unsigned>;
+    using CategoryIndex = std::map<ndCategories::Id, IdSet>;
+    using CategoryIndexInsert = std::pair<ndCategories::Id, IdSet>;
 
 protected:
     friend class ndCategories;
 
-    index_tag tag;
-    index_cat index;
+    TagIndex tag;
+    CategoryIndex index;
 
     ndCategories::Type type;
 };

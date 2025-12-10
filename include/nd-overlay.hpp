@@ -91,7 +91,7 @@ public:
 
 protected:
     std::string tag;
-    nd_cat_id_t category_id = { 0 };
+    ndCategories::Id category_id = { 0 };
 
     using Groups = std::unordered_map<std::string, Group>;
     Groups groups;

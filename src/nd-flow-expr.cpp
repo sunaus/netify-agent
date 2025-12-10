@@ -4525,7 +4525,7 @@ yyreduce:
         while ((p = category.find_first_of("'\"")) != string::npos)
             category.erase(p, 1);
 
-        if (_NDFP_flow->category.application != ND_CAT_UNKNOWN) {
+        if (_NDFP_flow->category.application != ndCategory::UNKNOWN) {
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
@@ -4534,7 +4534,7 @@ yyreduce:
             );
         }
 
-        if (! _NDFP_result && _NDFP_flow->category.domain != ND_CAT_UNKNOWN) {
+        if (! _NDFP_result && _NDFP_flow->category.domain != ndCategory::UNKNOWN) {
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
@@ -4543,7 +4543,7 @@ yyreduce:
             );
         }
 
-        if (! _NDFP_result && _NDFP_flow->category.lower_net != ND_CAT_UNKNOWN) {
+        if (! _NDFP_result && _NDFP_flow->category.lower_net != ndCategory::UNKNOWN) {
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
@@ -4552,7 +4552,7 @@ yyreduce:
             );
         }
 
-        if (! _NDFP_result && _NDFP_flow->category.upper_net != ND_CAT_UNKNOWN) {
+        if (! _NDFP_result && _NDFP_flow->category.upper_net != ndCategory::UNKNOWN) {
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(
@@ -4561,7 +4561,7 @@ yyreduce:
             );
         }
 
-        if (! _NDFP_result && _NDFP_flow->category.overlay != ND_CAT_UNKNOWN) {
+        if (! _NDFP_result && _NDFP_flow->category.overlay != ndCategory::UNKNOWN) {
             _NDFP_result = (
                 (yyval.bool_result) = (
                     _NDFP_categories.LookupTag(

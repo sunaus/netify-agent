@@ -1357,7 +1357,7 @@ void ndDetectionThread::DetectionComplete(
                 if (nsd.aid == static_cast<int>(ndApp::Id::UNKNOWN)) {
                     ndEF->detected_application = ndApp::Id::UNKNOWN;
                     ndEF->detected_application_name.clear();
-                    ndEF->category.application = ND_CAT_UNKNOWN;
+                    ndEF->category.application = ndCategory::UNKNOWN;
                 }
                 else {
                     SetDetectedApplication(entry,

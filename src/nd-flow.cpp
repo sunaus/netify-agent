@@ -29,9 +29,9 @@
 #include <sstream>
 
 #include "nd-apps.hpp"
-#include "nd-category.hpp"
 #include "nd-flags.hpp"
 #include "nd-flow.hpp"
+#include "nd-instance.hpp"
 #include "nd-risks.hpp"
 #include "nd-sha1.h"
 #include "nd-util.hpp"
@@ -642,6 +642,23 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                     << setw(plen) << " "
                     << ": JA4: " << tls.client_ja4;
             }
+
+            ndInstance &ndi = ndInstance::GetInstance();
+
+            dls << endl
+                << setw(plen) << " "
+                << ": CAT/APP: " << ndi.categories.GetTag(
+                  ndCategories::Type::APP, category.application)
+                << " CAT/PROTO: " << ndi.categories.GetTag(
+                  ndCategories::Type::PROTO, category.protocol)
+                << ": CAT/DOMAIN: " << ndi.categories.GetTag(
+                  ndCategories::Type::APP, category.domain)
+                << ": CAT/NET/LOWER: " << ndi.categories.GetTag(
+                  ndCategories::Type::APP, category.lower_net)
+                << ": CAT/NET/UPPER: " << ndi.categories.GetTag(
+                  ndCategories::Type::APP, category.upper_net)
+                << ": CAT/OVERLAY: " << ndi.categories.GetTag(
+                  ndCategories::Type::APP, category.overlay);
         }
 
         if (ndFlagBoolean(pflags, PrintFlags::RISKS)) {

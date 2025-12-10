@@ -108,10 +108,10 @@ public:
     uint16_t other_port = { 0 };
     uint16_t src_port = { 0 };
     uint16_t dst_port = { 0 };
-    nd_cat_id_t local_net_cat = { ND_CAT_UNKNOWN };
-    nd_cat_id_t other_net_cat = { ND_CAT_UNKNOWN };
-    nd_cat_id_t src_net_cat = { ND_CAT_UNKNOWN };
-    nd_cat_id_t dst_net_cat = { ND_CAT_UNKNOWN };
+    ndCategories::Id local_net_cat = { ndCategory::UNKNOWN };
+    ndCategories::Id other_net_cat = { ndCategory::UNKNOWN };
+    ndCategories::Id src_net_cat = { ndCategory::UNKNOWN };
+    ndCategories::Id dst_net_cat = { ndCategory::UNKNOWN };
     uint16_t origin = { 0 };
     const nlohmann::json *params_intel = { nullptr };
 

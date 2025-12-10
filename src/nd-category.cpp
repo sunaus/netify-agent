@@ -35,8 +35,12 @@ using json = nlohmann::json;
 
 // #define _ND_LOG_DOMAINS   1
 
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, nd_cat_id_t> nd_rn4_cat;
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, nd_cat_id_t> nd_rn6_cat;
+const ndCategories::Id ndCategory::UNKNOWN = 0;
+
+using ndRN4Categories = radix_tree<
+  ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndCategories::Id>;
+using ndRN6Categories = radix_tree<
+  ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndCategories::Id>;
 
 ndCategories::ndCategories()
   : networks4(nullptr), networks6(nullptr) {
@@ -61,20 +65,20 @@ void ndCategories::ResetDomains(void) {
 
 void ndCategories::ResetNetworks(bool free_only) {
     if (networks4 != nullptr) {
-        nd_rn4_cat *rn4 = static_cast<nd_rn4_cat *>(networks4);
+        ndRN4Categories *rn4 = static_cast<ndRN4Categories *>(networks4);
         delete rn4;
         networks4 = nullptr;
     }
 
     if (networks6 != nullptr) {
-        nd_rn6_cat *rn6 = static_cast<nd_rn6_cat *>(networks6);
+        ndRN6Categories *rn6 = static_cast<ndRN6Categories *>(networks6);
         delete rn6;
         networks6 = nullptr;
     }
 
     if (! free_only) {
-        nd_rn4_cat *rn4 = new nd_rn4_cat;
-        nd_rn6_cat *rn6 = new nd_rn6_cat;
+        ndRN4Categories *rn4 = new ndRN4Categories;
+        ndRN6Categories *rn6 = new ndRN6Categories;
 
         networks4 = static_cast<void *>(rn4);
         networks6 = static_cast<void *>(rn6);
@@ -127,9 +131,9 @@ bool ndCategories::Load(const string &filename) {
 
         if (! key.empty()) {
             ci.second.tag =
-              jdata[key + "_tag_index"].get<ndCategory::index_tag>();
+              jdata[key + "_tag_index"].get<ndCategory::TagIndex>();
             ci.second.index =
-              jdata[key + "_index"].get<ndCategory::index_cat>();
+              jdata[key + "_index"].get<ndCategory::CategoryIndex>();
         }
     }
 
@@ -142,7 +146,7 @@ bool ndCategories::LoadLegacy(const json &jdata) {
 
     for (auto &ci : categories) {
         string key;
-        nd_cat_id_t id = 1;
+        Id id = 1;
 
         switch (ci.first) {
         case Type::APP: key = "application"; break;
@@ -157,7 +161,7 @@ bool ndCategories::LoadLegacy(const json &jdata) {
 
             ci.second.tag[it_kvp.first] = id;
             ci.second.index[id] =
-              it_kvp.second.get<ndCategory::set_id>();
+              it_kvp.second.get<ndCategory::IdSet>();
 
             id++;
         }
@@ -189,8 +193,8 @@ bool ndCategories::Load(Type type, json &jdata) {
         auto it_cat = it->find(key);
         if (it_cat == it->end()) continue;
 
-        nd_cat_id_t id = (*it)["id"].get<unsigned>();
-        nd_cat_id_t cid = (*it_cat)["id"].get<nd_cat_id_t>();
+        Id id = (*it)["id"].get<unsigned>();
+        Id cid = (*it_cat)["id"].get<Id>();
         string tag = (*it_cat)["tag"].get<string>();
 
         auto it_tag_id = ci->second.tag.find(tag);
@@ -202,7 +206,7 @@ bool ndCategories::Load(Type type, json &jdata) {
 
         if (it_entry == ci->second.index.end())
             ci->second.index.insert(
-              ndCategory::index_cat_insert(cid, { id }));
+              ndCategory::CategoryIndexInsert(cid, { id }));
         else it_entry->second.insert(id);
     }
 
@@ -287,7 +291,7 @@ void ndCategories::Dump(Type type) {
     }
 }
 
-bool ndCategories::IsMember(Type type, nd_cat_id_t cat_id,
+bool ndCategories::IsMember(Type type, Id cat_id,
   unsigned id) {
     lock_guard<mutex> ul(lock);
     auto ci = categories.find(type);
@@ -333,37 +337,39 @@ bool ndCategories::IsMember(Type type,
     return true;
 }
 
-nd_cat_id_t ndCategories::Lookup(Type type, unsigned id) const {
+ndCategories::Id ndCategories::Lookup(Type type, unsigned id) const {
     lock_guard<mutex> ul(lock);
 
     const auto index = categories.find(type);
-    if (index == categories.end()) return ND_CAT_UNKNOWN;
+    if (index == categories.end()) return ndCategory::UNKNOWN;
 
     for (const auto &it : index->second.index) {
         if (it.second.find(id) == it.second.end()) continue;
         return it.first;
     }
 
-    return ND_CAT_UNKNOWN;
+    return ndCategory::UNKNOWN;
 }
 
-nd_cat_id_t
-ndCategories::LookupTag(Type type, const string &tag) const {
+ndCategories::Id ndCategories::LookupTag(
+  Type type, const string &tag) const {
+
     lock_guard<mutex> ul(lock);
 
     const auto &index = categories.find(type);
-    if (index == categories.end()) return ND_CAT_UNKNOWN;
+    if (index == categories.end()) return ndCategory::UNKNOWN;
 
     const auto &it = index->second.tag.find(tag);
     if (it != index->second.tag.end()) return it->second;
 
-    return ND_CAT_UNKNOWN;
+    return ndCategory::UNKNOWN;
 }
 
-nd_cat_id_t ndCategories::ResolveTag(Type type, unsigned id,
-  string &tag) const {
-    nd_cat_id_t cat_id = Lookup(type, id);
-    if (cat_id == ND_CAT_UNKNOWN) return ND_CAT_UNKNOWN;
+ndCategories::Id ndCategories::ResolveTag(
+  Type type, unsigned id, string &tag) const {
+
+    Id cat_id = Lookup(type, id);
+    if (cat_id == ndCategory::UNKNOWN) return ndCategory::UNKNOWN;
 
     lock_guard<mutex> ul(lock);
 
@@ -380,8 +386,27 @@ nd_cat_id_t ndCategories::ResolveTag(Type type, unsigned id,
     return cat_id;
 }
 
-bool ndCategories::GetTag(Type type, nd_cat_id_t id,
-  string &tag) const {
+string ndCategories::GetTag(
+  Type type, ndCategories::Id id) const {
+
+    string tag("none");
+    lock_guard<mutex> ul(lock);
+
+    auto ci = categories.find(type);
+    if (ci == categories.end()) return tag;
+
+    for (auto &i : ci->second.tag) {
+        if (i.second != id) continue;
+        tag = i.first;
+        break;
+    }
+
+    return tag;
+}
+
+bool ndCategories::GetTag(
+  Type type, ndCategories::Id id, string &tag) const {
+
     lock_guard<mutex> ul(lock);
 
     auto ci = categories.find(type);
@@ -455,8 +480,7 @@ bool ndCategories::LoadDotDirectory(const string &path) {
 
                 if (! addr.IsValid() || ! addr.IsIP()) {
                     nd_printf(
-                      "Invalid IPv4/6 network address: "
-                      "%s: %s\n",
+                      "Invalid IPv4/6 network address: %s: %s\n",
                       it.c_str(), line.substr(p + 1).c_str());
                     continue;
                 }
@@ -467,8 +491,8 @@ bool ndCategories::LoadDotDirectory(const string &path) {
                         if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(
                               entry, addr))
                         {
-                            nd_rn4_cat *rn4 =
-                              static_cast<nd_rn4_cat *>(networks4);
+                            ndRN4Categories *rn4 =
+                              static_cast<ndRN4Categories *>(networks4);
                             (*rn4)[entry] = tag->second;
                             networks++;
                         }
@@ -478,8 +502,8 @@ bool ndCategories::LoadDotDirectory(const string &path) {
                         if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(
                               entry, addr))
                         {
-                            nd_rn6_cat *rn6 =
-                              static_cast<nd_rn6_cat *>(networks6);
+                            ndRN6Categories *rn6 =
+                              static_cast<ndRN6Categories *>(networks6);
                             (*rn6)[entry] = tag->second;
                             networks++;
                         }
@@ -515,15 +539,13 @@ bool ndCategories::LoadDotDirectory(const string &path) {
             domains.insert(make_pair(tag->second, entries));
 
             nd_dprintf(
-              "Loaded %u %s domains from category "
-              "file: %s\n",
+              "Loaded %u %s domains from category file: %s\n",
               entries.size(), tag->first.c_str(), it.c_str());
         }
 
         if (networks) {
             nd_dprintf(
-              "Loaded %u %s networks from category "
-              "file: %s\n",
+              "Loaded %u %s networks from category file: %s\n",
               networks, tag->first.c_str(), it.c_str());
         }
     }
@@ -531,7 +553,7 @@ bool ndCategories::LoadDotDirectory(const string &path) {
     return true;
 }
 
-nd_cat_id_t ndCategories::LookupDotDirectory(const string &domain) {
+ndCategories::Id ndCategories::LookupDotDirectory(const string &domain) {
     lock_guard<mutex> ul(lock);
 
     for (auto &it : rxps) {
@@ -562,36 +584,36 @@ nd_cat_id_t ndCategories::LookupDotDirectory(const string &domain) {
     }
     while (search.size() && p != string::npos);
 
-    return ND_CAT_UNKNOWN;
+    return ndCategory::UNKNOWN;
 }
 
-nd_cat_id_t ndCategories::LookupDotDirectory(const ndAddr &addr) {
+ndCategories::Id ndCategories::LookupDotDirectory(const ndAddr &addr) {
     lock_guard<mutex> ul(lock);
 
     if (addr.IsIPv4()) {
-        nd_rn4_cat *rn = static_cast<nd_rn4_cat *>(networks4);
+        ndRN4Categories *rn = static_cast<ndRN4Categories *>(networks4);
 
         ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
         if (rn != nullptr &&
           ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(entry, addr))
         {
-            nd_rn4_cat::iterator it;
+            ndRN4Categories::iterator it;
             if ((it = rn->longest_match(entry)) != rn->end())
                 return it->second;
         }
     }
     else if (addr.IsIPv6()) {
-        nd_rn6_cat *rn = static_cast<nd_rn6_cat *>(networks6);
+        ndRN6Categories *rn = static_cast<ndRN6Categories *>(networks6);
 
         ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
         if (rn != nullptr &&
           ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(entry, addr))
         {
-            nd_rn6_cat::iterator it;
+            ndRN6Categories::iterator it;
             if ((it = rn->longest_match(entry)) != rn->end())
                 return it->second;
         }
     }
 
-    return ND_CAT_UNKNOWN;
+    return ndCategory::UNKNOWN;
 }
