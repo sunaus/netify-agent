@@ -75,7 +75,8 @@ protected:
     bool LoadLegacy(const nlohmann::json &jdata);
 
     void ResetCategories(void);
-    inline void ResetDomains(void);
+    inline void ResetDomains(void) { domains.clear(); }
+    inline void ResetRegExprs(void) { rxps.clear(); }
     void ResetNetworks(bool free_only = true);
 
 private:

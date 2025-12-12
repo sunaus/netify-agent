@@ -120,6 +120,9 @@ public:
 protected:
     void *scanner = { nullptr };
 
-    typedef std::unordered_map<std::string, std::unique_ptr<std::regex>> rx_cache_map;
-    rx_cache_map rx_cache;
+    using RegExCache = std::unordered_map<std::string, std::unique_ptr<std::regex>>;
+    RegExCache rx_cache;
+
+public:
+    inline void FlushRegExCache(void) { rx_cache.clear(); }
 };

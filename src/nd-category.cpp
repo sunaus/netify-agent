@@ -52,17 +52,6 @@ ndCategories::~ndCategories() {
     ResetNetworks();
 }
 
-void ndCategories::ResetCategories(void) {
-    for (auto &ci : categories) {
-        ci.second.tag.clear();
-        ci.second.index.clear();
-    }
-}
-
-void ndCategories::ResetDomains(void) {
-    domains.clear();
-}
-
 void ndCategories::ResetNetworks(bool free_only) {
     if (networks4 != nullptr) {
         ndRN4Categories *rn4 = static_cast<ndRN4Categories *>(networks4);
@@ -168,6 +157,13 @@ bool ndCategories::LoadLegacy(const json &jdata) {
     }
 
     return true;
+}
+
+void ndCategories::ResetCategories(void) {
+    for (auto &ci : categories) {
+        ci.second.tag.clear();
+        ci.second.index.clear();
+    }
 }
 
 bool ndCategories::Load(Type type, json &jdata) {
@@ -425,6 +421,7 @@ bool ndCategories::LoadDotDirectory(const string &path) {
     lock_guard<mutex> ul(lock);
 
     ResetDomains();
+    ResetRegExprs();
     ResetNetworks(false);
 
     auto it_apps = categories.find(Type::APP);
@@ -535,19 +532,14 @@ bool ndCategories::LoadDotDirectory(const string &path) {
             }
         }
 
-        if (! entries.empty()) {
+        if (! entries.empty())
             domains.insert(make_pair(tag->second, entries));
 
-            nd_dprintf(
-              "Loaded %u %s domains from category file: %s\n",
-              entries.size(), tag->first.c_str(), it.c_str());
-        }
-
-        if (networks) {
-            nd_dprintf(
-              "Loaded %u %s networks from category file: %s\n",
-              networks, tag->first.c_str(), it.c_str());
-        }
+        nd_dprintf(
+          "Loaded %u domains, %u networks, and %u regex entries "
+          "from custom \"%s\" category file: %s\n",
+          entries.size(), networks, rxps.size(),
+          tag->first.c_str(), it.c_str());
     }
 
     return true;
