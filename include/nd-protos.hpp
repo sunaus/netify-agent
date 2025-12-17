@@ -1061,7 +1061,6 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_SIGNAL_VOIP, Id::SIGNAL_CALL },
     { NDPI_PROTOCOL_SIP, Id::SIP },
     { NDPI_PROTOCOL_SKINNY, Id::CISCO_SKINNY },
-/*    { NDPI_PROTOCOL_SKYPE_TEAMS, Id::SKYPE_TEAMS }, */
     { NDPI_PROTOCOL_SMBV1, Id::SMBV1 },
     { NDPI_PROTOCOL_SMBV23, Id::SMBV23 },
     { NDPI_PROTOCOL_SMPP, Id::SMPP },
@@ -1076,7 +1075,6 @@ const std::unordered_map<uint16_t, Id> Protos = {
     { NDPI_PROTOCOL_SRTP, Id::SRTP },
     { NDPI_PROTOCOL_SSDP, Id::SSDP },
     { NDPI_PROTOCOL_SSH, Id::SSH },
-/*    { NDPI_PROTOCOL_STARCRAFT, Id::STARCRAFT }, */
     { NDPI_PROTOCOL_STEAM, Id::STEAM },
     { NDPI_PROTOCOL_STOMP, Id::STOMP },
     { NDPI_PROTOCOL_STUN, Id::STUN },
