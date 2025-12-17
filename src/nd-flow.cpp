@@ -366,6 +366,7 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
           << (risk.risks.empty() ? '-' : 'r')
           << (flags.soft_dissector.load() ? 's' : '-')
           << (flags.app_ip_override.load() ? 'o' : '-')
+          << (flags.app_proto_twins.load() ? 't' : '-')
           << (tcp.fin_ack.load() ? 'F' : '-')
           << (ndFlagBoolean(privacy_mask,
                 (PrivacyMask::LOWER_MAC | PrivacyMask::LOWER_IP)) ?

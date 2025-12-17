@@ -217,6 +217,7 @@ public:
         std::atomic<bool> ip_nat = { false };
         std::atomic<bool> soft_dissector = { false };
         std::atomic<bool> app_ip_override = { false };
+        std::atomic<bool> app_proto_twins = { false };
     } flags;
 
     struct {
@@ -522,6 +523,8 @@ public:
               (bool)flags.soft_dissector.load());
             serialize(output, { "app_ip_override" },
               (bool)flags.app_ip_override.load());
+            serialize(output, { "app_proto_twins" },
+              (bool)flags.app_proto_twins.load());
             serialize(output, { "ip_version" }, (unsigned)ip_version);
             serialize(output, { "ip_dscp" }, (unsigned)ip_dscp);
             serialize(output, { "ip_protocol" },

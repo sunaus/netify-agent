@@ -773,6 +773,38 @@ const std::unordered_map<Id, const char *, ndEnumHasher> Tags = {
     { Id::ZUG, "ZUG" },
 };
 
+const std::unordered_map<Id, const char *, ndEnumHasher> Twins = {
+    { Id::APPLE_PUSH, "netify.apple-push" },
+    { Id::AVAST, "netify.avast" },
+    { Id::BITCOIN, "netify.bitcoin" },
+    { Id::DINGTALK, "netify.dingtalk" },
+    { Id::FACEBOOK_VOIP, "netify.meta" },
+    { Id::LINE_CALL, "netify.line" },
+    { Id::MERAKI_CLOUD, "netify.meraki" },
+    { Id::NEST_LOG_SINK, "netify.nest" },
+    { Id::NTP, "netify.ntp" },
+    { Id::OOKLA, "netify.speedtest" },
+    { Id::PALTALK, "netify.paltalk" },
+    { Id::QQ, "netify.qq" },
+    { Id::RIPE_ATLAS, "netify.ripe-atlas" },
+    { Id::SIGNAL_CALL, "netify.signal" },
+    { Id::SKYPE_TEAMS_CALL, "netify.teams" },
+    { Id::SNAPCHAT_CALL, "netify.snapchat" },
+    { Id::SONOS, "netify.sonos" },
+    { Id::SPOTIFY, "netify.spotify" },
+    { Id::STEAM, "netify.steam" },
+    { Id::SYNCTHING, "netify.syncthing" },
+    { Id::TEAMVIEWER, "netify.teamviewer" },
+    { Id::TELEGRAM_VOIP, "netify.telegram" },
+    { Id::TIVOCONNECT, "netify.tivo" },
+    { Id::TPLINK_SHP, "netify.tp-link" },
+    { Id::TUYA_LP, "netify.tuya-smart" },
+    { Id::UBNTAC2, "netify.ubiquiti" },
+    { Id::WHATSAPP_CALL, "netify.whatsapp" },
+    { Id::XIAOMI, "netify.xiaomi" },
+    { Id::ZOOM, "netify.zoom" },
+};
+
 inline const char *GetName(Id id) {
     auto i = Tags.find(id);
     if (i == Tags.end()) return "Unknown";

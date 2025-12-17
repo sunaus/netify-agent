@@ -805,107 +805,19 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
     else if (refined || ndEF->flags.detection_init.load() == false) {
         // Determine application based on master protocol metadata
         // for Protocol / Application "Twins"
-        ndApp::Id app_twin = ndApp::Id::UNKNOWN;
+        auto twin = ndProto::Twins.find(ndEF->detected_protocol);
+        if (twin != ndProto::Twins.end()) {
+            ndApp::Id id = ndi.apps.Lookup(twin->second);
 
-        switch (ndEF->detected_protocol) {
-        case ndProto::Id::APPLE_PUSH:
-            app_twin = ndi.apps.Lookup("netify.apple-push");
-            break;
-
-        case ndProto::Id::AVAST:
-            app_twin = ndi.apps.Lookup("netify.avast");
-            break;
-
-        case ndProto::Id::DINGTALK:
-            app_twin = ndi.apps.Lookup("netify.dingtalk");
-            break;
-
-        case ndProto::Id::FACEBOOK_VOIP:
-            app_twin = ndi.apps.Lookup("netify.meta");
-            break;
-
-        case ndProto::Id::LINE_CALL:
-            app_twin = ndi.apps.Lookup("netify.line");
-            break;
-
-        case ndProto::Id::NEST_LOG_SINK:
-            app_twin = ndi.apps.Lookup("netify.nest");
-            break;
-
-        case ndProto::Id::NTP:
-            app_twin = ndi.apps.Lookup("netify.ntp");
-            break;
-
-        case ndProto::Id::OOKLA:
-            app_twin = ndi.apps.Lookup("netify.speedtest");
-            break;
-
-        case ndProto::Id::QQ:
-            app_twin = ndi.apps.Lookup("netify.qq");
-            break;
-
-        case ndProto::Id::SPOTIFY:
-            app_twin = ndi.apps.Lookup("netify.spotify");
-            break;
-
-        case ndProto::Id::SIGNAL_CALL:
-            app_twin = ndi.apps.Lookup("netify.signal");
-            break;
-
-        case ndProto::Id::SKYPE_TEAMS_CALL:
-            // TODO: netify.skype or netify.teams?
-            app_twin = ndi.apps.Lookup("netify.teams");
-            break;
-
-        case ndProto::Id::SNAPCHAT_CALL:
-            app_twin = ndi.apps.Lookup("netify.snapchat");
-            break;
-
-        case ndProto::Id::STEAM:
-            app_twin = ndi.apps.Lookup("netify.steam");
-            break;
-
-        case ndProto::Id::SYNCTHING:
-            app_twin = ndi.apps.Lookup("netify.syncthing");
-            break;
-
-        case ndProto::Id::TEAMVIEWER:
-            app_twin = ndi.apps.Lookup("netify.teamviewer");
-            break;
-
-        case ndProto::Id::TELEGRAM_VOIP:
-            app_twin = ndi.apps.Lookup("netify.telegram");
-            break;
-
-        case ndProto::Id::TIVOCONNECT:
-            app_twin = ndi.apps.Lookup("netify.tivo");
-            break;
-
-        case ndProto::Id::TPLINK_SHP:
-            app_twin = ndi.apps.Lookup("netify.tp-link");
-            break;
-
-        case ndProto::Id::TUYA_LP:
-            app_twin = ndi.apps.Lookup("netify.tuya-smart");
-            break;
-
-        case ndProto::Id::UBNTAC2:
-            app_twin = ndi.apps.Lookup("netify.ubiquiti");
-            break;
-
-        case ndProto::Id::WHATSAPP_CALL:
-            app_twin = ndi.apps.Lookup("netify.whatsapp");
-            break;
-
-        case ndProto::Id::ZOOM:
-            app_twin = ndi.apps.Lookup("netify.zoom");
-            break;
-
-        default: break;
+            if (id != ndApp::Id::UNKNOWN) {
+                ndEF->flags.app_proto_twins = true;
+                SetDetectedApplication(entry, id);
+            }
+            else {
+                nd_dprintf("%s: twin protocol entry found, "
+                  "but app lookup failed: %s\n", tag.c_str(), twin->second);
+            }
         }
-
-        if (app_twin != ndApp::Id::UNKNOWN)
-            SetDetectedApplication(entry, app_twin);
     }
 
     if (ndEFNF != nullptr) {
