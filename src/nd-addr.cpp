@@ -995,7 +995,7 @@ bool ndAddrLookup::SaveGroupAddress(const string &tag, const string &filename) {
     if (group == groups.end()) return false;
 
     for (auto &i : group->second)
-        ofs << i.GetString() << endl;
+        ofs << i.GetString(ndAddr::MakeFlags::PREFIX) << endl;
 
     nd_dprintf("%s: Saved %lu group address(es) to: %s.\n",
         tag.c_str(), group->second.size(), filename.c_str());
