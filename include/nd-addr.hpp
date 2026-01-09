@@ -206,6 +206,13 @@ public:
     inline bool IsIPv6(void) const {
         return (addr.ss.ss_family == AF_INET6);
     }
+    inline bool IsNAT64(void) const {
+        return (addr.ss.ss_family == AF_INET6 &&
+          addr.in6.sin6_addr.s6_addr16[0] == 0x64 &&
+          addr.in6.sin6_addr.s6_addr16[1] == 0xff9b);
+    }
+
+    static bool GetNAT64Addr(const ndAddr &addr_nat64, ndAddr &addr_ipv4);
 
     enum class MakeFlags : uint8_t {
         NONE = 0x0,
@@ -526,7 +533,11 @@ public:
     bool operator==(const ndRadixNetworkEntry &rhs) const {
         return prefix_len == rhs.prefix_len && addr == rhs.addr;
     }
-
+#if 0
+    bool operator!=(const ndRadixNetworkEntry &rhs) const {
+        return addr != rhs.addr;
+    }
+#endif
     bool operator<(const ndRadixNetworkEntry &rhs) const {
         if (addr == rhs.addr)
             return prefix_len < rhs.prefix_len;

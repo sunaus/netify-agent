@@ -403,7 +403,30 @@ ndApp::Id ndApplications::Find(const ndAddr &addr, bool app_override) {
             nd_rn4_app *rn4 = ((app_override) ?
               static_cast<nd_rn4_app *>(app_overrides4) :
               static_cast<nd_rn4_app *>(app_networks4));
+#if 0
+            vector<nd_rn4_app::iterator> it_matches;
+            rn4->prefix_match(entry, it_matches);
+            if (it_matches.size()) {
+                nd_dprintf("Prefix matches:\n");
+                for (auto &i : it_matches) {
+                    string ip;
+                    i->first.GetString(ip, ndAddr::MakeFlags::PREFIX);
+                    nd_dprintf(" %s\n", ip.c_str());
+                }
+            }
 
+            it_matches.clear();
+
+            rn4->greedy_match(entry, it_matches);
+            if (it_matches.size()) {
+                nd_dprintf("Greedy matches:\n");
+                for (auto &i : it_matches) {
+                    string ip;
+                    i->first.GetString(ip, ndAddr::MakeFlags::PREFIX);
+                    nd_dprintf(" %s\n", ip.c_str());
+                }
+            }
+#endif
             if ((it = rn4->longest_match(entry)) != rn4->end())
                 return it->second;
         }

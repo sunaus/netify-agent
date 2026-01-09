@@ -312,6 +312,21 @@ bool ndAddr::SetPort(uint16_t port) {
     return false;
 }
 
+bool ndAddr::GetNAT64Addr(const ndAddr &addr_nat64, ndAddr &addr_ipv4) {
+    if (! addr_nat64.IsNAT64()) return false;
+
+    struct in_addr ipv4 = { .s_addr = (
+        static_cast<in_addr_t>(
+          addr_nat64.addr.in6.sin6_addr.s6_addr16[6]) << 16) |
+        static_cast<in_addr_t>(
+          addr_nat64.addr.in6.sin6_addr.s6_addr16[7])
+    };
+
+    addr_ipv4 = ndAddr(&ipv4);
+
+    return addr_ipv4.IsIPv4();
+}
+
 bool ndAddr::MakeString(const ndAddr &a, string &result,
   ndFlags<MakeFlags> flags) {
     if (! a.IsValid()) return false;
