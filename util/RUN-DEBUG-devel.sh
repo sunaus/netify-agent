@@ -21,8 +21,8 @@ echo "Options:"
 echo " OPTION_GDB: ${OPTION_GDB}"
 echo " OPTION_LLDB: ${OPTION_LLDB}"
 echo " OPTION_PIDCORE: ${OPTION_PIDCORE}"
-echo " VALGRIND_EXEC: ${VALGRIND_EXEC}"
 echo " OPTION_VALGRIND: ${OPTION_VALGRIND}"
+echo " VALGRIND_EXEC: ${VALGRIND_EXEC}"
 echo " NETIFYD_PREFIX: ${NETIFYD_PREFIX}"
 echo " NETIFYD_OPTIONS: ${NETIFYD_OPTIONS}"
 echo " NETIFYD_CONF: ${NETIFYD_CONF}"
@@ -83,6 +83,11 @@ else
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
           ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} \
             --massif-out-file=/tmp/netifyd-massif.%p.out ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+        ;;
+      drd)
+        exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+          ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} \
+            --show-stack-usage=yes ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
         ;;
       *)
         echo "Unsupported or invalid valgrind tool: ${OPTION_VALGRIND}"
