@@ -53,7 +53,7 @@ config BR2_PACKAGE_NETIFYD_CONNTRACK_MDATA
 
 endif
 
-comment "Miscellaneous Options"
+comment "General Options"
 
 config BR2_PACKAGE_NETIFYD_NETLINK
 	bool "netlink support"
@@ -72,6 +72,13 @@ config BR2_PACKAGE_NETIFYD_LEAN_AND_MEAN
 	default n
 	help
 	  Enabling lean-and-mean build disables as many extra features as possible to produce the smallest binary.
+
+config BR2_PACKAGE_NETIFYD_UBUS
+	bool "UBUS support"
+	default n
+	select BR2_PACKAGE_UBUS
+	help
+	  Enable UBUS support.
 
 endif
 

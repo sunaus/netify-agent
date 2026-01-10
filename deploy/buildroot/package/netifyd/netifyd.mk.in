@@ -25,7 +25,8 @@ NETIFYD_CONF_OPTS = \
 	$(if $(BR2_PACKAGE_NETIFYD_CONNTRACK_MDATA),--enable-conntrack-mdata,--disable-conntrack-mdata) \
 	$(if $(BR2_PACKAGE_NETIFYD_NETLINK),--enable-netlink,--disable-netlink) \
 	$(if $(BR2_PACKAGE_NETIFYD_EXTENDED_STATS),--enable-extended-stats,--disable-extended-stats) \
-	$(if $(BR2_PACKAGE_NETIFYD_LEAN_AND_MEAN),--enable-lean-and-mean,--disable-lean-and-mean)
+	$(if $(BR2_PACKAGE_NETIFYD_LEAN_AND_MEAN),--enable-lean-and-mean,--disable-lean-and-mean) \
+	$(if $(BR2_PACKAGE_NETIFYD_UBUS),--enable-ubus,--disable-ubus)
 
 define NETIFYD_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 $(@D)/deploy/systemd/netifyd.service \
