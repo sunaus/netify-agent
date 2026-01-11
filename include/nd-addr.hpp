@@ -208,7 +208,7 @@ public:
     }
     inline bool IsNAT64(void) const {
         return (addr.ss.ss_family == AF_INET6 &&
-          addr.in6.sin6_addr.s6_addr32[0] == 0x0064ff9b);
+          addr.in6.sin6_addr.s6_addr32[0] == 0x9bff6400);
     }
 
     static bool GetNAT64Addr(const ndAddr &addr_nat64, ndAddr &addr_ipv4);
