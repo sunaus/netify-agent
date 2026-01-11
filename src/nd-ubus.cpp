@@ -256,6 +256,10 @@ void ndUbus::Call(json &result,
     if (! args.empty() && ! blobmsg_add_json_from_string(
         &buf, args.c_str())) {
         blob_buf_free(&buf);
+        if (ndGC_DEBUG) {
+            nd_dprintf("%s/%s: Failed to parse JSON argument(s):\n\"%s\"\n",
+                path.c_str(), func.c_str(), args.c_str());
+        }
         throw ndException("%s/%s: Failed to parse JSON argument(s)",
             path.c_str(), func.c_str());
     }
