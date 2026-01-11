@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include "nd-config.hpp"
 #include "nd-except.hpp"
 #include "nd-ubus.hpp"
 #include "nd-util.hpp"
