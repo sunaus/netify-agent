@@ -20,10 +20,9 @@
 
 #pragma once
 
-#include <array>
+#include <vector>
 #include <cstdint>
 
-#include <libmnl/libmnl.h>
 #include <linux/netfilter/nfnetlink.h>
 
 #include "nd-addr.hpp"
@@ -38,12 +37,6 @@
         return rtn; \
     }
 
-#ifndef MNL_SOCKET_DUMP_SIZE
-constexpr size_t ND_NETLINK_BUFFER_DUMP_SIZE = 32768; // 32KB
-#else
-constexpr size_t ND_NETLINK_BUFFER_DUMP_SIZE = MNL_SOCKET_DUMP_SIZE;
-#endif
-
 constexpr size_t ND_NETLINK_BUFFER_SOCKET_SIZE = 8192;
 
 class ndNetlink
@@ -52,18 +45,8 @@ public:
     ndNetlink(int bus);
     ndNetlink(int bus, unsigned int groups);
 
-    virtual ~ndNetlink() {
-        if (socket_nl != nullptr) {
-            mnl_socket_close(socket_nl);
-            socket_nl = nullptr;
-        }
-    }
-
-    inline int GetDescriptor(void) {
-        if (socket_nl != nullptr)
-            return mnl_socket_get_fd(socket_nl);
-        return -1;
-    }
+    virtual ~ndNetlink();
+    int GetDescriptor(void);
 
     virtual int ProcessMessage(const struct nlmsghdr *nlh) = 0;
 
@@ -72,7 +55,7 @@ public:
 protected:
     bool dump = { false };
     struct mnl_socket *socket_nl = { nullptr };
-    std::array<uint8_t, ND_NETLINK_BUFFER_DUMP_SIZE> socket_buffer = { 0 };
+    std::vector<uint8_t> socket_buffer;
     unsigned int port_id = { 0 }, seq_id = { 0 };
 
     bool Send(nlmsghdr *nlh);

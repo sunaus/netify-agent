@@ -9,8 +9,11 @@
 
 #include <sys/select.h>
 
+#include <libmnl/libmnl.h>
+
 #include <iostream>
 
+#include "nd-config.hpp"
 #include "nd-except.hpp"
 #include "nd-netlink.hpp"
 
@@ -25,6 +28,8 @@ static int ndNetlink_ProcessMessageCallback(
 }
 
 ndNetlink::ndNetlink(int bus) : dump(true) {
+    socket_buffer.resize(ndGC.netlink_buffer_size);
+
     socket_nl = mnl_socket_open(bus);
     if (socket_nl == nullptr)
         throw ndException("mnl_socket_open: %s", strerror(errno));
@@ -36,12 +41,27 @@ ndNetlink::ndNetlink(int bus) : dump(true) {
 }
 
 ndNetlink::ndNetlink(int bus, unsigned int groups) {
+    socket_buffer.resize(ndGC.netlink_buffer_size);
+
     socket_nl = mnl_socket_open2(bus, SOCK_NONBLOCK);
     if (socket_nl == nullptr)
         throw ndException("mnl_socket_open: %s", strerror(errno));
 
     if (mnl_socket_bind(socket_nl, groups, MNL_SOCKET_AUTOPID) < 0)
         throw ndException("mnl_socket_bind: %s", strerror(errno));
+}
+
+ndNetlink::~ndNetlink() {
+    if (socket_nl != nullptr) {
+        mnl_socket_close(socket_nl);
+        socket_nl = nullptr;
+    }
+}
+
+int ndNetlink::GetDescriptor(void) {
+    if (socket_nl != nullptr)
+        return mnl_socket_get_fd(socket_nl);
+    return -1;
 }
 
 bool ndNetlink::Recv(void)

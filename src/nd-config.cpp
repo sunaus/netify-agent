@@ -267,6 +267,12 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     ca_detection_cores = (int16_t)r->GetInteger("threads",
       "detection_cores", this->ca_detection_cores);
 
+    // Netlink section
+#ifdef _ND_ENABLE_NETLINK
+    netlink_buffer_size = (size_t)r->GetInteger("netlink",
+      "buffer_size", this->netlink_buffer_size);
+#endif
+
     // Capture defaults section
     if (! profile) {
         capture_read_timeout = (unsigned)r->GetInteger(

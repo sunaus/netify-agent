@@ -150,6 +150,13 @@ tls_verify = yes
 
 [protocols]
 # Enable all DPI protocol dissectors
-all=include
+all = include
+
+# Linux Netlink Options
+############################################################################
+
+[netlink]
+# Set the Netlink buffer size
+buffer_size = 32768
 
 # vim: set ft=dosini :

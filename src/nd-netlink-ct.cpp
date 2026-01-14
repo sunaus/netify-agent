@@ -27,6 +27,8 @@
 #include <sstream>
 #include <string>
 
+#include <libmnl/libmnl.h>
+
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-netlink-ct.hpp"
@@ -202,11 +204,6 @@ public:
     }
 
     bool Dump(bool zero_counters = false, sa_family_t family = AF_UNSPEC) {
-        fill(
-            socket_buffer.begin(),
-            socket_buffer.begin() + sizeof(nlmsghdr), '\0'
-        );
-
         struct nlmsghdr *nlh = mnl_nlmsg_put_header(socket_buffer.data());
         nlh->nlmsg_type = (NFNL_SUBSYS_CTNETLINK << 8) |
             (zero_counters ? IPCTNL_MSG_CT_GET_CTRZERO : IPCTNL_MSG_CT_GET);

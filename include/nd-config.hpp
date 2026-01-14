@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <iostream>
 #include <map>
 #include <mutex>
@@ -357,9 +358,11 @@ public:
     unsigned ttl_idle_tcp_flow = { ND_TTL_IDLE_TCP_FLOW };
     unsigned ttl_napi_tick = { ND_TTL_API_TICK };
     unsigned ttl_napi_update = { ND_TTL_API_UPDATE };
-    unsigned update_imf { 1 };
-    unsigned update_interval { ND_STATS_INTERVAL };
-
+    unsigned update_imf = { 1 };
+    unsigned update_interval = { ND_STATS_INTERVAL };
+#ifdef _ND_ENABLE_NETLINK
+    size_t netlink_buffer_size = { ND_NETLINK_BUFFER_SIZE };
+#endif
     typedef std::vector<std::pair<std::string, std::string>> SocketHosts;
     SocketHosts socket_host;
 

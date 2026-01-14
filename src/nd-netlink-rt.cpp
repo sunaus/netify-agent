@@ -30,6 +30,8 @@
 #include <linux/if.h>
 #include <linux/if_link.h>
 
+#include <libmnl/libmnl.h>
+
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-netlink-rt.hpp"
@@ -268,11 +270,6 @@ public:
     }
 
     bool Dump(uint16_t type, sa_family_t family = AF_UNSPEC) {
-        fill(
-            socket_buffer.begin(),
-            socket_buffer.begin() + sizeof(nlmsghdr), '\0'
-        );
-
         struct nlmsghdr *nlh = mnl_nlmsg_put_header(socket_buffer.data());
         nlh->nlmsg_type = type;
 

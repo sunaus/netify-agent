@@ -210,3 +210,7 @@
 #define ND_URL_API_BOOTSTRAP \
     "https://agents.netify.ai/api/v2/bootstrap"
 #define ND_API_VENDOR "EG"
+
+#ifdef _ND_ENABLE_NETLINK
+#define ND_NETLINK_BUFFER_SIZE  32768
+#endif
