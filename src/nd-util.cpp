@@ -297,8 +297,7 @@ void nd_sha1_to_string(const ndDigest &digest, string &digest_str) {
     digest_str.assign(_digest.begin(), _digest.end() - 1);
 }
 
-void nd_sha1_to_string(const ndDigestDynamic &digest,
-  string &digest_str) {
+void nd_sha1_to_string(const ndDigestDynamic &digest, string &digest_str) {
     if (digest.size() != SHA1_DIGEST_LENGTH) {
         throw ndException(
           "%s: invalid digest length: %lu != %u",

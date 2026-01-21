@@ -263,27 +263,21 @@ void nd_trim(std::string &s, unsigned char c = 0);
 
 int nd_sha1_file(const std::string &filename, ndDigest &digest);
 
-void nd_sha1_to_string(const ndDigest &digest,
-  std::string &digest_str);
-void nd_sha1_to_string(const ndDigestDynamic &digest,
-  std::string &digest_str);
+void nd_sha1_to_string(const ndDigest &digest, std::string &digest_str);
+void nd_sha1_to_string(const ndDigestDynamic &digest, std::string &digest_str);
 
-bool nd_string_to_sha1(const std::string &digest_str,
-  ndDigest &digest);
-bool nd_string_to_sha1(const std::string &digest_str,
-  ndDigestDynamic &digest);
+bool nd_string_to_sha1(const std::string &digest_str, ndDigest &digest);
+bool nd_string_to_sha1(const std::string &digest_str, ndDigestDynamic &digest);
 
 bool nd_string_to_mac(const std::string &src, uint8_t *mac);
-sa_family_t
-nd_string_to_ip(const std::string &src, sockaddr_storage *ip);
-bool nd_ip_to_string(sa_family_t af, const void *addr,
-  std::string &dst);
+sa_family_t nd_string_to_ip(const std::string &src, sockaddr_storage *ip);
+bool nd_ip_to_string(sa_family_t af, const void *addr, std::string &dst);
 bool nd_ip_to_string(const sockaddr_storage &ip, std::string &dst);
 
-void nd_json_to_string(const nlohmann::json &j,
-  std::string &output, bool pretty = false);
-void nd_ordered_json_to_string(const nlohmann::ordered_json &j,
-  std::string &output, bool pretty = false);
+void nd_json_to_string(
+  const nlohmann::json &j, std::string &output, bool pretty = false);
+void nd_ordered_json_to_string(
+  const nlohmann::ordered_json &j, std::string &output, bool pretty = false);
 
 uint8_t nd_netmask_to_prefix(const struct sockaddr_storage *netmask);
 uint8_t nd_netmask_to_prefix(const std::string &netmask);

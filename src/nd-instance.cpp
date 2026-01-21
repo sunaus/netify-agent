@@ -2905,8 +2905,6 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
 
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
     if (ndGC_USE_CONNTRACK) {
-        thread_conntrack->Dump(true);
-
         set<string> ct_counter_ifnames;
 
         for (auto &it : interfaces) {
@@ -2914,23 +2912,27 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
             ct_counter_ifnames.insert(it.first);
         }
 
-        struct timeval stamp;
-        gettimeofday(&stamp, nullptr);
+        if (! ct_counter_ifnames.empty()) {
+            thread_conntrack->Dump(true);
 
-        const size_t buckets = flow_buckets->GetBuckets();
-        for (size_t b = 0; b < buckets; b++) {
-            auto &fm = flow_buckets->Acquire(b);
+            struct timeval stamp;
+            gettimeofday(&stamp, nullptr);
 
-            for (auto &i : fm) {
-                if (i.second->conntrack.id == 0) continue;
-                if (ct_counter_ifnames.find(i.second->iface->ifname) ==
-                    ct_counter_ifnames.end())
-                    continue;
+            const size_t buckets = flow_buckets->GetBuckets();
+            for (size_t b = 0; b < buckets; b++) {
+                auto &fm = flow_buckets->Acquire(b);
 
-                thread_conntrack->UpdateFlowStats(i.second, stamp);
+                for (auto &i : fm) {
+                    if (i.second->conntrack.id == 0) continue;
+                    if (ct_counter_ifnames.find(i.second->iface->ifname) ==
+                        ct_counter_ifnames.end())
+                        continue;
+
+                    thread_conntrack->UpdateFlowStats(i.second, stamp);
+                }
+
+                flow_buckets->Release(b);
             }
-
-            flow_buckets->Release(b);
         }
     }
 #endif // _ND_ENABLE_CONNTRACK_COUNTERS

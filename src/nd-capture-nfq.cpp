@@ -361,7 +361,6 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
     nlh = nfq_nlmsg_put((char *)buffer, NFQNL_MSG_CONFIG, queue_id);
     nfq_nlmsg_cfg_put_params(nlh, NFQNL_COPY_PACKET, ndGC.max_capture_length);
 
-    //long flags = NFQA_CFG_F_FAIL_OPEN | NFQA_CFG_F_GSO;
     long flags = NFQA_CFG_F_FAIL_OPEN |
         NFQA_CFG_F_CONNTRACK | NFQA_CFG_F_GSO;
     mnl_attr_put_u32(nlh, NFQA_CFG_FLAGS, htonl(flags));
