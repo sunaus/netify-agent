@@ -90,8 +90,7 @@ void ndFlowHashCache::Load(void) {
             return;
         }
 
-        if (! nd_string_to_sha1(line.substr(0, p), entry.digest))
-        {
+        if (! nd_string_to_sha1(line.substr(0, p), entry.digest)) {
             nd_printf("%s: parse error at line #%u\n",
               filename.c_str(), ln);
             return;
