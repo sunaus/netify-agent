@@ -114,7 +114,7 @@ void ndPlugin::DispatchSinkPayload(const string &target,
 
         flags |= ndPlugin::DispatchFlags::FORMAT_JSON;
 
-        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_CR))
+        if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_LF))
             output.append("\n");
         if (ndFlagBoolean(flags, ndPlugin::DispatchFlags::ADD_HEADER))
         {
