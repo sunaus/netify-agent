@@ -357,8 +357,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
             }
         }
 
-        ndEFNF = (ndpi_flow_struct *)ndpi_malloc(
-          sizeof(ndpi_flow_struct));
+        ndEFNF = (ndpi_flow_struct *)ndpi_malloc(sizeof(ndpi_flow_struct));
         if (ndEFNF == nullptr) {
             throw ndExceptionSystemError(__PRETTY_FUNCTION__,
               "ndpi_malloc");

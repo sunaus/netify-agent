@@ -2620,8 +2620,7 @@ void ndInstance::DestroyCaptureThreads(
 
         for (auto &it : fm) {
             if (it.second->flags.expired.load() == false &&
-              it.second->flags.expiring.load() == false)
-            {
+              it.second->flags.expiring.load() == false) {
                 total++;
                 if (ExpireFlow(it.second)) count++;
             }
