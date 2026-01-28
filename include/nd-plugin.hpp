@@ -97,7 +97,9 @@ public:
         FORMAT_JSON = (1 << 0),
         FORMAT_JSON_OBJECT = (1 << 1),
         FORMAT_MSGPACK = (1 << 2),
+        FORMAT_MASK = (FORMAT_JSON | FORMAT_JSON_OBJECT | FORMAT_MSGPACK),
         ADD_CR = (1 << 3),
+        ADD_LF = (1 << 3),
         ADD_HEADER = (1 << 4),
         GZ_DEFLATE = (1 << 5),
     };
