@@ -37,6 +37,7 @@ public:
     enum class CommandCode : uint16_t {
         NONE,
         STATUS,
+        RELOAD,
         GROUP_ADDR_ADD,
         GROUP_ADDR_DEL,
         GROUP_ADDR_FLUSH,

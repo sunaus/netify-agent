@@ -25,6 +25,7 @@
 #include <array>
 #include <atomic>
 #include <cerrno>
+#include <csignal>
 #include <cstring>
 #include <ctime>
 #include <thread>
@@ -105,6 +106,12 @@ static bool ndServer_ClientRequest(FILE *hf) {
                 jdata["agent_version"] = nd_get_version_and_features();
 
                 ndInstance::GetInstance().GetStatus().Encode(jdata);
+                ndServer_ClientResponse(hf,
+                  ndServer::ResponseCode::OK, "Ok.", jdata);
+                break;
+
+            case ndServer::CommandCode::RELOAD:
+                ndInstance::GetInstance().SendSignal(SIGHUP);
                 ndServer_ClientResponse(hf,
                   ndServer::ResponseCode::OK, "Ok.", jdata);
                 break;
@@ -356,6 +363,8 @@ bool ndServerSaxConsumer::string(string_t &val) {
 
         if (strcasecmp(val.c_str(), "status") == 0)
             command = ndServer::CommandCode::STATUS;
+        else if (strcasecmp(val.c_str(), "reload") == 0)
+            command = ndServer::CommandCode::RELOAD;
         else if (strcasecmp(val.c_str(), "add-group-address") == 0)
             command = ndServer::CommandCode::GROUP_ADDR_ADD;
         else if (strcasecmp(val.c_str(), "remove-group-address") == 0 ||

@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
                 continue;
             }
 
-            instance.SendSignal(si);
+            instance.SendSignal(si.si_signo);
         }
     }
 

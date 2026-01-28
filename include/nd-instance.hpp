@@ -284,7 +284,7 @@ public:
         ndThread::SendIPC(static_cast<uint32_t>(event));
     }
 
-    bool SendSignal(const siginfo_t &si);
+    bool SendSignal(int signo);
 
     int exit_code = { EXIT_FAILURE };
 

@@ -2186,8 +2186,8 @@ ndInstance_RunReturn:
     return exit_code;
 }
 
-bool ndInstance::SendSignal(const siginfo_t &si) {
-    switch (si.si_signo) {
+bool ndInstance::SendSignal(int signo) {
+    switch (signo) {
     case SIGHUP:
         ndThread::SendIPC(
           static_cast<uint32_t>(InstanceEvent::RELOAD));
@@ -2226,14 +2226,14 @@ bool ndInstance::SendSignal(const siginfo_t &si) {
         break;
     default:
         if (timer_update.GetSignal() >= 0 &&
-          si.si_signo == timer_update.GetSignal())
+          signo == timer_update.GetSignal())
         {
             ndThread::SendIPC(
               static_cast<uint32_t>(InstanceEvent::TIMER_UPDATE));
             return true;
         }
         else if (timer_update_napi.GetSignal() >= 0 &&
-          si.si_signo == timer_update_napi.GetSignal())
+          signo == timer_update_napi.GetSignal())
         {
             ndThread::SendIPC(static_cast<uint32_t>(
               InstanceEvent::TIMER_UPDATE_NAPI));
