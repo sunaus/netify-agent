@@ -24,6 +24,7 @@
 
 #include <ctime>
 #include <map>
+#include <mutex>
 #include <nlohmann/json.hpp>
 
 #include "nd-config.hpp"
@@ -125,14 +126,6 @@ public:
         return jstatus;
     }
 
-protected:
-    struct RequestHash {
-        template <typename T>
-        size_t operator()(T t) const {
-            return static_cast<std::size_t>(t);
-        }
-    };
-
     enum class Request : uint8_t {
         NONE,
         BOOTSTRAP,
@@ -141,6 +134,18 @@ protected:
         DOWNLOAD_CATEGORIES,
         DOWNLOAD_INTELLIGENCE,
         DOWNLOAD_INTELLIGENCE_DAT,
+        FEEDS_FLOWS,
+    };
+
+    std::string GetRequestUrl(Request request);
+    std::string GetToken(void);
+
+protected:
+    struct RequestHash {
+        template <typename T>
+        size_t operator()(T t) const {
+            return static_cast<std::size_t>(t);
+        }
     };
 
     typedef std::unordered_map<
@@ -149,6 +154,8 @@ protected:
     Requests requests;
 
     typedef std::unordered_map<Request, std::string, RequestHash> Urls;
+
+    std::mutex lock;
 
     Urls urls;
 

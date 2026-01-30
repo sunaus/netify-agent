@@ -550,8 +550,7 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
                 ndNetifyApiDownload *download = new ndNetifyApiDownload(
                   token, url.second, filename);
 
-                auto request = requests.insert(
-                  make_pair(url.first, download));
+                auto request = requests.insert(make_pair(url.first, download));
 
                 if (request.second != true) delete download;
                 else {
@@ -560,9 +559,7 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
                     }
                     catch (exception &e) {
                         nd_printf(
-                          "netify-api: Error creating "
-                          "download "
-                          "request: %s\n",
+                          "netify-api: Error creating download request: %s\n",
                           e.what());
                         delete download;
                         requests.erase(request.first);
@@ -580,6 +577,21 @@ void ndNetifyApiManager::Terminate(void) {
         request.second->Terminate();
     for (auto &request : requests) delete request.second;
     requests.clear();
+}
+
+string ndNetifyApiManager::GetRequestUrl(ndNetifyApiManager::Request request) {
+    unique_lock<mutex> ul(lock);
+
+    string url;
+    const auto i = urls.find(request);
+    if (i != urls.end()) url = i->second;
+
+    return url;
+}
+
+string ndNetifyApiManager::GetToken(void) {
+    unique_lock<mutex> ul(lock);
+    return token;
 }
 
 ndNetifyApiManager::UpdateResult
@@ -725,6 +737,8 @@ ndNetifyApiManager::ProcessBootstrapRequest(
             return UpdateResult::ERROR;
         }
 
+        unique_lock<mutex> ul(lock);
+
         string new_token = jtoken->get<string>();
 
         if (token.empty() || new_token != token) {
@@ -732,44 +746,54 @@ ndNetifyApiManager::ProcessBootstrapRequest(
             nd_dprintf("netify-api: new API token set.\n");
         }
 
-        auto japps = jsigs->find("applications_endpoint");
-        if (japps != jsigs->end() ||
-          japps->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_APPLICATIONS] = japps->get<string>();
+        auto jendpoint = jsigs->find("applications_endpoint");
+        if (jendpoint != jsigs->end() ||
+          jendpoint->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_APPLICATIONS] = jendpoint->get<string>();
         }
 
-        auto japps_dat = jsigs->find("applications_dat_endpoint");
-        if (japps_dat != jsigs->end() &&
-          japps_dat->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_APPLICATIONS_DAT] = japps_dat->get<string>();
+        jendpoint = jsigs->find("applications_dat_endpoint");
+        if (jendpoint != jsigs->end() &&
+          jendpoint->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_APPLICATIONS_DAT] = jendpoint->get<string>();
         }
 
-        auto jcats = jsigs->find("categories_endpoint");
-        if (jcats != jsigs->end() ||
-          jcats->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_CATEGORIES] = jcats->get<string>();
+        jendpoint = jsigs->find("categories_endpoint");
+        if (jendpoint != jsigs->end() ||
+          jendpoint->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_CATEGORIES] = jendpoint->get<string>();
         }
 
-        auto jintel = jsigs->find("intelligence_endpoint");
-        if (jintel != jsigs->end() &&
-          jintel->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_INTELLIGENCE] = jintel->get<string>();
+        jendpoint = jsigs->find("intelligence_endpoint");
+        if (jendpoint != jsigs->end() &&
+          jendpoint->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_INTELLIGENCE] = jendpoint->get<string>();
         }
 
-        auto jintel_dat = jsigs->find("intelligence_dat_endpoint");
-        if (jintel_dat != jsigs->end() &&
-          jintel_dat->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_INTELLIGENCE_DAT] = jintel_dat->get<string>();
+        jendpoint = jsigs->find("intelligence_dat_endpoint");
+        if (jendpoint != jsigs->end() &&
+          jendpoint->type() == json::value_t::string) {
+            urls[Request::DOWNLOAD_INTELLIGENCE_DAT] = jendpoint->get<string>();
+        }
+
+        jendpoint = jsigs->find("feeds_endpoint");
+        if (jendpoint != jsigs->end() &&
+          jendpoint->type() == json::value_t::string) {
+            urls[Request::FEEDS_FLOWS] = jendpoint->get<string>();
+        }
+
+        jendpoint = jsigs->find("feeds_flows_endpoint");
+        if (jendpoint != jsigs->end() &&
+          jendpoint->type() == json::value_t::string) {
+            urls[Request::FEEDS_FLOWS] = jendpoint->get<string>();
         }
     }
     catch (json::exception &e) {
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] =
-          "Exception encountered while assigning signature "
-          "download URLs";
+          "Exception encountered while assigning signature download URLs";
         nd_printf(
-          "netify-api: Failed to decode bootstrap "
-          "content.\n");
+          "netify-api: Failed to decode bootstrap content.\n");
         nd_dprintf("netify-api: JSON exception: %s\n", e.what());
         return UpdateResult::ERROR;
     }
