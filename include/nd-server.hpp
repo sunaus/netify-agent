@@ -38,6 +38,7 @@ public:
         NONE,
         STATUS,
         RELOAD,
+        RESTART,
         GROUP_ADDR_ADD,
         GROUP_ADDR_DEL,
         GROUP_ADDR_FLUSH,
@@ -99,6 +100,8 @@ protected:
 
     const char *CC_NONE = { "NONE" };
     const char *CC_STATUS = { "STATUS" };
+    const char *CC_RELOAD = { "RELOAD" };
+    const char *CC_RESTART = { "RESTART" };
     const char *CC_GROUP_ADDR_ADD = { "GROUP_ADDR_ADD" };
     const char *CC_GROUP_ADDR_DEL = { "GROUP_ADDR_DEL" };
     const char *CC_GROUP_ADDR_FLUSH = { "GROUP_ADDR_FLUSH" };
@@ -111,6 +114,8 @@ protected:
         CommandCode, std::string, ndEnumHasher> MapCommandCodeName = {
         { CommandCode::NONE, CC_NONE },
         { CommandCode::STATUS, CC_STATUS },
+        { CommandCode::RELOAD, CC_RELOAD },
+        { CommandCode::RESTART, CC_RESTART },
         { CommandCode::GROUP_ADDR_ADD, CC_GROUP_ADDR_ADD },
         { CommandCode::GROUP_ADDR_DEL, CC_GROUP_ADDR_DEL },
         { CommandCode::GROUP_ADDR_FLUSH, CC_GROUP_ADDR_FLUSH },

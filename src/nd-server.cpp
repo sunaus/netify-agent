@@ -36,6 +36,7 @@
 #include "nd-config.hpp"
 #include "nd-instance.hpp"
 #include "nd-server.hpp"
+#include "nd-signal.hpp"
 #include "nd-util.hpp"
 
 using namespace std;
@@ -114,6 +115,12 @@ static bool ndServer_ClientRequest(FILE *hf) {
                 ndInstance::GetInstance().SendSignal(SIGHUP);
                 ndServer_ClientResponse(hf,
                   ndServer::ResponseCode::OK, "Ok.", jdata);
+                break;
+
+            case ndServer::CommandCode::RESTART:
+                kill(getpid(), ND_SIG_RESTART);
+                ndServer_ClientResponse(hf,
+                  ndServer::ResponseCode::OK, "Bye, bye.", jdata);
                 break;
 
             case ndServer::CommandCode::GROUP_ADDR_ADD:
@@ -279,6 +286,7 @@ ndServer &ndServer::Create(void) {
     }
 
     instance = new ndServer;
+    ndServer_ClientTerminate = false;
 
     return *instance;
 }
@@ -290,6 +298,7 @@ void ndServer::Destroy(void) {
     }
 
     delete instance;
+    instance = nullptr;
 }
 
 void ndServer::Reload(const string &path_socket) {
@@ -365,6 +374,8 @@ bool ndServerSaxConsumer::string(string_t &val) {
             command = ndServer::CommandCode::STATUS;
         else if (strcasecmp(val.c_str(), "reload") == 0)
             command = ndServer::CommandCode::RELOAD;
+        else if (strcasecmp(val.c_str(), "restart") == 0)
+            command = ndServer::CommandCode::RESTART;
         else if (strcasecmp(val.c_str(), "add-group-address") == 0)
             command = ndServer::CommandCode::GROUP_ADDR_ADD;
         else if (strcasecmp(val.c_str(), "remove-group-address") == 0 ||

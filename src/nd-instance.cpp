@@ -175,6 +175,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
     string last_iface;
     ndFlags<DumpFlags> dump_flags = DumpFlags::NONE;
 
+    optind = 1;
     nd_basename(argv[0], self);
 
     static struct option options[] = { { "config", 1, 0, 'c' },

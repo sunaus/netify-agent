@@ -23,10 +23,13 @@
 #endif
 
 #include <syslog.h>
+#include <unistd.h>
 
+#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <locale>
+#include <memory>
 
 #include "nd-instance.hpp"
 #include "nd-signal.hpp"
@@ -35,10 +38,59 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
-    int rc = 0;
-    uint32_t result;
+static void nd_instance(int argc, char *argv[], sigset_t &sigset) {
+    bool restart = false;
 
+    ndInstance& instance = ndInstance::Create();
+
+    uint32_t result = instance.InitializeConfig(argc, argv);
+
+    if (ndCR_Result(result) != ndInstance::ConfigResult::OK)
+        exit(ndCR_Code(result));
+
+    if (instance.Daemonize() == false) exit(1);
+
+    // When using provided timers, ensure they're initialized
+    // after Daemonize() is called, otherwise on some
+    // platforms, timer IDs are not maintained after fork(2).
+    if (instance.InitializeTimers() == false) exit(1);
+
+    int rc = instance.Run();
+
+    if (rc == 0) {
+        siginfo_t si;
+        const struct timespec tspec_sigwait = { 1, 0 };
+
+        while (! instance.HasTerminated()) {
+            if (sigtimedwait(&sigset, &si, &tspec_sigwait) < 0)
+            {
+                if (errno == EAGAIN || errno == EINTR)
+                    continue;
+
+                nd_printf("sigwaitinfo: %s\n", strerror(errno));
+
+                rc = -1;
+                instance.Terminate();
+                continue;
+            }
+
+            if (si.si_signo == ND_SIG_RESTART) {
+                restart = true;
+                //instance.Terminate();
+                instance.SendSignal(SIGTERM);
+                continue;
+            }
+
+            instance.SendSignal(si.si_signo);
+        }
+    }
+
+    ndInstance::Destroy();
+
+    if (restart) return; else exit(rc);
+}
+
+int main(int argc, char *argv[]) {
     try {
         locale::global(locale("C"));
 
@@ -66,6 +118,7 @@ int main(int argc, char* argv[]) {
     sigemptyset(&sigset);
     sigaddset(&sigset, ND_SIG_UPDATE);
     sigaddset(&sigset, ND_SIG_UPDATE_NAPI);
+    sigaddset(&sigset, ND_SIG_RESTART);
     sigaddset(&sigset, SIGHUP);
     sigaddset(&sigset, SIGINT);
 #ifdef SIGPWR
@@ -75,44 +128,13 @@ int main(int argc, char* argv[]) {
     sigaddset(&sigset, SIGUSR1);
     sigaddset(&sigset, SIGUSR2);
 
-    ndInstance& instance = ndInstance::Create();
+    do {
+        nd_instance(argc, argv, sigset);
 
-    result = instance.InitializeConfig(argc, argv);
+        fprintf(stdout, "Restarting...\n");
+        sleep(1);
 
-    if (ndCR_Result(result) != ndInstance::ConfigResult::OK)
-        return ndCR_Code(result);
+    } while(true);
 
-    if (instance.Daemonize() == false) return 1;
-
-    // When using provided timers, ensure they're initialized
-    // after Daemonize() is called, otherwise on some
-    // platforms, timer IDs are not maintained after fork(2).
-    if (instance.InitializeTimers() == false) return 1;
-
-    rc = instance.Run();
-
-    if (rc == 0) {
-        siginfo_t si;
-        const struct timespec tspec_sigwait = { 1, 0 };
-
-        while (! instance.HasTerminated()) {
-            if (sigtimedwait(&sigset, &si, &tspec_sigwait) < 0)
-            {
-                if (errno == EAGAIN || errno == EINTR)
-                    continue;
-
-                nd_printf("sigwaitinfo: %s\n", strerror(errno));
-
-                rc = -1;
-                instance.Terminate();
-                continue;
-            }
-
-            instance.SendSignal(si.si_signo);
-        }
-    }
-
-    ndInstance::Destroy();
-
-    return rc;
+    return 0;
 }

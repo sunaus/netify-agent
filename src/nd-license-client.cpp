@@ -52,6 +52,7 @@ void ndLicenseClient::Destroy(void) {
     }
 
     delete instance;
+    instance = nullptr;
 }
 
 void ndLicenseClient::Reload(const string &so_name) {
