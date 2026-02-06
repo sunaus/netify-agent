@@ -47,6 +47,9 @@ public:
 
     struct bpf_program filter = { 0 };
     int verdict = { 0 };
+    uint32_t mark = { 0 };
+    uint32_t mark_verdict = { 0 };
+    uint32_t mark_mask = { 0 };
 
 protected:
     unsigned queue_id = { 0 };

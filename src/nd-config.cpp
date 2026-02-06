@@ -1158,6 +1158,34 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
               "Invalid verdict type: %s\n", verdict.c_str());
             return false;
         }
+
+        string value = r->Get(section, "mark", "0");
+
+        try {
+            nfq->mark = (uint32_t)stoul(value, nullptr, 0);
+        } catch (invalid_argument &e) {
+            fprintf(stderr,
+                "Invalid %s value: %s: %s\n", "mark", value.c_str(), e.what());
+            return false;
+        } catch (out_of_range &e) {
+            fprintf(stderr,
+                "Invalid %s value: %s: %s\n", "mark", value.c_str(), e.what());
+            return false;
+        }
+
+        value = r->Get(section, "mask", "0");
+
+        try {
+            nfq->mask = (uint32_t)stoul(value, nullptr, 0);
+        } catch (invalid_argument &e) {
+            fprintf(stderr,
+                "Invalid %s value: %s: %s\n", "mask", value.c_str(), e.what());
+            return false;
+        } catch (out_of_range &e) {
+            fprintf(stderr,
+                "Invalid %s value: %s: %s\n", "mask", value.c_str(), e.what());
+            return false;
+        }
     }
 
     return true;

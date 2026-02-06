@@ -273,13 +273,16 @@ typedef struct nd_config_nfq_t {
     unsigned instances{ 0 };
     bool conntrack_counters = { false };
     ndNFQVerdict verdict = { ndNFQVerdict::ACCEPT };
+    uint32_t mark = { 0 };
+    uint32_t mask = { 0 };
 
     inline bool operator==(const struct nd_config_nfq_t &i) const {
         return (
             queue_id == i.queue_id &&
             instances == i.instances &&
             conntrack_counters == i.conntrack_counters &&
-            verdict == i.verdict
+            verdict == i.verdict &&
+            mark == i.mark && mask == i.mask
         );
     }
 } nd_config_nfq;

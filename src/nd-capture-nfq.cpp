@@ -132,8 +132,13 @@ static int ndCaptureNFQueue_SetVerdict(
     struct nlmsghdr *nlh_verdict = nfq_nlmsg_put(
       (char *)buffer, NFQNL_MSG_VERDICT, ntohs(nfg->res_id));
 
+    if (nfq->mark_verdict) {
+        nfq_nlmsg_verdict_put_mark(nlh_verdict, htonl(
+          nfq->mark | (nfq->mark_verdict & nfq->mark_mask)));
+    }
+
     nfq_nlmsg_verdict_put(nlh_verdict,
-      ntohl(pkt_hdr->packet_id), nfq->verdict);
+      htonl(pkt_hdr->packet_id), nfq->verdict);
 
     if (mnl_socket_sendto(nfq->GetSocket(), nlh_verdict,
           nlh_verdict->nlmsg_len) < 0)
@@ -201,6 +206,9 @@ static int ndCaptureNFQueue_Callback(
 #endif
         gettimeofday(&pkt_tv, nullptr);
     }
+
+    if (attr[NFQA_MARK] != nullptr)
+        nfq->mark = ntohl(mnl_attr_get_u32(attr[NFQA_MARK]));
 
     uint32_t ifidx_in = 0;
     if (attr[NFQA_IFINDEX_PHYSINDEV] != nullptr)
@@ -331,6 +339,9 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
         break;
     }
 
+    mark_verdict = iface->config_nfq.mark;
+    mark_mask = iface->config_nfq.mask;
+
     nl = mnl_socket_open(NETLINK_NETFILTER);
 
     if (nl == nullptr) {
@@ -377,10 +388,11 @@ ndCaptureNFQueue::ndCaptureNFQueue(int16_t cpu,
 
     nd_dprintf(
       "%s: NFQ capture thread created on queue #%u, thread #%u, "
-      "counters: %s, buffer size: %lu, verdict: %s\n", tag.c_str(),
+      "counters: %s, buffer size: %lu, verdict: %s, mark: 0x%08x/0x%08x\n",
+      tag.c_str(),
       iface->config_nfq.queue_id, instance_id,
       (iface->config_nfq.conntrack_counters) ? "enabled" : "disabled",
-      buffer_size, verdict_tag);
+      buffer_size, verdict_tag, mark_verdict, mark_mask);
 }
 
 ndCaptureNFQueue::~ndCaptureNFQueue() {
