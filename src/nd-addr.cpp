@@ -424,9 +424,13 @@ bool ndAddr::MakeString(const ndAddr &a, string &result,
             return false;
         }
 
-        if (ndFlagBoolean(flags, MakeFlags::IPV6_URI))
+        if (ndFlagBoolean(flags, MakeFlags::IPV6_URI)) {
             result = "[";
-        result.append(sa);
+            result.append(sa);
+        }
+        else
+            result.append(sa);
+
         if (ndFlagBoolean(flags, MakeFlags::IPV6_URI))
             result.append("]");
 
