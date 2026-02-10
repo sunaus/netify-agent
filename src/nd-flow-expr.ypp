@@ -3161,11 +3161,12 @@ expr_intel:
     | FLOW_INTEL CMP_EQUAL VALUE_REGEX {
         _NDFP_result = ($$ = false);
 
-        string key($1); json jvalue;
+        string key($1), search;
+        json jvalue;
         if (_NDFP_params_intel &&
             flow_intel(key, *_NDFP_params_intel, jvalue) && jvalue.is_string()) {
             string rx($3);
-            string search(jvalue.get<string>());
+            search = jvalue.get<string>();
 
             _NDFP_result = ($$ = _NDFP_regex_search(rx, search));
         }
@@ -3260,11 +3261,12 @@ expr_intel:
     | FLOW_INTEL CMP_NOTEQUAL VALUE_REGEX {
         _NDFP_result = ($$ = true);
 
-        string key($1); json jvalue;
+        string key($1), search;
+        json jvalue;
         if (_NDFP_params_intel &&
             flow_intel(key, *_NDFP_params_intel, jvalue) && jvalue.is_string()) {
             string rx($3);
-            string search(jvalue.get<string>());
+            search = jvalue.get<string>();
 
             _NDFP_result = ($$ = ! _NDFP_regex_search(rx, search));
         }
