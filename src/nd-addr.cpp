@@ -1000,15 +1000,15 @@ bool ndAddrLookup::LoadGroupAddress(const string &tag, const string &filename) {
 bool ndAddrLookup::SaveGroupAddress(const string &tag, const string &filename) {
     lock_guard<recursive_mutex> ul(lock_groups);
 
+    auto group = groups.find(tag);
+    if (group == groups.end()) return false;
+
     ofstream ofs(filename, ofstream::trunc);
     if (! ofs.is_open()) {
         nd_printf("Error opening group address file: %s: %s\n",
           filename.c_str(), strerror(ENOENT));
         return false;
     }
-
-    auto group = groups.find(tag);
-    if (group == groups.end()) return false;
 
     for (auto &i : group->second)
         ofs << i.GetString(ndAddr::MakeFlags::PREFIX) << endl;
@@ -1026,8 +1026,6 @@ void ndAddrLookup::LoadGroupAddresses(const string &path) {
         auto group = groups.find(i.first);
         if (group != groups.end()) groups.erase(group);
     }
-
-    group_filenames.clear();
 
     vector<string> files;
     if (! nd_scan_dotd(path, files) || files.empty())
