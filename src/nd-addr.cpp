@@ -1013,7 +1013,7 @@ bool ndAddrLookup::SaveGroupAddress(const string &tag, const string &filename) {
     for (auto &i : group->second)
         ofs << i.GetString(ndAddr::MakeFlags::PREFIX) << endl;
 
-    nd_dprintf("%s: Saved %lu group address(es) to: %s.\n",
+    nd_dprintf("%s: Saved %lu group address(es) to: %s\n",
         tag.c_str(), group->second.size(), filename.c_str());
 
     return true;
