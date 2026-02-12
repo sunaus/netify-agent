@@ -175,7 +175,7 @@ static bool ndServer_ClientRequest(FILE *hf) {
                     else {
                         ndServer_ClientResponse(hf,
                           ndServer::ResponseCode::OK,
-                            "Loaded group adress(es)."
+                            "Loaded group address(es)."
                         );
                     }
                 }
@@ -222,7 +222,7 @@ static bool ndServer_ClientRequest(FILE *hf) {
                     else {
                         ndServer_ClientResponse(hf,
                           ndServer::ResponseCode::OK,
-                            "Saved group adress(es)."
+                            "Saved group address(es)."
                         );
                     }
                 }
