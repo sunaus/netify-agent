@@ -440,7 +440,7 @@ public:
             nd_sha1_to_string((*i), digest);
             serialize(output, { "digest" }, digest);
 
-            for (++i; i != digest_mdata.rend(); i++) {
+            for ( ; i != digest_mdata.rend(); i++) {
                 nd_sha1_to_string((*i), digest);
                 digests.push_back(digest);
             }
