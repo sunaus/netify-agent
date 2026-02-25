@@ -92,7 +92,7 @@ protected:
 class ndPacketStats : public ndSerializer
 {
 public:
-    typedef std::pair<std::string, ndPacketStats> Interface;
+    using Interface = std::pair<std::string, ndPacketStats>;
 
     struct pkt_t {
         uint64_t raw;

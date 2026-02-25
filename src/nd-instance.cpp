@@ -2445,7 +2445,7 @@ bool ndInstance::Reload(bool broadcast, bool silent) {
     return result;
 }
 
-void ndInstance::CreateCaptureInterfaces(ndInterfaces &ifaces) const {
+void ndInstance::CreateCaptureInterfaces(ndInterface::Interfaces &ifaces) const {
     for (auto &r : ndGC.interfaces) {
         for (auto &i : r.second) {
             auto result = ifaces.insert(make_pair(i.first,
@@ -2482,7 +2482,7 @@ void ndInstance::CreateCaptureInterfaces(ndInterfaces &ifaces) const {
     }
 }
 
-bool ndInstance::CreateCaptureThreads(ndInterfaces &ifaces,
+bool ndInstance::CreateCaptureThreads(ndInterface::Interfaces &ifaces,
   ndCaptureThreads &threads) {
     if (threads.size() != 0) {
         nd_printf("%s: Capture threads already created.\n",
@@ -2660,7 +2660,7 @@ size_t ndInstance::ReapCaptureThreads(ndCaptureThreads &threads) {
 }
 
 bool ndInstance::ReloadCaptureThreads(ndCaptureThreads &threads) {
-    ndInterfaces ifaces, ifaces_new, ifaces_common, ifaces_delete;
+    ndInterface::Interfaces ifaces, ifaces_new, ifaces_common, ifaces_delete;
 
     ndGlobalConfig::InterfaceAddrs old_addrs;
     old_addrs.insert(ndGC.interface_addrs.begin(),

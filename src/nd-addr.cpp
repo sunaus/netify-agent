@@ -851,7 +851,7 @@ bool ndAddrLookup::RemoveNeighbor(const ndAddr &addr) {
         removed = true;
     }
     else {
-        for (neighbor_map::iterator i = neighbors.begin();
+        for (NeighborMap::iterator i = neighbors.begin();
             i != neighbors.end(); i++) {
             if (i->second != addr) continue;
 
@@ -885,7 +885,7 @@ bool ndAddrLookup::AddGroupAddress(const string &tag, const ndAddr &addr) {
 
     auto group = groups.find(tag);
     if (group == groups.end()) {
-        group_addr_set addr_set({ addr });
+        GroupAddrSet addr_set({ addr });
         groups.emplace(tag, addr_set);
         return true;
     }
@@ -1133,7 +1133,7 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
                   entry, addr))
             {
-                nd_rn4_atype::iterator it;
+                RadixAddrType4::iterator it;
                 if ((it = iface.second.longest_match(entry)) !=
                   iface.second.end())
                 {
@@ -1150,7 +1150,7 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
               entry, addr))
         {
-            nd_rn4_atype::iterator it;
+            RadixAddrType4::iterator it;
             if ((it = ipv4_reserved.longest_match(entry)) !=
               ipv4_reserved.end())
             {
@@ -1171,7 +1171,7 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
                   entry, addr))
             {
-                nd_rn6_atype::iterator it;
+                RadixAddrType6::iterator it;
                 if ((it = iface.second.longest_match(entry)) !=
                   iface.second.end())
                 {
@@ -1188,7 +1188,7 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
               entry, addr))
         {
-            nd_rn6_atype::iterator it;
+            RadixAddrType6::iterator it;
             if ((it = ipv6_reserved.longest_match(entry)) !=
               ipv6_reserved.end())
             {
@@ -1232,7 +1232,7 @@ size_t ndAddrLookup::GetInterfaceAddresses(const string &iface,
     return result.size();
 }
 
-size_t ndInterface::UpdateAddrs(ndInterfaces &interfaces) {
+size_t ndInterface::UpdateAddrs(ndInterface::Interfaces &interfaces) {
     size_t count = 0;
 
     struct ifaddrs *if_addrs;

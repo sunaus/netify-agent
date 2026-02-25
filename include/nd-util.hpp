@@ -20,11 +20,6 @@
 
 #pragma once
 
-#include <sys/socket.h>
-#include <sys/stat.h>
-
-#include <sched.h>
-
 #include <array>
 #include <atomic>
 #include <cstddef>
@@ -34,11 +29,17 @@
 #include <list>
 #include <map>
 #include <mutex>
+#include <queue>
 #include <regex>
 #include <sstream>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
+
+#include <sys/socket.h>
+#include <sys/stat.h>
+
+#include <sched.h>
 
 #include <nlohmann/json.hpp>
 
@@ -734,3 +735,97 @@ std::string nd_change_ext(const std::string &filename, const std::string &ext);
 
 bool nd_has_expired(const std::string &tag,
   time_t ttl, time_t last_update, bool monotonic = true, time_t now = 0);
+
+template<class Tp>
+struct ndDebugAllocator
+{
+    typedef Tp value_type;
+    size_t allocated = { 0 };
+    size_t allocations = { 0 };
+
+    ndDebugAllocator() = default;
+
+    template<class T> ndDebugAllocator(const ndDebugAllocator<T>&) { }
+
+    Tp* allocate(std::size_t n) {
+        n *= sizeof(Tp);
+        allocated += n;
+        nd_dprintf("%p: allocated %lu bytes, total: %lu\n",
+          this, n, allocated);
+
+        return static_cast<Tp*>(::operator new(n));
+    }
+
+    void deallocate(Tp* p, std::size_t n) {
+        n *= sizeof(Tp);
+        allocated -= n;
+        nd_dprintf("%p: deallocated %lu bytes, total: %lu\n",
+          this, n, allocated);
+
+        ::operator delete(p);
+    }
+};
+
+template<class T, class U>
+bool operator==(const ndDebugAllocator<T>&, const ndDebugAllocator<U>&) {
+    return true;
+}
+template<class T, class U>
+bool operator!=(const ndDebugAllocator<T>&, const ndDebugAllocator<U>&) {
+    return false;
+}
+
+template<class T, size_t N>
+class ndLeanQueueAdapter
+{
+private:
+    std::deque<T, ndDebugAllocator<T>> q;
+    size_t pop_count = { 0 };
+
+public:
+    using const_reference = const T&;
+    using reference = T&;
+    using size_type = std::size_t;
+    using value_type = T;
+
+    bool empty() const noexcept{
+        return q.empty();
+    }
+
+    size_t size() const noexcept{
+        return q.size();
+    }
+
+    T& front() noexcept{
+        return q.front();
+    }
+
+    const T& front() const noexcept{
+        return q.front();
+    }
+
+    T& back() noexcept{
+        return q.back();
+    }
+
+    const T& back() const noexcept{
+        return q.back();
+    }
+
+    void push_back(const T& t) {
+        return q.push_back(t);
+    }
+
+    void push_back(T&& t) {
+        return q.push_back(std::move(t));
+    }
+
+    void pop_front() {
+        q.pop_front();
+
+        if (++pop_count % N == 0U) {
+            q.shrink_to_fit();
+            nd_dprintf("queue shrink_to_fit @ %lu pops.\n", pop_count);
+        }
+    }
+};

@@ -20,6 +20,17 @@
 
 #pragma once
 
+#include <atomic>
+#include <bitset>
+#include <cstdint>
+#include <cstring>
+#include <mutex>
+#include <set>
+#include <string>
+#include <thread>
+#include <unordered_set>
+#include <utility>
+
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #if defined(__linux__)
@@ -31,17 +42,7 @@
 #include <net/if_dl.h>
 #endif
 
-#include <atomic>
-#include <bitset>
-#include <cstdint>
-#include <cstring>
-#include <mutex>
-#include <radix/radix_tree.hpp>
-#include <set>
-#include <string>
-#include <thread>
-#include <unordered_set>
-#include <utility>
+#include "radix/radix_tree.hpp"
 
 #include "nd-config.hpp"
 #include "nd-flags.hpp"
@@ -66,7 +67,7 @@ public:
         ERROR = 0x7f,
     };
 
-    typedef std::pair<struct sockaddr_storage, struct sockaddr_storage> PrivatePair;
+    using PrivatePair = std::pair<struct sockaddr_storage, struct sockaddr_storage>;
 
     ndAddr(uint8_t prefix = 0)
       : addr{ { 0 } }, prefix(prefix),
@@ -640,9 +641,6 @@ template <size_t N>
 ndRadixNetworkEntry<N> radix_join(const ndRadixNetworkEntry<N> &x,
   const ndRadixNetworkEntry<N> &y);
 
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndAddr::Type> nd_rn4_atype;
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndAddr::Type> nd_rn6_atype;
-
 class ndAddrLookup
 {
 public:
@@ -703,15 +701,20 @@ protected:
     mutable std::mutex lock_ether_reserved;
     std::unordered_map<std::string, ndAddr::Type> ether_reserved;
 
+    using RadixAddrType4 = radix_tree<
+      ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndAddr::Type>;
+    using RadixAddrType6 = radix_tree<
+      ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndAddr::Type>;
+
     mutable std::mutex lock_ipv4_reserved;
-    nd_rn4_atype ipv4_reserved;
+    RadixAddrType4 ipv4_reserved;
     mutable std::mutex lock_ipv6_reserved;
-    nd_rn6_atype ipv6_reserved;
+    RadixAddrType6 ipv6_reserved;
 
     mutable std::mutex lock_ipv4_ifaces;
-    std::unordered_map<std::string, nd_rn4_atype> ipv4_ifaces;
+    std::unordered_map<std::string, RadixAddrType4> ipv4_ifaces;
     mutable std::mutex lock_ipv6_ifaces;
-    std::unordered_map<std::string, nd_rn6_atype> ipv6_ifaces;
+    std::unordered_map<std::string, RadixAddrType6> ipv6_ifaces;
 
     mutable std::mutex lock_link_addrs;
     std::unordered_map<unsigned, ndAddr> link_addrs;
@@ -723,18 +726,16 @@ protected:
     std::unordered_map<unsigned, std::string> link_names;
 
     mutable std::mutex lock_neighbors;
-    typedef std::unordered_map<
-        ndAddr, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> neighbor_map;
-    neighbor_map neighbors;
+    using NeighborMap = std::unordered_map<
+        ndAddr, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual>;
+    NeighborMap neighbors;
 
     mutable std::recursive_mutex lock_groups;
-    typedef std::unordered_set<
-        ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> group_addr_set;
-    std::unordered_map<std::string, group_addr_set> groups;
+    using GroupAddrSet = std::unordered_set<
+        ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual>;
+    std::unordered_map<std::string, GroupAddrSet> groups;
     std::unordered_map<std::string, std::string> group_filenames;
 };
-
-typedef std::unordered_set<ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceAddrs;
 
 class ndInterfaceAddr : public ndSerializer
 {
@@ -799,14 +800,11 @@ public:
     }
 
 protected:
-    ndInterfaceAddrs addrs;
     mutable std::mutex lock;
+
+    using Addrs = std::unordered_set<ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual>;
+    Addrs addrs;
 };
-
-typedef std::unordered_map<ndAddr, ndInterfaceAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual> ndInterfaceEndpoints;
-
-class ndInterface;
-typedef std::map<std::string, std::shared_ptr<ndInterface>> ndInterfaces;
 
 class ndInterface : public ndSerializer
 {
@@ -843,7 +841,8 @@ public:
         }
     }
 
-    static size_t UpdateAddrs(ndInterfaces &interfaces);
+    using Interfaces = std::map<std::string, std::shared_ptr<ndInterface>>;
+    static size_t UpdateAddrs(Interfaces &interfaces);
 
     size_t UpdateAddrs(const struct ifaddrs *if_addrs);
 
@@ -1013,11 +1012,15 @@ public:
     bool conntrack_counters = { false };
 #endif
 
-    typedef std::shared_ptr<ndInterface> Ptr;
+    using Ptr = std::shared_ptr<ndInterface>;
+
+    using Endpoints = std::unordered_map<
+      ndAddr, ndInterfaceAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual>;
 
 protected:
-    ndInterfaceAddr addrs;
-    ndInterfaceEndpoints endpoints[2];
-    std::atomic<bool> endpoint_snapshot;
     mutable std::mutex lock;
+
+    ndInterfaceAddr addrs;
+    Endpoints endpoints[2];
+    std::atomic<bool> endpoint_snapshot;
 };

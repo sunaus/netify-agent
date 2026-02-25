@@ -292,7 +292,7 @@ public:
     ndPacketStats pkt_stats_global;
     ndApplications apps;
     ndCategories categories;
-    ndInterfaces interfaces;
+    ndInterface::Interfaces interfaces;
     ndAddrLookup addr_lookup;
     ndDNSHintCache *dns_hint_cache = { nullptr };
     ndFlowHashCache *flow_hash_cache = { nullptr };
@@ -317,9 +317,9 @@ protected:
 
     bool Reload(bool broadcast = true, bool silent = true);
 
-    void CreateCaptureInterfaces(ndInterfaces &ifaces) const;
+    void CreateCaptureInterfaces(ndInterface::Interfaces &ifaces) const;
 
-    bool CreateCaptureThreads(ndInterfaces &ifaces,
+    bool CreateCaptureThreads(ndInterface::Interfaces &ifaces,
       ndCaptureThreads &threads);
     void DestroyCaptureThreads(ndCaptureThreads &threads,
       bool expire_flows = false);

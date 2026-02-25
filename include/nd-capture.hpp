@@ -20,6 +20,9 @@
 
 #pragma once
 
+#include <atomic>
+#include <string>
+
 #include <pcap/pcap.h>
 
 #include "nd-except.hpp"

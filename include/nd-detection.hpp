@@ -20,7 +20,13 @@
 
 #pragma once
 
+#include <string>
+
 #include "nd-flow-parser.hpp"
+#include "nd-util.hpp"
+
+template <class T>
+using ndDetectionQueue = std::queue<T, ndLeanQueueAdapter<T, 1024u>>;
 
 class ndDetectionQueueEntry
 {
@@ -89,7 +95,7 @@ protected:
 
     std::string flow_digest, flow_digest_mdata;
 
-    std::queue<ndDetectionQueueEntry *> pkt_queue;
+    ndDetectionQueue<ndDetectionQueueEntry *> pkt_queue;
     pthread_cond_t pkt_queue_cond;
     pthread_mutex_t pkt_queue_cond_mutex;
 

@@ -425,7 +425,7 @@ void ndPluginManager::Load(ndPlugin::Type type, bool create) {
 
             if (create) loader->GetPlugin()->Create();
 
-            map_plugin *mp = nullptr;
+            PluginMap *mp = nullptr;
 
             switch (t.first) {
             case ndPlugin::Type::PROC:
@@ -461,7 +461,7 @@ bool ndPluginManager::Create(ndPlugin::Type type) {
         if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
-        map_plugin *mp = nullptr;
+        PluginMap *mp = nullptr;
 
         switch (t.first) {
         case ndPlugin::Type::PROC: mp = &processors; break;
@@ -546,7 +546,7 @@ size_t ndPluginManager::Reap(ndPlugin::Type type) {
         if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
-        map_plugin *mp = nullptr;
+        PluginMap *mp = nullptr;
 
         switch (t.first) {
         case ndPlugin::Type::PROC: mp = &processors; break;
@@ -557,7 +557,7 @@ size_t ndPluginManager::Reap(ndPlugin::Type type) {
             break;
         }
 
-        for (map_plugin::iterator p = mp->begin(); p != mp->end();)
+        for (PluginMap::iterator p = mp->begin(); p != mp->end();)
         {
             if (! p->second->GetPlugin()->HasTerminated()) {
                 p++;
@@ -589,7 +589,7 @@ void ndPluginManager::BroadcastEvent(ndPlugin::Type type,
         if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
-        map_plugin *mp = nullptr;
+        PluginMap *mp = nullptr;
 
         switch (t.first) {
         case ndPlugin::Type::PROC: mp = &processors; break;
@@ -677,7 +677,7 @@ void ndPluginManager::DispatchProcessorEvent(const string &target,
 }
 
 void ndPluginManager::DispatchProcessorEvent(const string &target,
-  ndPluginProcessor::Event event, ndInterfaces *interfaces) {
+  ndPluginProcessor::Event event, ndInterface::Interfaces *interfaces) {
     lock_guard<mutex> ul(lock);
 
     auto p = processors.find(target);
@@ -785,7 +785,7 @@ void ndPluginManager::BroadcastProcessorEvent(
 }
 
 void ndPluginManager::BroadcastProcessorEvent(
-  ndPluginProcessor::Event event, ndInterfaces *interfaces) {
+  ndPluginProcessor::Event event, ndInterface::Interfaces *interfaces) {
     lock_guard<mutex> ul(lock);
 
     for (auto &p : processors) {
@@ -837,7 +837,7 @@ void ndPluginManager::BroadcastProcessorEvent(
 
 void ndPluginManager::Encode(nlohmann::json &output) const {
     auto add_plugins =
-      [](const map_plugin &plugins_in, json &plugins_out,
+      [](const PluginMap &plugins_in, json &plugins_out,
         const string &type) {
         for (auto &p : plugins_in) {
             json plugin;
@@ -931,7 +931,7 @@ void ndPluginManager::DumpVersions(ndPlugin::Type type) {
         if (type != ndPlugin::Type::BASE && type != t.first)
             continue;
 
-        map_plugin *mp = nullptr;
+        PluginMap *mp = nullptr;
 
         switch (t.first) {
         case ndPlugin::Type::PROC: mp = &processors; break;

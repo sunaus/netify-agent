@@ -62,8 +62,8 @@ public:
         SINK,
     };
 
-    typedef std::map<std::string, std::string> Params;
-    typedef std::set<std::string> Channels;
+    using Params = std::map<std::string, std::string>;
+    using Channels = std::set<std::string>;
 
     ndPlugin(Type type, const std::string &tag, const Params &params);
     virtual ~ndPlugin();
@@ -160,7 +160,7 @@ public:
     DispatchProcessorEvent(Event event,
       ndFlow::Ptr &flow, nlohmann::json &jargs) { }
     virtual void DispatchProcessorEvent(Event event,
-      ndInterfaces *interfaces) { }
+      ndInterface::Interfaces *interfaces) { }
     virtual void DispatchProcessorEvent(Event event,
       const std::string &iface, ndPacketStats *stats) { }
     virtual void DispatchProcessorEvent(Event event,
@@ -173,7 +173,7 @@ public:
 class ndPluginSinkPayload
 {
 public:
-    typedef std::shared_ptr<ndPluginSinkPayload> Ptr;
+    using Ptr = std::shared_ptr<ndPluginSinkPayload>;
 
     static Ptr Create(size_t length, const uint8_t *data,
       const ndPlugin::Channels &channels,
@@ -315,7 +315,7 @@ public:
     void DispatchProcessorEvent(const std::string &target,
       ndPluginProcessor::Event event, ndFlow::Ptr &flow, nlohmann::json &jargs);
     void DispatchProcessorEvent(const std::string &target,
-      ndPluginProcessor::Event event, ndInterfaces *interfaces);
+      ndPluginProcessor::Event event, ndInterface::Interfaces *interfaces);
     void DispatchProcessorEvent(const std::string &target,
       ndPluginProcessor::Event event, const std::string &iface, ndPacketStats *stats);
     void DispatchProcessorEvent(const std::string &target,
@@ -332,7 +332,7 @@ public:
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
       ndFlow::Ptr &flow, nlohmann::json &jargs);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
-      ndInterfaces *interfaces);
+      ndInterface::Interfaces *interfaces);
     void BroadcastProcessorEvent(ndPluginProcessor::Event event,
       const std::string &iface, ndPacketStats *stats);
     void BroadcastProcessorEvent(
@@ -350,8 +350,8 @@ public:
 protected:
     std::mutex lock;
 
-    typedef std::map<std::string, ndPluginLoader *> map_plugin;
+    using PluginMap = std::map<std::string, ndPluginLoader *>;
 
-    map_plugin processors;
-    map_plugin sinks;
+    PluginMap processors;
+    PluginMap sinks;
 };
