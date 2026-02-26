@@ -72,7 +72,7 @@ ndFlow::ndFlow(ndInterface::Ptr &iface)
 ndFlow::ndFlow(const ndFlow &flow)
   : iface(flow.iface), lower_mac(flow.lower_mac),
     upper_mac(flow.upper_mac), lower_addr(flow.lower_addr),
-    upper_addr(flow.upper_addr), direction(flow.direction),
+    upper_addr(flow.upper_addr), first_addr_cmp(flow.first_addr_cmp),
     ip_version(flow.ip_version), ip_protocol(flow.ip_protocol),
     vlan_id(flow.vlan_id), ts_first_seen(flow.ts_first_seen),
     ts_last_seen(flow.ts_last_seen.load()),

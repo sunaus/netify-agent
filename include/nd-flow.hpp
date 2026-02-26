@@ -150,7 +150,7 @@ public:
     ndAddr::Type lower_type = { ndAddr::Type::NONE };
     ndAddr::Type upper_type = { ndAddr::Type::NONE };
 
-    int direction = { 0 };
+    int first_addr_cmp = { 0 };
 
     uint8_t ip_version = { 0 };
     uint8_t ip_dscp = { 0 };
