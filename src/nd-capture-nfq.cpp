@@ -401,6 +401,8 @@ ndCaptureNFQueue::~ndCaptureNFQueue() {
     if (nl != nullptr) mnl_socket_close(nl);
     if (buffer != nullptr) delete[] buffer;
 
+    pcap_freecode(&filter);
+
     nd_dprintf("%s: NFQ capture thread destroyed.\n", tag.c_str());
 }
 

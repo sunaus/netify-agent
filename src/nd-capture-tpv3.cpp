@@ -127,7 +127,7 @@ protected:
 
     struct tpacket_req3 tp_req;
 
-    struct bpf_program filter;
+    struct bpf_program filter = { 0 };
 
     ndPacketStats *stats;
 };
@@ -403,6 +403,8 @@ ndPacketRing::~ndPacketRing() {
     if (buffer) munmap(buffer, tp_ring_size);
     if (sd != -1) close(sd);
     for (auto &i : blocks) delete i;
+
+    pcap_freecode(&filter);
 }
 
 bool ndPacketRing::ApplyFilter(const uint8_t *pkt,

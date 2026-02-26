@@ -40,7 +40,7 @@ public:
 protected:
     pcap_t *pcap;
     int pcap_fd;
-    struct bpf_program pcap_filter;
+    struct bpf_program filter = { 0 };
     char pcap_errbuf[PCAP_ERRBUF_SIZE];
     int pcap_snaplen;
     struct pcap_pkthdr *pkt_header;

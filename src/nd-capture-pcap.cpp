@@ -53,6 +53,8 @@ ndCapturePcap::~ndCapturePcap() {
     if (pcap != nullptr) {
         pcap_close(pcap);
         pcap = nullptr;
+
+        pcap_freecode(&filter);
     }
 
     nd_dprintf("%s: PCAP capture thread destroyed.\n", tag.c_str());
@@ -263,7 +265,7 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
 
         if (i != ndGC.interface_filters.end()) {
             try {
-                CompileFilter(i->second, pcap_filter, pcap_new);
+                CompileFilter(i->second, filter, pcap_new);
             } catch (exception &e) {
                 nd_printf("%s: pcap_compile: %s\n",
                   tag.c_str(), pcap_geterr(pcap_new));
@@ -273,7 +275,7 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
                 return nullptr;
             }
 
-            if (pcap_setfilter(pcap_new, &pcap_filter) < 0) {
+            if (pcap_setfilter(pcap_new, &filter) < 0) {
                 nd_printf("%s: pcap_setfilter: %s\n",
                   tag.c_str(), pcap_geterr(pcap_new));
                 pcap_close(pcap_new);
