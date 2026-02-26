@@ -1051,7 +1051,7 @@ nd_process_ip:
 
     if (nf) {
         // Flow exists in map.
-        if (nf->direction != addr_cmp) {
+        if (addr_cmp != nf->first_addr_cmp) {
 #if _ND_DISSECT_GTP
             if (hdr_gtpv1 != nullptr && hdr_gtpv1->flags.version == 1)
             {
@@ -1118,7 +1118,7 @@ nd_process_ip:
 
         nf = make_shared<ndFlow>(flow);
 
-        nf->direction = addr_cmp;
+        nf->first_addr_cmp = addr_cmp;
 
 #if defined(_ND_ENABLE_NFQUEUE)
         if (ndCT_TYPE(
