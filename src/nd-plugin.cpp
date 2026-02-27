@@ -845,6 +845,16 @@ void ndPluginManager::Encode(nlohmann::json &output) const {
             plugin["tag"] = p.first;
             plugin["type"] = type;
 
+            string library;
+            p.second->GetPlugin()->GetLibrary(library);
+
+            plugin["library"] = library;
+
+            string name;
+            p.second->GetPlugin()->GetName(name);
+
+            plugin["name"] = name;
+
             string version;
             p.second->GetPlugin()->GetVersion(version);
 
