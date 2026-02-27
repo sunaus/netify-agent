@@ -70,6 +70,10 @@ public:
 
     virtual void *Entry(void) = 0;
 
+    virtual void GetLibrary(std::string &library) { library = "-"; }
+
+    virtual void GetName(std::string &name) { name = "-"; }
+
     virtual void GetVersion(std::string &version) = 0;
 
     virtual void GetStatus(nlohmann::json &status) { }

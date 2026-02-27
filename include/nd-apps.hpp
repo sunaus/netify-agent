@@ -98,6 +98,8 @@ public:
     bool Lookup(ndApp::Id id, ndApplication &app);
 
     void Get(nd_apps_t &apps_copy) const;
+    const std::string GetLibrary(void) const { return library; }
+    const std::string GetName(void) const { return name; }
     const std::string GetVersion(void) const { return version; }
 
     bool SoftDissectorMatch(ndFlow::Ptr const &flow,
@@ -128,6 +130,8 @@ protected:
     nd_domains_t domains;
     nd_nsd_t soft_dissectors;
     nd_domain_rx_xforms_t domain_xforms;
+    std::string library = { "-" };
+    std::string name = { "-" };
     std::string version = { "-" };
 
     struct {
