@@ -14,6 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#if defined(__linux__)
+#include <linux/if_packet.h>
+#include <net/if_arp.h>
+#elif defined(__FreeBSD__)
+// XXX: net/if_arp.h must be included after sys/socket.h
+#include <net/if_arp.h>
+#include <net/if_dl.h>
+#endif
+
+#include <atomic>
+#include <bitset>
+#include <cstdint>
+#include <cstring>
+#include <mutex>
+#include <radix/radix_tree.hpp>
+#include <set>
+#include <string>
+#include <thread>
+#include <unordered_set>
+#include <utility>
+
 #ifndef _ND_ADDR_H
 #define _ND_ADDR_H
 
