@@ -27,6 +27,7 @@
 
 #include <radix/radix_tree.hpp>
 
+#include "nd-except.hpp"
 #include "nd-flow-parser.hpp"
 #include "nd-flow-expr.hpp"
 
@@ -41,7 +42,8 @@ extern "C" {
 }
 
 void yyerror(YYLTYPE *yyllocp, yyscan_t scanner, const char *message) {
-    throw string(message);
+    throw ndException("[%d:%d] %s",
+      yyllocp->first_line, yyllocp->first_column, message);
 }
 
 static bool is_addr_equal(const ndAddr *flow_addr, const string &compr_addr) {
@@ -1852,7 +1854,7 @@ expr_app_category:
         _NDFP_debugf("App category == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
-    | FLOW_APPLICATION_CATEGORY_ID CMP_NOTEQUAL VALUE_NAME {
+    | FLOW_APPLICATION_CATEGORY CMP_NOTEQUAL VALUE_NAME {
         size_t p;
         string category($3);
 
@@ -3783,7 +3785,7 @@ ndFlowParser::ndFlowParser() {
     yylex_init_extra((void *)this, &scanner);
 
     if (scanner == nullptr)
-        throw string("Error creating scanner context");
+        throw ndException("creating scanner context");
 
     this->scanner = static_cast<void *>(scanner);
 }
@@ -3903,7 +3905,7 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
     );
 
     if (flow_expr_scan_buffer == nullptr)
-        throw string("Error allocating flow expression scan buffer");
+        throw ndException("allocating flow expression scan buffer");
 
     yy_switch_to_buffer(flow_expr_scan_buffer, (yyscan_t)scanner);
 
@@ -3911,9 +3913,17 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
 
     try {
         rc = yyparse((yyscan_t)scanner);
+    } catch (exception &e) {
+        this->flow.reset();
+        yy_delete_buffer(flow_expr_scan_buffer, scanner);
+        nd_dprintf("flow parser exception: %s: \"%s\"\n",
+            e.what(), expr.c_str());
+        throw;
     } catch (...) {
         this->flow.reset();
         yy_delete_buffer(flow_expr_scan_buffer, scanner);
+        nd_dprintf("flow parser exception: %s: \"%s\"\n",
+            "unknown", expr.c_str());
         throw;
     }
 

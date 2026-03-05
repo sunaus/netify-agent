@@ -26,7 +26,7 @@
 #include "nd-util.hpp"
 
 template <class T>
-using ndDetectionQueue = std::queue<T, ndLeanQueueAdapter<T, 1024u>>;
+using ndDetectionQueue = std::queue<T, ndLeanQueueAdapter<T, 1000u>>;
 
 class ndDetectionQueueEntry
 {

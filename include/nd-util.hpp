@@ -736,6 +736,8 @@ std::string nd_change_ext(const std::string &filename, const std::string &ext);
 bool nd_has_expired(const std::string &tag,
   time_t ttl, time_t last_update, bool monotonic = true, time_t now = 0);
 
+#ifdef _ND_DEBUG_ALLOCATOR
+
 template<class Tp>
 struct ndDebugAllocator
 {
@@ -775,11 +777,17 @@ bool operator!=(const ndDebugAllocator<T>&, const ndDebugAllocator<U>&) {
     return false;
 }
 
+#endif // _ND_DEBUG_ALLOCATOR
+
 template<class T, size_t N>
 class ndLeanQueueAdapter
 {
 private:
+#ifdef _ND_DEBUG_ALLOCATOR
     std::deque<T, ndDebugAllocator<T>> q;
+#else
+    std::deque<T> q;
+#endif
     size_t pop_count = { 0 };
 
 public:
