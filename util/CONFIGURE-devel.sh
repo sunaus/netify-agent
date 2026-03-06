@@ -64,8 +64,8 @@ else
 fi
 
 if [ "x${ENABLE_STACK_PROTECTION}" == "xtrue" ]; then
-  CPPFLAGS+=" -fstack-clash-protection \
-    -fstack-protector-strong -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2"
+  CPPFLAGS+=" -fstack-clash-protection -fstack-protector-strong \
+    -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2"
 fi
 
 export CPPFLAGS="${CPPFLAGS}"
