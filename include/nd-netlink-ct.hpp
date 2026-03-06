@@ -137,7 +137,7 @@ protected:
     uint32_t mark = { 0 };
 #endif
     time_t updated_at = { 0 };
-    ndDigest digest[2] = { { 0 } };
+    ndDigest digest[2];
     sa_family_t l3_proto = { 0 };
     uint8_t l4_proto = { 0 };
     ndAddr orig_addr[2];
