@@ -43,7 +43,6 @@
 #include <sys/user.h>
 #endif
 #if defined(__linux__)
-#include <linux/wireless.h>
 #ifdef _ND_ENABLE_LIBCAP
 #include <sys/capability.h>
 #include <sys/prctl.h>
