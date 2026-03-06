@@ -46,7 +46,7 @@ using json_ordered = nlohmann::ordered_json;
 ndServer *ndServer::instance = nullptr;
 ndSocketServer *ndServer::skt = nullptr;
 
-static atomic<bool> ndServer_ClientTerminate = false;
+static atomic<bool> ndServer_ClientTerminate{false};
 
 static void ndServer_ClientResponse(FILE *hf, const json_ordered &jpayload) {
     string payload;
