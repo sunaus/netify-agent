@@ -27,7 +27,6 @@
 
 #include <net/if.h>
 
-#include <linux/if.h>
 #include <linux/if_link.h>
 
 #include <libmnl/libmnl.h>
