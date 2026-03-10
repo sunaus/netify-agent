@@ -1691,7 +1691,18 @@ expr_category:
             );
         }
 
-        _NDFP_debugf("App/domain/network/tag category == %s? %s\n",
+        if (! _NDFP_result && _NDFP_params_intel) {
+            json jvalue;
+            string key("intel_domain_criteria");
+            _NDFP_result = (
+                $$ = (
+                    flow_intel(key, *_NDFP_params_intel, jvalue) &&
+                      jvalue.is_string() && jvalue.get<string>() == category
+                )
+            );
+        }
+
+        _NDFP_debugf("App/domain/network/tag/intel category == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_CATEGORY CMP_NOTEQUAL VALUE_NAME {
@@ -1744,7 +1755,18 @@ expr_category:
             );
         }
 
-        _NDFP_debugf("App/domain/network/tag category != %s? %s\n",
+        if (! _NDFP_result && _NDFP_params_intel) {
+            json jvalue;
+            string key("intel_domain_criteria");
+            _NDFP_result = (
+                $$ = (
+                    flow_intel(key, *_NDFP_params_intel, jvalue) &&
+                      jvalue.is_string() && jvalue.get<string>() != category
+                )
+            );
+        }
+
+        _NDFP_debugf("App/domain/network/tag/intel category != %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
@@ -1789,6 +1811,17 @@ expr_category_id:
                 $3, (_NDFP_result) ? "yes" : "no");
         }
 
+        if (! _NDFP_result && _NDFP_params_intel) {
+            json jvalue;
+            string key("intel_domain_criteria");
+            _NDFP_result = (
+                $$ = (
+                    flow_intel(key, *_NDFP_params_intel, jvalue) &&
+                      jvalue.is_number() && jvalue.get<unsigned long>() == $3
+                )
+            );
+        }
+
         _NDFP_debugf("App/domain/network/tag category ID == %s? %s\n",
             $3, (_NDFP_result) ? "yes" : "no");
     }
@@ -1829,6 +1862,17 @@ expr_category_id:
             ));
             _NDFP_debugf("Overlay tag category ID == %lu? %s\n",
                 $3, (_NDFP_result) ? "yes" : "no");
+        }
+
+        if (! _NDFP_result && _NDFP_params_intel) {
+            json jvalue;
+            string key("intel_domain_criteria");
+            _NDFP_result = (
+                $$ = (
+                    flow_intel(key, *_NDFP_params_intel, jvalue) &&
+                      jvalue.is_number() && jvalue.get<unsigned long>() != $3
+                )
+            );
         }
 
         _NDFP_debugf("App/domain/network/tag category ID != %s? %s\n",

@@ -148,6 +148,9 @@ static bool ndServer_ClientRequest(FILE *hf) {
                 }
                 break;
 
+            case ndServer::CommandCode::GROUP_ADDR_LIST:
+                break;
+
             case ndServer::CommandCode::GROUP_ADDR_LOAD:
                 if (ssc.addr_group.empty()) {
                     ndServer_ClientResponse(hf,
@@ -385,6 +388,8 @@ bool ndServerSaxConsumer::string(string_t &val) {
             command = ndServer::CommandCode::GROUP_ADDR_FLUSH;
         else if (strcasecmp(val.c_str(), "lookup-group-address") == 0)
             command = ndServer::CommandCode::GROUP_ADDR_LOOKUP;
+        else if (strcasecmp(val.c_str(), "list-address-groups") == 0)
+            command = ndServer::CommandCode::GROUP_ADDR_LIST;
         else if (strcasecmp(val.c_str(), "load-address-group") == 0)
             command = ndServer::CommandCode::GROUP_ADDR_LOAD;
         else if (strcasecmp(val.c_str(), "save-address-group") == 0)
