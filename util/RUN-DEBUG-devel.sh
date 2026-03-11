@@ -47,8 +47,8 @@ fi
 export LD_LIBRARY_PATH=$(dirname ${NETIFYD_SO})
 echo " LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}"
 
-ARGS="-c ${NETIFYD_CONF} ${NETIFYD_OPTIONS} $@"
-echo -e "Arguments:\n $ARGS"
+ARGS="-c ${NETIFYD_CONF} ${NETIFYD_OPTIONS}"
+echo -e "Arguments:\n $ARGS $@"
 
 export NETIFYD_DESTDIR="${NETIFYD_PREFIX}"
 
@@ -56,38 +56,38 @@ SUDO=$(which sudo)
 
 if [ -z "${SUDO}" ]; then
   echo "WARNING: sudo not found, running as: ${USER}"
-  exec ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+  exec ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS "$@"
 else
   if [ "${OPTION_GDB}" == "enable" ]; then
     grep -E '^#define' config.h | sed -e 's/#define/macro define/g' > defines.gdb
     echo "set solib-search-path ${NETIFYD_PREFIX}/usr/lib/x86_64-linux-gnu/" >> defines.gdb
     if [ "${OPTION_PIDCORE}" == "disable" ]; then
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-          gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+          gdb -x defines.gdb -ex 'break main' --args ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS "$@"
     else
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
           gdb -x defines.gdb ${NETIFYD_PREFIX}/usr/sbin/netifyd ${OPTION_PIDCORE}
     fi
   elif [ "${OPTION_LLDB}" == "enable" ]; then
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      lldb ${NETIFYD_PREFIX}/usr/sbin/netifyd -- $ARGS
+      lldb ${NETIFYD_PREFIX}/usr/sbin/netifyd -- $ARGS "$@"
   elif [ "${OPTION_VALGRIND}" != "disable" ]; then
     case "${OPTION_VALGRIND}" in
       memcheck)
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
           ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
             --track-origins=yes --read-inline-info=yes --leak-check=full \
-            --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+            --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS "$@"
         ;;
       massif)
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
           ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} \
-            --massif-out-file=/tmp/netifyd-massif.%p.out ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+            --massif-out-file=/tmp/netifyd-massif.%p.out ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS "$@"
         ;;
       drd)
         exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
           ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} \
-            --show-stack-usage=yes ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+            --show-stack-usage=yes ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS "$@"
         ;;
       *)
         echo "Unsupported or invalid valgrind tool: ${OPTION_VALGRIND}"
@@ -98,10 +98,10 @@ else
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
       ${VALGRIND_EXEC} --tool=${OPTION_VALGRIND} --vgdb=yes --vgdb-error=0 \
         --track-origins=yes --read-inline-info=yes \
-        --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+        --log-file=/tmp/netifyd-$(date '+%s').log ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS "$@"
   else
     exec ${SUDO} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
-      ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS
+      ${NETIFYD_PREFIX}/usr/sbin/netifyd $ARGS "$@"
   fi
 fi
 
