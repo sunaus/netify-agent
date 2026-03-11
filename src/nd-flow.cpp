@@ -41,6 +41,9 @@ using namespace std;
 // Enable lower map debug output
 // #define _ND_DEBUG_LOWER_MAP	1
 
+// Enable digest mdata debug output
+// #define _ND_DEBUG_DIGEST_MDATA 1
+
 void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
   uint64_t bytes) {
     const unsigned interval = ndGC.update_interval;
@@ -855,5 +858,18 @@ bool ndFlow::PushMetadataDigest(const ndDigest &digest) {
     }
 
     digest_mdata.push_back(digest);
+
+#ifdef _ND_DEBUG_DIGEST_MDATA
+    string lower;
+    nd_sha1_to_string(digest_lower, lower);
+
+    unsigned i = 0;
+    for (auto &d : digest_mdata) {
+        string mdata;
+        nd_sha1_to_string(d, mdata);
+        nd_dprintf("%s: digest mdata[%u]: %s\n",
+          lower.c_str(), i++, mdata.c_str());
+    }
+#endif
     return true;
 }

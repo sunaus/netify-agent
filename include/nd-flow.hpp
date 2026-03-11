@@ -433,19 +433,24 @@ public:
         std::string _upper_rate = "other_rate";
 #endif
         std::string digest;
-        std::vector<std::string> digests;
 
-        if (! digest_mdata.empty()) {
+        if (digest_mdata.empty()) {
+            nd_sha1_to_string(digest_lower, digest);
+            serialize(output, { "digest" }, digest);
+            serialize(output, { "digest_prev" }, digest);
+        }
+        else {
             auto i = digest_mdata.rbegin();
             nd_sha1_to_string((*i), digest);
             serialize(output, { "digest" }, digest);
 
-            for ( ; i != digest_mdata.rend(); i++) {
-                nd_sha1_to_string((*i), digest);
+            std::vector<std::string> digests;
+            for (auto &i : digest_mdata) {
+                nd_sha1_to_string(i, digest);
                 digests.push_back(digest);
             }
+            serialize(output, { "digest_prev" }, digests);
         }
-        serialize(output, { "digest_prev" }, digests);
 
         serialize(output, { "last_seen_at" }, ts_last_seen.load());
 
