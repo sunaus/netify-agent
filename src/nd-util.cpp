@@ -1522,6 +1522,22 @@ void ndTimer::Create(int sig) {
           __PRETTY_FUNCTION__, strerror(EEXIST));
     }
 
+#if defined(__APPLE__)
+    if (! (id = dispatch_source_create(
+      DISPATCH_SOURCE_TYPE_TIMER, 0, 0,
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+    )))
+        throw ndExceptionSystemError(__PRETTY_FUNCTION__,
+            "dispatch_source_create");
+
+    // Capture the signal to send when the timer fires
+    dispatch_source_set_event_handler(id, ^{
+        kill(getpid(), sig);
+    });
+
+    // The source is created in a suspended state, so we must resume it
+    dispatch_resume(id);
+#else
     struct sigevent sigev;
     memset(&sigev, 0, sizeof(struct sigevent));
     sigev.sigev_notify = SIGEV_SIGNAL;
@@ -1531,13 +1547,19 @@ void ndTimer::Create(int sig) {
         throw ndExceptionSystemError(__PRETTY_FUNCTION__,
           "timer_create");
     }
+#endif
 
     valid = true;
 }
 
 void ndTimer::Reset(void) {
     if (valid) {
+#if defined(__APPLE__)
+        dispatch_source_cancel(id);
+        dispatch_release(id);
+#else
         timer_delete(id);
+#endif
         valid = false;
     }
 }
@@ -1548,10 +1570,31 @@ void ndTimer::Set(const struct itimerspec &itspec) {
           __PRETTY_FUNCTION__, strerror(EEXIST));
     }
 
+#if defined(__APPLE__)
+    uint64_t start_nsec =
+        (uint64_t)itspec.it_value.tv_sec * NSEC_PER_SEC
+      + (uint64_t)itspec.it_value.tv_nsec;
+    uint64_t interval_nsec =
+        (uint64_t)itspec.it_interval.tv_sec * NSEC_PER_SEC
+      + (uint64_t)itspec.it_interval.tv_nsec;
+
+    if (start_nsec == 0) {
+        // Disarm the timer
+        dispatch_source_set_timer(
+          id, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
+    } else {
+        dispatch_time_t start_time = dispatch_time(
+          DISPATCH_TIME_NOW, start_nsec);
+        uint64_t interval = (interval_nsec == 0)
+          ? DISPATCH_TIME_FOREVER : interval_nsec;
+        dispatch_source_set_timer(id, start_time, interval, 0);
+    }
+#else
     if (timer_settime(id, 0, &itspec, nullptr) != 0) {
         throw ndExceptionSystemError(__PRETTY_FUNCTION__,
           "timer_settime");
     }
+#endif
 }
 
 ndCPUSet::ndCPUSet(bool empty) {

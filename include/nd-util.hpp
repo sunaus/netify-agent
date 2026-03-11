@@ -39,6 +39,10 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 
+#if defined(__APPLE__)
+#include <dispatch/dispatch.h>
+#endif
+
 #include <sched.h>
 
 #include <nlohmann/json.hpp>
@@ -389,7 +393,11 @@ public:
 protected:
     int sig;
     bool valid;
+#if defined(__APPLE__)
+    dispatch_source_t id;
+#else
     timer_t id;
+#endif
 };
 
 class ndCPUSet
