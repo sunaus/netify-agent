@@ -25,6 +25,27 @@
 #include <ctime>
 #include <string>
 
+#if defined(__FreeBSD__)
+// XXX: Needed for u_char.  Must be included before
+// net/ethernet.h below
+#include <sys/types.h>
+#endif
+
+#define __FAVOR_BSD
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip6.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#undef __FAVOR_BSD
+
+#include <net/ethernet.h>
+#ifdef HAVE_PCAP_SLL_H
+#include <pcap/sll.h>
+#else
+#include "pcap-compat/sll.h"
+#endif
+
 #include "nd-flags.hpp"
 #include "nd-serializer.hpp"
 
@@ -48,18 +69,9 @@ public:
 #if defined(_ND_ENABLE_NFQUEUE)
       , int ifidx_src = -1, int ifidx_dst = -1
 #endif
-      )
-      : status(status), length(length), caplen(caplen),
-        data(data), tv_sec(tv.tv_sec), tv_usec(tv.tv_usec)
-#if defined(_ND_ENABLE_NFQUEUE)
-        , ifidx_src(ifidx_src), ifidx_dst(ifidx_dst)
-#endif
-        { }
+      );
 
-    virtual ~ndPacket() {
-        if (data != nullptr) delete[] data;
-        status = StatusFlags::INIT;
-    }
+    virtual ~ndPacket();
 
     inline ndFlags<StatusFlags> GetStatus(void) {
         return status;
@@ -80,7 +92,13 @@ protected:
     ndFlags<StatusFlags> status;
     uint16_t length;
     uint16_t caplen;
-    const uint8_t *data;
+    const uint8_t *data = { nullptr };
+    const struct ether_header *hdr_eth = { nullptr };
+    const struct sll_header *hdr_sll = { nullptr };
+    const struct ip *hdr_ip = { nullptr };
+    const struct ip6_hdr *hdr_ip6 = { nullptr };
+    const struct tcphdr *hdr_tcp = { nullptr };
+    const struct udphdr *hdr_udp = { nullptr };
     time_t tv_sec;
     time_t tv_usec;
 #if defined(_ND_ENABLE_NFQUEUE)

@@ -28,6 +28,7 @@
 #include "nd-except.hpp"
 #include "nd-flags.hpp"
 #include "nd-instance.hpp"
+#include "nd-packet.hpp"
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
@@ -82,7 +83,7 @@ protected:
     const ndDetectionThreads &threads_dpi;
     int16_t dpi_thread_id;
 
-    const ndPacket *ProcessPacket(const ndPacket *packet);
+    const ndPacket *ProcessPacket(ndPacket *packet);
 
     bool ProcessDNSPacket(ndFlow::Ptr &flow,
       const uint8_t *pkt, uint16_t pkt_len, ndProto::Id proto);

@@ -43,12 +43,6 @@
 #include "pcap-compat/dlt.h"
 #endif
 
-#ifdef HAVE_PCAP_SLL_H
-#include <pcap/sll.h>
-#else
-#include "pcap-compat/sll.h"
-#endif
-
 #ifdef HAVE_PCAP_VLAN_H
 #include <pcap/vlan.h>
 #else
@@ -62,14 +56,6 @@
 #else
 #error Unable to find a usable ppp_defs include
 #endif
-
-#define __FAVOR_BSD
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip6.h>
-#include <netinet/tcp.h>
-#include <netinet/udp.h>
-#undef __FAVOR_BSD
 
 #if defined(__linux__)
 #define _ND_ADDROFF(ptr, typeof, member) &ptr->member
@@ -311,15 +297,8 @@ void ndCaptureThread::CompileFilter(
 }
 
 const ndPacket *
-ndCaptureThread::ProcessPacket(const ndPacket *packet) {
+ndCaptureThread::ProcessPacket(ndPacket *packet) {
     ndFlow::Ptr nf;
-
-    const struct ether_header *hdr_eth = nullptr;
-    const struct sll_header *hdr_sll = nullptr;
-    const struct ip *hdr_ip = nullptr;
-    const struct ip6_hdr *hdr_ip6 = nullptr;
-    const struct tcphdr *hdr_tcp = nullptr;
-    const struct udphdr *hdr_udp = nullptr;
 #ifdef _ND_DISSECT_GTP
     const struct nd_gtpv1_header_t *hdr_gtpv1 = nullptr;
     const struct nd_gtpv2_header_t *hdr_gtpv2 = nullptr;
@@ -413,25 +392,25 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             return packet;
         }
 
-        hdr_eth = reinterpret_cast<const struct ether_header *>(
+        packet->hdr_eth = reinterpret_cast<const struct ether_header *>(
           packet->data);
-        type = ntohs(hdr_eth->ether_type);
+        type = ntohs(packet->hdr_eth->ether_type);
         l2_len = sizeof(struct ether_header);
         stats.pkt.eth++;
 
         // STP?
-        if ((hdr_eth->ether_shost[0] == 0x01 &&
-              hdr_eth->ether_shost[1] == 0x80 &&
-              hdr_eth->ether_shost[2] == 0xC2) ||
-          (hdr_eth->ether_dhost[0] == 0x01 &&
-            hdr_eth->ether_dhost[1] == 0x80 &&
-            hdr_eth->ether_dhost[2] == 0xC2))
+        if ((packet->hdr_eth->ether_shost[0] == 0x01 &&
+              packet->hdr_eth->ether_shost[1] == 0x80 &&
+              packet->hdr_eth->ether_shost[2] == 0xC2) ||
+          (packet->hdr_eth->ether_dhost[0] == 0x01 &&
+            packet->hdr_eth->ether_dhost[1] == 0x80 &&
+            packet->hdr_eth->ether_dhost[2] == 0xC2))
         {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "bridge group address", hdr_eth);
+              "bridge group address", packet->hdr_eth);
 #endif
             return packet;
         }
@@ -449,9 +428,9 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
             return packet;
         }
 
-        hdr_sll = reinterpret_cast<const struct sll_header *>(
+        packet->hdr_sll = reinterpret_cast<const struct sll_header *>(
           packet->data);
-        type = hdr_sll->sll_protocol;
+        type = packet->hdr_sll->sll_protocol;
         l2_len = SLL_HDR_LEN;
         break;
 
@@ -476,13 +455,13 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        if (hdr_eth == nullptr) {
+        if (packet->hdr_eth == nullptr) {
             _ND_LOG_DISCARD(tag.c_str(),
               "layer-2 length is beyond capture length");
         }
         else {
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "layer-2 length is beyond capture length", hdr_eth);
+              "layer-2 length is beyond capture length", packet->hdr_eth);
         }
 #endif
     }
@@ -498,7 +477,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 _ND_LOG_DISCARD_ETHER(tag.c_str(),
                   "layer-2 + VLAN length is beyond capture "
                   "length",
-                  hdr_eth);
+                  packet->hdr_eth);
 #endif
             }
 
@@ -530,7 +509,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                 _ND_LOG_DISCARD_ETHER(tag.c_str(),
                   "layer-2 + MPLS length is beyond capture "
                   "length",
-                  hdr_eth);
+                  packet->hdr_eth);
 #endif
             }
 
@@ -544,7 +523,7 @@ ndCaptureThread::ProcessPacket(const ndPacket *packet) {
                     _ND_LOG_DISCARD_ETHER(tag.c_str(),
                       "%s: discard: layer-2 + MPLS length "
                       "is beyond capture length",
-                      hdr_eth);
+                      packet->hdr_eth);
 #endif
                 }
                 u32 = (uint32_t)ntohl(
@@ -614,33 +593,33 @@ nd_process_ip:
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        if (hdr_eth == nullptr) {
+        if (packet->hdr_eth == nullptr) {
             _ND_LOG_DISCARD(tag.c_str(),
               "layer-2 + IP length is beyond capture length");
         }
         else {
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "layer-2 + IP length is beyond capture length", hdr_eth);
+              "layer-2 + IP length is beyond capture length", packet->hdr_eth);
         }
 #endif
     }
 
-    hdr_ip = reinterpret_cast<const struct ip *>(
+    packet->hdr_ip= reinterpret_cast<const struct ip *>(
       &packet->data[l2_len]);
 
-    flow.ip_version = hdr_ip->ip_v;
-    flow.ip_dscp = (hdr_ip->ip_tos & 0xfc) >> 2;
+    flow.ip_version = packet->hdr_ip->ip_v;
+    flow.ip_dscp = (packet->hdr_ip->ip_tos & 0xfc) >> 2;
 
     if (flow.ip_version == 4) {
         if (type == 0) type = ETHERTYPE_IP;
 
-        l3_len = ((uint16_t)hdr_ip->ip_hl * 4);
-        l4_len = ntohs(hdr_ip->ip_len) - l3_len;
-        flow.ip_protocol = hdr_ip->ip_p;
-        l3 = reinterpret_cast<const uint8_t *>(hdr_ip);
+        l3_len = ((uint16_t)packet->hdr_ip->ip_hl * 4);
+        l4_len = ntohs(packet->hdr_ip->ip_len) - l3_len;
+        flow.ip_protocol = packet->hdr_ip->ip_p;
+        l3 = reinterpret_cast<const uint8_t *>(packet->hdr_ip);
 
         if (packet->caplen >= l2_len)
-            frag_off = ntohs(hdr_ip->ip_off);
+            frag_off = ntohs(packet->hdr_ip->ip_off);
 
         if ((unsigned)(packet->caplen - l2_len) < sizeof(struct ip))
         {
@@ -649,7 +628,7 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "IP header too small", hdr_eth);
+              "IP header too small", packet->hdr_eth);
 #endif
             return packet;
         }
@@ -661,7 +640,7 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "fragmented IP, offset: 0x3fff\n", hdr_eth);
+              "fragmented IP, offset: 0x3fff\n", packet->hdr_eth);
 #endif
             return packet;
         }
@@ -673,7 +652,7 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "fragmented IP, offset: 0x1fff\n", hdr_eth);
+              "fragmented IP, offset: 0x1fff\n", packet->hdr_eth);
 #endif
             return packet;
         }
@@ -692,24 +671,24 @@ nd_process_ip:
         }
 
         addr_cmp = memcmp(
-          (const uint8_t *)_ND_ADDROFF(hdr_ip, struct ip, ip_src),
-          (const uint8_t *)_ND_ADDROFF(hdr_ip, struct ip, ip_dst),
+          (const uint8_t *)_ND_ADDROFF(packet->hdr_ip, struct ip, ip_src),
+          (const uint8_t *)_ND_ADDROFF(packet->hdr_ip, struct ip, ip_dst),
           sizeof(struct in_addr));
 
         if (addr_cmp < 0) {
             ndAddr::Create(flow.lower_addr,
-              (const struct in_addr *)_ND_ADDROFF(hdr_ip,
+              (const struct in_addr *)_ND_ADDROFF(packet->hdr_ip,
                 struct ip, ip_src));
             ndAddr::Create(flow.upper_addr,
-              (const struct in_addr *)_ND_ADDROFF(hdr_ip,
+              (const struct in_addr *)_ND_ADDROFF(packet->hdr_ip,
                 struct ip, ip_dst));
         }
         else {
             ndAddr::Create(flow.lower_addr,
-              (const struct in_addr *)_ND_ADDROFF(hdr_ip,
+              (const struct in_addr *)_ND_ADDROFF(packet->hdr_ip,
                 struct ip, ip_dst));
             ndAddr::Create(flow.upper_addr,
-              (const struct in_addr *)_ND_ADDROFF(hdr_ip,
+              (const struct in_addr *)_ND_ADDROFF(packet->hdr_ip,
                 struct ip, ip_src));
         }
 
@@ -718,14 +697,14 @@ nd_process_ip:
     else if (flow.ip_version == 6) {
         if (type == 0) type = ETHERTYPE_IPV6;
 
-        hdr_ip6 = reinterpret_cast<const struct ip6_hdr *>(
+        packet->hdr_ip6 = reinterpret_cast<const struct ip6_hdr *>(
           &packet->data[l2_len]);
 
-        l3 = reinterpret_cast<const uint8_t *>(hdr_ip6);
+        l3 = reinterpret_cast<const uint8_t *>(packet->hdr_ip6);
         l3_len = sizeof(struct ip6_hdr);
         l4 = reinterpret_cast<const uint8_t *>(l3 + l3_len);
-        l4_len = ntohs(hdr_ip6->ip6_ctlun.ip6_un1.ip6_un1_plen);
-        flow.ip_protocol = hdr_ip6->ip6_ctlun.ip6_un1.ip6_un1_nxt;
+        l4_len = ntohs(packet->hdr_ip6->ip6_ctlun.ip6_un1.ip6_un1_plen);
+        flow.ip_protocol = packet->hdr_ip6->ip6_ctlun.ip6_un1.ip6_un1_nxt;
 
         if (ndpi_handle_ipv6_extension_headers(l3_len, &l4,
               &l4_len, &flow.ip_protocol))
@@ -734,18 +713,18 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "error walking IPv6 extensions", hdr_eth);
+              "error walking IPv6 extensions", packet->hdr_eth);
 #endif
             return packet;
         }
 
         int i = 0;
-        if (memcmp(&hdr_ip6->ip6_src, &hdr_ip6->ip6_dst,
+        if (memcmp(&packet->hdr_ip6->ip6_src, &packet->hdr_ip6->ip6_dst,
               sizeof(struct in6_addr)))
         {
             do {
-                addr_cmp = memcmp(&hdr_ip6->ip6_src.s6_addr32[i],
-                  &hdr_ip6->ip6_dst.s6_addr32[i],
+                addr_cmp = memcmp(&packet->hdr_ip6->ip6_src.s6_addr32[i],
+                  &packet->hdr_ip6->ip6_dst.s6_addr32[i],
                   sizeof(uint32_t));
                 i++;
             }
@@ -754,18 +733,18 @@ nd_process_ip:
 
         if (addr_cmp < 0) {
             ndAddr::Create(flow.lower_addr,
-              (const struct in6_addr *)_ND_ADDROFF(hdr_ip6,
+              (const struct in6_addr *)_ND_ADDROFF(packet->hdr_ip6,
                 struct ip6_hdr, ip6_src));
             ndAddr::Create(flow.upper_addr,
-              (const struct in6_addr *)_ND_ADDROFF(hdr_ip6,
+              (const struct in6_addr *)_ND_ADDROFF(packet->hdr_ip6,
                 struct ip6_hdr, ip6_dst));
         }
         else {
             ndAddr::Create(flow.lower_addr,
-              (const struct in6_addr *)_ND_ADDROFF(hdr_ip6,
+              (const struct in6_addr *)_ND_ADDROFF(packet->hdr_ip6,
                 struct ip6_hdr, ip6_dst));
             ndAddr::Create(flow.upper_addr,
-              (const struct in6_addr *)_ND_ADDROFF(hdr_ip6,
+              (const struct in6_addr *)_ND_ADDROFF(packet->hdr_ip6,
                 struct ip6_hdr, ip6_src));
         }
     }
@@ -776,7 +755,7 @@ nd_process_ip:
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
         _ND_LOG_DISCARD_ETHER(tag.c_str(),
-          "invalid IP protocol version", hdr_eth);
+          "invalid IP protocol version", packet->hdr_eth);
 #endif
         return packet;
     }
@@ -787,10 +766,10 @@ nd_process_ip:
             // Assign upper/lower MACs for all by NFQ capture sources...
             ndAddr::Create(flow.lower_mac,
               (addr_cmp < 0) ?
-                hdr_eth->ether_shost : hdr_eth->ether_dhost, ETH_ALEN);
+                packet->hdr_eth->ether_shost : packet->hdr_eth->ether_dhost, ETH_ALEN);
             ndAddr::Create(flow.upper_mac,
               (addr_cmp < 0) ?
-                hdr_eth->ether_dhost : hdr_eth->ether_shost, ETH_ALEN);
+                packet->hdr_eth->ether_dhost : packet->hdr_eth->ether_shost, ETH_ALEN);
         }
         else {
             // NFQ: If we have a source MAC, use it.
@@ -798,7 +777,7 @@ nd_process_ip:
                 ndPacket::StatusFlags::NFQ_HWADDR_SRC)) {
                 ndAddr::Create(
                     (addr_cmp < 0) ? flow.lower_mac : flow.upper_mac,
-                    hdr_eth->ether_shost, ETH_ALEN);
+                    packet->hdr_eth->ether_shost, ETH_ALEN);
             }
             else {
                 // No source MAC, try to find one by looking up the IP in
@@ -818,7 +797,7 @@ nd_process_ip:
                 ndPacket::StatusFlags::NFQ_HWADDR_DST)) {
                 ndAddr::Create(
                     (addr_cmp < 0) ? flow.upper_mac : flow.lower_mac,
-                    hdr_eth->ether_dhost, ETH_ALEN);
+                    packet->hdr_eth->ether_dhost, ETH_ALEN);
             }
 
             // Now try to refine it by looking up the destination IP in
@@ -855,17 +834,17 @@ nd_process_ip:
 #ifdef _ND_LOG_PKT_DISCARD
         _ND_LOG_DISCARD_ETHER(tag.c_str(),
           "layer-2 + layer-3 + layer-4 length is beyond capture length",
-          hdr_eth);
+          packet->hdr_eth);
 #endif
         return packet;
     }
 
 #if _ND_DISSECT_GTP
     if (l4_len > 8 && flow.ip_protocol == IPPROTO_UDP) {
-        hdr_udp = reinterpret_cast<const struct udphdr *>(l4);
+        packet->hdr_udp = reinterpret_cast<const struct udphdr *>(l4);
 
-        if (ntohs(hdr_udp->uh_sport) == _ND_GTP_U_PORT ||
-          ntohs(hdr_udp->uh_dport) == _ND_GTP_U_PORT)
+        if (ntohs(packet->hdr_udp->uh_sport) == _ND_GTP_U_PORT ||
+          ntohs(packet->hdr_udp->uh_dport) == _ND_GTP_U_PORT)
         {
             hdr_gtpv1 = reinterpret_cast< const struct nd_gtpv1_header_t *>(
               l4 + sizeof(struct udphdr));
@@ -928,54 +907,54 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "layer-4 length is too small for TCP header", hdr_eth);
+              "layer-4 length is too small for TCP header", packet->hdr_eth);
 #endif
             return packet;
         }
         else {
-            hdr_tcp = reinterpret_cast<const struct tcphdr *>(l4);
+            packet->hdr_tcp = reinterpret_cast<const struct tcphdr *>(l4);
 #ifdef _ND_LOG_PKT_TCP_FLAGS
             nd_dprintf("%s: TCP flags: %c%c%c%c%c%c\n",
-              tag.c_str(), (hdr_tcp->th_flags & TH_FIN) ? 'f' : '-',
-              (hdr_tcp->th_flags & TH_SYN) ? 's' : '-',
-              (hdr_tcp->th_flags & TH_RST) ? 'r' : '-',
-              (hdr_tcp->th_flags & TH_PUSH) ? 'p' : '-',
-              (hdr_tcp->th_flags & TH_ACK) ? 'a' : '-',
-              (hdr_tcp->th_flags & TH_URG) ? 'u' : '-');
+              tag.c_str(), (packet->hdr_tcp->th_flags & TH_FIN) ? 'f' : '-',
+              (packet->hdr_tcp->th_flags & TH_SYN) ? 's' : '-',
+              (packet->hdr_tcp->th_flags & TH_RST) ? 'r' : '-',
+              (packet->hdr_tcp->th_flags & TH_PUSH) ? 'p' : '-',
+              (packet->hdr_tcp->th_flags & TH_ACK) ? 'a' : '-',
+              (packet->hdr_tcp->th_flags & TH_URG) ? 'u' : '-');
 #endif
-            uint16_t hdr_size = hdr_tcp->th_off * 4;
+            uint16_t hdr_size = packet->hdr_tcp->th_off * 4;
 
             if (hdr_size < 20 || hdr_size > l4_len) {
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
                 _ND_LOG_DISCARD_ETHER(tag.c_str(),
-                  "unexpected TCP payload length", hdr_eth);
+                  "unexpected TCP payload length", packet->hdr_eth);
 #endif
                 return packet;
             }
 
             if (addr_cmp < 0) {
-                flow.lower_addr.SetPort(hdr_tcp->th_sport);
-                flow.upper_addr.SetPort(hdr_tcp->th_dport);
+                flow.lower_addr.SetPort(packet->hdr_tcp->th_sport);
+                flow.upper_addr.SetPort(packet->hdr_tcp->th_dport);
             }
             else if (addr_cmp > 0) {
-                flow.lower_addr.SetPort(hdr_tcp->th_dport);
-                flow.upper_addr.SetPort(hdr_tcp->th_sport);
+                flow.lower_addr.SetPort(packet->hdr_tcp->th_dport);
+                flow.upper_addr.SetPort(packet->hdr_tcp->th_sport);
             }
             else {
-                if (hdr_tcp->th_sport < hdr_tcp->th_dport) {
-                    flow.lower_addr.SetPort(hdr_tcp->th_sport);
-                    flow.upper_addr.SetPort(hdr_tcp->th_dport);
+                if (packet->hdr_tcp->th_sport < packet->hdr_tcp->th_dport) {
+                    flow.lower_addr.SetPort(packet->hdr_tcp->th_sport);
+                    flow.upper_addr.SetPort(packet->hdr_tcp->th_dport);
                 }
                 else {
-                    flow.lower_addr.SetPort(hdr_tcp->th_dport);
-                    flow.upper_addr.SetPort(hdr_tcp->th_sport);
+                    flow.lower_addr.SetPort(packet->hdr_tcp->th_dport);
+                    flow.upper_addr.SetPort(packet->hdr_tcp->th_sport);
                 }
             }
 
             pkt = reinterpret_cast<const uint8_t *>(
-              l4 + (hdr_tcp->th_off * 4));
+              l4 + (packet->hdr_tcp->th_off * 4));
             pkt_len = l4_len - hdr_size;
         }
 
@@ -989,45 +968,45 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "layer-4 length is too small for UDP header", hdr_eth);
+              "layer-4 length is too small for UDP header", packet->hdr_eth);
 #endif
             return packet;
         }
 
-        hdr_udp = reinterpret_cast<const struct udphdr *>(l4);
+        packet->hdr_udp = reinterpret_cast<const struct udphdr *>(l4);
 
         if (addr_cmp < 0) {
-            flow.lower_addr.SetPort(hdr_udp->uh_sport);
-            flow.upper_addr.SetPort(hdr_udp->uh_dport);
+            flow.lower_addr.SetPort(packet->hdr_udp->uh_sport);
+            flow.upper_addr.SetPort(packet->hdr_udp->uh_dport);
         }
         else if (addr_cmp > 0) {
-            flow.lower_addr.SetPort(hdr_udp->uh_dport);
-            flow.upper_addr.SetPort(hdr_udp->uh_sport);
+            flow.lower_addr.SetPort(packet->hdr_udp->uh_dport);
+            flow.upper_addr.SetPort(packet->hdr_udp->uh_sport);
         }
         else {
-            if (hdr_udp->uh_sport < hdr_udp->uh_dport) {
-                flow.lower_addr.SetPort(hdr_udp->uh_sport);
-                flow.upper_addr.SetPort(hdr_udp->uh_dport);
+            if (packet->hdr_udp->uh_sport < packet->hdr_udp->uh_dport) {
+                flow.lower_addr.SetPort(packet->hdr_udp->uh_sport);
+                flow.upper_addr.SetPort(packet->hdr_udp->uh_dport);
             }
             else {
-                flow.lower_addr.SetPort(hdr_udp->uh_dport);
-                flow.upper_addr.SetPort(hdr_udp->uh_sport);
+                flow.lower_addr.SetPort(packet->hdr_udp->uh_dport);
+                flow.upper_addr.SetPort(packet->hdr_udp->uh_sport);
             }
         }
 
-        if (ntohs(hdr_udp->uh_ulen) != l4_len) {
+        if (ntohs(packet->hdr_udp->uh_ulen) != l4_len) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
             _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "unexpected UDP data length", hdr_eth);
+              "unexpected UDP data length", packet->hdr_eth);
 #endif
             return packet;
         }
 
         pkt = reinterpret_cast<const uint8_t *>(
           l4 + sizeof(struct udphdr));
-        pkt_len = ntohs(hdr_udp->uh_ulen) - sizeof(struct udphdr);
+        pkt_len = ntohs(packet->hdr_udp->uh_ulen) - sizeof(struct udphdr);
 
         break;
 
@@ -1102,7 +1081,7 @@ nd_process_ip:
 
         // A new TCP flow must only have SYN+ACK bits set
         if (ndGC_SYN_SCAN_PROTECTION && flow.ip_protocol == IPPROTO_TCP &&
-          hdr_tcp->th_flags != (TH_SYN | TH_ACK))
+          packet->hdr_tcp->th_flags != (TH_SYN | TH_ACK))
         {
 #ifdef _ND_LOG_PKT_DISCARD_TCP
             _ND_LOG_DISCARD(tag.c_str(),
@@ -1180,8 +1159,8 @@ nd_process_ip:
         // Try to refine flow origin for TCP flows using SYN/ACK
         // flags
         if (nf->ip_protocol == IPPROTO_TCP) {
-            if ((hdr_tcp->th_flags & TH_SYN)) {
-                if (! (hdr_tcp->th_flags & TH_ACK)) {
+            if ((packet->hdr_tcp->th_flags & TH_SYN)) {
+                if (! (packet->hdr_tcp->th_flags & TH_ACK)) {
                     if (addr_cmp < 0)
                         nf->origin = ndFlow::Origin::LOWER;
                     else nf->origin = ndFlow::Origin::UPPER;
@@ -1249,8 +1228,8 @@ nd_process_ip:
     nf->ts_last_seen = ts_pkt;
 
     if (nf->ip_protocol == IPPROTO_TCP) {
-        if (hdr_tcp->th_seq <= nf->tcp.last_seq) {
-            nf->tcp.last_seq = hdr_tcp->th_seq;
+        if (packet->hdr_tcp->th_seq <= nf->tcp.last_seq) {
+            nf->tcp.last_seq = packet->hdr_tcp->th_seq;
 #ifdef _ND_ENABLE_EXTENDED_STATS
             nf->stats.tcp_seq_errors++;
             // TODO: tcp_retrans detection
@@ -1258,10 +1237,10 @@ nd_process_ip:
             stats.pkt.tcp_seq_errors++;
         }
 
-        if ((hdr_tcp->th_flags & TH_FIN) &&
-          (hdr_tcp->th_flags & TH_ACK))
+        if ((packet->hdr_tcp->th_flags & TH_FIN) &&
+          (packet->hdr_tcp->th_flags & TH_ACK))
             nf->tcp.fin_ack++;
-        if (hdr_tcp->th_flags & TH_RST) {
+        if (packet->hdr_tcp->th_flags & TH_RST) {
 #ifdef _ND_ENABLE_EXTENDED_STATS
             nf->stats.tcp_resets++;
 #endif
@@ -1311,7 +1290,8 @@ nd_process_ip:
 
         if (idpi != threads_dpi.end()) {
             idpi->second->QueuePacket(nf, packet,
-              (nf->ip_version == 4) ? (uint8_t *)hdr_ip : (uint8_t *)hdr_ip6,
+              (nf->ip_version == 4) ?
+                (uint8_t *)packet->hdr_ip : (uint8_t *)packet->hdr_ip6,
               packet->caplen - l2_len);
 
             // Hand over packet ownership to the DPI queue
