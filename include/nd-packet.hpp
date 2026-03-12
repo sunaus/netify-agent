@@ -93,12 +93,22 @@ protected:
     uint16_t length;
     uint16_t caplen;
     const uint8_t *data = { nullptr };
-    const struct ether_header *hdr_eth = { nullptr };
-    const struct sll_header *hdr_sll = { nullptr };
-    const struct ip *hdr_ip = { nullptr };
-    const struct ip6_hdr *hdr_ip6 = { nullptr };
-    const struct tcphdr *hdr_tcp = { nullptr };
-    const struct udphdr *hdr_udp = { nullptr };
+
+    union {
+        const struct ether_header *eth;
+        const struct sll_header *sll;
+    } l2 = { nullptr };
+
+    union {
+        const struct ip *ip4;
+        const struct ip6_hdr *ip6;
+    } l3 = { nullptr };
+
+    union {
+        const struct tcphdr *tcp;
+        const struct udphdr *udp;
+    } l4 = { nullptr };
+
     time_t tv_sec;
     time_t tv_usec;
 #if defined(_ND_ENABLE_NFQUEUE)
