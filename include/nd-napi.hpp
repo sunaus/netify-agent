@@ -25,6 +25,7 @@
 #include <ctime>
 #include <map>
 #include <mutex>
+
 #include <nlohmann/json.hpp>
 
 #include "nd-config.hpp"
@@ -36,7 +37,7 @@ class ndNetifyApiManager;
 class ndNetifyApiThread : public ndThread
 {
 public:
-    ndNetifyApiThread();
+    ndNetifyApiThread(const std::string &tag);
     virtual ~ndNetifyApiThread();
 
     virtual void *Entry(void) = 0;
@@ -77,7 +78,7 @@ protected:
 class ndNetifyApiBootstrap : public ndNetifyApiThread
 {
 public:
-    ndNetifyApiBootstrap() : ndNetifyApiThread() { }
+    ndNetifyApiBootstrap() : ndNetifyApiThread("api-bootstrap") { }
 
     virtual void *Entry(void);
 
@@ -99,7 +100,6 @@ public:
 protected:
     friend class ndNetifyApiManager;
 
-    std::string tag;
     std::string token;
     std::string url;
     ndDigest digest = { { 0 } };

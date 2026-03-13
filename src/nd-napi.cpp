@@ -160,8 +160,8 @@ ndNetifyApiCurl::~ndNetifyApiCurl() {
     }
 }
 
-ndNetifyApiThread::ndNetifyApiThread()
-  : ndThread("netify-api") {
+ndNetifyApiThread::ndNetifyApiThread(const string &tag)
+  : ndThread(tag) {
     curl_private = static_cast<void *>(new ndNetifyApiCurl);
 
     curl_easy_setopt(ndCurl->ch, CURLOPT_WRITEFUNCTION,
@@ -370,7 +370,7 @@ void *ndNetifyApiBootstrap::Entry(void) {
 
 ndNetifyApiDownload::ndNetifyApiDownload(const string &token,
   const string &url, const string &filename)
-  : ndNetifyApiThread(), tag("api-download"), token(token),
+  : ndNetifyApiThread("api-download"), token(token),
     url(url) {
     if (! filename.empty()) {
         nd_sha1_file(filename, digest);
