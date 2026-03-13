@@ -1309,6 +1309,7 @@ void ndGlobalConfig::UpdatePaths(void) {
     path_proto_config = path_state_persistent + "/" + ND_CONF_PROTO_BASE;
 
     path_cat_config = path_state_persistent + "/" + ND_CONF_CAT_BASE;
+    path_cat_user_config = path_state_persistent + "/" + ND_CONF_CAT_USER_BASE;
 
     path_legacy_config = path_state_persistent + "/" +
       ND_CONF_LEGACY_BASE;
@@ -1345,6 +1346,8 @@ void ndGlobalConfig::UpdateConfigVars(void) {
       make_pair("${path_proto_config}", path_proto_config));
     conf_vars.insert(
       make_pair("${path_category_config}", path_cat_config));
+    conf_vars.insert(
+      make_pair("${path_category_custom_config}", path_cat_user_config));
     conf_vars.insert(make_pair("${path_plugins}", path_plugins));
     conf_vars.insert(
       make_pair("${path_plugin_libdir}", path_plugin_libdir));

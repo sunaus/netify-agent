@@ -2418,6 +2418,7 @@ bool ndInstance::Reload(bool broadcast, bool silent) {
         result = apps.LoadLegacy(ndGC.path_legacy_config);
 
     result = categories.Load(ndGC.path_cat_config);
+    result = categories.LoadCustom(ndGC.path_cat_user_config);
 
     if (ndGC_DOTD_CATEGORIES) {
         result = categories.LoadDotDirectory(ndGC.path_categories);

@@ -299,6 +299,7 @@ public:
     std::string path_agent_status = { ND_AGENT_STATUS_PATH };
     std::string path_app_config = { ND_CONF_APP_PATH };
     std::string path_cat_config = { ND_CONF_CAT_PATH };
+    std::string path_cat_user_config = { ND_CONF_CAT_USER_PATH };
     std::string path_categories = { ND_CATEGORIES_PATH };
     std::string path_config = { ND_CONF_FILE_NAME };
     std::string path_debug_log;

@@ -41,11 +41,12 @@ public:
     virtual ~ndCategories();
 
     bool Load(const std::string &filename);
-    bool Load(Type type, nlohmann::json &jdata);
-    bool Save(const std::string &filename);
-    void Dump(Type type = Type::MAX);
-
+    bool LoadCustom(const std::string &filename);
     bool LoadDotDirectory(const std::string &path);
+
+    bool Save(const std::string &filename);
+
+    void Dump(Type type = Type::MAX);
 
     bool IsMember(Type type, Id cat_id, unsigned id);
     bool IsMember(Type type, const std::string &cat_tag, unsigned id);
@@ -72,6 +73,7 @@ protected:
     using RegExprs = std::unordered_map<Id, std::regex>;
     RegExprs rxps;
 
+    bool Load(Type type, nlohmann::json &jdata);
     bool LoadLegacy(const nlohmann::json &jdata);
 
     void ResetCategories(void);
