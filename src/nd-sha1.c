@@ -31,13 +31,6 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_STDALIGN_H
-#include <stdalign.h>
-#endif
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "nd-sha1.h"
 
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__

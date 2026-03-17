@@ -25,6 +25,13 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_STDALIGN_H
+#include <stdalign.h>
+#endif
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define SHA1_DIGEST_LENGTH 20
 
 /* Structure to save state of computation between the single
