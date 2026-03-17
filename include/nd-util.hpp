@@ -531,6 +531,23 @@ public:
           insert_hit_pct, lookup_total, lookup_hit_pct);
     }
 
+    void Prune(time_t ttl) {
+        std::unique_lock<std::mutex> lg(lock, std::defer_lock);
+
+        if (lockable) lg.lock();
+
+        time_t now = time(nullptr);
+
+        for (auto it = kvmap.begin(); it != kvmap.end(); ) {
+            if (now - it->second.timestamp >= ttl) {
+                entries.erase(it->second.it);
+                it = kvmap.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+
 protected:
     void CacheInsert(const K &key, const V &value,
       bool update = false) {
@@ -543,7 +560,7 @@ protected:
             stats.insert_miss++;
 
             entries.push_front(key);
-            kvmap[key] = { value, entries.begin() };
+            kvmap[key] = { value, time(nullptr), entries.begin() };
 
             while (kvmap.size() > max_size) {
                 kvmap.erase(entries.back());
@@ -553,11 +570,12 @@ protected:
         else {
             stats.insert_hit++;
 
-            entries.erase(i->second.second);
+            entries.erase(i->second.it);
             entries.push_front(key);
 
-            i->second.second = entries.begin();
-            if (update) i->second.first = value;
+            i->second.it = entries.begin();
+            i->second.timestamp = time(nullptr);
+            if (update) i->second.value = value;
         }
     }
 
@@ -574,12 +592,13 @@ protected:
 
         stats.lookup_hit++;
 
-        entries.erase(i->second.second);
+        entries.erase(i->second.it);
         entries.push_front(key);
 
-        i->second.second = entries.begin();
+        i->second.it = entries.begin();
+        i->second.timestamp = time(nullptr);
 
-        value = i->second.first;
+        value = i->second.value;
 
         return true;
     }
@@ -589,8 +608,14 @@ protected:
 
     mutable std::mutex lock;
 
+    struct CacheEntry {
+        V value;
+        time_t timestamp;
+        typename std::list<K>::iterator it;
+    };
+
     std::list<K> entries;
-    std::unordered_map<K, std::pair<V, typename std::list<K>::iterator>> kvmap;
+    std::unordered_map<K, CacheEntry> kvmap;
 };
 
 struct ndEnumHasher {

@@ -191,7 +191,7 @@ void ndFlowHashCache::Save(void) const {
         ndDigestDynamic digest_bin(i.first.begin(), i.first.end());
         nd_sha1_to_string(digest_bin, digest);
 
-        ofs << digest << "," << i.second.first << endl;
+        ofs << digest << "," << i.second.value << endl;
 
         if (ofs.good()) saved++;
         else {
