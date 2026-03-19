@@ -707,15 +707,13 @@ bool ndGlobalConfig::LoadInterfaces(const string &filename) {
             switch (rc) {
             case -1:
                 fprintf(stderr,
-                  "Error opening interface configuration "
-                  "file: %s: %s\n",
+                  "Error opening interface configuration file: %s: %s\n",
                   file.c_str(), strerror(errno));
                 return false;
             case 0: break;
             default:
                 fprintf(stderr,
-                  "Error while parsing line #%d of "
-                  "interface file: %s\n",
+                  "Error while parsing line #%d of interface file: %s\n",
                   rc, file.c_str());
                 return false;
             }
@@ -744,8 +742,7 @@ bool ndGlobalConfig::AddInterface(const string &iface,
         if (ndCT_TYPE(capture_type.flags) == ndCaptureType::NONE)
         {
             fprintf(stderr,
-              "WARNING: capture type not set for "
-              "interface: %s\n",
+              "WARNING: capture type not set for interface: %s\n",
               iface.c_str());
             return false;
         }
@@ -853,7 +850,8 @@ bool ndGlobalConfig::LoadInterfaces(void *config_reader) {
         static const char *key = "capture-interface-";
         static const size_t key_len = strlen(key);
 
-        if (strncasecmp(s.c_str(), key, key_len)) continue;
+        if (! r->GetBoolean(s, "enable", true) ||
+          strncasecmp(s.c_str(), key, key_len)) continue;
 
         size_t p = strlen(key) >= s.size() ?
           string::npos :
