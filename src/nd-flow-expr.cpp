@@ -7423,9 +7423,9 @@ yyreduce:
                 break;
             }
 
-            if ((p = search.find_first_of(".")) != string::npos) {
-                if (strncasecmp(search.substr(0, p).c_str(),
-                    tag.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+            if ((p = tag.find_first_of(".")) != string::npos) {
+                if (strncasecmp(search.c_str(),
+                    tag.substr(0, p).c_str(), _NDFP_MAX_BUFLEN) == 0) {
                     _NDFP_result = ((yyval.bool_result) = true);
                     break;
                 }
@@ -7456,9 +7456,9 @@ yyreduce:
                 break;
             }
 
-            if ((p = search.find_first_of(".")) != string::npos) {
-                if (strncasecmp(search.substr(0, p).c_str(),
-                    tag.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+            if ((p = tag.find_first_of(".")) != string::npos) {
+                if (strncasecmp(search.c_str(),
+                    tag.substr(0, p).c_str(), _NDFP_MAX_BUFLEN) == 0) {
                     _NDFP_result = ((yyval.bool_result) = false);
                     break;
                 }
