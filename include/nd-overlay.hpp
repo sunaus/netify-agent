@@ -49,6 +49,10 @@ protected:
 
     Apps apps;
 
+    using Categories = std::unordered_set<ndCategories::Id>;
+
+    Categories app_categories;
+
     using Protos = std::unordered_set<ndProto::Id, ndEnumHasher>;
 
     Protos protos;

@@ -37,6 +37,9 @@ void Criteria::Load(const nlohmann::json &jconfig) {
     auto ji = jconfig.find("applications");
     if (ji != jconfig.end()) apps = ji->get<Apps>();
 
+    ji = jconfig.find("application_categories");
+    if (ji != jconfig.end()) app_categories = ji->get<Categories>();
+
     ji = jconfig.find("protocols");
     if (ji != jconfig.end()) protos = ji->get<Protos>();
 
@@ -56,6 +59,9 @@ void Criteria::Load(const nlohmann::json &jconfig) {
 bool Criteria::operator==(const ndFlow::Ptr &flow) const {
     if (! apps.empty() &&
       apps.find(flow->detected_application) == apps.end()) return false;
+
+    if (! app_categories.empty() &&
+      app_categories.find(flow->category.application) == app_categories.end()) return false;
 
     if (! protos.empty() &&
       protos.find(flow->detected_protocol) == protos.end()) return false;
