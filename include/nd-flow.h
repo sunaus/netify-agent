@@ -263,6 +263,7 @@ public:
 
     ndFlow(ndInterface &iface);
     ndFlow(const ndFlow &flow);
+    ndFlow(const ndFlow *flow);
     virtual ~ndFlow();
 
     void hash(const string &device, bool hash_mdata = false,

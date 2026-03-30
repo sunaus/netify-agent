@@ -142,6 +142,44 @@ ndFlow::ndFlow(const ndFlow &flow)
     memset(digest_mdata, 0, SHA1_DIGEST_LENGTH);
 }
 
+ndFlow::ndFlow(const ndFlow *flow)
+    : iface(flow->iface), dpi_thread_id(flow->dpi_thread_id),
+    ip_version(flow->ip_version), ip_protocol(flow->ip_protocol),
+    vlan_id(flow->vlan_id), tcp_last_seq(flow->tcp_last_seq),
+    ts_first_seen(flow->ts_first_seen), ts_first_update(flow->ts_first_update),
+    ts_last_seen(flow->ts_last_seen),
+    lower_map(flow->lower_map), other_type(flow->other_type),
+    lower_mac(flow->lower_mac), upper_mac(flow->upper_mac),
+    lower_addr(flow->lower_addr), upper_addr(flow->upper_addr),
+    tunnel_type(flow->tunnel_type),
+    lower_bytes(flow->lower_bytes), upper_bytes(flow->upper_bytes), total_bytes(flow->total_bytes),
+    lower_packets(flow->lower_packets), upper_packets(flow->upper_packets), total_packets(flow->total_packets),
+    detection_packets(flow->detection_packets.load()),
+    detected_protocol(flow->detected_protocol),
+    detected_application(flow->detected_application),
+    detected_protocol_name(NULL),
+    detected_application_name(NULL),
+    category(flow->category),
+    ndpi_flow(NULL), http{},
+    privacy_mask(flow->privacy_mask), origin(flow->origin), direction(flow->direction),
+#if defined(_ND_USE_CONNTRACK) && defined(_ND_WITH_CONNTRACK_MDATA)
+    ct_id(flow->ct_id), ct_mark(flow->ct_mark),
+#endif
+    lower_type(flow->lower_type), upper_type(flow->upper_type),
+    flags{}, tickets(0), gtp(flow->gtp),
+    risks{}, ndpi_risk_score(flow->ndpi_risk_score), ndpi_risk_score_client(flow->ndpi_risk_score_client), ndpi_risk_score_server(flow->ndpi_risk_score_server)
+{
+    if (flow->detected_protocol_name != NULL)
+        detected_protocol_name = strdup(flow->detected_protocol_name);
+    if (flow->detected_application_name != NULL)
+        detected_application_name = strdup(flow->detected_application_name);
+    strcpy(dns_host_name, flow->dns_host_name);
+    strcpy(host_server_name, flow->host_server_name);
+    strcpy(capture_filename, flow->capture_filename);
+    memcpy(digest_lower, flow->digest_lower, SHA1_DIGEST_LENGTH);
+    memset(digest_mdata, 0, SHA1_DIGEST_LENGTH);
+}
+
 ndFlow::~ndFlow()
 {
     release();

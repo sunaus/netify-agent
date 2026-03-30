@@ -20,6 +20,61 @@
 #define _ND_ADDR_BITSv4     32
 #define _ND_ADDR_BITSv6     128
 
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <map>
+#include <stdexcept>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <atomic>
+#include <regex>
+#include <mutex>
+#include <bitset>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
+#include <ifaddrs.h>
+
+#include <arpa/inet.h>
+
+#define __FAVOR_BSD 1
+#include <netinet/in.h>
+
+#include <net/if.h>
+#include <net/if_arp.h>
+#include <linux/if_packet.h>
+
+#include <pcap/pcap.h>
+
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
+#include <radix/radix_tree.hpp>
+
+using namespace std;
+
+#include "netifyd.h"
+
+#include "nd-config.h"
+#include "nd-ndpi.h"
+#include "nd-risks.h"
+#include "nd-serializer.h"
+#include "nd-packet.h"
+#include "nd-json.h"
+#include "nd-ndpi.h"
+#include "nd-sha1.h"
+#include "nd-util.h"
+#include "nd-addr.h"
+
 class ndAddr
 {
 public:
