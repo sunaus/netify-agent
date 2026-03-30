@@ -146,32 +146,34 @@ typedef void* yyscan_t;
     bool bool_result;
 }
 
-%token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_IP_DSCP FLOW_VLAN_ID FLOW_OTHER_TYPE
-%token FLOW_ANY_MAC FLOW_LOCAL_MAC FLOW_OTHER_MAC FLOW_SRC_MAC FLOW_DST_MAC
-%token FLOW_ANY_IP FLOW_LOCAL_IP FLOW_OTHER_IP FLOW_SRC_IP FLOW_DST_IP
-%token FLOW_ANY_PORT FLOW_LOCAL_PORT FLOW_OTHER_PORT FLOW_SRC_PORT FLOW_DST_PORT
-%token FLOW_TUNNEL_TYPE
-%token FLOW_DETECTION_COMPLETE FLOW_DETECTION_GUESSED
-%token FLOW_DETECTION_INIT FLOW_DETECTION_UPDATED
-%token FLOW_DHC_HIT FLOW_FHC_HIT FLOW_IP_NAT
-%token FLOW_EXPIRING FLOW_EXPIRED FLOW_SOFT_DISSECTOR
-%token FLOW_RISKS FLOW_NDPI_RISK_SCORE FLOW_NDPI_RISK_SCORE_CLIENT FLOW_NDPI_RISK_SCORE_SERVER
-%token FLOW_CATEGORY FLOW_CATEGORY_ID
-%token FLOW_APPLICATION FLOW_APPLICATION_CATEGORY FLOW_APPLICATION_CATEGORY_ID
-%token FLOW_DOMAIN_CATEGORY FLOW_DOMAIN_CATEGORY_ID
-%token FLOW_NETWORK_CATEGORY FLOW_NETWORK_CATEGORY_ID
+%token FLOW_ANY_IP FLOW_ANY_MAC FLOW_ANY_PORT FLOW_APPLICATION
+%token FLOW_APPLICATION_CATEGORY FLOW_APPLICATION_CATEGORY_ID FLOW_CATEGORY
+%token FLOW_CATEGORY_ID
+%token FLOW_CONNTRACK_ID FLOW_CONNTRACK_MARK
+%token FLOW_CONNTRACK_REPLY_DST_IP FLOW_CONNTRACK_REPLY_SRC_IP
+%token FLOW_DETECTED_HOSTNAME FLOW_DETECTION_COMPLETE
+%token FLOW_DETECTION_GUESSED FLOW_DETECTION_INIT FLOW_DETECTION_UPDATED
+%token FLOW_DHC_HIT FLOW_DNS_HOSTNAME FLOW_DOMAIN_CATEGORY
+%token FLOW_DOMAIN_CATEGORY_ID FLOW_DST_IP FLOW_DST_MAC
+%token FLOW_DST_NETWORK_CATEGORY FLOW_DST_NETWORK_CATEGORY_ID FLOW_DST_PORT
+%token FLOW_EXPIRED FLOW_EXPIRING FLOW_FHC_HIT FLOW_IFACE
+%token FLOW_IFACE_NFQ_DST FLOW_IFACE_NFQ_SRC FLOW_IP_DSCP FLOW_IP_NAT
+%token FLOW_IP_PROTO FLOW_IP_VERSION FLOW_LOCAL_IP FLOW_LOCAL_MAC
 %token FLOW_LOCAL_NETWORK_CATEGORY FLOW_LOCAL_NETWORK_CATEGORY_ID
+%token FLOW_LOCAL_PORT FLOW_NDPI_RISK_SCORE FLOW_NDPI_RISK_SCORE_CLIENT
+%token FLOW_NDPI_RISK_SCORE_SERVER FLOW_NETWORK_CATEGORY
+%token FLOW_NETWORK_CATEGORY_ID FLOW_ORIGIN FLOW_OTHER_IP FLOW_OTHER_MAC
 %token FLOW_OTHER_NETWORK_CATEGORY FLOW_OTHER_NETWORK_CATEGORY_ID
-%token FLOW_SRC_NETWORK_CATEGORY FLOW_SRC_NETWORK_CATEGORY_ID
-%token FLOW_DST_NETWORK_CATEGORY FLOW_DST_NETWORK_CATEGORY_ID
-%token FLOW_TAG FLOW_TAG_CATEGORY FLOW_TAG_CATEGORY_ID
-%token FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY FLOW_PROTOCOL_CATEGORY_ID
-%token FLOW_DETECTED_HOSTNAME FLOW_DNS_HOSTNAME FLOW_ORIGIN FLOW_CT_MARK
-%token FLOW_TLS_VERSION FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_JA4
-%token FLOW_IFACE FLOW_IFACE_NFQ_SRC FLOW_IFACE_NFQ_DST
+%token FLOW_OTHER_PORT FLOW_OTHER_TYPE FLOW_PROTOCOL FLOW_PROTOCOL_CATEGORY
+%token FLOW_PROTOCOL_CATEGORY_ID FLOW_RISKS FLOW_SOFT_DISSECTOR FLOW_SRC_IP
+%token FLOW_SRC_MAC FLOW_SRC_NETWORK_CATEGORY FLOW_SRC_NETWORK_CATEGORY_ID
+%token FLOW_SRC_PORT FLOW_TAG FLOW_TAG_CATEGORY FLOW_TAG_CATEGORY_ID
+%token FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_JA4 FLOW_TLS_VERSION
+%token FLOW_TUNNEL_TYPE FLOW_VLAN_ID
 
-%token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED FLOW_OTHER_LOCAL
-%token <us_number> FLOW_OTHER_MULTICAST FLOW_OTHER_BROADCAST FLOW_OTHER_REMOTE
+%token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED
+%token <us_number> FLOW_OTHER_LOCAL FLOW_OTHER_MULTICAST
+%token <us_number> FLOW_OTHER_BROADCAST FLOW_OTHER_REMOTE
 %token <us_number> FLOW_OTHER_ERROR
 
 %token <us_number> FLOW_ORIGIN_LOCAL FLOW_ORIGIN_OTHER FLOW_ORIGIN_UNKNOWN
@@ -180,7 +182,8 @@ typedef void* yyscan_t;
 
 %token <buffer> FLOW_INTEL
 
-%token CMP_EQUAL CMP_NOTEQUAL CMP_GTHANEQUAL CMP_LTHANEQUAL BOOL_AND BOOL_OR
+%token CMP_EQUAL CMP_NOTEQUAL CMP_GTHANEQUAL CMP_LTHANEQUAL
+%token BOOL_AND BOOL_OR
 
 %token VALUE_ADDR_IPMASK
 %token <bool_number> VALUE_TRUE VALUE_FALSE
@@ -195,30 +198,37 @@ typedef void* yyscan_t;
 %type <buffer> value_addr_ip
 %type <us_number> value_tunnel_type
 
-%type <bool_result> expr expr_ip_proto expr_ip_dscp expr_ip_version expr_vlan_id expr_other_type
-%type <bool_result> expr_any_mac expr_local_mac expr_other_mac expr_src_mac expr_dst_mac
-%type <bool_result> expr_any_ip expr_local_ip expr_other_ip expr_src_ip expr_dst_ip
-%type <bool_result> expr_any_port expr_local_port expr_other_port expr_src_port expr_dst_port
-%type <bool_result> expr_tunnel_type
-%type <bool_result> expr_detection_complete expr_detection_guessed
-%type <bool_result> expr_detection_init expr_detection_updated
-%type <bool_result> expr_dhc_hit expr_fhc_hit expr_ip_nat
-%type <bool_result> expr_expiring expr_expired expr_soft_dissector
-%type <bool_result> expr_category expr_category_id
-%type <bool_result> expr_app expr_app_id expr_app_name expr_app_category expr_app_category_id
+%type <bool_result> expr expr_any_ip expr_any_mac expr_any_port expr_app
+%type <bool_result> expr_app_category expr_app_category_id expr_app_id
+%type <bool_result> expr_app_name expr_category expr_category_id
+%type <bool_result> expr_conntrack_reply_src_ip expr_conntrack_reply_dst_ip
+%type <bool_result> expr_conntrack_id expr_conntrack_mark
+%type <bool_result> expr_detected_hostname expr_detection_complete
+%type <bool_result> expr_detection_guessed expr_detection_init
+%type <bool_result> expr_detection_updated expr_dhc_hit expr_dns_hostname
 %type <bool_result> expr_domain_category expr_domain_category_id
+%type <bool_result> expr_dst_ip expr_dst_mac expr_dst_network_category
+%type <bool_result> expr_dst_network_category_id expr_dst_port
+%type <bool_result> expr_expired expr_expiring expr_fhc_hit
+%type <bool_result> expr_iface expr_iface_nfq_dst expr_iface_nfq_src
+%type <bool_result> expr_intel expr_ip_dscp expr_ip_nat expr_ip_proto
+%type <bool_result> expr_ip_version expr_local_ip expr_local_mac
+%type <bool_result> expr_local_network_category
+%type <bool_result> expr_local_network_category_id expr_local_port
 %type <bool_result> expr_network_category expr_network_category_id
-%type <bool_result> expr_local_network_category expr_local_network_category_id
-%type <bool_result> expr_other_network_category expr_other_network_category_id
+%type <bool_result> expr_origin expr_other_ip expr_other_mac
+%type <bool_result> expr_other_network_category
+%type <bool_result> expr_other_network_category_id expr_other_port
+%type <bool_result> expr_other_type expr_proto expr_proto_category
+%type <bool_result> expr_proto_category_id expr_proto_id expr_proto_name
+%type <bool_result> expr_risk_ndpi_score expr_risk_ndpi_score_client
+%type <bool_result> expr_risk_ndpi_score_server expr_risks
+%type <bool_result> expr_soft_dissector expr_src_ip expr_src_mac
 %type <bool_result> expr_src_network_category expr_src_network_category_id
-%type <bool_result> expr_dst_network_category expr_dst_network_category_id
-%type <bool_result> expr_risks expr_risk_ndpi_score expr_risk_ndpi_score_client expr_risk_ndpi_score_server
-%type <bool_result> expr_proto expr_proto_id expr_proto_name expr_proto_category expr_proto_category_id
-%type <bool_result> expr_detected_hostname expr_dns_hostname expr_origin expr_fwmark
-%type <bool_result> expr_tls_version expr_tls_cipher expr_tls_ech expr_tls_ja4
-%type <bool_result> expr_iface expr_iface_nfq_src expr_iface_nfq_dst
-%type <bool_result> expr_intel
-%type <bool_result> expr_tag expr_tag_category expr_tag_category_id
+%type <bool_result> expr_src_port expr_tag expr_tag_category
+%type <bool_result> expr_tag_category_id expr_tls_cipher expr_tls_ech
+%type <bool_result> expr_tls_ja4 expr_tls_version expr_tunnel_type
+%type <bool_result> expr_vlan_id
 
 %%
 
@@ -243,6 +253,8 @@ expr:
     | expr_other_ip
     | expr_src_ip
     | expr_dst_ip
+    | expr_conntrack_reply_src_ip
+    | expr_conntrack_reply_dst_ip
     | expr_any_port
     | expr_local_port
     | expr_other_port
@@ -292,7 +304,8 @@ expr:
     | expr_tls_ech
     | expr_tls_ja4
     | expr_origin
-    | expr_fwmark
+    | expr_conntrack_id
+    | expr_conntrack_mark
     | expr_iface
     | expr_iface_nfq_src
     | expr_iface_nfq_dst
@@ -846,13 +859,15 @@ expr_src_ip:
         _NDFP_result = ($$ = (
             is_addr_equal(_NDFP_src_ip, $3) == true
         ));
-        _NDFP_debugf("Source IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Source IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SRC_IP CMP_NOTEQUAL value_addr_ip {
         _NDFP_result = ($$ = (
             is_addr_equal(_NDFP_src_ip, $3) == false
         ));
-        _NDFP_debugf("Source IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Source IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SRC_IP CMP_EQUAL VALUE_ADDR_TAG {
         string tag($3);
@@ -861,7 +876,8 @@ expr_src_ip:
 
         _NDFP_result = ($$ = (_NDFP_addr_lookup
           .LookupGroupAddress(tag, *_NDFP_src_ip) == true));
-        _NDFP_debugf("Source IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Source IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_SRC_IP CMP_NOTEQUAL VALUE_ADDR_TAG {
         string tag($3);
@@ -870,7 +886,8 @@ expr_src_ip:
 
         _NDFP_result = ($$ = (_NDFP_addr_lookup
           .LookupGroupAddress(tag, *_NDFP_src_ip) == false));
-        _NDFP_debugf("Source IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Source IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -879,13 +896,15 @@ expr_dst_ip:
         _NDFP_result = ($$ = (
             is_addr_equal(_NDFP_dst_ip, $3) == true
         ));
-        _NDFP_debugf("Destination IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Destination IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_DST_IP CMP_NOTEQUAL value_addr_ip {
         _NDFP_result = ($$ = (
             is_addr_equal(_NDFP_dst_ip, $3) == false
         ));
-        _NDFP_debugf("Destination IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Destination IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_DST_IP CMP_EQUAL VALUE_ADDR_TAG {
         string tag($3);
@@ -894,7 +913,8 @@ expr_dst_ip:
 
         _NDFP_result = ($$ = (_NDFP_addr_lookup
           .LookupGroupAddress(tag, *_NDFP_dst_ip) == true));
-        _NDFP_debugf("Destination IP == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Destination IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_DST_IP CMP_NOTEQUAL VALUE_ADDR_TAG {
         string tag($3);
@@ -903,7 +923,114 @@ expr_dst_ip:
 
         _NDFP_result = ($$ = (_NDFP_addr_lookup
           .LookupGroupAddress(tag, *_NDFP_dst_ip) == false));
-        _NDFP_debugf("Destination IP != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("Destination IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_conntrack_reply_src_ip:
+      FLOW_CONNTRACK_REPLY_SRC_IP CMP_EQUAL value_addr_ip {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_ct_reply_src_ip, $3) == true
+        ));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Source IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_CONNTRACK_REPLY_SRC_IP CMP_NOTEQUAL value_addr_ip {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_ct_reply_src_ip, $3) == false
+        ));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Source IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_CONNTRACK_REPLY_SRC_IP CMP_EQUAL VALUE_ADDR_TAG {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_ct_reply_src_ip) == true));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Source IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_CONNTRACK_REPLY_SRC_IP CMP_NOTEQUAL VALUE_ADDR_TAG {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_ct_reply_src_ip) == false));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Source IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    ;
+
+expr_conntrack_reply_dst_ip:
+      FLOW_CONNTRACK_REPLY_DST_IP CMP_EQUAL value_addr_ip {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_ct_reply_dst_ip, $3) == true
+        ));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Destination IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_CONNTRACK_REPLY_DST_IP CMP_NOTEQUAL value_addr_ip {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (
+            is_addr_equal(_NDFP_ct_reply_dst_ip, $3) == false
+        ));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Destination IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_CONNTRACK_REPLY_DST_IP CMP_EQUAL VALUE_ADDR_TAG {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_ct_reply_dst_ip) == true));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Destination IP == %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
+    }
+    | FLOW_CONNTRACK_REPLY_DST_IP CMP_NOTEQUAL VALUE_ADDR_TAG {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != string::npos) tag.erase(p, 1);
+
+        _NDFP_result = ($$ = (_NDFP_addr_lookup
+          .LookupGroupAddress(tag, *_NDFP_ct_reply_dst_ip) == false));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+        _NDFP_debugf("CT Reply Destination IP != %s? %s\n",
+            $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
@@ -2815,67 +2942,134 @@ expr_risk_ndpi_score_server:
     }
     ;
 
-expr_fwmark:
-      FLOW_CT_MARK {
+expr_conntrack_id:
+      FLOW_CONNTRACK_ID {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id != 0));
+        _NDFP_debugf("CT ID set? %s\n", (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    | '!' FLOW_CONNTRACK_ID {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id == 0));
+        _NDFP_debugf("CT ID not set? %s\n", (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    | FLOW_CONNTRACK_ID CMP_EQUAL VALUE_UNSIGNED {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id == $3));
+        _NDFP_debugf("CT ID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    | FLOW_CONNTRACK_ID CMP_NOTEQUAL VALUE_UNSIGNED {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id != $3));
+        _NDFP_debugf("CT ID != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    | FLOW_CONNTRACK_ID CMP_GTHANEQUAL VALUE_UNSIGNED {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id >= $3));
+        _NDFP_debugf("CT ID >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    | FLOW_CONNTRACK_ID CMP_LTHANEQUAL VALUE_UNSIGNED {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id <= $3));
+        _NDFP_debugf("CT ID <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    | FLOW_CONNTRACK_ID '>' VALUE_UNSIGNED {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id > $3));
+        _NDFP_debugf("CT ID > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    | FLOW_CONNTRACK_ID '<' VALUE_UNSIGNED {
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+        _NDFP_result = ($$ = (_NDFP_flow->conntrack.id < $3));
+        _NDFP_debugf("CT ID < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+#else
+        _NDFP_result = ($$ = (false));
+#endif
+    }
+    ;
+
+expr_conntrack_mark:
+      FLOW_CONNTRACK_MARK {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark != 0));
-        _NDFP_debugf("FWMARK set? %s\n", (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
-    | '!' FLOW_CT_MARK {
+    | '!' FLOW_CONNTRACK_MARK {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark == 0));
-        _NDFP_debugf("FWMARK not set? %s\n", (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark not set? %s\n", (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
-    | FLOW_CT_MARK CMP_EQUAL VALUE_UNSIGNED {
+    | FLOW_CONNTRACK_MARK CMP_EQUAL VALUE_UNSIGNED {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark == $3));
-        _NDFP_debugf("FWMARK == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
-    | FLOW_CT_MARK CMP_NOTEQUAL VALUE_UNSIGNED {
+    | FLOW_CONNTRACK_MARK CMP_NOTEQUAL VALUE_UNSIGNED {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark != $3));
-        _NDFP_debugf("FWMARK != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
-    | FLOW_CT_MARK CMP_GTHANEQUAL VALUE_UNSIGNED {
+    | FLOW_CONNTRACK_MARK CMP_GTHANEQUAL VALUE_UNSIGNED {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark >= $3));
-        _NDFP_debugf("FWMARK >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
-    | FLOW_CT_MARK CMP_LTHANEQUAL VALUE_UNSIGNED {
+    | FLOW_CONNTRACK_MARK CMP_LTHANEQUAL VALUE_UNSIGNED {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark <= $3));
-        _NDFP_debugf("FWMARK <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
-    | FLOW_CT_MARK '>' VALUE_UNSIGNED {
+    | FLOW_CONNTRACK_MARK '>' VALUE_UNSIGNED {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark > $3));
-        _NDFP_debugf("FWMARK > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
     }
-    | FLOW_CT_MARK '<' VALUE_UNSIGNED {
+    | FLOW_CONNTRACK_MARK '<' VALUE_UNSIGNED {
 #if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
         _NDFP_result = ($$ = (_NDFP_flow->conntrack.mark < $3));
-        _NDFP_debugf("FWMARK < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
+        _NDFP_debugf("CT Mark < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
 #else
         _NDFP_result = ($$ = (false));
 #endif
@@ -3939,6 +4133,11 @@ bool ndFlowParser::Parse(ndFlow::Ptr const& flow,
         this->flow.reset();
         return false;
     }
+
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+    ct_reply_src_ip = &flow->conntrack.reply_src_addr;
+    ct_reply_dst_ip = &flow->conntrack.reply_dst_addr;
+#endif
 
     auto ji = params.find("intel");
     params_intel = (ji != params.end()) ? &ji->second : nullptr;

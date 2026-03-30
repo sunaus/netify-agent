@@ -49,6 +49,12 @@
     ((ndFlowParser *)yyget_extra(scanner))->src_ip
 #define _NDFP_dst_ip \
     ((ndFlowParser *)yyget_extra(scanner))->dst_ip
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+#define _NDFP_ct_reply_src_ip \
+    ((ndFlowParser *)yyget_extra(scanner))->ct_reply_src_ip
+#define _NDFP_ct_reply_dst_ip \
+    ((ndFlowParser *)yyget_extra(scanner))->ct_reply_dst_ip
+#endif
 #define _NDFP_local_port \
     ((ndFlowParser *)yyget_extra(scanner))->local_port
 #define _NDFP_other_port \
@@ -104,6 +110,10 @@ public:
     const ndAddr *other_ip = { nullptr };
     const ndAddr *src_ip = { nullptr };
     const ndAddr *dst_ip = { nullptr };
+#if defined(_ND_ENABLE_CONNTRACK) && defined(_ND_ENABLE_CONNTRACK_MDATA)
+    const ndAddr *ct_reply_src_ip = { nullptr };
+    const ndAddr *ct_reply_dst_ip = { nullptr };
+#endif
     uint16_t local_port = { 0 };
     uint16_t other_port = { 0 };
     uint16_t src_port = { 0 };
