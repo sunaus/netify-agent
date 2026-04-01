@@ -717,22 +717,20 @@ ndNetifyApiManager::ProcessBootstrapRequest(
             jstatus["bootstrap"]["message"] =
               "Signatures not found";
             nd_dprintf(
-              "netify-api: Malformed bootstrap content: "
-              "%s\n",
+              "netify-api: Malformed bootstrap content: %s\n",
               "signatures not found");
             return UpdateResult::ERROR;
         }
 
         auto jtoken = jsigs->find("token");
-        if (jtoken == jsigs->end() ||
+        if (jtoken == jsigs->end() &&
           jtoken->type() != json::value_t::string)
         {
             jstatus["bootstrap"]["code"] = -1;
             jstatus["bootstrap"]["message"] =
               "Authentication token not found";
             nd_dprintf(
-              "netify-api: Malformed bootstrap content: "
-              "%s\n",
+              "netify-api: Malformed bootstrap content: %s\n",
               "token not found or invalid type");
             return UpdateResult::ERROR;
         }
@@ -747,7 +745,7 @@ ndNetifyApiManager::ProcessBootstrapRequest(
         }
 
         auto jendpoint = jsigs->find("applications_endpoint");
-        if (jendpoint != jsigs->end() ||
+        if (jendpoint != jsigs->end() &&
           jendpoint->type() == json::value_t::string) {
             urls[Request::DOWNLOAD_APPLICATIONS] = jendpoint->get<string>();
         }
@@ -759,7 +757,7 @@ ndNetifyApiManager::ProcessBootstrapRequest(
         }
 
         jendpoint = jsigs->find("categories_endpoint");
-        if (jendpoint != jsigs->end() ||
+        if (jendpoint != jsigs->end() &&
           jendpoint->type() == json::value_t::string) {
             urls[Request::DOWNLOAD_CATEGORIES] = jendpoint->get<string>();
         }
