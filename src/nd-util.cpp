@@ -1957,9 +1957,32 @@ void nd_enable_coredumps(bool enable) {
 
 void ndTimeOfDay::Load(ndTimeOfDay &tod, const json &jconfig) {
     tod.valid = false;
+    tod.is_epoch = false;
 
     // Optional: day, default: all days
     tod.days = ndTod_to_days(Day::NONE);
+
+    nd_printf("TODO: Checking for epoch attributes");
+    if (jconfig.contains("time_start_epoch") || jconfig.contains("time_end_epoch")) {
+        tod.time_start_epoch = 0;
+        tod.time_end_epoch = 0;
+
+        if (jconfig.contains("time_start_epoch")) {
+            auto &v = jconfig.at("time_start_epoch");
+            // Handle both "123" and 123
+            tod.time_start_epoch = v.is_string() ? std::stoul(v.get<string>()) : v.get<uint32_t>();
+        }
+
+        if (jconfig.contains("time_end_epoch")) {
+            auto &v = jconfig.at("time_end_epoch");
+            tod.time_end_epoch = v.is_string() ? std::stoul(v.get<string>()) : v.get<uint32_t>();
+        }
+
+        tod.is_epoch = true;
+        tod.valid = true;
+        nd_printf("SUCCESS: Loaded Epoch Rule: %u to %u\n", tod.time_start_epoch, tod.time_end_epoch);
+        return;
+    }
 
     auto jdays = jconfig.find("day");
     if (jdays != jconfig.end()) {
@@ -2119,6 +2142,12 @@ void ndTimeOfDay::Describe(const ndTimeOfDay &tod, string &desc) {
 
     if (! tod.valid) os << "[invalid] ";
 
+    if (tod.is_epoch) {
+        os << "absolute range: " << tod.time_start_epoch << " to " << tod.time_end_epoch;
+        desc = os.str();
+        return;
+    }
+
     os << ((tod.policy == ndTimeOfDay::Policy::INCLUDE) ?
             "within " : "outside of ");
     os << tod.time_start << "s and " << tod.time_end << "s, on:";
@@ -2213,7 +2242,6 @@ time_t ndTimeOfDay::TickUpdate(void) {
 
 bool ndTimeOfDay::operator==(const time_t tv) const {
     if (! valid) return false;
-    if (days == ndTod_to_days(Day::NONE)) return false;
 
     struct tm tm = { 0 };
 
@@ -2221,6 +2249,23 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
           "gmtime_r", strerror(errno));
     }
+
+    if (is_epoch) {
+        uint32_t true_utc_now = (uint32_t)time(nullptr);
+
+        bool start_ok = (time_start_epoch == 0 || true_utc_now >= time_start_epoch);
+        bool end_ok = (time_end_epoch == 0 || true_utc_now <= time_end_epoch);
+
+        /*
+        nd_dprintf("Epoch Check: Rule[%u-%u] vs SystemUTC[%u]. Match: %s\n",
+                    time_start_epoch, time_end_epoch, true_utc_now,
+                    (start_ok && end_ok) ? "YES" : "NO");
+        */
+
+        return start_ok && end_ok;
+    }
+
+    if (days == ndTod_to_days(Day::NONE)) return false;
 
     if (days != ndTod_to_days(Day::ALL)) {
         switch (tm.tm_wday) {

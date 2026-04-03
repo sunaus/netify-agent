@@ -721,6 +721,10 @@ public:
         Load(*this, time_start, time_end, days, policy);
     }
 
+    bool is_epoch = false;
+    uint32_t time_start_epoch = 0;
+    uint32_t time_end_epoch = 0;
+
     static void Load(ndTimeOfDay &tod,
         const nlohmann::json &jconfig);
     static void Load(ndTimeOfDay &tod,
