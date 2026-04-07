@@ -2255,6 +2255,7 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
 
         bool start_ok = (time_start_epoch == 0 || true_utc_now >= time_start_epoch);
         bool end_ok = (time_end_epoch == 0 || true_utc_now <= time_end_epoch);
+        bool epoch_match = (start_ok && end_ok);
 
         /*
         nd_dprintf("Epoch Check: Rule[%u-%u] vs SystemUTC[%u]. Match: %s\n",
@@ -2262,7 +2263,16 @@ bool ndTimeOfDay::operator==(const time_t tv) const {
                     (start_ok && end_ok) ? "YES" : "NO");
         */
 
-        return start_ok && end_ok;
+        // If the days map is NONE, the epoch check is the final answer.
+        if (days == ndTod_to_days(Day::NONE)) {
+          return epoch_match;
+        }
+
+        // Otherwise, if we ARE using a schedule, but the epoch check failed,
+        // we should stop here because the "master window" is closed.
+        if (!epoch_match) {
+            return false;
+        }
     }
 
     if (days == ndTod_to_days(Day::NONE)) return false;
