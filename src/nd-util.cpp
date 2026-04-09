@@ -1962,7 +1962,6 @@ void ndTimeOfDay::Load(ndTimeOfDay &tod, const json &jconfig) {
     // Optional: day, default: all days
     tod.days = ndTod_to_days(Day::NONE);
 
-    nd_printf("TODO: Checking for epoch attributes");
     if (jconfig.contains("time_start_epoch") || jconfig.contains("time_end_epoch")) {
         tod.time_start_epoch = 0;
         tod.time_end_epoch = 0;
