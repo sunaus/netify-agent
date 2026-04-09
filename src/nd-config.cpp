@@ -271,6 +271,8 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #ifdef _ND_ENABLE_NETLINK
     netlink_buffer_size = (size_t)r->GetInteger("netlink",
       "buffer_size", this->netlink_buffer_size);
+    netlink_bridge_pvid_discovery = r->GetBoolean("netlink",
+      "bridge_pvid_discovery", this->netlink_bridge_pvid_discovery);
 #endif
 
     // Capture defaults section
