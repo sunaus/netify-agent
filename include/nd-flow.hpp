@@ -45,8 +45,10 @@ class ndFlowStats
 public:
     ndFlowStats()
       : lower_bytes(0), upper_bytes(0), total_bytes(0),
-        lower_packets(0), upper_packets(0),
-        total_packets(0), detection_packets(0)
+        total_lower_bytes(0), total_upper_bytes(0),
+        lower_packets(0), upper_packets(0), total_packets(0),
+        total_lower_packets(0), total_upper_packets(0),
+        detection_packets(0)
 #ifdef _ND_ENABLE_EXTENDED_STATS
         ,
         lower_rate_samples(ndGC.update_interval, 0),
@@ -61,9 +63,13 @@ public:
       : lower_bytes(stats.lower_bytes.load()),
         upper_bytes(stats.upper_bytes.load()),
         total_bytes(stats.total_bytes.load()),
+        total_lower_bytes(stats.total_lower_bytes.load()),
+        total_upper_bytes(stats.total_upper_bytes.load()),
         lower_packets(stats.lower_packets.load()),
         upper_packets(stats.upper_packets.load()),
         total_packets(stats.total_packets.load()),
+        total_lower_packets(stats.total_lower_packets.load()),
+        total_upper_packets(stats.total_upper_packets.load()),
         detection_packets(stats.detection_packets.load())
 #ifdef _ND_ENABLE_EXTENDED_STATS
         ,
@@ -82,9 +88,13 @@ public:
         lower_bytes = fs.lower_bytes.load();
         upper_bytes = fs.upper_bytes.load();
         total_bytes = fs.total_bytes.load();
+        total_lower_bytes = fs.total_lower_bytes.load();
+        total_upper_bytes = fs.total_upper_bytes.load();
         lower_packets = fs.lower_packets.load();
         upper_packets = fs.upper_packets.load();
         total_packets = fs.total_packets.load();
+        total_lower_packets = fs.total_lower_packets.load();
+        total_upper_packets = fs.total_upper_packets.load();
         detection_packets = fs.detection_packets.load();
 #ifdef _ND_ENABLE_EXTENDED_STATS
         lower_rate = fs.lower_rate.load();
@@ -113,10 +123,14 @@ public:
     std::atomic<uint64_t> lower_bytes;
     std::atomic<uint64_t> upper_bytes;
     std::atomic<uint64_t> total_bytes;
+    std::atomic<uint64_t> total_lower_bytes;
+    std::atomic<uint64_t> total_upper_bytes;
 
     std::atomic<uint32_t> lower_packets;
     std::atomic<uint32_t> upper_packets;
     std::atomic<uint32_t> total_packets;
+    std::atomic<uint32_t> total_lower_packets;
+    std::atomic<uint32_t> total_upper_packets;
 
     std::atomic<uint8_t> detection_packets;
 
@@ -424,8 +438,12 @@ public:
                     _upper_gtp_port = "other_port";
         std::string _lower_bytes = "local_bytes",
                     _upper_bytes = "other_bytes";
+        std::string _total_lower_bytes = "total_local_bytes",
+                    _total_upper_bytes = "total_other_bytes";
         std::string _lower_packets = "local_packets",
                     _upper_packets = "other_packets";
+        std::string _total_lower_packets = "total_local_packets",
+                    _total_upper_packets = "total_other_packets";
         std::string _lower_net_cat = "local_network";
         std::string _upper_net_cat = "other_network";
 #ifdef _ND_ENABLE_EXTENDED_STATS
@@ -460,7 +478,9 @@ public:
             _lower_ip = "local_ip";
             _lower_port = "local_port";
             _lower_bytes = "local_bytes";
+            _total_lower_bytes = "total_local_bytes";
             _lower_packets = "local_packets";
+            _total_lower_packets = "total_local_packets";
             _lower_net_cat = "local_network";
             _upper_mac = "other_mac";
             _upper_ip = "other_ip";
@@ -478,7 +498,9 @@ public:
             _lower_ip = "other_ip";
             _lower_port = "other_port";
             _lower_bytes = "other_bytes";
+            _total_lower_bytes = "total_other_bytes";
             _lower_packets = "other_packets";
+            _total_lower_packets = "total_other_packets";
             _lower_net_cat = "other_network";
             _upper_mac = "local_mac";
             _upper_ip = "local_ip";
@@ -865,10 +887,20 @@ public:
               stats.lower_bytes.load());
             serialize(output, { _upper_bytes },
               stats.upper_bytes.load());
+            serialize(output, { _total_lower_bytes },
+              stats.total_lower_bytes.load());
+            serialize(output, { _upper_bytes },
+              stats.upper_bytes.load());
+            serialize(output, { _total_upper_bytes },
+              stats.total_upper_bytes.load());
             serialize(output, { _lower_packets },
               stats.lower_packets.load());
+            serialize(output, { _total_lower_packets },
+              stats.total_lower_packets.load());
             serialize(output, { _upper_packets },
               stats.upper_packets.load());
+            serialize(output, { _total_upper_packets },
+              stats.total_upper_packets.load());
             serialize(output, { "total_packets" },
               stats.total_packets.load());
             serialize(output, { "total_bytes" },
