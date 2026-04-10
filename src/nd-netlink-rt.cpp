@@ -39,7 +39,34 @@
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_LOG   1
 
+#ifndef IFLA_EXT_MASK 
+#define IFLA_EXT_MASK 29
+#endif
+
+#ifndef AF_BRIDGE
+#define AF_BRIDGE 7
+#endif
+
+// Manual definitions with unique names to avoid Musl/Kernel conflicts
+#ifndef IFLA_BRIDGE_VLAN_INFO
+#define IFLA_BRIDGE_VLAN_INFO 2
+#endif
+
+#ifndef BRIDGE_VLAN_INFO_PVID
+#define BRIDGE_VLAN_INFO_PVID (1 << 1)
+#endif
+
+#ifndef RTEXT_FILTER_BRVLAN
+#define RTEXT_FILTER_BRVLAN (1 << 1)
+#endif
+
 using namespace std;
+
+// We use "nd_" prefix so the compiler never confuses this with system types
+struct nd_bridge_vlan_info {
+    uint16_t flags;
+    uint16_t vid;
+};
 
 constexpr const char *TAG = { "netlink-rt" };
 
@@ -166,6 +193,7 @@ static int ndNetlinkRoute_attr_parse_ifla(
         break;
 
     case IFLA_LINKINFO:
+    case IFLA_AF_SPEC:
         if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0) {
             nd_dprintf("%s: invalid attribute type, expected: %s\n",
                 TAG, "NESTED");
@@ -285,10 +313,12 @@ public:
             rth->rtm_family = family;
         }
         else if (type == RTM_GETLINK) {
-            struct rtgenmsg *rtgh = static_cast<struct rtgenmsg *>(
-                mnl_nlmsg_put_extra_header(nlh, sizeof(struct rtgenmsg))
+            struct ifinfomsg *ifi = static_cast<struct ifinfomsg *>(
+                mnl_nlmsg_put_extra_header(nlh, sizeof(struct ifinfomsg))
             );
-            rtgh->rtgen_family = AF_PACKET;
+            ifi->ifi_family = family;
+            // Request Bridge VLAN information (PVIDs, etc)
+            mnl_attr_put_u32(nlh, IFLA_EXT_MASK, RTEXT_FILTER_BRVLAN);
         }
         else if (type == RTM_GETNEIGH) {
             struct ndmsg *ndh = static_cast<struct ndmsg *>(
@@ -419,6 +449,12 @@ void ndNetlinkRouteThread::Dump(void) {
     rt_dump.Dump(RTM_GETADDR);
     rt_dump.Dump(RTM_GETROUTE);
     rt_dump.Dump(RTM_GETLINK);
+    // Need to make a specific call to Netlink specifing family
+    // otherwise kernel does not return the bridge VLAN metadata
+    // we're looking for
+    if (ndGC.netlink_bridge_pvid_discovery) {
+        rt_dump.Dump(RTM_GETLINK, AF_BRIDGE);
+    }
     rt_dump.Dump(RTM_GETNEIGH);
 }
 
@@ -715,6 +751,66 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
                 }
             }
         }
+
+        if (ndGC.netlink_bridge_pvid_discovery && attrs[IFLA_AF_SPEC]) {
+            int rem = mnl_attr_get_payload_len(attrs[IFLA_AF_SPEC]);
+            const struct nlattr *af_spec_attr =
+                static_cast<const struct nlattr *>(mnl_attr_get_payload(attrs[IFLA_AF_SPEC]));
+
+            while (mnl_attr_ok(af_spec_attr, rem)) {
+                uint16_t type = mnl_attr_get_type(af_spec_attr);
+
+                // --- CASE 1: Nested Data (Inside AF_BRIDGE/7 folder) ---
+                if (type == AF_BRIDGE) {
+                    const struct nlattr *br_attr =
+                        static_cast<const struct nlattr *>(mnl_attr_get_payload(af_spec_attr));
+                    int br_rem = mnl_attr_get_payload_len(af_spec_attr);
+
+                    while (mnl_attr_ok(br_attr, br_rem)) {
+                        if (mnl_attr_get_type(br_attr) == IFLA_BRIDGE_VLAN_INFO) {
+                            const char *payload = static_cast<const char *>(mnl_attr_get_payload(br_attr));
+                            int vlen = mnl_attr_get_payload_len(br_attr);
+
+                            for (int i = 0; i <= vlen - (int)sizeof(nd_bridge_vlan_info); i += sizeof(nd_bridge_vlan_info)) {
+                                const struct nd_bridge_vlan_info *vinfo =
+                                    reinterpret_cast<const struct nd_bridge_vlan_info *>(payload + i);
+
+                                if (vinfo->flags & BRIDGE_VLAN_INFO_PVID) {
+                                    nd_dprintf("%s: %s PVID (Nested): %hu\n",TAG, ifname, vinfo->vid);
+                                    ndi.addr_lookup.AddLinkVLANId(ifi->ifi_index, vinfo->vid);
+                                    goto next_interface;
+                                }
+                            }
+                        }
+                        int b_len = mnl_attr_get_len(br_attr);
+                        br_attr = mnl_attr_next(br_attr);
+                        br_rem -= MNL_ALIGN(b_len);
+                    }
+                }
+                // --- CASE 2: Direct Data (Type 2 is VLAN Info because header is AF_BRIDGE) ---
+                else if (type == IFLA_BRIDGE_VLAN_INFO && ifi->ifi_family == AF_BRIDGE) {
+                    const char *payload = static_cast<const char *>(mnl_attr_get_payload(af_spec_attr));
+                    int vlen = mnl_attr_get_payload_len(af_spec_attr);
+
+                    for (int i = 0; i <= vlen - (int)sizeof(nd_bridge_vlan_info); i += sizeof(nd_bridge_vlan_info)) {
+                        const struct nd_bridge_vlan_info *vinfo =
+                            reinterpret_cast<const struct nd_bridge_vlan_info *>(payload + i);
+
+                        if (vinfo->flags & BRIDGE_VLAN_INFO_PVID) {
+                            nd_dprintf("%s: %s PVID (Direct): %hu\n", TAG, ifname, vinfo->vid);
+                            ndi.addr_lookup.AddLinkVLANId(ifi->ifi_index, vinfo->vid);
+                            goto next_interface;
+                        }
+                    }
+                }
+
+                int a_len = mnl_attr_get_len(af_spec_attr);
+                af_spec_attr = mnl_attr_next(af_spec_attr);
+                rem -= MNL_ALIGN(a_len);
+            }
+        }
+
+    next_interface: // Label to break out of nested loops once PVID is found
 
         _ND_NLRT_CHECK_ATTR(TAG, attrs[IFLA_ADDRESS], -1);
 
