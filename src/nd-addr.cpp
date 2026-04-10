@@ -27,12 +27,17 @@
 #include <ifaddrs.h>
 #include <sys/types.h>
 
+#include <radix/radix_tree.hpp>
+
 #include "nd-addr.hpp"
 #include "nd-flags.hpp"
 #include "nd-instance.hpp"
 #include "nd-util.hpp"
 
 using namespace std;
+
+using nd_rn4_network = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, bool>;
+using nd_rn6_network = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, bool>;
 
 bool ndAddr::Create(ndAddr &a, const string &addr) {
     a.Reset();
@@ -881,27 +886,93 @@ bool ndAddrLookup::AddGroupAddress(const string &tag, const ndAddr &addr) {
     if (! addr.IsValid()) return false;
     if (! (addr.IsEthernet() || addr.IsIP())) return false;
 
-    lock_guard<recursive_mutex> ul(lock_groups);
+    if (addr.IsEthernet() || ! addr.IsNetwork()) {
+        lock_guard<recursive_mutex> ul(lock_group_addrs);
 
-    auto group = groups.find(tag);
-    if (group == groups.end()) {
-        GroupAddrSet addr_set({ addr });
-        groups.emplace(tag, addr_set);
-        return true;
+        auto group = group_addrs.find(tag);
+        if (group == group_addrs.end()) {
+            GroupAddrSet addr_set({ addr });
+            group_addrs.emplace(tag, addr_set);
+            return true;
+        }
+
+        auto result = group->second.insert(addr);
+
+        return result.second;
     }
 
-    auto result = group->second.insert(addr);
+    if (addr.IsIPv4()) {
+        lock_guard<recursive_mutex> ul(lock_group_networks4);
 
-    return result.second;
+        nd_rn4_network *rn4 = nullptr;
+        auto group = group_networks4.find(tag);
+        if (group == group_networks4.end()) {
+            rn4 = new nd_rn4_network;
+            group_networks4.emplace(tag, static_cast<void *>(rn4));
+        }
+        else rn4 = static_cast<nd_rn4_network *>(group->second);
+
+        ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
+        if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr)) {
+            (*rn4)[entry] = true;
+            return true;
+        }
+    }
+    else if (addr.IsIPv6()) {
+        lock_guard<recursive_mutex> ul(lock_group_networks6);
+
+        nd_rn6_network *rn6 = nullptr;
+        auto group = group_networks6.find(tag);
+        if (group == group_networks6.end()) {
+            rn6 = new nd_rn6_network;
+            group_networks6.emplace(tag, static_cast<void *>(rn6));
+        }
+        else rn6 = static_cast<nd_rn6_network *>(group->second);
+
+        ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
+        if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr)) {
+            (*rn6)[entry] = true;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool ndAddrLookup::RemoveGroup(const string &tag) {
-    lock_guard<recursive_mutex> ul(lock_groups);
+    unique_lock<recursive_mutex> ul(lock_group_addrs);
 
-    auto group = groups.find(tag);
-    if (group == groups.end()) return false;
+    auto group = group_addrs.find(tag);
+    if (group != group_addrs.end())
+        group_addrs.erase(group);
 
-    groups.erase(group);
+    ul.unlock();
+    ul.release();
+    ul = unique_lock<recursive_mutex>{ lock_group_networks4 };
+
+    auto networks4 = group_networks4.find(tag);
+    if (networks4 != group_networks4.end()) {
+        nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(
+          networks4->second);
+        delete rn4;
+        group_networks4.erase(networks4);
+    }
+
+    ul.unlock();
+    ul.release();
+    ul = unique_lock<recursive_mutex>{ lock_group_networks6 };
+
+    auto networks6 = group_networks6.find(tag);
+    if (networks6 != group_networks6.end()) {
+        nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(
+          networks6->second);
+        delete rn6;
+        group_networks6.erase(networks6);
+    }
+
+    ul.unlock();
+    ul.release();
+    ul = unique_lock<recursive_mutex>{ lock_group_filenames };
 
     auto filename = group_filenames.find(tag);
     if (filename != group_filenames.end()) {
@@ -913,41 +984,122 @@ bool ndAddrLookup::RemoveGroup(const string &tag) {
     return true;
 }
 
-bool ndAddrLookup::RemoveGroupAddress(const string &tag, const ndAddr &addr) {
+bool ndAddrLookup::RemoveGroupAddress(
+  const string &tag, const ndAddr &addr) {
     if (! addr.IsValid()) return false;
     if (! (addr.IsEthernet() || addr.IsIP())) return false;
 
-    lock_guard<recursive_mutex> ul(lock_groups);
+    if (addr.IsEthernet() || ! addr.IsNetwork()) {
+        lock_guard<recursive_mutex> ul(lock_group_addrs);
 
-    auto group = groups.find(tag);
-    if (group == groups.end()) return false;
+        auto group = group_addrs.find(tag);
+        if (group == group_addrs.end()) return false;
 
-    auto result = group->second.find(addr);
-    if (result == group->second.end()) return false;
+        auto result = group->second.find(addr);
+        if (result == group->second.end()) return false;
 
-    group->second.erase(addr);
+        group->second.erase(result);
 
-    if (group->second.empty()) groups.erase(group);
+        if (group->second.empty()) group_addrs.erase(group);
+
+        return true;
+    }
+
+    if (addr.IsIPv4()) {
+        lock_guard<recursive_mutex> ul(lock_group_networks4);
+
+        auto group = group_networks4.find(tag);
+        if (group == group_networks4.end()) return false;
+        nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(group->second);
+
+        nd_rn4_network::iterator it;
+        ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
+
+        if ((it = rn4->longest_match(entry)) == rn4->end()) return false;
+
+        rn4->erase(it);
+
+        return true;
+    }
+
+    if (addr.IsIPv6()) {
+        lock_guard<recursive_mutex> ul(lock_group_networks6);
+
+        auto group = group_networks6.find(tag);
+        if (group == group_networks6.end()) return false;
+        nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(group->second);
+
+        nd_rn6_network::iterator it;
+        ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
+
+        if ((it = rn6->longest_match(entry)) == rn6->end()) return false;
+
+        rn6->erase(it);
+
+        return true;
+    }
 
     return true;
 }
 
-bool ndAddrLookup::LookupGroupAddress(const string &tag, const ndAddr &addr) {
+bool ndAddrLookup::LookupGroupAddress(
+  const string &tag, const ndAddr &addr) {
+
     if (! addr.IsValid()) return false;
     if (! (addr.IsEthernet() || addr.IsIP())) return false;
 
-    lock_guard<recursive_mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_group_addrs);
 
-    auto group = groups.find(tag);
-    if (group == groups.end()) return false;
+    auto group = group_addrs.find(tag);
+    if (group == group_addrs.end()) return false;
 
     if (group->second.find(addr) == group->second.end()) return false;
 
     return true;
+
+    if (addr.IsEthernet() || ! addr.IsNetwork()) {
+        lock_guard<recursive_mutex> ul(lock_group_addrs);
+
+        auto group = group_addrs.find(tag);
+        if (group != group_addrs.end()) {
+            if (group->second.find(addr) != group->second.end())
+                return true;
+        }
+    }
+
+    if (addr.IsIPv4()) {
+        lock_guard<recursive_mutex> ul(lock_group_networks4);
+
+        auto group = group_networks4.find(tag);
+        if (group != group_networks4.end()) {
+            nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(
+              group->second);
+
+            ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
+            if (rn4->longest_match(entry) != rn4->end())
+                return true;
+        }
+    }
+
+    if (addr.IsIPv6()) {
+        lock_guard<recursive_mutex> ul(lock_group_networks6);
+
+        auto group = group_networks6.find(tag);
+        if (group != group_networks6.end()) {
+            nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(
+              group->second);
+
+            ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
+            if (rn6->longest_match(entry) != rn6->end())
+                return true;
+        }
+    }
+
+    return false;
 }
 
 bool ndAddrLookup::GetGroupFilename(const string &tag, string &filename) {
-    lock_guard<recursive_mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_group_filenames);
 
     auto group = group_filenames.find(tag);
     if (group == group_filenames.end()) return false;
@@ -957,7 +1109,7 @@ bool ndAddrLookup::GetGroupFilename(const string &tag, string &filename) {
 }
 
 bool ndAddrLookup::SetGroupFilename(const string &tag) {
-    lock_guard<recursive_mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_group_filenames);
 
     auto group = group_filenames.find(tag);
     if (group != group_filenames.end()) return false;
@@ -968,7 +1120,9 @@ bool ndAddrLookup::SetGroupFilename(const string &tag) {
     return true;
 }
 
-bool ndAddrLookup::LoadGroupAddress(const string &tag, const string &filename) {
+bool ndAddrLookup::LoadGroupAddress(
+  const string &tag, const string &filename) {
+
     ifstream ifs(filename);
     if (! ifs.is_open()) {
         nd_printf("Error opening group address file: %s: %s\n",
@@ -976,13 +1130,32 @@ bool ndAddrLookup::LoadGroupAddress(const string &tag, const string &filename) {
         return false;
     }
 
-    lock_guard<recursive_mutex> ul(lock_groups);
+    unique_lock<recursive_mutex> ul(lock_group_addrs);
 
-    auto group = groups.find(tag);
-    if (group != groups.end()) groups.erase(group);
+    auto group = group_addrs.find(tag);
+    if (group != group_addrs.end()) group_addrs.erase(group);
+
+    ul.unlock();
+    ul.release();
+    ul = unique_lock<recursive_mutex>{ lock_group_networks4 };
+
+    auto networks4 = group_networks4.find(tag);
+    if (networks4 != group_networks4.end())
+        group_networks4.erase(networks4);
+
+    ul.unlock();
+    ul.release();
+    ul = unique_lock<recursive_mutex>{ lock_group_networks6 };
+
+    auto networks6 = group_networks6.find(tag);
+    if (networks6 != group_networks6.end())
+        group_networks6.erase(networks6);
+
+    ul.unlock();
+    ul.release();
 
     string line;
-    uint32_t addrs = 0;
+    size_t addrs = 0;
 
     while (getline(ifs, line)) {
         nd_ltrim(line);
@@ -997,11 +1170,8 @@ bool ndAddrLookup::LoadGroupAddress(const string &tag, const string &filename) {
     return (addrs != 0);
 }
 
-bool ndAddrLookup::SaveGroupAddress(const string &tag, const string &filename) {
-    lock_guard<recursive_mutex> ul(lock_groups);
-
-    auto group = groups.find(tag);
-    if (group == groups.end()) return false;
+bool ndAddrLookup::SaveGroupAddress(
+  const string &tag, const string &filename) {
 
     ofstream ofs(filename, ofstream::trunc);
     if (! ofs.is_open()) {
@@ -1010,21 +1180,71 @@ bool ndAddrLookup::SaveGroupAddress(const string &tag, const string &filename) {
         return false;
     }
 
-    for (auto &i : group->second)
-        ofs << i.GetString(ndAddr::MakeFlags::PREFIX) << endl;
+    size_t addrs = 0;
+    unique_lock<recursive_mutex> ul(lock_group_addrs);
+
+    if (! group_addrs.empty()) {
+        auto group = group_addrs.find(tag);
+        if (group == group_addrs.end()) return false;
+
+        for (auto &i : group->second)
+            ofs << i.GetString(ndAddr::MakeFlags::PREFIX) << endl;
+
+        addrs += group->second.size();
+    }
+
+    ul.unlock();
+    ul.release();
+    ul = unique_lock<recursive_mutex>{ lock_group_networks4 };
+
+    if (! group_networks4.empty()) {
+        auto group = group_networks4.find(tag);
+        if (group == group_networks4.end()) return false;
+
+        nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(group->second);
+
+        for (auto &it : (*rn4)) {
+            string ip;
+            if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX)) {
+                ofs << ip << endl;
+                addrs++;
+            }
+        }
+    }
+
+    ul.unlock();
+    ul.release();
+    ul = unique_lock<recursive_mutex>{ lock_group_networks6 };
+
+    if (! group_networks6.empty()) {
+        auto group = group_networks6.find(tag);
+        if (group == group_networks6.end()) return false;
+
+        nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(group->second);
+
+        for (auto &it : (*rn6)) {
+            string ip;
+            if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX)) {
+                ofs << ip << endl;
+                addrs++;
+            }
+        }
+    }
 
     nd_dprintf("%s: Saved %lu group address(es) to: %s\n",
-        tag.c_str(), group->second.size(), filename.c_str());
+        tag.c_str(), addrs, filename.c_str());
 
     return true;
 }
 
 void ndAddrLookup::LoadGroupAddresses(const string &path) {
-    lock_guard<recursive_mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_group_filenames);
 
     for (auto &i : group_filenames) {
-        auto group = groups.find(i.first);
-        if (group != groups.end()) groups.erase(group);
+        lock_guard<recursive_mutex> ul_group_addrs(lock_group_addrs);
+
+        auto group = group_addrs.find(i.first);
+        if (group != group_addrs.end()) group_addrs.erase(group);
     }
 
     vector<string> files;
@@ -1041,7 +1261,7 @@ void ndAddrLookup::LoadGroupAddresses(const string &path) {
 }
 
 void ndAddrLookup::SaveGroupAddresses(const string &path) {
-    lock_guard<recursive_mutex> ul(lock_groups);
+    lock_guard<recursive_mutex> ul(lock_group_filenames);
 
     for (auto &i : group_filenames)
         SaveGroupAddress(i.first, path + "/" + i.second);

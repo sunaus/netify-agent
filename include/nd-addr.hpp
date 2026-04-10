@@ -730,10 +730,15 @@ protected:
         ndAddr, ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual>;
     NeighborMap neighbors;
 
-    mutable std::recursive_mutex lock_groups;
+    mutable std::recursive_mutex lock_group_addrs;
+    mutable std::recursive_mutex lock_group_networks4;
+    mutable std::recursive_mutex lock_group_networks6;
+    mutable std::recursive_mutex lock_group_filenames;
     using GroupAddrSet = std::unordered_set<
         ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual>;
-    std::unordered_map<std::string, GroupAddrSet> groups;
+    std::unordered_map<std::string, GroupAddrSet> group_addrs;
+    std::unordered_map<std::string, void *> group_networks4;
+    std::unordered_map<std::string, void *> group_networks6;
     std::unordered_map<std::string, std::string> group_filenames;
 };
 
