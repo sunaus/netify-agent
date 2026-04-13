@@ -23,7 +23,7 @@ include:
       - /gitlab/common/variants-templates.yml
 
 services:
-  - docker:28-dind
+  - docker:29-dind
 
 variables:
   CI_DEBUG_TRACE: 'false'
