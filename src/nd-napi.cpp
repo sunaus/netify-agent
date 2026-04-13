@@ -358,7 +358,9 @@ void *ndNetifyApiBootstrap::Entry(void) {
     string url = ndGC.url_napi_bootstrap;
 
     try {
-        Perform(ndNetifyApiThread::Method::POST, url, headers);
+        string payload;
+        nd_file_load(ndGC.path_state_persistent + "/license.json", payload);
+        Perform(ndNetifyApiThread::Method::POST, url, headers, payload);
     }
     catch (CURLcode &rc) {
         nd_dprintf("%s: bootstrap request error: %s\n",
