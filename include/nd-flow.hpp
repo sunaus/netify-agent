@@ -455,7 +455,10 @@ public:
         if (digest_mdata.empty()) {
             nd_sha1_to_string(digest_lower, digest);
             serialize(output, { "digest" }, digest);
-            serialize(output, { "digest_prev" }, digest);
+
+            std::vector<std::string> digests;
+            digests.push_back(digest);
+            serialize(output, { "digest_prev" }, digests);
         }
         else {
             auto i = digest_mdata.rbegin();
