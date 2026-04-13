@@ -30,6 +30,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   OS_EXTRA_PACKAGES: ''
   OS_REPOS: ''
+  DOCKER_API_VERSION: '1.44'
 
 # -----------------------------------------------------------
 # Build
