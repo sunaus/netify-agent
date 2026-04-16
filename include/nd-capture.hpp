@@ -76,8 +76,6 @@ protected:
 
     ndPacketStats stats;
 
-    std::string flow_digest;
-
     ndDNSHintCache *dhc;
 
     const ndDetectionThreads &threads_dpi;

@@ -1023,10 +1023,8 @@ nd_process_ip:
     }
 
     flow.Hash(tag);
-    flow_digest.assign(flow.digest_lower.begin(),
-      flow.digest_lower.end());
 
-    nf = ndi.flow_buckets->Lookup(flow_digest, true);
+    nf = ndi.flow_buckets->Lookup(flow.digest_lower, true);
 
     if (nf) {
         // Flow exists in map.
@@ -1061,7 +1059,7 @@ nd_process_ip:
 #endif
         }
 
-        ndi.flow_buckets->Release(flow_digest);
+        ndi.flow_buckets->Release(flow.digest_lower);
     }
     else {
         if (ndGC.max_flows > 0 &&
@@ -1075,7 +1073,7 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
             stats.flow.dropped++;
 
-            ndi.flow_buckets->Release(flow_digest);
+            ndi.flow_buckets->Release(flow.digest_lower);
             return packet;
         }
 
@@ -1091,7 +1089,7 @@ nd_process_ip:
             stats.pkt.discard_bytes += packet->length;
             stats.flow.dropped++;
 
-            ndi.flow_buckets->Release(flow_digest);
+            ndi.flow_buckets->Release(flow.digest_lower);
             return packet;
         }
 
@@ -1122,9 +1120,9 @@ nd_process_ip:
             }
         }
 #endif
-        if (! ndi.flow_buckets->InsertUnlocked(flow_digest, nf))
+        if (! ndi.flow_buckets->InsertUnlocked(flow.digest_lower, nf))
         {
-            ndi.flow_buckets->Release(flow_digest);
+            ndi.flow_buckets->Release(flow.digest_lower);
             // Flow exists in map!  Impossible!
             throw ndException("%s: flow exists in map",
               tag.c_str());
@@ -1185,7 +1183,7 @@ nd_process_ip:
             }
         }
 
-        ndi.flow_buckets->Release(flow_digest);
+        ndi.flow_buckets->Release(flow.digest_lower);
 
         ndi.plugins.BroadcastProcessorEvent(
           ndPluginProcessor::Event::FLOW_NEW, nf);

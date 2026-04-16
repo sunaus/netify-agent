@@ -52,13 +52,13 @@ ndFlowMap::~ndFlowMap() {
 }
 
 ndFlow::Ptr
-ndFlowMap::Lookup(const string &digest, bool acquire_lock) {
+ndFlowMap::Lookup(uint64_t hash_id, bool acquire_lock) {
     ndFlow::Ptr f;
-    size_t b = HashToBucket(digest);
+    size_t b = HashToBucket(hash_id);
 
     bucket_lock[b]->lock();
 
-    auto fi = bucket[b]->find(digest);
+    auto fi = bucket[b]->find(hash_id);
     if (fi != bucket[b]->end()) f = fi->second;
 
     if (! acquire_lock) bucket_lock[b]->unlock();
@@ -66,14 +66,14 @@ ndFlowMap::Lookup(const string &digest, bool acquire_lock) {
     return f;
 }
 
-bool ndFlowMap::Insert(const string &digest,
+bool ndFlowMap::Insert(uint64_t hash_id,
   ndFlow::Ptr &flow, bool unlocked) {
     bool result = false;
-    size_t b = HashToBucket(digest);
+    size_t b = HashToBucket(hash_id);
 
     if (! unlocked) bucket_lock[b]->lock();
 
-    auto fi = bucket[b]->insert(make_pair(digest, flow));
+    auto fi = bucket[b]->insert(make_pair(hash_id, flow));
 
     result = fi.second;
 
@@ -82,12 +82,12 @@ bool ndFlowMap::Insert(const string &digest,
     return result;
 }
 
-bool ndFlowMap::Delete(const string &digest) {
+bool ndFlowMap::Delete(uint64_t hash_id) {
     bool deleted = false;
-    size_t b = HashToBucket(digest);
+    size_t b = HashToBucket(hash_id);
     lock_guard<mutex> lock(*bucket_lock[b]);
 
-    auto fi = bucket[b]->find(digest);
+    auto fi = bucket[b]->find(hash_id);
     if (fi != bucket[b]->end()) {
         deleted = true;
         bucket[b]->erase(fi);
@@ -118,7 +118,7 @@ const ndFlowMap::Map &ndFlowMap::AcquireConst(size_t b) const {
     return *bucket[b];
 }
 
-void ndFlowMap::Release(size_t b) const {
+void ndFlowMap::ReleaseBucket(size_t b) const {
     if (b >= buckets) {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
           "bucket", strerror(EINVAL));
@@ -127,8 +127,8 @@ void ndFlowMap::Release(size_t b) const {
     bucket_lock[b]->unlock();
 }
 
-void ndFlowMap::Release(const string &digest) const {
-    Release(HashToBucket(digest));
+void ndFlowMap::Release(uint64_t hash_id) const {
+    ReleaseBucket(HashToBucket(hash_id));
 }
 
 #ifndef _ND_LEAN_AND_MEAN

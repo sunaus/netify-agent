@@ -35,29 +35,29 @@ public:
     ndFlowMap(size_t buckets = ND_FLOW_MAP_BUCKETS);
     virtual ~ndFlowMap();
 
-    ndFlow::Ptr Lookup(const std::string &digest,
+    ndFlow::Ptr Lookup(uint64_t hash_id,
       bool acquire_lock = false);
-    bool Insert(const std::string &digest,
+    bool Insert(uint64_t hash_id,
       ndFlow::Ptr &flow, bool unlocked = false);
-    inline bool InsertUnlocked(const std::string &digest,
+    inline bool InsertUnlocked(uint64_t hash_id,
       ndFlow::Ptr &flow) {
-        return Insert(digest, flow, true);
+        return Insert(hash_id, flow, true);
     }
 
-    bool Delete(const std::string &digest);
+    bool Delete(uint64_t hash_id);
 
-    typedef std::unordered_map<std::string, ndFlow::Ptr> Map;
+    typedef std::unordered_map<uint64_t, ndFlow::Ptr> Map;
 
     Map &Acquire(size_t b);
     const Map &AcquireConst(size_t b) const;
 
-    void Release(size_t b) const;
+    void ReleaseBucket(size_t b) const;
 #if 0
-    inline void Release(const string &digest) const {
-        Release(HashToBucket(digest));
+    inline void Release(uint64_t hash_id) const {
+        ReleaseBucket(HashToBucket(hash_id));
     }
 #else
-    void Release(const std::string &digest) const;
+    void Release(uint64_t hash_id) const;
 #endif
 #ifndef _ND_LEAN_AND_MEAN
     void DumpBucketStats(void);
@@ -66,10 +66,8 @@ public:
     inline size_t GetBuckets(void) const { return buckets; }
 
 protected:
-    unsigned HashToBucket(const std::string &digest) const {
-        const char *p = digest.c_str();
-        const uint64_t *b = (const uint64_t *)&p[0];
-        return (*b % buckets);
+    unsigned HashToBucket(uint64_t hash_id) const {
+        return (hash_id % buckets);
     }
 
     size_t buckets;

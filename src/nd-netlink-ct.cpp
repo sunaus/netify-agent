@@ -431,8 +431,15 @@ void ndNetlinkConntrackThread::Dump(bool zero_counters) {
 
 void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
 
-    sha1 ctx;
-    sha1_init(&ctx);
+    uint8_t hdata[128];
+    size_t hoff = 0;
+
+    auto hwrite = [&](const void *data, size_t len) {
+        if (hoff + len <= sizeof(hdata)) {
+            memcpy(&hdata[hoff], data, len);
+            hoff += len;
+        }
+    };
 
     sa_family_t family;
     switch (flow->ip_version) {
@@ -440,21 +447,18 @@ void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
     default: family = AF_INET6; break;
     }
 
-    sha1_write(&ctx, (const char *)&family, sizeof(sa_family_t));
-    sha1_write(&ctx, (const char *)&flow->ip_protocol, sizeof(uint8_t));
+    hwrite(&family, sizeof(sa_family_t));
+    hwrite(&flow->ip_protocol, sizeof(uint8_t));
 
-    sha1_write(&ctx, flow->lower_addr.GetAddress(),
-      flow->lower_addr.GetAddressSize());
-    sha1_write(&ctx, flow->upper_addr.GetAddress(),
-      flow->lower_addr.GetAddressSize());
+    hwrite(flow->lower_addr.GetAddress(), flow->lower_addr.GetAddressSize());
+    hwrite(flow->upper_addr.GetAddress(), flow->lower_addr.GetAddressSize());
 
     uint16_t port = flow->lower_addr.GetPort(false);
-    sha1_write(&ctx, (const char *)&port, sizeof(uint16_t));
+    hwrite(&port, sizeof(uint16_t));
     port = flow->upper_addr.GetPort(false);
-    sha1_write(&ctx, (const char *)&port, sizeof(uint16_t));
+    hwrite(&port, sizeof(uint16_t));
 
-    ndDigest digest;
-    sha1_result(&ctx, digest.data());
+    ndDigest digest = nd_xxh64(hdata, hoff);
 
     lock_guard<mutex> lg(map_lock);
 
@@ -499,7 +503,7 @@ void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
 #ifdef _ND_DEBUG_LOG
     else {
         string _digest;
-        nd_sha1_to_string(digest, _digest);
+        nd_xxh64_to_string(digest, _digest);
         nd_dprintf("%s: flow not updated, no match: %s\n", TAG, _digest.c_str());
         flow->Print();
     }
@@ -778,13 +782,18 @@ void ndConntrackFlow::Update(const ndNetlinkConntrackThread::Attrs &attr) {
 
 void ndConntrackFlow::Hash(void) {
     for (uint8_t i = 0; i < static_cast<uint8_t>(Origin::MAX); i++) {
-        sha1 ctx;
-        sha1_init(&ctx);
+        uint8_t hdata[128];
+        size_t hoff = 0;
 
-        sha1_write(&ctx, reinterpret_cast<const char *>(&l3_proto),
-          sizeof(sa_family_t));
-        sha1_write(&ctx, reinterpret_cast<const char *>(&l4_proto),
-          sizeof(uint8_t));
+        auto hwrite = [&](const void *data, size_t len) {
+            if (hoff + len <= sizeof(hdata)) {
+                memcpy(&hdata[hoff], data, len);
+                hoff += len;
+            }
+        };
+
+        hwrite(&l3_proto, sizeof(sa_family_t));
+        hwrite(&l4_proto, sizeof(uint8_t));
 
         const ndAddr *src, *dst;
 
@@ -801,31 +810,28 @@ void ndConntrackFlow::Hash(void) {
         int addr_cmp = src->Compare(*dst);
 
         if (addr_cmp < 0) {
-            sha1_write(&ctx, src->GetAddress(), src->GetAddressSize());
-            sha1_write(&ctx, dst->GetAddress(), dst->GetAddressSize());
+            hwrite(src->GetAddress(), src->GetAddressSize());
+            hwrite(dst->GetAddress(), dst->GetAddressSize());
 
             port = src->GetPort(false);
-            sha1_write(&ctx,
-              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
+            hwrite(&port, sizeof(uint16_t));
             port = dst->GetPort(false);
-            sha1_write(&ctx,
-              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
+            hwrite(&port, sizeof(uint16_t));
         }
         else {
-            sha1_write(&ctx, dst->GetAddress(), dst->GetAddressSize());
-            sha1_write(&ctx, src->GetAddress(), src->GetAddressSize());
+            hwrite(dst->GetAddress(), dst->GetAddressSize());
+            hwrite(src->GetAddress(), src->GetAddressSize());
+
             port = dst->GetPort(false);
-            sha1_write(&ctx,
-              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
+            hwrite(&port, sizeof(uint16_t));
             port = src->GetPort(false);
-            sha1_write(&ctx,
-              reinterpret_cast<const char *>(&port), sizeof(uint16_t));
+            hwrite(&port, sizeof(uint16_t));
         }
 
-        sha1_result(&ctx, digest[i].data());
+        digest[i] = nd_xxh64(hdata, hoff);
 #ifdef _ND_DEBUG_LOG
         string _digest;
-        nd_sha1_to_string(digest[i], _digest);
+        nd_xxh64_to_string(digest[i], _digest);
         nd_dprintf("%s: %lu: [%hhu]:%s\n", TAG, id, i, _digest.c_str());
 #endif
     }
@@ -838,17 +844,11 @@ void ndConntrackFlow::Print(void) {
     // ID
     dls << TAG << ": " << setw(8) << id << ": ";
 
-    // Digest ORIG
-    for (unsigned i = 0; i < 5; i++) {
-        dls << setw(2) << setfill('0') << hex
-            << (int)digest[ndEnumCast(Origin, ORIG)][i];
-    }
-    // Digest REPLY
-    for (unsigned i = 0; i < 5; i++) {
-        dls << ": " << setw(2) << setfill('0') << hex
-            << (int)digest[ndEnumCast(Origin, REPLY)][i];
-    }
-    dls << ": ";
+    string d1, d2;
+    nd_xxh64_to_string(digest[ndEnumCast(Origin, ORIG)], d1);
+    nd_xxh64_to_string(digest[ndEnumCast(Origin, REPLY)], d2);
+
+    dls << d1 << ": " << d2 << ": ";
 
     // L3 proto
     switch (l3_proto) {

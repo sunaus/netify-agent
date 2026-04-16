@@ -502,7 +502,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case 'S':
 #ifndef _ND_LEAN_AND_MEAN
         {
-            ndDigest digest;
+            ndDigestSHA1 digest;
 
             if ((rc = nd_sha1_file(optarg, digest)) == 0) {
                 string sha1;
@@ -2629,7 +2629,7 @@ void ndInstance::DestroyCaptureThreads(
             }
         }
 
-        flow_buckets->Release(b);
+        flow_buckets->ReleaseBucket(b);
     }
 
     nd_dprintf("%s: forcibly expired %lu of %lu flow(s).\n",
@@ -2933,7 +2933,7 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
                     thread_conntrack->UpdateFlowStats(i.second, stamp);
                 }
 
-                flow_buckets->Release(b);
+                flow_buckets->ReleaseBucket(b);
             }
         }
     }
@@ -3080,7 +3080,7 @@ void ndInstance::ProcessFlows(void) {
             i++;
         }
 
-        flow_buckets->Release(b);
+        flow_buckets->ReleaseBucket(b);
     }
 
     size_t flows_new = 0;

@@ -98,7 +98,7 @@ protected:
     typedef std::unordered_map<uint32_t,
         std::shared_ptr<ndConntrackFlow>> IdFlowMap;
     typedef std::unordered_map<ndDigest,
-        std::shared_ptr<ndConntrackFlow>, ndArrayHasher> DigestFlowMap;
+        std::shared_ptr<ndConntrackFlow>> DigestFlowMap;
 
     IdFlowMap id_flows;
     DigestFlowMap digest_flows;

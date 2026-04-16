@@ -49,7 +49,7 @@ public:
     friend std::ostream &operator<<(std::ostream &stream,
       const ndFlowHashCacheEntry &entry) {
         std::string _digest;
-        nd_sha1_to_string(entry.digest, _digest);
+        nd_xxh64_to_string(entry.digest, _digest);
         stream << _digest << "," << entry.app_id << ","
                << static_cast<unsigned>(entry.proto_id);
         return stream;
@@ -61,36 +61,23 @@ public:
 };
 
 class ndFlowHashCache :
-  public ndLRUCache<std::string, ndFlowHashCacheEntry>
+  public ndLRUCache<uint64_t, ndFlowHashCacheEntry>
 {
 public:
     ndFlowHashCache(size_t cache_size);
 
     inline void Insert(const ndFlow::Ptr &flow) {
-        const std::string key(flow->digest_lower.begin(),
-          flow->digest_lower.end());
-        CacheInsert(key, ndFlowHashCacheEntry(flow));
+        CacheInsert(flow->digest_lower, ndFlowHashCacheEntry(flow));
     }
 
     inline void Insert(const ndDigest &digest_lower,
       const ndFlowHashCacheEntry &entry) {
-        const std::string key(digest_lower.begin(),
-          digest_lower.end());
-        CacheInsert(key, entry);
-    }
-
-    inline void Insert(const ndDigestDynamic &digest_lower,
-      const ndFlowHashCacheEntry &entry) {
-        const std::string key(digest_lower.begin(),
-          digest_lower.end());
-        CacheInsert(key, entry);
+        CacheInsert(digest_lower, entry);
     }
 
     inline bool Lookup(const ndDigest &digest_lower,
       ndFlowHashCacheEntry &entry) {
-        const std::string key(digest_lower.begin(),
-          digest_lower.end());
-        return CacheLookup(key, entry);
+        return CacheLookup(digest_lower, entry);
     }
 
     void Load(void);

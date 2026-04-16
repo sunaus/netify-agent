@@ -213,7 +213,7 @@ public:
 
     ndFlags<PrivacyMask> privacy_mask = { PrivacyMask::NONE };
 
-    ndDigest digest_lower = { { 0 } };
+    ndDigest digest_lower = 0;
 
     using DigestVec = std::vector<ndDigest>;
     DigestVec digest_mdata;
@@ -459,7 +459,7 @@ public:
         std::string digest;
 
         if (digest_mdata.empty()) {
-            nd_sha1_to_string(digest_lower, digest);
+            nd_xxh64_to_string(digest_lower, digest);
             serialize(output, { "digest" }, digest);
 
             std::vector<std::string> digests;
@@ -468,12 +468,12 @@ public:
         }
         else {
             auto i = digest_mdata.rbegin();
-            nd_sha1_to_string((*i), digest);
+            nd_xxh64_to_string((*i), digest);
             serialize(output, { "digest" }, digest);
 
             std::vector<std::string> digests;
             for (auto &i : digest_mdata) {
-                nd_sha1_to_string(i, digest);
+                nd_xxh64_to_string(i, digest);
                 digests.push_back(digest);
             }
             serialize(output, { "digest_prev" }, digests);
