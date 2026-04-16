@@ -36,7 +36,7 @@ using namespace std;
 using json = nlohmann::json;
 
 extern "C" {
-    #include "nd-flow-criteria.h"
+#include "nd-flow-criteria.h"
 
     void yyerror(YYLTYPE *yyllocp, yyscan_t scanner, const char *message);
 }
@@ -170,6 +170,28 @@ typedef void* yyscan_t;
 %token FLOW_SRC_PORT FLOW_TAG FLOW_TAG_CATEGORY FLOW_TAG_CATEGORY_ID
 %token FLOW_TLS_CIPHER FLOW_TLS_ECH FLOW_TLS_JA4 FLOW_TLS_VERSION
 %token FLOW_TUNNEL_TYPE FLOW_VLAN_ID
+%token FLOW_APP_IP_OVERRIDE FLOW_APP_PROTO_TWINS
+%token FLOW_DHCP_CLASS_IDENT FLOW_DHCP_FINGERPRINT
+%token FLOW_DST_BYTES FLOW_DST_PACKETS
+%token FLOW_HTTP_URL FLOW_HTTP_USER_AGENT
+%token FLOW_LOCAL_BYTES FLOW_LOCAL_PACKETS
+%token FLOW_MDNS_DOMAIN_NAME
+%token FLOW_NFQ_DST_IFINDEX FLOW_NFQ_SRC_IFINDEX
+%token FLOW_OTHER_BYTES FLOW_OTHER_PACKETS
+%token FLOW_SRC_BYTES FLOW_SRC_PACKETS
+%token FLOW_SSH_CLIENT_AGENT FLOW_SSH_SERVER_AGENT
+%token FLOW_TCP_FIN_ACK FLOW_TCP_LAST_SEQ
+%token FLOW_TLS_ALPN FLOW_TLS_ISSUER_DN FLOW_TLS_SERVER_CN FLOW_TLS_SUBJECT_DN
+%token FLOW_TOTAL_BYTES FLOW_TOTAL_PACKETS
+%token FLOW_TS_FIRST_SEEN FLOW_TS_LAST_SEEN
+%token FLOW_TOTAL_LOCAL_BYTES FLOW_TOTAL_OTHER_BYTES FLOW_TOTAL_SRC_BYTES FLOW_TOTAL_DST_BYTES
+%token FLOW_TOTAL_LOCAL_PACKETS FLOW_TOTAL_OTHER_PACKETS FLOW_TOTAL_SRC_PACKETS FLOW_TOTAL_DST_PACKETS
+%token FLOW_DETECTION_PACKETS
+%token FLOW_LOCAL_RATE FLOW_OTHER_RATE FLOW_SRC_RATE FLOW_DST_RATE
+%token FLOW_TCP_SEQ_ERRORS FLOW_TCP_RESETS FLOW_TCP_RETRANS
+%token FLOW_TLS_CERT_FINGERPRINT FLOW_TLS_ALPN_SERVER FLOW_TLS_PROC_HELLO FLOW_TLS_PROC_CERTIFICATE
+%token FLOW_SMTP_TLS FLOW_BT_INFO_HASH
+%token FLOW_STUN_MAPPED FLOW_STUN_PEER FLOW_STUN_RELAYED FLOW_STUN_RESPONSE FLOW_STUN_OTHER
 
 %token <us_number> FLOW_OTHER_UNKNOWN FLOW_OTHER_UNSUPPORTED
 %token <us_number> FLOW_OTHER_LOCAL FLOW_OTHER_MULTICAST
@@ -229,6 +251,28 @@ typedef void* yyscan_t;
 %type <bool_result> expr_tag_category_id expr_tls_cipher expr_tls_ech
 %type <bool_result> expr_tls_ja4 expr_tls_version expr_tunnel_type
 %type <bool_result> expr_vlan_id
+%type <bool_result> expr_app_ip_override expr_app_proto_twins
+%type <bool_result> expr_dhcp_class_ident expr_dhcp_fingerprint
+%type <bool_result> expr_dst_bytes expr_dst_packets
+%type <bool_result> expr_http_url expr_http_user_agent
+%type <bool_result> expr_local_bytes expr_local_packets
+%type <bool_result> expr_mdns_domain_name
+%type <bool_result> expr_nfq_dst_ifindex expr_nfq_src_ifindex
+%type <bool_result> expr_other_bytes expr_other_packets
+%type <bool_result> expr_src_bytes expr_src_packets
+%type <bool_result> expr_ssh_client_agent expr_ssh_server_agent
+%type <bool_result> expr_tcp_fin_ack expr_tcp_last_seq
+%type <bool_result> expr_tls_alpn expr_tls_issuer_dn expr_tls_server_cn expr_tls_subject_dn
+%type <bool_result> expr_total_bytes expr_total_packets
+%type <bool_result> expr_ts_first_seen expr_ts_last_seen
+%type <bool_result> expr_total_local_bytes expr_total_other_bytes expr_total_src_bytes expr_total_dst_bytes
+%type <bool_result> expr_total_local_packets expr_total_other_packets expr_total_src_packets expr_total_dst_packets
+%type <bool_result> expr_detection_packets
+%type <bool_result> expr_local_rate expr_other_rate expr_src_rate expr_dst_rate
+%type <bool_result> expr_tcp_seq_errors expr_tcp_resets expr_tcp_retrans
+%type <bool_result> expr_tls_cert_fingerprint expr_tls_alpn_server expr_tls_proc_hello expr_tls_proc_certificate
+%type <bool_result> expr_smtp_tls expr_bt_info_hash
+%type <bool_result> expr_stun_mapped expr_stun_peer expr_stun_relayed expr_stun_response expr_stun_other
 
 %%
 
@@ -242,6 +286,62 @@ expr:
     | expr_ip_dscp
     | expr_ip_version
     | expr_vlan_id
+    | expr_app_ip_override
+    | expr_app_proto_twins
+    | expr_dhcp_class_ident
+    | expr_dhcp_fingerprint
+    | expr_dst_bytes
+    | expr_dst_packets
+    | expr_http_url
+    | expr_http_user_agent
+    | expr_local_bytes
+    | expr_local_packets
+    | expr_mdns_domain_name
+    | expr_nfq_dst_ifindex
+    | expr_nfq_src_ifindex
+    | expr_other_bytes
+    | expr_other_packets
+    | expr_src_bytes
+    | expr_src_packets
+    | expr_ssh_client_agent
+    | expr_ssh_server_agent
+    | expr_tcp_fin_ack
+    | expr_tcp_last_seq
+    | expr_tls_alpn
+    | expr_tls_issuer_dn
+    | expr_tls_server_cn
+    | expr_tls_subject_dn
+    | expr_total_bytes
+    | expr_total_packets
+    | expr_ts_first_seen
+    | expr_ts_last_seen
+    | expr_total_local_bytes
+    | expr_total_other_bytes
+    | expr_total_src_bytes
+    | expr_total_dst_bytes
+    | expr_total_local_packets
+    | expr_total_other_packets
+    | expr_total_src_packets
+    | expr_total_dst_packets
+    | expr_detection_packets
+    | expr_local_rate
+    | expr_other_rate
+    | expr_src_rate
+    | expr_dst_rate
+    | expr_tcp_seq_errors
+    | expr_tcp_resets
+    | expr_tcp_retrans
+    | expr_tls_cert_fingerprint
+    | expr_tls_alpn_server
+    | expr_tls_proc_hello
+    | expr_tls_proc_certificate
+    | expr_smtp_tls
+    | expr_bt_info_hash
+    | expr_stun_mapped
+    | expr_stun_peer
+    | expr_stun_relayed
+    | expr_stun_response
+    | expr_stun_other
     | expr_other_type
     | expr_any_mac
     | expr_local_mac
@@ -4016,6 +4116,1969 @@ expr_tag:
     }
     ;
 
+expr_app_ip_override:
+      FLOW_APP_IP_OVERRIDE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_ip_override.load() == true));
+    }
+    | '!' FLOW_APP_IP_OVERRIDE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_ip_override.load() == false));
+    }
+    | FLOW_APP_IP_OVERRIDE CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_ip_override.load() == true));
+    }
+    | FLOW_APP_IP_OVERRIDE CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_ip_override.load() == false));
+    }
+    | FLOW_APP_IP_OVERRIDE CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_ip_override.load() != true));
+    }
+    | FLOW_APP_IP_OVERRIDE CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_ip_override.load() != false));
+    }
+    ;
+
+expr_app_proto_twins:
+      FLOW_APP_PROTO_TWINS {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_proto_twins.load() == true));
+    }
+    | '!' FLOW_APP_PROTO_TWINS {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_proto_twins.load() == false));
+    }
+    | FLOW_APP_PROTO_TWINS CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_proto_twins.load() == true));
+    }
+    | FLOW_APP_PROTO_TWINS CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_proto_twins.load() == false));
+    }
+    | FLOW_APP_PROTO_TWINS CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_proto_twins.load() != true));
+    }
+    | FLOW_APP_PROTO_TWINS CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->flags.app_proto_twins.load() != false));
+    }
+    ;
+
+expr_ts_first_seen:
+      FLOW_TS_FIRST_SEEN CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_first_seen == $3));
+    }
+    | FLOW_TS_FIRST_SEEN CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_first_seen != $3));
+    }
+    | FLOW_TS_FIRST_SEEN CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_first_seen >= $3));
+    }
+    | FLOW_TS_FIRST_SEEN CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_first_seen <= $3));
+    }
+    | FLOW_TS_FIRST_SEEN '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_first_seen > $3));
+    }
+    | FLOW_TS_FIRST_SEEN '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_first_seen < $3));
+    }
+    ;
+
+expr_ts_last_seen:
+      FLOW_TS_LAST_SEEN CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_last_seen.load() == $3));
+    }
+    | FLOW_TS_LAST_SEEN CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_last_seen.load() != $3));
+    }
+    | FLOW_TS_LAST_SEEN CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_last_seen.load() >= $3));
+    }
+    | FLOW_TS_LAST_SEEN CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_last_seen.load() <= $3));
+    }
+    | FLOW_TS_LAST_SEEN '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_last_seen.load() > $3));
+    }
+    | FLOW_TS_LAST_SEEN '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->ts_last_seen.load() < $3));
+    }
+    ;
+
+expr_nfq_src_ifindex:
+      FLOW_NFQ_SRC_IFINDEX CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.src_ifindex == $3));
+    }
+    | FLOW_NFQ_SRC_IFINDEX CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.src_ifindex != $3));
+    }
+    | FLOW_NFQ_SRC_IFINDEX CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.src_ifindex >= $3));
+    }
+    | FLOW_NFQ_SRC_IFINDEX CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.src_ifindex <= $3));
+    }
+    | FLOW_NFQ_SRC_IFINDEX '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.src_ifindex > $3));
+    }
+    | FLOW_NFQ_SRC_IFINDEX '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.src_ifindex < $3));
+    }
+    ;
+
+expr_nfq_dst_ifindex:
+      FLOW_NFQ_DST_IFINDEX CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.dst_ifindex == $3));
+    }
+    | FLOW_NFQ_DST_IFINDEX CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.dst_ifindex != $3));
+    }
+    | FLOW_NFQ_DST_IFINDEX CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.dst_ifindex >= $3));
+    }
+    | FLOW_NFQ_DST_IFINDEX CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.dst_ifindex <= $3));
+    }
+    | FLOW_NFQ_DST_IFINDEX '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.dst_ifindex > $3));
+    }
+    | FLOW_NFQ_DST_IFINDEX '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->nfq.dst_ifindex < $3));
+    }
+    ;
+
+expr_tcp_fin_ack:
+      FLOW_TCP_FIN_ACK CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.fin_ack.load() == $3));
+    }
+    | FLOW_TCP_FIN_ACK CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.fin_ack.load() != $3));
+    }
+    | FLOW_TCP_FIN_ACK CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.fin_ack.load() >= $3));
+    }
+    | FLOW_TCP_FIN_ACK CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.fin_ack.load() <= $3));
+    }
+    | FLOW_TCP_FIN_ACK '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.fin_ack.load() > $3));
+    }
+    | FLOW_TCP_FIN_ACK '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.fin_ack.load() < $3));
+    }
+    ;
+
+expr_tcp_last_seq:
+      FLOW_TCP_LAST_SEQ CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.last_seq.load() == $3));
+    }
+    | FLOW_TCP_LAST_SEQ CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.last_seq.load() != $3));
+    }
+    | FLOW_TCP_LAST_SEQ CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.last_seq.load() >= $3));
+    }
+    | FLOW_TCP_LAST_SEQ CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.last_seq.load() <= $3));
+    }
+    | FLOW_TCP_LAST_SEQ '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.last_seq.load() > $3));
+    }
+    | FLOW_TCP_LAST_SEQ '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->tcp.last_seq.load() < $3));
+    }
+    ;
+
+expr_total_bytes:
+      FLOW_TOTAL_BYTES CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_bytes.load() == $3));
+    }
+    | FLOW_TOTAL_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_bytes.load() != $3));
+    }
+    | FLOW_TOTAL_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_bytes.load() >= $3));
+    }
+    | FLOW_TOTAL_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_bytes.load() <= $3));
+    }
+    | FLOW_TOTAL_BYTES '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_bytes.load() > $3));
+    }
+    | FLOW_TOTAL_BYTES '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_bytes.load() < $3));
+    }
+    ;
+
+expr_total_packets:
+      FLOW_TOTAL_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_packets.load() == $3));
+    }
+    | FLOW_TOTAL_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_packets.load() != $3));
+    }
+    | FLOW_TOTAL_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_packets.load() >= $3));
+    }
+    | FLOW_TOTAL_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_packets.load() <= $3));
+    }
+    | FLOW_TOTAL_PACKETS '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_packets.load() > $3));
+    }
+    | FLOW_TOTAL_PACKETS '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = (_NDFP_flow->stats.total_packets.load() < $3));
+    }
+    ;
+
+expr_local_bytes:
+      FLOW_LOCAL_BYTES CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) == $3));
+    }
+    | FLOW_LOCAL_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) != $3));
+    }
+    | FLOW_LOCAL_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) >= $3));
+    }
+    | FLOW_LOCAL_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) <= $3));
+    }
+    | FLOW_LOCAL_BYTES '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) > $3));
+    }
+    | FLOW_LOCAL_BYTES '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) < $3));
+    }
+    ;
+
+expr_other_bytes:
+      FLOW_OTHER_BYTES CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) == $3));
+    }
+    | FLOW_OTHER_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) != $3));
+    }
+    | FLOW_OTHER_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) >= $3));
+    }
+    | FLOW_OTHER_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) <= $3));
+    }
+    | FLOW_OTHER_BYTES '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) > $3));
+    }
+    | FLOW_OTHER_BYTES '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) < $3));
+    }
+    ;
+
+expr_src_bytes:
+      FLOW_SRC_BYTES CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) == $3));
+    }
+    | FLOW_SRC_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) != $3));
+    }
+    | FLOW_SRC_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) >= $3));
+    }
+    | FLOW_SRC_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) <= $3));
+    }
+    | FLOW_SRC_BYTES '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) > $3));
+    }
+    | FLOW_SRC_BYTES '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_bytes.load() : _NDFP_flow->stats.upper_bytes.load()) < $3));
+    }
+    ;
+
+expr_dst_bytes:
+      FLOW_DST_BYTES CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) == $3));
+    }
+    | FLOW_DST_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) != $3));
+    }
+    | FLOW_DST_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) >= $3));
+    }
+    | FLOW_DST_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) <= $3));
+    }
+    | FLOW_DST_BYTES '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) > $3));
+    }
+    | FLOW_DST_BYTES '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_bytes.load() : _NDFP_flow->stats.lower_bytes.load()) < $3));
+    }
+    ;
+
+expr_local_packets:
+      FLOW_LOCAL_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) == $3));
+    }
+    | FLOW_LOCAL_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) != $3));
+    }
+    | FLOW_LOCAL_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) >= $3));
+    }
+    | FLOW_LOCAL_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) <= $3));
+    }
+    | FLOW_LOCAL_PACKETS '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) > $3));
+    }
+    | FLOW_LOCAL_PACKETS '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) < $3));
+    }
+    ;
+
+expr_other_packets:
+      FLOW_OTHER_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) == $3));
+    }
+    | FLOW_OTHER_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) != $3));
+    }
+    | FLOW_OTHER_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) >= $3));
+    }
+    | FLOW_OTHER_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) <= $3));
+    }
+    | FLOW_OTHER_PACKETS '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) > $3));
+    }
+    | FLOW_OTHER_PACKETS '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) < $3));
+    }
+    ;
+
+expr_src_packets:
+      FLOW_SRC_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) == $3));
+    }
+    | FLOW_SRC_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) != $3));
+    }
+    | FLOW_SRC_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) >= $3));
+    }
+    | FLOW_SRC_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) <= $3));
+    }
+    | FLOW_SRC_PACKETS '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) > $3));
+    }
+    | FLOW_SRC_PACKETS '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_packets.load() : _NDFP_flow->stats.upper_packets.load()) < $3));
+    }
+    ;
+
+expr_dst_packets:
+      FLOW_DST_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) == $3));
+    }
+    | FLOW_DST_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) != $3));
+    }
+    | FLOW_DST_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) >= $3));
+    }
+    | FLOW_DST_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) <= $3));
+    }
+    | FLOW_DST_PACKETS '>' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) > $3));
+    }
+    | FLOW_DST_PACKETS '<' VALUE_UNSIGNED {
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_packets.load() : _NDFP_flow->stats.lower_packets.load()) < $3));
+    }
+    ;
+
+expr_http_user_agent:
+      FLOW_HTTP_USER_AGENT {
+        _NDFP_result = ($$ = (_NDFP_flow->http.user_agent.empty() == false));
+    }
+    | '!' FLOW_HTTP_USER_AGENT {
+        _NDFP_result = ($$ = (_NDFP_flow->http.user_agent.empty() == true));
+    }
+    | FLOW_HTTP_USER_AGENT CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->http.user_agent.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->http.user_agent.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_HTTP_USER_AGENT CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->http.user_agent.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->http.user_agent.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_HTTP_USER_AGENT CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->http.user_agent.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->http.user_agent));
+        }
+    }
+    | FLOW_HTTP_USER_AGENT CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->http.user_agent.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->http.user_agent));
+        }
+    }
+    ;
+
+expr_http_url:
+      FLOW_HTTP_URL {
+        _NDFP_result = ($$ = (_NDFP_flow->http.url.empty() == false));
+    }
+    | '!' FLOW_HTTP_URL {
+        _NDFP_result = ($$ = (_NDFP_flow->http.url.empty() == true));
+    }
+    | FLOW_HTTP_URL CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->http.url.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->http.url.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_HTTP_URL CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->http.url.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->http.url.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_HTTP_URL CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->http.url.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->http.url));
+        }
+    }
+    | FLOW_HTTP_URL CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->http.url.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->http.url));
+        }
+    }
+    ;
+
+expr_dhcp_fingerprint:
+      FLOW_DHCP_FINGERPRINT {
+        _NDFP_result = ($$ = (_NDFP_flow->dhcp.fingerprint.empty() == false));
+    }
+    | '!' FLOW_DHCP_FINGERPRINT {
+        _NDFP_result = ($$ = (_NDFP_flow->dhcp.fingerprint.empty() == true));
+    }
+    | FLOW_DHCP_FINGERPRINT CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->dhcp.fingerprint.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->dhcp.fingerprint.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_DHCP_FINGERPRINT CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->dhcp.fingerprint.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->dhcp.fingerprint.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_DHCP_FINGERPRINT CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->dhcp.fingerprint.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->dhcp.fingerprint));
+        }
+    }
+    | FLOW_DHCP_FINGERPRINT CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->dhcp.fingerprint.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->dhcp.fingerprint));
+        }
+    }
+    ;
+
+expr_dhcp_class_ident:
+      FLOW_DHCP_CLASS_IDENT {
+        _NDFP_result = ($$ = (_NDFP_flow->dhcp.class_ident.empty() == false));
+    }
+    | '!' FLOW_DHCP_CLASS_IDENT {
+        _NDFP_result = ($$ = (_NDFP_flow->dhcp.class_ident.empty() == true));
+    }
+    | FLOW_DHCP_CLASS_IDENT CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->dhcp.class_ident.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->dhcp.class_ident.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_DHCP_CLASS_IDENT CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->dhcp.class_ident.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->dhcp.class_ident.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_DHCP_CLASS_IDENT CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->dhcp.class_ident.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->dhcp.class_ident));
+        }
+    }
+    | FLOW_DHCP_CLASS_IDENT CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->dhcp.class_ident.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->dhcp.class_ident));
+        }
+    }
+    ;
+
+expr_ssh_client_agent:
+      FLOW_SSH_CLIENT_AGENT {
+        _NDFP_result = ($$ = (_NDFP_flow->ssh.client_agent.empty() == false));
+    }
+    | '!' FLOW_SSH_CLIENT_AGENT {
+        _NDFP_result = ($$ = (_NDFP_flow->ssh.client_agent.empty() == true));
+    }
+    | FLOW_SSH_CLIENT_AGENT CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->ssh.client_agent.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->ssh.client_agent.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_SSH_CLIENT_AGENT CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->ssh.client_agent.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->ssh.client_agent.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_SSH_CLIENT_AGENT CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->ssh.client_agent.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->ssh.client_agent));
+        }
+    }
+    | FLOW_SSH_CLIENT_AGENT CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->ssh.client_agent.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->ssh.client_agent));
+        }
+    }
+    ;
+
+expr_ssh_server_agent:
+      FLOW_SSH_SERVER_AGENT {
+        _NDFP_result = ($$ = (_NDFP_flow->ssh.server_agent.empty() == false));
+    }
+    | '!' FLOW_SSH_SERVER_AGENT {
+        _NDFP_result = ($$ = (_NDFP_flow->ssh.server_agent.empty() == true));
+    }
+    | FLOW_SSH_SERVER_AGENT CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->ssh.server_agent.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->ssh.server_agent.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_SSH_SERVER_AGENT CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->ssh.server_agent.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->ssh.server_agent.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_SSH_SERVER_AGENT CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->ssh.server_agent.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->ssh.server_agent));
+        }
+    }
+    | FLOW_SSH_SERVER_AGENT CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->ssh.server_agent.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->ssh.server_agent));
+        }
+    }
+    ;
+
+expr_tls_subject_dn:
+      FLOW_TLS_SUBJECT_DN {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.subject_dn.empty() == false));
+    }
+    | '!' FLOW_TLS_SUBJECT_DN {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.subject_dn.empty() == true));
+    }
+    | FLOW_TLS_SUBJECT_DN CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->tls.subject_dn.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->tls.subject_dn.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_TLS_SUBJECT_DN CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->tls.subject_dn.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->tls.subject_dn.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_TLS_SUBJECT_DN CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->tls.subject_dn.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->tls.subject_dn));
+        }
+    }
+    | FLOW_TLS_SUBJECT_DN CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->tls.subject_dn.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->tls.subject_dn));
+        }
+    }
+    ;
+
+expr_tls_issuer_dn:
+      FLOW_TLS_ISSUER_DN {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.issuer_dn.empty() == false));
+    }
+    | '!' FLOW_TLS_ISSUER_DN {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.issuer_dn.empty() == true));
+    }
+    | FLOW_TLS_ISSUER_DN CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->tls.issuer_dn.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->tls.issuer_dn.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_TLS_ISSUER_DN CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->tls.issuer_dn.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->tls.issuer_dn.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_TLS_ISSUER_DN CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->tls.issuer_dn.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->tls.issuer_dn));
+        }
+    }
+    | FLOW_TLS_ISSUER_DN CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->tls.issuer_dn.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->tls.issuer_dn));
+        }
+    }
+    ;
+
+expr_tls_server_cn:
+      FLOW_TLS_SERVER_CN {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.server_cn.empty() == false));
+    }
+    | '!' FLOW_TLS_SERVER_CN {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.server_cn.empty() == true));
+    }
+    | FLOW_TLS_SERVER_CN CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->tls.server_cn.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->tls.server_cn.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_TLS_SERVER_CN CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->tls.server_cn.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->tls.server_cn.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_TLS_SERVER_CN CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->tls.server_cn.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->tls.server_cn));
+        }
+    }
+    | FLOW_TLS_SERVER_CN CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->tls.server_cn.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->tls.server_cn));
+        }
+    }
+    ;
+
+expr_mdns_domain_name:
+      FLOW_MDNS_DOMAIN_NAME {
+        _NDFP_result = ($$ = (_NDFP_flow->mdns.domain_name.empty() == false));
+    }
+    | '!' FLOW_MDNS_DOMAIN_NAME {
+        _NDFP_result = ($$ = (_NDFP_flow->mdns.domain_name.empty() == true));
+    }
+    | FLOW_MDNS_DOMAIN_NAME CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->mdns.domain_name.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->mdns.domain_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+            }
+        }
+    }
+    | FLOW_MDNS_DOMAIN_NAME CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->mdns.domain_name.empty()) {
+            size_t p; std::string search($3);
+            while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+            if (strncasecmp(search.c_str(), _NDFP_flow->mdns.domain_name.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+            }
+        }
+    }
+    | FLOW_MDNS_DOMAIN_NAME CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        if (! _NDFP_flow->mdns.domain_name.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->mdns.domain_name));
+        }
+    }
+    | FLOW_MDNS_DOMAIN_NAME CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        if (! _NDFP_flow->mdns.domain_name.empty()) {
+            std::string rx($3);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->mdns.domain_name));
+        }
+    }
+    ;
+
+expr_tls_alpn:
+      FLOW_TLS_ALPN {
+        _NDFP_result = ($$ = (! _NDFP_flow->tls.alpn.empty()));
+    }
+    | '!' FLOW_TLS_ALPN {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.alpn.empty()));
+    }
+    | FLOW_TLS_ALPN CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        for (auto &item : _NDFP_flow->tls.alpn) {
+            if (strncasecmp(search.c_str(), item.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+                break;
+            }
+        }
+    }
+    | FLOW_TLS_ALPN CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        for (auto &item : _NDFP_flow->tls.alpn) {
+            if (strncasecmp(search.c_str(), item.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+                break;
+            }
+        }
+    }
+    | FLOW_TLS_ALPN CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        std::string rx($3);
+        for (auto &item : _NDFP_flow->tls.alpn) {
+            if (_NDFP_regex_search(rx, item)) {
+                _NDFP_result = ($$ = true);
+                break;
+            }
+        }
+    }
+    | FLOW_TLS_ALPN CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        std::string rx($3);
+        for (auto &item : _NDFP_flow->tls.alpn) {
+            if (_NDFP_regex_search(rx, item)) {
+                _NDFP_result = ($$ = false);
+                break;
+            }
+        }
+    }
+    ;
+
+expr_tls_proc_hello:
+      FLOW_TLS_PROC_HELLO {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_hello.load() == true));
+    }
+    | '!' FLOW_TLS_PROC_HELLO {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_hello.load() == false));
+    }
+    | FLOW_TLS_PROC_HELLO CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_hello.load() == true));
+    }
+    | FLOW_TLS_PROC_HELLO CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_hello.load() == false));
+    }
+    | FLOW_TLS_PROC_HELLO CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_hello.load() != true));
+    }
+    | FLOW_TLS_PROC_HELLO CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_hello.load() != false));
+    }
+    ;
+
+expr_tls_proc_certificate:
+      FLOW_TLS_PROC_CERTIFICATE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_certificate.load() == true));
+    }
+    | '!' FLOW_TLS_PROC_CERTIFICATE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_certificate.load() == false));
+    }
+    | FLOW_TLS_PROC_CERTIFICATE CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_certificate.load() == true));
+    }
+    | FLOW_TLS_PROC_CERTIFICATE CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_certificate.load() == false));
+    }
+    | FLOW_TLS_PROC_CERTIFICATE CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_certificate.load() != true));
+    }
+    | FLOW_TLS_PROC_CERTIFICATE CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.proc_certificate.load() != false));
+    }
+    ;
+
+expr_smtp_tls:
+      FLOW_SMTP_TLS {
+        _NDFP_result = ($$ = (_NDFP_flow->smtp.tls == true));
+    }
+    | '!' FLOW_SMTP_TLS {
+        _NDFP_result = ($$ = (_NDFP_flow->smtp.tls == false));
+    }
+    | FLOW_SMTP_TLS CMP_EQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->smtp.tls == true));
+    }
+    | FLOW_SMTP_TLS CMP_EQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->smtp.tls == false));
+    }
+    | FLOW_SMTP_TLS CMP_NOTEQUAL VALUE_TRUE {
+        _NDFP_result = ($$ = (_NDFP_flow->smtp.tls != true));
+    }
+    | FLOW_SMTP_TLS CMP_NOTEQUAL VALUE_FALSE {
+        _NDFP_result = ($$ = (_NDFP_flow->smtp.tls != false));
+    }
+    ;
+
+expr_total_local_bytes:
+      FLOW_TOTAL_LOCAL_BYTES CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_BYTES '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_BYTES '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_total_other_bytes:
+      FLOW_TOTAL_OTHER_BYTES CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_BYTES '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_BYTES '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_total_src_bytes:
+      FLOW_TOTAL_SRC_BYTES CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_BYTES '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_BYTES '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_bytes.load() : _NDFP_flow->stats.total_upper_bytes.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_total_dst_bytes:
+      FLOW_TOTAL_DST_BYTES CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_BYTES CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_BYTES CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_BYTES CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_BYTES '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_BYTES '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_bytes.load() : _NDFP_flow->stats.total_lower_bytes.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_total_local_packets:
+      FLOW_TOTAL_LOCAL_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_PACKETS '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_LOCAL_PACKETS '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_total_other_packets:
+      FLOW_TOTAL_OTHER_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_PACKETS '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_OTHER_PACKETS '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_total_src_packets:
+      FLOW_TOTAL_SRC_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_PACKETS '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_SRC_PACKETS '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_lower_packets.load() : _NDFP_flow->stats.total_upper_packets.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_total_dst_packets:
+      FLOW_TOTAL_DST_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_PACKETS '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TOTAL_DST_PACKETS '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.total_upper_packets.load() : _NDFP_flow->stats.total_lower_packets.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_detection_packets:
+      FLOW_DETECTION_PACKETS CMP_EQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = (_NDFP_flow->stats.detection_packets.load() == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_DETECTION_PACKETS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = (_NDFP_flow->stats.detection_packets.load() != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_DETECTION_PACKETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = (_NDFP_flow->stats.detection_packets.load() >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_DETECTION_PACKETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = (_NDFP_flow->stats.detection_packets.load() <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_DETECTION_PACKETS '>' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = (_NDFP_flow->stats.detection_packets.load() > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_DETECTION_PACKETS '<' VALUE_UNSIGNED {
+#ifndef _ND_FLOW_EXPR_DUMMY_MACRO
+        _NDFP_result = ($$ = (_NDFP_flow->stats.detection_packets.load() < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_local_rate:
+      FLOW_LOCAL_RATE CMP_EQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_LOCAL_RATE CMP_NOTEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_LOCAL_RATE CMP_GTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_LOCAL_RATE CMP_LTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_LOCAL_RATE '>' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_LOCAL_RATE '<' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_other_rate:
+      FLOW_OTHER_RATE CMP_EQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_OTHER_RATE CMP_NOTEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_OTHER_RATE CMP_GTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_OTHER_RATE CMP_LTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_OTHER_RATE '>' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_OTHER_RATE '<' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->lower_map == ndFlow::LowerMap::LOCAL ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_src_rate:
+      FLOW_SRC_RATE CMP_EQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_SRC_RATE CMP_NOTEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_SRC_RATE CMP_GTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_SRC_RATE CMP_LTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_SRC_RATE '>' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_SRC_RATE '<' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.lower_rate.load() : _NDFP_flow->stats.upper_rate.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_dst_rate:
+      FLOW_DST_RATE CMP_EQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_DST_RATE CMP_NOTEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_DST_RATE CMP_GTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_DST_RATE CMP_LTHANEQUAL VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_DST_RATE '>' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_DST_RATE '<' VALUE_FLOAT {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = ((_NDFP_flow->origin == ndFlow::Origin::LOWER ?
+          _NDFP_flow->stats.upper_rate.load() : _NDFP_flow->stats.lower_rate.load()) < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_tcp_seq_errors:
+      FLOW_TCP_SEQ_ERRORS CMP_EQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_seq_errors.load() == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TCP_SEQ_ERRORS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_seq_errors.load() != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TCP_SEQ_ERRORS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_seq_errors.load() >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TCP_SEQ_ERRORS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_seq_errors.load() <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TCP_SEQ_ERRORS '>' VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_seq_errors.load() > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TCP_SEQ_ERRORS '<' VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_seq_errors.load() < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_tcp_resets:
+      FLOW_TCP_RESETS CMP_EQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_resets.load() == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TCP_RESETS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_resets.load() != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TCP_RESETS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_resets.load() >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TCP_RESETS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_resets.load() <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TCP_RESETS '>' VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_resets.load() > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TCP_RESETS '<' VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_resets.load() < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_tcp_retrans:
+      FLOW_TCP_RETRANS CMP_EQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_retrans.load() == $3));
+#else
+        _NDFP_result = ($$ = (0 == $3));
+#endif
+    }
+    | FLOW_TCP_RETRANS CMP_NOTEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_retrans.load() != $3));
+#else
+        _NDFP_result = ($$ = (0 != $3));
+#endif
+    }
+    | FLOW_TCP_RETRANS CMP_GTHANEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_retrans.load() >= $3));
+#else
+        _NDFP_result = ($$ = (0 >= $3));
+#endif
+    }
+    | FLOW_TCP_RETRANS CMP_LTHANEQUAL VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_retrans.load() <= $3));
+#else
+        _NDFP_result = ($$ = (0 <= $3));
+#endif
+    }
+    | FLOW_TCP_RETRANS '>' VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_retrans.load() > $3));
+#else
+        _NDFP_result = ($$ = (0 > $3));
+#endif
+    }
+    | FLOW_TCP_RETRANS '<' VALUE_UNSIGNED {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+        _NDFP_result = ($$ = (_NDFP_flow->stats.tcp_retrans.load() < $3));
+#else
+        _NDFP_result = ($$ = (0 < $3));
+#endif
+    }
+    ;
+
+expr_tls_alpn_server:
+      FLOW_TLS_ALPN_SERVER {
+        _NDFP_result = ($$ = (! _NDFP_flow->tls.alpn_server.empty()));
+    }
+    | '!' FLOW_TLS_ALPN_SERVER {
+        _NDFP_result = ($$ = (_NDFP_flow->tls.alpn_server.empty()));
+    }
+    | FLOW_TLS_ALPN_SERVER CMP_EQUAL VALUE_NAME {
+        _NDFP_result = ($$ = false);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        for (auto &item : _NDFP_flow->tls.alpn_server) {
+            if (strncasecmp(search.c_str(), item.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = true);
+                break;
+            }
+        }
+    }
+    | FLOW_TLS_ALPN_SERVER CMP_NOTEQUAL VALUE_NAME {
+        _NDFP_result = ($$ = true);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        for (auto &item : _NDFP_flow->tls.alpn_server) {
+            if (strncasecmp(search.c_str(), item.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+                _NDFP_result = ($$ = false);
+                break;
+            }
+        }
+    }
+    | FLOW_TLS_ALPN_SERVER CMP_EQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = false);
+        std::string rx($3);
+        for (auto &item : _NDFP_flow->tls.alpn_server) {
+            if (_NDFP_regex_search(rx, item)) {
+                _NDFP_result = ($$ = true);
+                break;
+            }
+        }
+    }
+    | FLOW_TLS_ALPN_SERVER CMP_NOTEQUAL VALUE_REGEX {
+        _NDFP_result = ($$ = true);
+        std::string rx($3);
+        for (auto &item : _NDFP_flow->tls.alpn_server) {
+            if (_NDFP_regex_search(rx, item)) {
+                _NDFP_result = ($$ = false);
+                break;
+            }
+        }
+    }
+    ;
+
+expr_tls_cert_fingerprint:
+      FLOW_TLS_CERT_FINGERPRINT CMP_EQUAL VALUE_NAME {
+        std::string digest;
+        nd_sha1_to_string(_NDFP_flow->tls.cert_fingerprint, digest);
+        _NDFP_result = ($$ = false);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        if (strncasecmp(search.c_str(), digest.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+            _NDFP_result = ($$ = true);
+        }
+    }
+    | FLOW_TLS_CERT_FINGERPRINT CMP_NOTEQUAL VALUE_NAME {
+        std::string digest;
+        nd_sha1_to_string(_NDFP_flow->tls.cert_fingerprint, digest);
+        _NDFP_result = ($$ = true);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        if (strncasecmp(search.c_str(), digest.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+            _NDFP_result = ($$ = false);
+        }
+    }
+    ;
+
+expr_bt_info_hash:
+      FLOW_BT_INFO_HASH CMP_EQUAL VALUE_NAME {
+        std::string digest;
+        nd_sha1_to_string(_NDFP_flow->bt.info_hash, digest);
+        _NDFP_result = ($$ = false);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        if (strncasecmp(search.c_str(), digest.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+            _NDFP_result = ($$ = true);
+        }
+    }
+    | FLOW_BT_INFO_HASH CMP_NOTEQUAL VALUE_NAME {
+        std::string digest;
+        nd_sha1_to_string(_NDFP_flow->bt.info_hash, digest);
+        _NDFP_result = ($$ = true);
+        size_t p; std::string search($3);
+        while ((p = search.find_first_of("'\"")) != std::string::npos) search.erase(p, 1);
+        if (strncasecmp(search.c_str(), digest.c_str(), _NDFP_MAX_BUFLEN) == 0) {
+            _NDFP_result = ($$ = false);
+        }
+    }
+    ;
+
+expr_stun_mapped:
+      FLOW_STUN_MAPPED CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.mapped, $3) == true));
+    }
+    | FLOW_STUN_MAPPED CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.mapped, $3) == false));
+    }
+    | FLOW_STUN_MAPPED CMP_EQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.mapped) == true));
+    }
+    | FLOW_STUN_MAPPED CMP_NOTEQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.mapped) == false));
+    }
+    ;
+
+expr_stun_peer:
+      FLOW_STUN_PEER CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.peer, $3) == true));
+    }
+    | FLOW_STUN_PEER CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.peer, $3) == false));
+    }
+    | FLOW_STUN_PEER CMP_EQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.peer) == true));
+    }
+    | FLOW_STUN_PEER CMP_NOTEQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.peer) == false));
+    }
+    ;
+
+expr_stun_relayed:
+      FLOW_STUN_RELAYED CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.relayed, $3) == true));
+    }
+    | FLOW_STUN_RELAYED CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.relayed, $3) == false));
+    }
+    | FLOW_STUN_RELAYED CMP_EQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.relayed) == true));
+    }
+    | FLOW_STUN_RELAYED CMP_NOTEQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.relayed) == false));
+    }
+    ;
+
+expr_stun_response:
+      FLOW_STUN_RESPONSE CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.response, $3) == true));
+    }
+    | FLOW_STUN_RESPONSE CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.response, $3) == false));
+    }
+    | FLOW_STUN_RESPONSE CMP_EQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.response) == true));
+    }
+    | FLOW_STUN_RESPONSE CMP_NOTEQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.response) == false));
+    }
+    ;
+
+expr_stun_other:
+      FLOW_STUN_OTHER CMP_EQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.other, $3) == true));
+    }
+    | FLOW_STUN_OTHER CMP_NOTEQUAL value_addr_ip {
+        _NDFP_result = ($$ = (is_addr_equal(&_NDFP_flow->stun.other, $3) == false));
+    }
+    | FLOW_STUN_OTHER CMP_EQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.other) == true));
+    }
+    | FLOW_STUN_OTHER CMP_NOTEQUAL VALUE_ADDR_TAG {
+        std::string tag($3);
+        size_t p = tag.find_first_of("@");
+        if (p != std::string::npos) tag.erase(p, 1);
+        _NDFP_result = ($$ = (_NDFP_addr_lookup.LookupGroupAddress(tag, _NDFP_flow->stun.other) == false));
+    }
+    ;
 %%
 
 ndFlowParser::ndFlowParser() {
