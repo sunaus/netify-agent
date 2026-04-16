@@ -36,6 +36,9 @@
 
 class ndFlowParser;
 
+using nd_rn4_app = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndApp::Id>;
+using nd_rn6_app = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndApp::Id>;
+
 class ndApplication
 {
 public:
@@ -49,11 +52,11 @@ public:
 };
 
 typedef std::map<std::string, ndApp::Id> nd_apps_t;
-typedef std::map<std::string, ndApplication *> nd_app_tag_map;
+typedef std::map<std::string, std::shared_ptr<ndApplication>> nd_app_tag_map;
 typedef std::unordered_set<std::string> nd_tlds_t;
-typedef std::unordered_map<ndApp::Id, ndApplication *, ndEnumHasher> nd_app_id_map;
+typedef std::unordered_map<ndApp::Id, std::shared_ptr<ndApplication>, ndEnumHasher> nd_app_id_map;
 typedef std::unordered_map<std::string, ndApp::Id> nd_domains_t;
-typedef std::unordered_map<std::string, std::pair<std::regex *, std::string>> nd_domain_rx_xforms_t;
+typedef std::unordered_map<std::string, std::pair<std::unique_ptr<std::regex>, std::string>> nd_domain_rx_xforms_t;
 
 class ndSoftDissector
 {
@@ -150,6 +153,8 @@ protected:
       const std::string &expr);
 
 private:
-    void *app_networks4, *app_networks6;
-    void *app_overrides4, *app_overrides6;
+    std::unique_ptr<nd_rn4_app> app_networks4;
+    std::unique_ptr<nd_rn6_app> app_networks6;
+    std::unique_ptr<nd_rn4_app> app_overrides4;
+    std::unique_ptr<nd_rn6_app> app_overrides6;
 };

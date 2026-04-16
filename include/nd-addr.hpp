@@ -24,6 +24,7 @@
 #include <bitset>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <mutex>
 #include <set>
 #include <string>
@@ -568,6 +569,9 @@ public:
     }
 };
 
+using nd_rn4_network = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, bool>;
+using nd_rn6_network = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, bool>;
+
 template <size_t N>
 std::bitset<N> &operator-=(std::bitset<N> &x, const size_t y) {
     bool borrow = false;
@@ -737,8 +741,8 @@ protected:
     using GroupAddrSet = std::unordered_set<
         ndAddr, ndAddr::ndAddrHash, ndAddr::ndAddrEqual>;
     std::unordered_map<std::string, GroupAddrSet> group_addrs;
-    std::unordered_map<std::string, void *> group_networks4;
-    std::unordered_map<std::string, void *> group_networks6;
+    std::unordered_map<std::string, std::unique_ptr<nd_rn4_network>> group_networks4;
+    std::unordered_map<std::string, std::unique_ptr<nd_rn6_network>> group_networks6;
     std::unordered_map<std::string, std::string> group_filenames;
 };
 

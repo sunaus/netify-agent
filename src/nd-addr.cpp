@@ -36,9 +36,6 @@
 
 using namespace std;
 
-using nd_rn4_network = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, bool>;
-using nd_rn6_network = radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, bool>;
-
 bool ndAddr::Create(ndAddr &a, const string &addr) {
     a.Reset();
     string _addr(addr);
@@ -907,10 +904,10 @@ bool ndAddrLookup::AddGroupAddress(const string &tag, const ndAddr &addr) {
         nd_rn4_network *rn4 = nullptr;
         auto group = group_networks4.find(tag);
         if (group == group_networks4.end()) {
-            rn4 = new nd_rn4_network;
-            group_networks4.emplace(tag, static_cast<void *>(rn4));
+            auto [it, inserted] = group_networks4.emplace(tag, make_unique<nd_rn4_network>());
+            rn4 = it->second.get();
         }
-        else rn4 = static_cast<nd_rn4_network *>(group->second);
+        else rn4 = group->second.get();
 
         ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr)) {
@@ -924,10 +921,10 @@ bool ndAddrLookup::AddGroupAddress(const string &tag, const ndAddr &addr) {
         nd_rn6_network *rn6 = nullptr;
         auto group = group_networks6.find(tag);
         if (group == group_networks6.end()) {
-            rn6 = new nd_rn6_network;
-            group_networks6.emplace(tag, static_cast<void *>(rn6));
+            auto [it, inserted] = group_networks6.emplace(tag, make_unique<nd_rn6_network>());
+            rn6 = it->second.get();
         }
-        else rn6 = static_cast<nd_rn6_network *>(group->second);
+        else rn6 = group->second.get();
 
         ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr)) {
@@ -950,25 +947,13 @@ bool ndAddrLookup::RemoveGroup(const string &tag) {
     ul.release();
     ul = unique_lock<recursive_mutex>{ lock_group_networks4 };
 
-    auto networks4 = group_networks4.find(tag);
-    if (networks4 != group_networks4.end()) {
-        nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(
-          networks4->second);
-        delete rn4;
-        group_networks4.erase(networks4);
-    }
+    group_networks4.erase(tag);
 
     ul.unlock();
     ul.release();
     ul = unique_lock<recursive_mutex>{ lock_group_networks6 };
 
-    auto networks6 = group_networks6.find(tag);
-    if (networks6 != group_networks6.end()) {
-        nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(
-          networks6->second);
-        delete rn6;
-        group_networks6.erase(networks6);
-    }
+    group_networks6.erase(tag);
 
     ul.unlock();
     ul.release();
@@ -1010,7 +995,7 @@ bool ndAddrLookup::RemoveGroupAddress(
 
         auto group = group_networks4.find(tag);
         if (group == group_networks4.end()) return false;
-        nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(group->second);
+        nd_rn4_network *rn4 = group->second.get();
 
         nd_rn4_network::iterator it;
         ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
@@ -1030,7 +1015,7 @@ bool ndAddrLookup::RemoveGroupAddress(
 
         auto group = group_networks6.find(tag);
         if (group == group_networks6.end()) return false;
-        nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(group->second);
+        nd_rn6_network *rn6 = group->second.get();
 
         nd_rn6_network::iterator it;
         ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
@@ -1071,8 +1056,7 @@ bool ndAddrLookup::LookupGroupAddress(
 
         auto group = group_networks4.find(tag);
         if (group != group_networks4.end()) {
-            nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(
-              group->second);
+            nd_rn4_network *rn4 = group->second.get();
 
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
@@ -1087,8 +1071,7 @@ bool ndAddrLookup::LookupGroupAddress(
 
         auto group = group_networks6.find(tag);
         if (group != group_networks6.end()) {
-            nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(
-              group->second);
+            nd_rn6_network *rn6 = group->second.get();
 
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
@@ -1143,17 +1126,13 @@ bool ndAddrLookup::LoadGroupAddress(
     ul.release();
     ul = unique_lock<recursive_mutex>{ lock_group_networks4 };
 
-    auto networks4 = group_networks4.find(tag);
-    if (networks4 != group_networks4.end())
-        group_networks4.erase(networks4);
+    group_networks4.erase(tag);
 
     ul.unlock();
     ul.release();
     ul = unique_lock<recursive_mutex>{ lock_group_networks6 };
 
-    auto networks6 = group_networks6.find(tag);
-    if (networks6 != group_networks6.end())
-        group_networks6.erase(networks6);
+    group_networks6.erase(tag);
 
     ul.unlock();
     ul.release();
@@ -1204,7 +1183,7 @@ bool ndAddrLookup::SaveGroupAddress(
     if (! group_networks4.empty()) {
         auto group = group_networks4.find(tag);
         if (group != group_networks4.end()) {
-            nd_rn4_network *rn4 = static_cast<nd_rn4_network *>(group->second);
+            nd_rn4_network *rn4 = group->second.get();
 
             for (auto &it : (*rn4)) {
                 string ip;
@@ -1222,8 +1201,8 @@ bool ndAddrLookup::SaveGroupAddress(
 
     if (! group_networks6.empty()) {
         auto group = group_networks6.find(tag);
-        if (group == group_networks6.end()) {
-            nd_rn6_network *rn6 = static_cast<nd_rn6_network *>(group->second);
+        if (group != group_networks6.end()) {
+            nd_rn6_network *rn6 = group->second.get();
 
             for (auto &it : (*rn6)) {
                 string ip;
