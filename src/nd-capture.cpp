@@ -1228,13 +1228,53 @@ nd_process_ip:
     nf->ts_last_seen = ts_pkt;
 
     if (nf->ip_protocol == IPPROTO_TCP) {
-        if (packet->l4.tcp->th_seq <= nf->tcp.last_seq) {
-            nf->tcp.last_seq = packet->l4.tcp->th_seq;
+        uint32_t seq = ntohl(packet->l4.tcp->th_seq);
+        uint32_t seq_len = pkt_len;
+
+        if (packet->l4.tcp->th_flags & (TH_SYN | TH_FIN)) {
+            seq_len++;
+        }
+
+        std::atomic<uint32_t>& next_seq_ref = (addr_cmp < 0) ?
+          nf->tcp.lower_next_seq : nf->tcp.upper_next_seq;
+        uint32_t next_seq = next_seq_ref.load();
+
+        if (next_seq == 0) {
+            next_seq_ref.store(seq + seq_len);
+            nf->tcp.last_seq = seq;
+        }
+        else {
+            if ((int32_t)(seq - next_seq) == 0) {
+                if (seq_len > 0) {
+                    next_seq_ref.store(seq + seq_len);
+                }
+                nf->tcp.last_seq = seq;
+            }
+            else if ((int32_t)(seq - next_seq) < 0) {
+                if (seq_len > 0 && (int32_t)(seq + seq_len - next_seq) <= 0) {
 #ifdef _ND_ENABLE_EXTENDED_STATS
-            nf->stats.tcp_seq_errors++;
-            // TODO: tcp_retrans detection
+                    nf->stats.tcp_retrans++;
 #endif
-            stats.pkt.tcp_seq_errors++;
+                }
+                else {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+                    nf->stats.tcp_seq_errors++;
+#endif
+                    stats.pkt.tcp_seq_errors++;
+                    if (seq_len > 0) {
+                        next_seq_ref.store(seq + seq_len);
+                    }
+                }
+                nf->tcp.last_seq = seq;
+            }
+            else {
+#ifdef _ND_ENABLE_EXTENDED_STATS
+                nf->stats.tcp_seq_errors++;
+#endif
+                stats.pkt.tcp_seq_errors++;
+                next_seq_ref.store(seq + seq_len);
+                nf->tcp.last_seq = seq;
+            }
         }
 
         if ((packet->l4.tcp->th_flags & TH_FIN) &&

@@ -237,6 +237,8 @@ public:
     struct {
         std::atomic<uint8_t> fin_ack = { 0 };
         std::atomic<uint32_t> last_seq = { 0 };
+        std::atomic<uint32_t> lower_next_seq = { 0 };
+        std::atomic<uint32_t> upper_next_seq = { 0 };
     } tcp;
 
 #ifdef _ND_ENABLE_CONNTRACK
@@ -370,6 +372,10 @@ public:
 
     inline void Reset(bool full = false) {
         stats.Reset();
+        tcp.last_seq = 0;
+        tcp.lower_next_seq = 0;
+        tcp.upper_next_seq = 0;
+        tcp.fin_ack = 0;
         if (full) vlan_id = 0;
     }
 

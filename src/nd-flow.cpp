@@ -88,6 +88,8 @@ ndFlow::ndFlow(const ndFlow &flow)
     digest_mdata.push_back(digest_lower);
     tcp.last_seq = flow.tcp.last_seq.load();
     tcp.fin_ack = flow.tcp.fin_ack.load();
+    tcp.lower_next_seq = flow.tcp.lower_next_seq.load();
+    tcp.upper_next_seq = flow.tcp.upper_next_seq.load();
 }
 
 ndFlow::~ndFlow() {
