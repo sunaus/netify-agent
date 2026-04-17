@@ -429,6 +429,29 @@ void ndNetlinkConntrackThread::Dump(bool zero_counters) {
     ct_dump.Dump(zero_counters);
 }
 
+void ndNetlinkConntrackThread::Sweep(time_t timeout) {
+    lock_guard<mutex> lg(map_lock);
+    time_t now = nd_time_monotonic();
+    uint32_t purged = 0;
+
+    for (auto it = id_flows.begin(); it != id_flows.end(); ) {
+        if (now - it->second->updated_at > timeout) {
+            digest_flows.erase(it->second->digest[ndEnumCast(ndConntrackFlow::Origin, ORIG)]);
+            digest_flows.erase(it->second->digest[ndEnumCast(ndConntrackFlow::Origin, REPLY)]);
+            it = id_flows.erase(it);
+            purged++;
+        } else {
+            ++it;
+        }
+    }
+
+    if (purged > 0) {
+        nd_dprintf("%s: swept %u stale conntrack flows (timeout: %ld seconds).\n",
+            TAG, purged, (long)timeout);
+        stats.destroyed += purged;
+    }
+}
+
 void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
 
     uint8_t hdata[128];
@@ -474,7 +497,7 @@ void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
         }
 
         stats.matches++;
-        auto ct_flow = *digest_flow->second;
+        auto &ct_flow = *digest_flow->second;
 
         ct_flow.updated_at = nd_time_monotonic();
 

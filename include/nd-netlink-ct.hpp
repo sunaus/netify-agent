@@ -48,6 +48,7 @@ public:
     virtual int ProcessMessage(const struct nlmsghdr *nlh);
 
     void Dump(bool zero_counters = false);
+    void Sweep(time_t timeout);
 
     void UpdateFlow(ndFlow::Ptr &flow);
 #if defined(_ND_ENABLE_CONNTRACK_COUNTERS)

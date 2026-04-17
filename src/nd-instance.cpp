@@ -2942,6 +2942,12 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
     }
 #endif // _ND_ENABLE_CONNTRACK_COUNTERS
 
+#ifdef _ND_ENABLE_CONNTRACK
+    if (ndGC_USE_CONNTRACK && thread_conntrack) {
+        thread_conntrack->Sweep(max((time_t)60, (time_t)ndGC.update_interval * 4));
+    }
+#endif
+
     plugins.BroadcastEvent(ndPlugin::Type::BASE,
       ndPlugin::Event::STATUS_UPDATE);
 
