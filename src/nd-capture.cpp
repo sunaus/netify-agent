@@ -311,6 +311,10 @@ ndCaptureThread::ProcessPacket(ndPacket *packet) {
     uint8_t vlan_packet = 0;
     int addr_cmp = 0;
 
+    const void *lower_ip = nullptr, *upper_ip = nullptr;
+    uint16_t lower_port = 0, upper_port = 0;
+    const uint8_t *lower_mac = nullptr, *upper_mac = nullptr;
+
     static constexpr uint32_t ts_usec_divisor = (1000000 / ND_DETECTION_TICKS);
     uint64_t ts_pkt = ((uint64_t)packet->tv_sec) * ND_DETECTION_TICKS +
       packet->tv_usec / ts_usec_divisor;
@@ -687,20 +691,12 @@ nd_process_ip:
         else addr_cmp = 0;
 
         if (addr_cmp < 0) {
-            ndAddr::Create(flow.lower_addr,
-              (const struct in_addr *)_ND_ADDROFF(packet->l3.ip4,
-                struct ip, ip_src));
-            ndAddr::Create(flow.upper_addr,
-              (const struct in_addr *)_ND_ADDROFF(packet->l3.ip4,
-                struct ip, ip_dst));
+            lower_ip = (const void *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_src);
+            upper_ip = (const void *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_dst);
         }
         else {
-            ndAddr::Create(flow.lower_addr,
-              (const struct in_addr *)_ND_ADDROFF(packet->l3.ip4,
-                struct ip, ip_dst));
-            ndAddr::Create(flow.upper_addr,
-              (const struct in_addr *)_ND_ADDROFF(packet->l3.ip4,
-                struct ip, ip_src));
+            lower_ip = (const void *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_dst);
+            upper_ip = (const void *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_src);
         }
 
         l4 = reinterpret_cast<const uint8_t *>(l3 + l3_len);
@@ -747,20 +743,12 @@ nd_process_ip:
         }
 
         if (addr_cmp < 0) {
-            ndAddr::Create(flow.lower_addr,
-              (const struct in6_addr *)_ND_ADDROFF(packet->l3.ip6,
-                struct ip6_hdr, ip6_src));
-            ndAddr::Create(flow.upper_addr,
-              (const struct in6_addr *)_ND_ADDROFF(packet->l3.ip6,
-                struct ip6_hdr, ip6_dst));
+            lower_ip = (const void *)_ND_ADDROFF(packet->l3.ip6, struct ip6_hdr, ip6_src);
+            upper_ip = (const void *)_ND_ADDROFF(packet->l3.ip6, struct ip6_hdr, ip6_dst);
         }
         else {
-            ndAddr::Create(flow.lower_addr,
-              (const struct in6_addr *)_ND_ADDROFF(packet->l3.ip6,
-                struct ip6_hdr, ip6_dst));
-            ndAddr::Create(flow.upper_addr,
-              (const struct in6_addr *)_ND_ADDROFF(packet->l3.ip6,
-                struct ip6_hdr, ip6_src));
+            lower_ip = (const void *)_ND_ADDROFF(packet->l3.ip6, struct ip6_hdr, ip6_dst);
+            upper_ip = (const void *)_ND_ADDROFF(packet->l3.ip6, struct ip6_hdr, ip6_src);
         }
     }
     else {
@@ -776,70 +764,27 @@ nd_process_ip:
     }
 
     if (dl_type == DLT_EN10MB) {
-        if (ndCT_TYPE(
-            iface->capture_type.flags) != ndCaptureType::NFQ) {
+        if (ndCT_TYPE(iface->capture_type.flags) != ndCaptureType::NFQ) {
             // Assign upper/lower MACs for all by NFQ capture sources...
-            ndAddr::Create(flow.lower_mac,
-              (addr_cmp < 0) ?
-                packet->l2.eth->ether_shost : packet->l2.eth->ether_dhost, ETH_ALEN);
-            ndAddr::Create(flow.upper_mac,
-              (addr_cmp < 0) ?
-                packet->l2.eth->ether_dhost : packet->l2.eth->ether_shost, ETH_ALEN);
+            lower_mac = (addr_cmp < 0) ? packet->l2.eth->ether_shost : packet->l2.eth->ether_dhost;
+            upper_mac = (addr_cmp < 0) ? packet->l2.eth->ether_dhost : packet->l2.eth->ether_shost;
         }
         else {
             // NFQ: If we have a source MAC, use it.
             if (ndFlagBoolean(packet->status,
                 ndPacket::StatusFlags::NFQ_HWADDR_SRC)) {
-                ndAddr::Create(
-                    (addr_cmp < 0) ? flow.lower_mac : flow.upper_mac,
-                    packet->l2.eth->ether_shost, ETH_ALEN);
-            }
-            else {
-                // No source MAC, try to find one by looking up the IP in
-                // the ARP cache.
-                if (addr_cmp < 0) {
-                    flow.lower_mac.Reset();
-                    ndi.addr_lookup.LookupNeighbor(flow.lower_addr, flow.lower_mac);
-                }
-                else {
-                    flow.upper_mac.Reset();
-                    ndi.addr_lookup.LookupNeighbor(flow.upper_addr, flow.upper_mac);
-                }
+                if (addr_cmp < 0) lower_mac = packet->l2.eth->ether_shost;
+                else upper_mac = packet->l2.eth->ether_shost;
             }
 
             // If we have a destination MAC, initially assign it...
             if (ndFlagBoolean(packet->status,
                 ndPacket::StatusFlags::NFQ_HWADDR_DST)) {
-                ndAddr::Create(
-                    (addr_cmp < 0) ? flow.upper_mac : flow.lower_mac,
-                    packet->l2.eth->ether_dhost, ETH_ALEN);
+                if (addr_cmp < 0) upper_mac = packet->l2.eth->ether_dhost;
+                else lower_mac = packet->l2.eth->ether_dhost;
             }
 
-            // Now try to refine it by looking up the destination IP in
-            // the ARP cache.
-            if (addr_cmp < 0) {
-                ndAddr addr;
-                if (ndi.addr_lookup.LookupNeighbor(flow.upper_addr, addr))
-                    flow.upper_mac = addr;
-            }
-            else {
-                ndAddr addr;
-                if (ndi.addr_lookup.LookupNeighbor(flow.lower_addr, addr))
-                    flow.lower_mac = addr;
-            }
-#ifdef _ND_LOG_NFQ_DEBUG
-            if (! flow.lower_mac.IsValid()) {
-                nd_dprintf("%s: lower MAC not found for IP: %s\n",
-                    tag.c_str(), flow.lower_addr.GetString().c_str()
-                );
-            }
-
-            if (! flow.upper_mac.IsValid()) {
-                nd_dprintf("%s: upper MAC not found for IP: %s\n",
-                    tag.c_str(), flow.upper_addr.GetString().c_str()
-                );
-            }
-#endif
+            // We delay ARP lookup for missing MACs to new flow creation phase
         }
     }
 
@@ -950,21 +895,21 @@ nd_process_ip:
             }
 
             if (addr_cmp < 0) {
-                flow.lower_addr.SetPort(packet->l4.tcp->th_sport);
-                flow.upper_addr.SetPort(packet->l4.tcp->th_dport);
+                lower_port = packet->l4.tcp->th_sport;
+                upper_port = packet->l4.tcp->th_dport;
             }
             else if (addr_cmp > 0) {
-                flow.lower_addr.SetPort(packet->l4.tcp->th_dport);
-                flow.upper_addr.SetPort(packet->l4.tcp->th_sport);
+                lower_port = packet->l4.tcp->th_dport;
+                upper_port = packet->l4.tcp->th_sport;
             }
             else {
                 if (packet->l4.tcp->th_sport < packet->l4.tcp->th_dport) {
-                    flow.lower_addr.SetPort(packet->l4.tcp->th_sport);
-                    flow.upper_addr.SetPort(packet->l4.tcp->th_dport);
+                    lower_port = packet->l4.tcp->th_sport;
+                    upper_port = packet->l4.tcp->th_dport;
                 }
                 else {
-                    flow.lower_addr.SetPort(packet->l4.tcp->th_dport);
-                    flow.upper_addr.SetPort(packet->l4.tcp->th_sport);
+                    lower_port = packet->l4.tcp->th_dport;
+                    upper_port = packet->l4.tcp->th_sport;
                 }
             }
 
@@ -991,21 +936,21 @@ nd_process_ip:
         packet->l4.udp = reinterpret_cast<const struct udphdr *>(l4);
 
         if (addr_cmp < 0) {
-            flow.lower_addr.SetPort(packet->l4.udp->uh_sport);
-            flow.upper_addr.SetPort(packet->l4.udp->uh_dport);
+            lower_port = packet->l4.udp->uh_sport;
+            upper_port = packet->l4.udp->uh_dport;
         }
         else if (addr_cmp > 0) {
-            flow.lower_addr.SetPort(packet->l4.udp->uh_dport);
-            flow.upper_addr.SetPort(packet->l4.udp->uh_sport);
+            lower_port = packet->l4.udp->uh_dport;
+            upper_port = packet->l4.udp->uh_sport;
         }
         else {
             if (packet->l4.udp->uh_sport < packet->l4.udp->uh_dport) {
-                flow.lower_addr.SetPort(packet->l4.udp->uh_sport);
-                flow.upper_addr.SetPort(packet->l4.udp->uh_dport);
+                lower_port = packet->l4.udp->uh_sport;
+                upper_port = packet->l4.udp->uh_dport;
             }
             else {
-                flow.lower_addr.SetPort(packet->l4.udp->uh_dport);
-                flow.upper_addr.SetPort(packet->l4.udp->uh_sport);
+                lower_port = packet->l4.udp->uh_dport;
+                upper_port = packet->l4.udp->uh_sport;
             }
         }
 
@@ -1037,7 +982,42 @@ nd_process_ip:
         break;
     }
 
-    flow.Hash(tag);
+    uint8_t hdata[128];
+    size_t hoff = 0;
+
+    auto hwrite = [&](const void *data, size_t len) {
+        if (hoff + len <= sizeof(hdata)) {
+            memcpy(&hdata[hoff], data, len);
+            hoff += len;
+        }
+    };
+
+    hwrite(tag.c_str(), tag.size());
+    hwrite(&flow.ip_version, 1);
+    hwrite(&flow.ip_protocol, 1);
+    uint16_t vlan_be = htons(flow.vlan_id);
+    hwrite(&vlan_be, 2);
+
+    if (flow.ip_version == 4) {
+        hwrite(lower_ip, 4);
+        hwrite(upper_ip, 4);
+
+        if (lower_mac != nullptr) {
+            uint32_t s_ip; memcpy(&s_ip, lower_ip, 4);
+            uint32_t d_ip; memcpy(&d_ip, upper_ip, 4);
+            if (s_ip == 0 && d_ip == 0xffffffff)
+                hwrite(lower_mac, ETH_ALEN);
+        }
+    }
+    else {
+        hwrite(lower_ip, 16);
+        hwrite(upper_ip, 16);
+    }
+
+    hwrite(&lower_port, 2);
+    hwrite(&upper_port, 2);
+
+    flow.digest_lower = nd_xxh64(hdata, hoff);
 
     nf = ndi.flow_buckets->Lookup(flow.digest_lower, true);
 
@@ -1106,6 +1086,30 @@ nd_process_ip:
 
             ndi.flow_buckets->Release(flow.digest_lower);
             return packet;
+        }
+
+        if (flow.ip_version == 4) {
+            ndAddr::Create(flow.lower_addr, (const struct in_addr *)lower_ip);
+            ndAddr::Create(flow.upper_addr, (const struct in_addr *)upper_ip);
+        } else {
+            ndAddr::Create(flow.lower_addr, (const struct in6_addr *)lower_ip);
+            ndAddr::Create(flow.upper_addr, (const struct in6_addr *)upper_ip);
+        }
+        flow.lower_addr.SetPort(ntohs(lower_port));
+        flow.upper_addr.SetPort(ntohs(upper_port));
+
+        if (dl_type == DLT_EN10MB) {
+            if (lower_mac) ndAddr::Create(flow.lower_mac, lower_mac, ETH_ALEN);
+            else if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::NFQ) {
+                flow.lower_mac.Reset();
+                ndi.addr_lookup.LookupNeighbor(flow.lower_addr, flow.lower_mac);
+            }
+
+            if (upper_mac) ndAddr::Create(flow.upper_mac, upper_mac, ETH_ALEN);
+            else if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::NFQ) {
+                flow.upper_mac.Reset();
+                ndi.addr_lookup.LookupNeighbor(flow.upper_addr, flow.upper_mac);
+            }
         }
 
         nf = make_shared<ndFlow>(flow);
