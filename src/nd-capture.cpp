@@ -296,8 +296,9 @@ void ndCaptureThread::CompileFilter(
     }
 }
 
+template <int DL_TYPE>
 const ndPacket *
-ndCaptureThread::ProcessPacket(ndPacket *packet) {
+ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
     ndFlow::Ptr nf;
 #ifdef _ND_DISSECT_GTP
     const struct nd_gtpv1_header_t *hdr_gtpv1 = nullptr;
@@ -351,8 +352,7 @@ ndCaptureThread::ProcessPacket(ndPacket *packet) {
     if (packet->length > stats.pkt.maxlen)
         stats.pkt.maxlen = packet->length;
 
-    switch (dl_type) {
-    case DLT_NULL:
+    if constexpr (DL_TYPE == DLT_NULL) {
         if (packet->caplen < sizeof(uint32_t)) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
@@ -385,9 +385,8 @@ ndCaptureThread::ProcessPacket(ndPacket *packet) {
         }
 
         l2_len = 4;
-        break;
-
-    case DLT_EN10MB:
+    }
+    else if constexpr (DL_TYPE == DLT_EN10MB) {
         if (packet->caplen < sizeof(struct ether_header)) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
@@ -419,10 +418,8 @@ ndCaptureThread::ProcessPacket(ndPacket *packet) {
 #endif
             return packet;
         }
-
-        break;
-
-    case DLT_LINUX_SLL:
+    }
+    else if constexpr (DL_TYPE == DLT_LINUX_SLL) {
         if (packet->caplen < sizeof(struct sll_header)) {
             stats.pkt.discard++;
             stats.pkt.discard_bytes += packet->length;
@@ -437,16 +434,12 @@ ndCaptureThread::ProcessPacket(ndPacket *packet) {
           packet->data);
         type = packet->l2.sll->sll_protocol;
         l2_len = SLL_HDR_LEN;
-        break;
-
-    case DLT_RAW:
-    case DLT_IPV4:
-    case DLT_IPV6:
+    }
+    else if constexpr (DL_TYPE == DLT_RAW || DL_TYPE == DLT_IPV4 || DL_TYPE == DLT_IPV6) {
         l2_len = 0;
         // type will be set to ETHERTYPE_IP/V6 below...
-        break;
-
-    default:
+    }
+    else {
         stats.pkt.discard++;
         stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
@@ -763,7 +756,7 @@ nd_process_ip:
         return packet;
     }
 
-    if (dl_type == DLT_EN10MB) {
+    if constexpr (DL_TYPE == DLT_EN10MB) {
         if (ndCT_TYPE(iface->capture_type.flags) != ndCaptureType::NFQ) {
             // Assign upper/lower MACs for all by NFQ capture sources...
             lower_mac = (addr_cmp < 0) ? packet->l2.eth->ether_shost : packet->l2.eth->ether_dhost;
@@ -1098,7 +1091,7 @@ nd_process_ip:
         flow.lower_addr.SetPort(ntohs(lower_port));
         flow.upper_addr.SetPort(ntohs(upper_port));
 
-        if (dl_type == DLT_EN10MB) {
+        if constexpr (DL_TYPE == DLT_EN10MB) {
             if (lower_mac) ndAddr::Create(flow.lower_mac, lower_mac, ETH_ALEN);
             else if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::NFQ) {
                 flow.lower_mac.Reset();
@@ -1552,4 +1545,28 @@ bool ndCaptureThread::ProcessDNSPacket(ndFlow::Ptr &flow,
     }
 
     return false;
+}
+
+template const ndPacket *ndCaptureThread::ProcessPacketImpl<DLT_EN10MB>(ndPacket *packet);
+template const ndPacket *ndCaptureThread::ProcessPacketImpl<DLT_LINUX_SLL>(ndPacket *packet);
+template const ndPacket *ndCaptureThread::ProcessPacketImpl<DLT_NULL>(ndPacket *packet);
+template const ndPacket *ndCaptureThread::ProcessPacketImpl<DLT_RAW>(ndPacket *packet);
+template const ndPacket *ndCaptureThread::ProcessPacketImpl<DLT_IPV4>(ndPacket *packet);
+template const ndPacket *ndCaptureThread::ProcessPacketImpl<DLT_IPV6>(ndPacket *packet);
+
+const ndPacket *ndCaptureThread::ProcessPacket(ndPacket *packet) {
+    if (__builtin_expect(process_packet_func == nullptr, 0)) {
+        switch (dl_type) {
+            case DLT_EN10MB: process_packet_func = &ndCaptureThread::ProcessPacketImpl<DLT_EN10MB>; break;
+            case DLT_LINUX_SLL: process_packet_func = &ndCaptureThread::ProcessPacketImpl<DLT_LINUX_SLL>; break;
+            case DLT_NULL: process_packet_func = &ndCaptureThread::ProcessPacketImpl<DLT_NULL>; break;
+            case DLT_RAW: process_packet_func = &ndCaptureThread::ProcessPacketImpl<DLT_RAW>; break;
+            case DLT_IPV4: process_packet_func = &ndCaptureThread::ProcessPacketImpl<DLT_IPV4>; break;
+            case DLT_IPV6: process_packet_func = &ndCaptureThread::ProcessPacketImpl<DLT_IPV6>; break;
+            default:
+                nd_dprintf("%s: unsupported datalink type: %d\n", tag.c_str(), dl_type);
+                throw ndException("%s: unsupported datalink type: %d", tag.c_str(), dl_type);
+        }
+    }
+    return (this->*process_packet_func)(packet);
 }
