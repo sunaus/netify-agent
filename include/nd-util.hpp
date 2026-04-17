@@ -52,7 +52,11 @@
 #include "nd-types.hpp"
 
 constexpr unsigned ND_SHA1_BUFFER = 4096;
+
+constexpr size_t ND_XXH64_DIGEST_LENGTH_STR = 16;
+
 typedef uint64_t ndDigest;
+
 typedef std::array<uint8_t, SHA1_DIGEST_LENGTH> ndDigestSHA1;
 typedef std::vector<uint8_t> ndDigestDynamic;
 
