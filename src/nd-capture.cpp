@@ -466,52 +466,42 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
 
     flow.Reset(true);
 
-    while (true) {
-        if (type == ETHERTYPE_VLAN) {
-            if (l2_len + 4 > packet->caplen) {
-                stats.pkt.discard++;
-                stats.pkt.discard_bytes += packet->length;
+    if (__builtin_expect(type == ETHERTYPE_IP || type == ETHERTYPE_IPV6, 1)) {
+        // Fast path: standard IP/IPv6, no tags
+    }
+    else {
+        while (true) {
+            if (type == ETHERTYPE_VLAN) {
+                if (l2_len + 4 > packet->caplen) {
+                    stats.pkt.discard++;
+                    stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                _ND_LOG_DISCARD_ETHER(tag.c_str(),
-                  "layer-2 + VLAN length is beyond capture "
-                  "length",
-                  packet->l2.eth);
+                    _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                      "layer-2 + VLAN length is beyond capture "
+                      "length",
+                      packet->l2.eth);
 #endif
+                }
+
+                // TODO: Replace with struct vlan_tag from
+                // <pcap/vlan.h> See:
+                // https://en.wikipedia.org/wiki/IEEE_802.1Q
+                vlan_packet = 1;
+                flow.vlan_id = ((packet->data[l2_len] << 8) +
+                                 packet->data[l2_len + 1]) & 0xFFF;
+
+                type = (packet->data[l2_len + 2] << 8) +
+                  packet->data[l2_len + 3];
+                l2_len += VLAN_TAG_LEN;
             }
-
-            // TODO: Replace with struct vlan_tag from
-            // <pcap/vlan.h> See:
-            // https://en.wikipedia.org/wiki/IEEE_802.1Q
-            vlan_packet = 1;
-            flow.vlan_id = ((packet->data[l2_len] << 8) +
-                             packet->data[l2_len + 1]) & 0xFFF;
-
-            type = (packet->data[l2_len + 2] << 8) +
-              packet->data[l2_len + 3];
-            l2_len += VLAN_TAG_LEN;
-        }
-        else if (type == ETHERTYPE_MPLS_UC || type == ETHERTYPE_MPLS_MC)
-        {
-            stats.pkt.mpls++;
-            uint32_t u32 = (uint32_t)ntohl(
-              *((uint32_t *)&packet->data[l2_len]));
-            const struct nd_mpls_header_t *mpls =
-              reinterpret_cast<const struct nd_mpls_header_t *>(&u32);
-            type = ETHERTYPE_IP;
-            l2_len += 4;
-
-            if (l2_len > packet->caplen) {
-                stats.pkt.discard++;
-                stats.pkt.discard_bytes += packet->length;
-#ifdef _ND_LOG_PKT_DISCARD
-                _ND_LOG_DISCARD_ETHER(tag.c_str(),
-                  "layer-2 + MPLS length is beyond capture "
-                  "length",
-                  packet->l2.eth);
-#endif
-            }
-
-            while (! mpls->s) {
+            else if (type == ETHERTYPE_MPLS_UC || type == ETHERTYPE_MPLS_MC)
+            {
+                stats.pkt.mpls++;
+                uint32_t u32 = (uint32_t)ntohl(
+                  *((uint32_t *)&packet->data[l2_len]));
+                const struct nd_mpls_header_t *mpls =
+                  reinterpret_cast<const struct nd_mpls_header_t *>(&u32);
+                type = ETHERTYPE_IP;
                 l2_len += 4;
 
                 if (l2_len > packet->caplen) {
@@ -519,88 +509,107 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
                     stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
                     _ND_LOG_DISCARD_ETHER(tag.c_str(),
-                      "%s: discard: layer-2 + MPLS length "
-                      "is beyond capture length",
+                      "layer-2 + MPLS length is beyond capture "
+                      "length",
                       packet->l2.eth);
 #endif
                 }
-                u32 = (uint32_t)ntohl(
-                  *((uint32_t *)&packet->data[l2_len]));
-                mpls = reinterpret_cast<const struct nd_mpls_header_t *>(
-                  &u32);
-            }
-        }
-        else if (type == ETHERTYPE_PPPOE) {
-            stats.pkt.pppoe++;
-            type = ETHERTYPE_IP;
 
-            if (l2_len + 6 > packet->caplen) {
-                stats.pkt.discard++;
-                stats.pkt.discard_bytes += packet->length;
+                while (! mpls->s) {
+                    l2_len += 4;
+
+                    if (l2_len > packet->caplen) {
+                        stats.pkt.discard++;
+                        stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-                _ND_LOG_DISCARD(tag.c_str(),
-                  "layer-2 + PPP length is beyond capture "
-                  "length");
+                        _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                          "%s: discard: layer-2 + MPLS length "
+                          "is beyond capture length",
+                          packet->l2.eth);
 #endif
+                    }
+                    u32 = (uint32_t)ntohl(
+                      *((uint32_t *)&packet->data[l2_len]));
+                    mpls = reinterpret_cast<const struct nd_mpls_header_t *>(
+                      &u32);
+                }
             }
+            else if (type == ETHERTYPE_PPPOE) {
+                stats.pkt.pppoe++;
+                type = ETHERTYPE_IP;
 
-            ppp_proto = (uint16_t)(_ND_PPP_PROTOCOL(
-              packet->data + l2_len + 6));
-            if (ppp_proto != PPP_IP && ppp_proto != PPP_IPV6)
-            {
+                if (l2_len + 6 > packet->caplen) {
+                    stats.pkt.discard++;
+                    stats.pkt.discard_bytes += packet->length;
+#ifdef _ND_LOG_PKT_DISCARD
+                    _ND_LOG_DISCARD(tag.c_str(),
+                      "layer-2 + PPP length is beyond capture "
+                      "length");
+#endif
+                }
+
+                ppp_proto = (uint16_t)(_ND_PPP_PROTOCOL(
+                  packet->data + l2_len + 6));
+                if (ppp_proto != PPP_IP && ppp_proto != PPP_IPV6)
+                {
+                    stats.pkt.discard++;
+                    stats.pkt.discard_bytes += packet->length;
+#ifdef _ND_LOG_PKT_DISCARD
+                    _ND_LOG_DISCARD(tag.c_str(),
+                      "unsupported PPP protocol");
+#endif
+                    return packet;
+                }
+
+                l2_len += 8;
+
+                if (l2_len > packet->caplen) {
+                    stats.pkt.discard++;
+                    stats.pkt.discard_bytes += packet->length;
+#ifdef _ND_LOG_PKT_DISCARD
+                    _ND_LOG_DISCARD(tag.c_str(),
+                      "layer-2 + PPP length is beyond capture "
+                      "length");
+#endif
+                }
+            }
+            else if (type == ETHERTYPE_PPPOEDISC) {
+                stats.pkt.pppoe++;
                 stats.pkt.discard++;
                 stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
                 _ND_LOG_DISCARD(tag.c_str(),
-                  "unsupported PPP protocol");
+                  "PPPoE discovery protocol");
 #endif
                 return packet;
             }
-
-            l2_len += 8;
-
-            if (l2_len > packet->caplen) {
-                stats.pkt.discard++;
-                stats.pkt.discard_bytes += packet->length;
-#ifdef _ND_LOG_PKT_DISCARD
-                _ND_LOG_DISCARD(tag.c_str(),
-                  "layer-2 + PPP length is beyond capture "
-                  "length");
-#endif
-            }
+            else break;
         }
-        else if (type == ETHERTYPE_PPPOEDISC) {
-            stats.pkt.pppoe++;
-            stats.pkt.discard++;
-            stats.pkt.discard_bytes += packet->length;
-#ifdef _ND_LOG_PKT_DISCARD
-            _ND_LOG_DISCARD(tag.c_str(),
-              "PPPoE discovery protocol");
-#endif
-            return packet;
-        }
-        else break;
     }
 
     stats.pkt.vlan += vlan_packet;
 
     flow.tunnel_type = ndFlow::TunnelType::NONE;
 
-nd_process_ip:
-    if (l2_len + sizeof(struct ip) > packet->caplen) {
-        stats.pkt.discard++;
-        stats.pkt.discard_bytes += packet->length;
+    bool parse_ip = true;
+    while (parse_ip) {
+        parse_ip = false;
+
+        if (l2_len + sizeof(struct ip) > packet->caplen) {
+            stats.pkt.discard++;
+            stats.pkt.discard_bytes += packet->length;
 #ifdef _ND_LOG_PKT_DISCARD
-        if (packet->l2.eth == nullptr) {
-            _ND_LOG_DISCARD(tag.c_str(),
-              "layer-2 + IP length is beyond capture length");
-        }
-        else {
-            _ND_LOG_DISCARD_ETHER(tag.c_str(),
-              "layer-2 + IP length is beyond capture length", packet->l2.eth);
-        }
+            if (packet->l2.eth == nullptr) {
+                _ND_LOG_DISCARD(tag.c_str(),
+                  "layer-2 + IP length is beyond capture length");
+            }
+            else {
+                _ND_LOG_DISCARD_ETHER(tag.c_str(),
+                  "layer-2 + IP length is beyond capture length", packet->l2.eth);
+            }
 #endif
-    }
+            return packet;
+        }
 
     packet->l3.ip4= reinterpret_cast<const struct ip *>(
       &packet->data[l2_len]);
@@ -825,7 +834,8 @@ nd_process_ip:
                     if (hdr_gtpv1->flags.npdu_num)
                         l2_len += 1;
 
-                    goto nd_process_ip;
+                    parse_ip = true;
+                    continue;
                 }
 #if 0
                 else {
@@ -851,6 +861,8 @@ nd_process_ip:
         }
     }
 #endif
+    } // end while(parse_ip)
+
     switch (flow.ip_protocol) {
     case IPPROTO_TCP:
         stats.pkt.tcp++;
