@@ -158,6 +158,9 @@ all = include
 [netlink]
 # Set the Netlink buffer size
 buffer_size = 32768
+# Set the Conntrack buffer size (1MB default, 8MB for higher traffic spikes)
+conntrack_buffer_size = 1048576
+# Enable Bridge PVID discovery
 bridge_pvid_discovery = no
 
 # vim: set ft=dosini :
