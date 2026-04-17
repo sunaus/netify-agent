@@ -7,6 +7,7 @@
 #include <cstring>
 #include <ctime>
 
+#include <sys/socket.h>
 #include <sys/select.h>
 
 #include <libmnl/libmnl.h>
@@ -47,6 +48,14 @@ ndNetlink::ndNetlink(int bus, unsigned int groups) {
     if (socket_nl == nullptr)
         throw ndException("mnl_socket_open: %s", strerror(errno));
 
+    if (bus == NETLINK_NETFILTER && ndGC.netlink_conntrack_buffer_size > 0) {
+        int rcvbuf = ndGC.netlink_conntrack_buffer_size;
+        int fd = mnl_socket_get_fd(socket_nl);
+        if (setsockopt(fd, SOL_SOCKET, SO_RCVBUFFORCE, &rcvbuf, sizeof(rcvbuf)) < 0) {
+            setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
+        }
+    }
+
     if (mnl_socket_bind(socket_nl, groups, MNL_SOCKET_AUTOPID) < 0)
         throw ndException("mnl_socket_bind: %s", strerror(errno));
 }
@@ -77,8 +86,20 @@ bool ndNetlink::Recv(void)
                 __PRETTY_FUNCTION__, bytes, seq_id, port_id);
         }
 #endif
-        if (bytes < 0)
+        if (bytes < 0) {
+            if (!dump) {
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    rc = MNL_CB_OK;
+                    break;
+                }
+                if (errno == ENOBUFS) {
+                    nd_dprintf("ndNetlink::Recv: ENOBUFS - Conntrack events dropped.\n");
+                    rc = MNL_CB_OK;
+                    continue;
+                }
+            }
             throw ndException("mnl_socket_recvfrom: %s", strerror(errno));
+        }
 #if _ND_NETLINK_DEBUG
         nd_dprintf("%s: read %ld byte(s), seq_id: %u, port_id: %u\n",
             __PRETTY_FUNCTION__, bytes,
@@ -90,9 +111,9 @@ bool ndNetlink::Recv(void)
             ndNetlink_ProcessMessageCallback,
             static_cast<void *>(this));
 
-    } while (dump && rc == MNL_CB_OK);
+    } while (rc == MNL_CB_OK);
 
-    return (rc == MNL_CB_OK);
+    return (rc == MNL_CB_OK || rc == MNL_CB_STOP);
 }
 
 bool ndNetlink::Send(nlmsghdr *nlh)

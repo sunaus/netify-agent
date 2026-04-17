@@ -244,6 +244,10 @@ public:
 #ifdef _ND_ENABLE_CONNTRACK
     struct {
         uint32_t id = { 0 };
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        uint64_t packets[2] = { 0, 0 };
+        uint64_t bytes[2] = { 0, 0 };
+#endif
 #ifdef _ND_ENABLE_CONNTRACK_MDATA
         uint32_t mark = { 0 };
         ndAddr reply_src_addr;

@@ -563,23 +563,39 @@ void ndNetlinkConntrackThread::UpdateFlowStats(
 
     flow->ts_last_seen = ts_pkt;
 
-    flow->stats.lower_packets = id_flow->second->packets[idx_lower];
-    flow->stats.lower_bytes = id_flow->second->bytes[idx_lower];
-    flow->stats.upper_packets = id_flow->second->packets[idx_upper];
-    flow->stats.upper_bytes = id_flow->second->bytes[idx_upper];
+    uint64_t current_lower_packets = id_flow->second->packets[idx_lower];
+    uint64_t current_lower_bytes = id_flow->second->bytes[idx_lower];
+    uint64_t current_upper_packets = id_flow->second->packets[idx_upper];
+    uint64_t current_upper_bytes = id_flow->second->bytes[idx_upper];
 
-    flow->stats.total_packets += id_flow->second->packets[idx_lower];
-    flow->stats.total_bytes += id_flow->second->bytes[idx_lower];
-    flow->stats.total_packets += id_flow->second->packets[idx_upper];
-    flow->stats.total_bytes += id_flow->second->bytes[idx_upper];
+    uint64_t delta_lower_packets = current_lower_packets >= flow->conntrack.packets[idx_lower] ?
+        current_lower_packets - flow->conntrack.packets[idx_lower] : current_lower_packets;
+    uint64_t delta_lower_bytes = current_lower_bytes >= flow->conntrack.bytes[idx_lower] ?
+        current_lower_bytes - flow->conntrack.bytes[idx_lower] : current_lower_bytes;
+
+    uint64_t delta_upper_packets = current_upper_packets >= flow->conntrack.packets[idx_upper] ?
+        current_upper_packets - flow->conntrack.packets[idx_upper] : current_upper_packets;
+    uint64_t delta_upper_bytes = current_upper_bytes >= flow->conntrack.bytes[idx_upper] ?
+        current_upper_bytes - flow->conntrack.bytes[idx_upper] : current_upper_bytes;
+
+    flow->conntrack.packets[idx_lower] = current_lower_packets;
+    flow->conntrack.bytes[idx_lower] = current_lower_bytes;
+    flow->conntrack.packets[idx_upper] = current_upper_packets;
+    flow->conntrack.bytes[idx_upper] = current_upper_bytes;
+
+    flow->stats.lower_packets = delta_lower_packets;
+    flow->stats.lower_bytes = delta_lower_bytes;
+    flow->stats.upper_packets = delta_upper_packets;
+    flow->stats.upper_bytes = delta_upper_bytes;
+
+    flow->stats.total_packets += delta_lower_packets;
+    flow->stats.total_bytes += delta_lower_bytes;
+    flow->stats.total_packets += delta_upper_packets;
+    flow->stats.total_bytes += delta_upper_bytes;
 #ifdef _ND_ENABLE_EXTENDED_STATS
-    flow->stats.UpdateRate(true, ts_pkt, id_flow->second->bytes[idx_lower]);
-    flow->stats.UpdateRate(false, ts_pkt, id_flow->second->bytes[idx_upper]);
+    flow->stats.UpdateRate(true, ts_pkt, delta_lower_bytes);
+    flow->stats.UpdateRate(false, ts_pkt, delta_upper_bytes);
 #endif
-    // TODO: Reset packet counters for edge cases were we don't get a
-    // destroy.
-    id_flow->second->packets[idx_lower] = 0;
-    id_flow->second->packets[idx_upper] = 0;
 #ifdef _ND_DEBUG_LOG
     nd_dprintf("%s: updated flow counters.\n", TAG);
 #endif

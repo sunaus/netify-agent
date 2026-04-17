@@ -2918,7 +2918,7 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
         }
 
         if (! ct_counter_ifnames.empty()) {
-            thread_conntrack->Dump(true);
+            thread_conntrack->Dump();
 
             struct timeval stamp;
             gettimeofday(&stamp, nullptr);

@@ -271,6 +271,10 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #ifdef _ND_ENABLE_NETLINK
     netlink_buffer_size = (size_t)r->GetInteger("netlink",
       "buffer_size", this->netlink_buffer_size);
+#ifdef _ND_ENABLE_CONNTRACK
+    netlink_conntrack_buffer_size = (size_t)r->GetInteger("netlink",
+      "conntrack_buffer_size", this->netlink_conntrack_buffer_size);
+#endif
     netlink_bridge_pvid_discovery = r->GetBoolean("netlink",
       "bridge_pvid_discovery", this->netlink_bridge_pvid_discovery);
 #endif

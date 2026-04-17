@@ -370,6 +370,9 @@ public:
     unsigned update_interval = { ND_STATS_INTERVAL };
 #ifdef _ND_ENABLE_NETLINK
     size_t netlink_buffer_size = { ND_NETLINK_BUFFER_SIZE };
+#ifdef _ND_ENABLE_CONNTRACK
+    size_t netlink_conntrack_buffer_size = { ND_NETLINK_CONNTRACK_BUFFER_SIZE };
+#endif
     bool netlink_bridge_pvid_discovery = { false };
 #endif
     typedef std::vector<std::pair<std::string, std::string>> SocketHosts;
