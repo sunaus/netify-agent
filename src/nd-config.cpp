@@ -274,6 +274,8 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #ifdef _ND_ENABLE_CONNTRACK
     netlink_conntrack_buffer_size = (size_t)r->GetInteger("netlink",
       "conntrack_buffer_size", this->netlink_conntrack_buffer_size);
+    netlink_conntrack_idle_timeout = (unsigned)r->GetInteger("netlink",
+      "conntrack_idle_timeout", this->netlink_conntrack_idle_timeout);
 #endif
     netlink_bridge_pvid_discovery = r->GetBoolean("netlink",
       "bridge_pvid_discovery", this->netlink_bridge_pvid_discovery);

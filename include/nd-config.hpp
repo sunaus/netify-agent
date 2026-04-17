@@ -372,6 +372,7 @@ public:
     size_t netlink_buffer_size = { ND_NETLINK_BUFFER_SIZE };
 #ifdef _ND_ENABLE_CONNTRACK
     size_t netlink_conntrack_buffer_size = { ND_NETLINK_CONNTRACK_BUFFER_SIZE };
+    unsigned netlink_conntrack_idle_timeout = { 0 }; // 0 means dynamic
 #endif
     bool netlink_bridge_pvid_discovery = { false };
 #endif

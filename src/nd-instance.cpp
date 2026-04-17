@@ -2944,7 +2944,10 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
 
 #ifdef _ND_ENABLE_CONNTRACK
     if (ndGC_USE_CONNTRACK && thread_conntrack) {
-        thread_conntrack->Sweep(max((time_t)60, (time_t)ndGC.update_interval * 4));
+        time_t timeout = ndGC.netlink_conntrack_idle_timeout > 0 ? 
+                         (time_t)ndGC.netlink_conntrack_idle_timeout : 
+                         max((time_t)60, (time_t)ndGC.update_interval * 4);
+        thread_conntrack->Sweep(timeout);
     }
 #endif
 
