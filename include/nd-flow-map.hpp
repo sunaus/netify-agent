@@ -45,8 +45,22 @@ public:
     }
 
     bool Delete(uint64_t hash_id);
+    void MoveToTail(uint64_t hash_id, ndFlow* flow);
+    void MoveToShort(uint64_t hash_id, ndFlow* flow);
 
-    typedef std::unordered_map<uint64_t, ndFlow::Ptr> Map;
+
+    struct Bucket {
+        std::unordered_map<uint64_t, ndFlow::Ptr> map;
+        ndFlow* lru_short_head = nullptr;
+        ndFlow* lru_short_tail = nullptr;
+        ndFlow* lru_long_head = nullptr;
+        ndFlow* lru_long_tail = nullptr;
+
+        void PushBackShort(ndFlow* f);
+        void PushBackLong(ndFlow* f);
+        void Remove(ndFlow* f);
+    };
+    typedef Bucket Map;
 
     Map &Acquire(size_t b);
     const Map &AcquireConst(size_t b) const;

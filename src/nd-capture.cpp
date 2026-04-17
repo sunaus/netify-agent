@@ -1247,7 +1247,11 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
 #endif
     }
 
+    uint64_t old_ts = nf->ts_last_seen.load();
     nf->ts_last_seen = ts_pkt;
+    if (ts_pkt > old_ts + 1000) {
+        ndi.flow_buckets->MoveToTail(flow.digest_lower, nf.get());
+    }
 
     if (nf->ip_protocol == IPPROTO_TCP) {
         uint32_t seq = ntohl(packet->l4.tcp->th_seq);
@@ -1300,8 +1304,13 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
         }
 
         if ((packet->l4.tcp->th_flags & TH_FIN) &&
-          (packet->l4.tcp->th_flags & TH_ACK))
+          (packet->l4.tcp->th_flags & TH_ACK)) {
             nf->tcp.fin_ack++;
+            if (nf->tcp.fin_ack.load() == 1) {
+                ndi.flow_buckets->MoveToShort(flow.digest_lower, nf.get());
+            }
+        }
+
         if (packet->l4.tcp->th_flags & TH_RST) {
 #ifdef _ND_ENABLE_EXTENDED_STATS
             nf->stats.tcp_resets++;
@@ -1312,8 +1321,8 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
 
     if (dhc != nullptr && pkt != nullptr &&
       pkt_len > sizeof(struct nd_dns_header_t) &&
-      packet->caplen == packet->length)
-    {
+      packet->caplen == packet->length) {
+
         ndProto::Id proto = ndProto::Id::UNKNOWN;
 
         if (nf->GetMasterProtocol() == ndProto::Id::DNS)

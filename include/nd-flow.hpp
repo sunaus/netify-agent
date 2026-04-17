@@ -362,6 +362,10 @@ public:
     int16_t dpi_thread_id = { -1 };
 
     struct ndpi_flow_struct *ndpi_flow = { nullptr };
+    mutable ndFlow *lru_prev = { nullptr };
+    mutable ndFlow *lru_next = { nullptr };
+    uint8_t lru_list = { 0 };
+
 
     ndFlow(ndInterface::Ptr &iface);
     ndFlow(const ndFlow &flow);

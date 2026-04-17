@@ -330,13 +330,11 @@ protected:
 
     void UpdateStatus(void);
 
-    //void DisplayDebugScoreboard(void) const;
-
     bool ExpireFlow(ndFlow::Ptr &flow);
 
     void ProcessUpdate(const ndCaptureThreads &threads);
-
     void ProcessFlows(void);
+    void ProcessExpirations(void);
 
     ndTimer timer_update, timer_update_napi;
 
