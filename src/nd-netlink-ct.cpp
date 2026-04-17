@@ -430,6 +430,8 @@ void ndNetlinkConntrackThread::Dump(bool zero_counters) {
 }
 
 void ndNetlinkConntrackThread::Sweep(time_t timeout) {
+    if (timeout == 0) return;
+
     lock_guard<mutex> lg(map_lock);
     time_t now = nd_time_monotonic();
     uint32_t purged = 0;
@@ -446,7 +448,8 @@ void ndNetlinkConntrackThread::Sweep(time_t timeout) {
     }
 
     if (purged > 0) {
-        nd_dprintf("%s: swept %u stale conntrack flows (timeout: %ld seconds).\n",
+        nd_dprintf(
+          "%s: swept %u stale conntrack flows (timeout: %ld seconds).\n",
             TAG, purged, (long)timeout);
         stats.destroyed += purged;
     }

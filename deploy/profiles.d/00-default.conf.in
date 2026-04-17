@@ -160,6 +160,10 @@ all = include
 buffer_size = 32768
 # Set the Conntrack buffer size (1MB default, 8MB for higher traffic spikes)
 conntrack_buffer_size = 1048576
+# In the event we miss a conntrack DESTROY event, clean-up cached flow
+# entries that have been idle for greater than this number of seconds.
+# Default: 1 hour (3600).  Set to 0 to disable.
+conntrack_idle_timeout = 3600
 # Enable Bridge PVID discovery
 bridge_pvid_discovery = no
 

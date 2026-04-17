@@ -2908,8 +2908,9 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
     if (flow_hash_cache != nullptr)
         flow_hash_cache->Scoreboard(tag + ": FHC");
 
+#ifdef _ND_ENABLE_CONNTRACK
+    if (ndGC_USE_CONNTRACK && thread_conntrack) {
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
-    if (ndGC_USE_CONNTRACK) {
         set<string> ct_counter_ifnames;
 
         for (auto &it : interfaces) {
@@ -2939,17 +2940,12 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
                 flow_buckets->ReleaseBucket(b);
             }
         }
-    }
 #endif // _ND_ENABLE_CONNTRACK_COUNTERS
-
-#ifdef _ND_ENABLE_CONNTRACK
-    if (ndGC_USE_CONNTRACK && thread_conntrack) {
-        time_t timeout = ndGC.netlink_conntrack_idle_timeout > 0 ? 
-                         (time_t)ndGC.netlink_conntrack_idle_timeout : 
-                         max((time_t)60, (time_t)ndGC.update_interval * 4);
-        thread_conntrack->Sweep(timeout);
+        thread_conntrack->Sweep(
+            ndGC.netlink_conntrack_idle_timeout
+        );
     }
-#endif
+#endif // _ND_ENABLE_CONNTRACK
 
     plugins.BroadcastEvent(ndPlugin::Type::BASE,
       ndPlugin::Event::STATUS_UPDATE);

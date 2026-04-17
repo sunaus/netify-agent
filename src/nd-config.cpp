@@ -275,7 +275,7 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     netlink_conntrack_buffer_size = (size_t)r->GetInteger("netlink",
       "conntrack_buffer_size", this->netlink_conntrack_buffer_size);
     netlink_conntrack_idle_timeout = (unsigned)r->GetInteger("netlink",
-      "conntrack_idle_timeout", this->netlink_conntrack_idle_timeout);
+      "conntrack_idle_ttl", this->netlink_conntrack_idle_timeout);
 #endif
     netlink_bridge_pvid_discovery = r->GetBoolean("netlink",
       "bridge_pvid_discovery", this->netlink_bridge_pvid_discovery);
@@ -443,17 +443,15 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     ndGC_SetFlag(ndGlobalFlags::USE_NAPI,
       r->GetBoolean("netify-api", "enable",
         (! profile) ? false : ndGC_USE_NAPI));
-    ttl_napi_tick = r->GetInteger("netify-api",
-      "update_tick", (! profile) ? ND_TTL_API_TICK : ttl_napi_tick);
-    ttl_napi_update = r->GetInteger("netify-api",
-      "update_interval",
+    ttl_napi_tick = r->GetInteger("netify-api", "update_tick",
+      (! profile) ? ND_TTL_API_TICK : ttl_napi_tick);
+    ttl_napi_update = r->GetInteger("netify-api", "update_interval",
       (! profile) ? ND_TTL_API_UPDATE : ttl_napi_update);
-    url_napi_bootstrap = r->Get("netify-api",
-      "bootstrap_url",
+    url_napi_bootstrap = r->Get("netify-api", "bootstrap_url",
       (! profile) ? ND_URL_API_BOOTSTRAP : url_napi_bootstrap);
     napi_vendor = r->Get("netify-api", "vendor", ND_API_VENDOR);
-    napi_tls_verify = r->GetBoolean("netify-api",
-      "tls_verify", (! profile) ? true : napi_tls_verify);
+    napi_tls_verify = r->GetBoolean("netify-api", "tls_verify",
+      (! profile) ? true : napi_tls_verify);
 
     // Protocols section
     Protocols p;
