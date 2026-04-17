@@ -311,8 +311,9 @@ ndCaptureThread::ProcessPacket(ndPacket *packet) {
     uint8_t vlan_packet = 0;
     int addr_cmp = 0;
 
+    static constexpr uint32_t ts_usec_divisor = (1000000 / ND_DETECTION_TICKS);
     uint64_t ts_pkt = ((uint64_t)packet->tv_sec) * ND_DETECTION_TICKS +
-      packet->tv_usec / (1000000 / ND_DETECTION_TICKS);
+      packet->tv_usec / ts_usec_divisor;
 
     if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::PCAP_OFFLINE)
     {
@@ -670,10 +671,20 @@ nd_process_ip:
             return packet;
         }
 
-        addr_cmp = memcmp(
-          (const uint8_t *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_src),
-          (const uint8_t *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_dst),
-          sizeof(struct in_addr));
+        uint32_t src_ip, dst_ip;
+        memcpy(&src_ip,
+          (const void *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_src),
+          sizeof(uint32_t));
+        memcpy(&dst_ip,
+          (const void *)_ND_ADDROFF(packet->l3.ip4, struct ip, ip_dst),
+          sizeof(uint32_t));
+
+        src_ip = ntohl(src_ip);
+        dst_ip = ntohl(dst_ip);
+
+        if (src_ip < dst_ip) addr_cmp = -1;
+        else if (src_ip > dst_ip) addr_cmp = 1;
+        else addr_cmp = 0;
 
         if (addr_cmp < 0) {
             ndAddr::Create(flow.lower_addr,
@@ -718,17 +729,21 @@ nd_process_ip:
             return packet;
         }
 
-        int i = 0;
-        if (memcmp(&packet->l3.ip6->ip6_src, &packet->l3.ip6->ip6_dst,
-              sizeof(struct in6_addr)))
-        {
-            do {
-                addr_cmp = memcmp(&packet->l3.ip6->ip6_src.s6_addr32[i],
-                  &packet->l3.ip6->ip6_dst.s6_addr32[i],
-                  sizeof(uint32_t));
-                i++;
-            }
-            while (addr_cmp == 0);
+        uint64_t src_ip6[2], dst_ip6[2];
+        memcpy(src_ip6, &packet->l3.ip6->ip6_src, sizeof(struct in6_addr));
+        memcpy(dst_ip6, &packet->l3.ip6->ip6_dst, sizeof(struct in6_addr));
+
+        uint64_t s_hi = be64toh(src_ip6[0]);
+        uint64_t d_hi = be64toh(dst_ip6[0]);
+
+        if (s_hi < d_hi) addr_cmp = -1;
+        else if (s_hi > d_hi) addr_cmp = 1;
+        else {
+            uint64_t s_lo = be64toh(src_ip6[1]);
+            uint64_t d_lo = be64toh(dst_ip6[1]);
+            if (s_lo < d_lo) addr_cmp = -1;
+            else if (s_lo > d_lo) addr_cmp = 1;
+            else addr_cmp = 0;
         }
 
         if (addr_cmp < 0) {
