@@ -237,11 +237,15 @@ enum class ndGlobalFlags : uint32_t {
 typedef struct nd_config_pcap_t {
     std::string capture_filename;
     bool conntrack_counters = { false };
+    unsigned buffer_size = { 16 * 1024 * 1024 };
+    unsigned queue_size = { 128 };
 
     inline bool operator==(const struct nd_config_pcap_t &i) const {
         return (
             capture_filename == i.capture_filename &&
-            conntrack_counters == i.conntrack_counters
+            conntrack_counters == i.conntrack_counters &&
+            buffer_size == i.buffer_size &&
+            queue_size == i.queue_size
         );
     }
 } nd_config_pcap;

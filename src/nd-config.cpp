@@ -1049,6 +1049,11 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
 #endif
     if (ndCT_TYPE(type.flags) == ndCaptureType::PCAP) {
         nd_config_pcap *pcap = static_cast<nd_config_pcap *>(config);
+        pcap->queue_size = (unsigned)r->GetInteger(
+          section, "queue_size", 128);
+        pcap->buffer_size = (unsigned)r->GetInteger(
+          section, "buffer_size", 16 * 1024 * 1024 /* 16MB default */);
+
         string capture_filename = r->Get(section,
           "filename", "");
 
