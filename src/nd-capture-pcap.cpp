@@ -217,7 +217,7 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
             pcap_set_promisc(pcap_new, 1);
             pcap_set_timeout(pcap_new, ndGC.capture_read_timeout);
             pcap_set_buffer_size(pcap_new, iface->config_pcap.buffer_size);
-            pcap_set_immediate_mode(pcap_new, 1);
+            pcap_set_immediate_mode(pcap_new, 0);
 
             int status = pcap_activate(pcap_new);
             if (status < 0) {
