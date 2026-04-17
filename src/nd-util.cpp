@@ -263,7 +263,6 @@ int nd_xxh64_file(const string &filename, ndDigest &digest) {
         return -1;
     }
 
-    uint64_t hash = 0;
     // Just read entire file to hash.
     vector<uint8_t> file_data;
     do {
