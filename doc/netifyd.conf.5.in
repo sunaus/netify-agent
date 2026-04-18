@@ -12,37 +12,161 @@ contains configuration parameters for the Netify Cloud service (\fIhttps://www.n
 .SS Main
 The main server options are defined within the [\fB@PACKAGE_TARNAME@\fR] section.
 .PP
-\fBenable_sink\fR=\fIBOOLEAN\fR
+\fBauto_informatics\fR=\fIBOOLEAN\fR
 .PP
-Uploading detection flow metadata to the Netify Cloud can be enabled or disabled by setting the \fBenable_sink\fR option.  When enabled, detection flow metadata is JSON-encoded, compressed, and uploaded to the Netify Sink server for further analysis and reporting.  A Netify Portal account is required for registration and provisioning at: \fIhttps://www.netify.ai/\fR
+Enable automatic Netify Informatics integration.  This option is intended to be managed exclusively by the \-\-enable/disable\-informatics command\-line parameters.
 .PP
-\fBmax_backlog_kb\fR=\fIINTEGER\fR
+\fBprofile\fR=\fIPATH\fR
 .PP
-Use \fBmax_backlog_kb\fR to set a limit on the size of the JSON upload buffer.  This is specified in kibibytes and the default is 2048 (2 MiB).  In the event that a payload can not be uploaded it will be queued until either it is successfully transfered or it is pushed out of the backlog buffer by a new payload.
+Configuration profile to load from \fIPATH\fR.  This is typically used to override defaults set in the main configuration file.
+.PP
+\fBpath_state_persistent\fR=\fIPATH\fR
+.PP
+Where to store "persistent" data (configuration files, etc).  The default is /etc/@PACKAGE_TARNAME@
+.PP
+\fBpath_state_volatile\fR=\fIPATH\fR
+.PP
+Where to store "volatile" data (temporary state files, etc).  The default is /var/run/@PACKAGE_TARNAME@
+.PP
+\fBuser\fR=\fIUSER\fR, \fBgroup\fR=\fIGROUP\fR
+.PP
+Switch to non-root user and/or group on start-up.  Requires Linux Capabilities support to be enabled at compile time.
+.PP
+\fBmax_capture_length\fR=\fIINTEGER\fR
+.PP
+The maximum number of bytes to capture (copy) per packet.  The maximum value is 65535, which is also the default.
 .PP
 \fBmax_detection_pkts\fR=\fIINTEGER\fR
 .PP
-This option controls the number of packets that are examined by the DPI engine before taking a guess at the type of flow.  The smaller the value the less processing overhead but the less likely enough of a conversation will be analyzed, resulting in fewer detections.  The larger the value, the greater processing duration required.  The default value is 32 packets.  The default should be a good compromise to extract most metadata from flows such as TLS.
+This option controls the number of packets that are examined by the DPI engine before taking a guess at the type of flow.  The smaller the value the less processing overhead but the less likely enough of a conversation will be analyzed, resulting in fewer detections.  The default value is 32 packets.
 .PP
-\fBssl_use_tlsv1\fR=\fIBOOLEAN\fR
+\fBmax_flows\fR=\fIINTEGER\fR
 .PP
-For some platforms it may be necessary to enforce the use of TLSv1.  The default is false.
+The maximum number of flows to track at any given moment.  When this value has been reached, new flows will stop being tracked until old flows expire.  The default is 0 (unlimited).
 .PP
-\fBssl_verify\fR=\fIBOOLEAN\fR
+\fBupdate_interval\fR=\fISECONDS\fR
 .PP
-This option disables host (SNI) and peer certificate verification.  You can use this option for testing against a server with a self-signed certificate.  The default is false.
+How often (in seconds) to process the global flow maps.  Flow statistics are made available, idle flows are expired, and other house-keeping is performed during this update period.  The default is 15s.
 .PP
-\fBjson_save\fR=\fIBOOLEAN\fR
+\fBttl_idle_flow\fR=\fISECONDS\fR, \fBttl_idle_tcp_flow\fR=\fISECONDS\fR
 .PP
-Enable/disable the \fBjson_save\fR parameter to set whether the current state is output to a JSON file during each update interval.  The default is false.
+How long to wait (in seconds) until an idle flow (non-TCP or TCP) is scheduled for expiry.
 .PP
-.SS Capture Sources
-Capture source options are set under a [\fBcapture\fR] section.
+\fBauto_flow_expiry\fR=\fIBOOLEAN\fR
 .PP
-\fBtype\fR=\fITYPE\fR
+On shutdown, force flows to immediately expire.  The default is yes.
 .PP
-Specify the packet capture type.  Depending on the platform and compile-time options, valid capture types are: \fBpcap\fR or \fBtpv3\fR
-The default is pcap.
+\fBsyn_scan_protection\fR=\fIBOOLEAN\fR
+.PP
+Don't track TCP flows until a SYN+ACK has been captured.
+.PP
+\fBsoft_dissectors\fR=\fIBOOLEAN\fR
+.PP
+Enable or disable Soft-dissectors (flow expressions defined in the application signatures).
+.PP
+\fBflow_map_buckets\fR=\fIINTEGER\fR
+.PP
+The number of "buckets" the main flow map will be divided into.  The default is 128.
+.PP
+\fBnetwork_namespace\fR=\fINAME/PID/PATH\fR
+.PP
+Attach to an alternate network namespace.
+.PP
+\fBpath_server_socket\fR=\fIPATH\fR
+.PP
+Local command/control socket.  Receive commands and control messages on a local UNIX socket.
+.PP
+\fBuse_getifaddrs\fR=\fIBOOLEAN\fR
+.PP
+Periodically call getifaddrs(3) to update the associated IP addresses of each capture source.
+.PP
+.SS Threads
+Threading options are defined within the [\fBthreads\fR] section.
+.PP
+\fBcapture_base\fR=\fIINTEGER\fR
+.PP
+Base CPU ID to start capture threads from.
+.PP
+\fBdetection_base\fR=\fIINTEGER\fR
+.PP
+Base CPU ID to start detection threads from.
+.PP
+\fBdetection_cores\fR=\fIINTEGER\fR
+.PP
+Number of detection (DPI) threads to start.
+.PP
+.SS Netlink
+Linux Netlink and Conntrack options are defined within the [\fBnetlink\fR] section.
+.PP
+\fBbuffer_size\fR=\fIINTEGER\fR
+.PP
+Set the Netlink buffer size.
+.PP
+\fBconntrack_buffer_size\fR=\fIINTEGER\fR
+.PP
+Set the Conntrack buffer size.
+.PP
+\fBconntrack_idle_ttl\fR=\fISECONDS\fR
+.PP
+In the event we miss a conntrack DESTROY event, clean-up cached flow entries that have been idle for greater than this number of seconds.
+.PP
+\fBbridge_pvid_discovery\fR=\fIBOOLEAN\fR
+.PP
+Enable Bridge PVID discovery.
+.PP
+.SS Capture Defaults
+Capture source defaults are set under a [\fBcapture-defaults\fR] section.
+.PP
+\fBcapture_type\fR=\fITYPE\fR
+.PP
+Specify the packet capture type.  Depending on the platform and compile-time options, valid capture types are: \fBpcap\fR, \fBtpv3\fR, or \fBnfqueue\fR.
+.PP
+\fBread_timeout\fR=\fIMILLISECONDS\fR
+.PP
+Packet capture timeout value (milliseconds).
+.PP
+.SS TPv3 Capture Defaults
+Linux TPv3 specific defaults are set under a [\fBcapture-defaults-tpv3\fR] section.
+.PP
+\fBfanout_mode\fR=\fIMODE\fR
+.PP
+Set the fanout mode: hash, lb, cpu, rollover, or random.
+.PP
+\fBfanout_flags\fR=\fIFLAGS\fR
+.PP
+Set the fanout flags: defrag, rollover.
+.PP
+\fBfanout_instances\fR=\fIINTEGER\fR
+.PP
+Set the number of fanout instances.
+.PP
+\fBrb_block_size\fR=\fIINTEGER\fR, \fBrb_frame_size\fR=\fIINTEGER\fR, \fBrb_blocks\fR=\fIINTEGER\fR
+.PP
+Set the ring buffer block size, frame size, and number of blocks.
+.PP
+.SS Capture Interfaces
+Individual capture interface options can be set under sections named [\fBcapture-interface-\fIINTERFACE\fR].
+.PP
+\fBenable\fR=\fIBOOLEAN\fR
+.PP
+Enable or disable capture on this interface.
+.PP
+\fBrole\fR=\fILAN | WAN\fR
+.PP
+Specify the role of the interface (internal or external).
+.PP
+\fBaddress\fR[\fIn\fR]=\fIADDRESS\fR
+.PP
+Specify local IP addresses for the interface.
+.PP
+\fBpeer\fR=\fIINTERFACE\fR
+.PP
+Associate the interface with a peer interface.
+.PP
+\fBfilter\fR=\fIBPF\fR
+.PP
+Attach a BPF filter expression to the interface.
+.PP
 .SS DNS Hint Cache
 DNS hint cache options are set within the [\fBdns_hint_cache\fR] section.
 
@@ -52,48 +176,69 @@ The DNS hint cache stores DNS response records for a period of time.  These hint
 .PP
 Enable or disable the DNS hint cache.  On non-embedded systems with more memory, it is highly recommended that this be enabled for more comprehensive application detection.  The default is true.
 .PP
+\fBpartial_lookups\fR=\fIBOOLEAN\fR
+.PP
+Enable or disable partial DNS lookups.
+.PP
 \fBsave\fR=\fIpersistent\fR | \fIvolatile\fR | \fIdisabled\fR
 .PP
-Enable or disable periodic saving of the DNS hint cache.  When reasonably fast storage (hard-drive, fast flash, or sufficiently large RAM disk) is available this option should be enabled.  In the event of a program crash/reload, or system reboot, the DNS hint cache will be primed on start-up when set to \fIpersistent\fR.  This prevents failed application detection due to missed DNS responses.  The default is: \fIpersistent\fR
+Enable or disable periodic saving of the DNS hint cache.  The default is: \fIpersistent\fR
 .PP
-\fBttl\fR=\fISECONDS\fR
+\fBcache_size\fR=\fIINTEGER\fR
 .PP
-The number of seconds DNS hints should be cached.  New hints will have their initial TTL set to this value.  Existing hints will have their TTL reset to this value on a cache hit (look-up match).  This value should be adjusted according to available memory and network traffic.  Larger networks will generate significantly more DNS traffic.  The default value is 30 minutes (1800 seconds).
-.SS Sockets
-All socket related configuration options are specified under the [\fBsocket\fR] section.
-
-The @PACKAGE_NAME@ can be configured to listen on one or more sockets (TCP/IP socket, or UNIX-domain socket).  Upon a client connection, \fB@PACKAGE_TARNAME@(8)\fR will pass real-time JSON-encoded flow detections.  This is designed for interfacing with third-party applications.  Take care to protect these sockets as there is no authentication or encryption performed.
+The maximum number of entries to store in the DNS hint cache.
 .PP
-\fBdump_established_flows\fR=\fIBOOLEAN\fR
+.SS Flow Hash Cache
+Flow hash cache options are set within the [\fBflow-hash-cache\fR] section.
 .PP
-When this option is enabled, all established flows that have completed detection will be passed to the connecting client.  This enables the client to take some action on established connections that it may have missed while reloading or being offline.  On embedded systems where memory is scarce, it is highly recommended that this option be carefully enabled because memory usage can be exhausted if the connecting client can not read from the stream fast enough and the socket buffer grows too large.  At the moment there is no hard limit on the socket buffer size.  The default is false.
+\fBenable\fR=\fIBOOLEAN\fR
 .PP
-\fBdump_unknown_flows\fR=\fIBOOLEAN\fR
+Enable or disable the flow hash cache.
 .PP
-By default, flows that have failed to have their "master" or Layer 7 protocol detected will not be passed to connected clients.  The rationale is that this is likely wasteful.  The default is false.
+\fBsave\fR=\fIpersistent\fR | \fIvolatile\fR | \fIdisabled\fR
 .PP
-Sockets; declare any of the following paramters as arrays with a starting index[\fIn\fR] of zero.
+Enable or disable periodic saving of the flow hash cache.
 .PP
-\fBlisten_path\fR[\fIn\fR]=\fIPATH\fR
+\fBcache_size\fR=\fIINTEGER\fR
 .PP
-Create a UNIX-domain socket at \fIPATH\fR for incoming client connections.
+The maximum number of entries to store in the flow hash cache.
 .PP
-\fBlisten_address\fR[\fIn\fR]\fR=\fIADDRESS\fR
+.SS Netify API
+Netify API integration options are defined within the [\fBnetify-api\fR] section.
 .PP
-Create and bind a TCP/IP socket on \fIADDRESS\fR for incoming network connections.
+\fBenable\fR=\fIBOOLEAN\fR
 .PP
-\fBlisten_port\fR[\fIn\fR]\fR=[\fISERVICE\fR|\fIPORT\fR]
+Enable or disable API integration with Netify Informatics.
 .PP
-For TCP/IP sockets, you can specify a corresponding \fISERVICE\fR or \fIPORT\fR.  If not specified, the default TCP port 7150 is used.
+\fBupdate_tick\fR=\fISECONDS\fR
+.PP
+Frequency of internal API housekeeping.
+.PP
+\fBupdate_interval\fR=\fISECONDS\fR
+.PP
+Interval for updating application and category data from the API.
+.PP
+\fBbootstrap_url\fR=\fIURL\fR
+.PP
+URL for the initial API bootstrap process.
+.PP
+\fBvendor\fR=\fINAME\fR
+.PP
+Vendor name to use for API identification.
+.PP
+\fBtls_verify\fR=\fIBOOLEAN\fR
+.PP
+Verify TLS certificates for API connections.
+.PP
+.SS Protocols
+Protocol dissector options are defined within the [\fBprotocols\fR] section.
+.PP
+\fB\fIprotocol_tag\fR\fR=\fIinclude | exclude\fR
+.PP
+Enable or disable specific DPI protocol dissectors by their tag.  Use \fBall=include\fR to enable all known dissectors.
+.PP
 .SS Privacy Filter
-The @PACKAGE_NAME@ can be configured to obfuscate flow addresses (MAC and IP) that match rules in the [\fBprivacy_filter\fR] section.  You can match by MAC or IP address.  When a match is found, the MAC and IP address will be replaced with the following bogus addresses:
-
- \fBMAC\fR: 01:02:03:04:05:06 (lower addresses) 0a:0b:0c:0d:0e:0f (upper addresses)
-
- \fBIPv4\fR: 1.2.3.1 (lower addresses) 1.2.3.2 (upper addresses)
- \fBIPv6\fR: 1230::1 (lower addresses) 1230::2 (upper addresses)
-
-Declare these paramters as arrays with a starting index[\fIn\fR] of zero.
+The @PACKAGE_NAME@ can be configured to obfuscate flow addresses (MAC and IP) that match rules in the [\fBprivacy-filter\fR] section.
 .PP
 \fBmac\fR[\fIn\fR]\fR=\fIMAC\fR
 .PP
@@ -102,6 +247,14 @@ Privacy filter by MAC address.
 \fBhost\fR[\fIn\fR]\fR=\fIADDRESS\fR
 .PP
 Privacy filter by IP address.
+.PP
+\fBregex_search\fR[\fIn\fR]\fR=\fIREGEX\fR, \fBregex_replace\fR[\fIn\fR]\fR=\fISTRING\fR
+.PP
+Search for a regular expression in flow metadata and replace it with a string.
+.PP
+\fBprivate_external_addresses\fR=\fIBOOLEAN\fR
+.PP
+Obfuscate external IP addresses in flows.
 .SH SAMPLE CONFIGURATION
 The following sample configuration file contains most common options with their default values.
 
@@ -111,40 +264,48 @@ The following sample configuration file contains most common options with their 
 # @PACKAGE_NAME@ sample configuration for version @PACKAGE_VERSION@
 
 [@PACKAGE_TARNAME@]
-enable_sink = false
-json_save = false
-max_backlog_kb = 2048
-max_detection_pkts = 32
-ssl_use_tlsv1 = false
-ssl_verify = true
+# profile = @persistentstatedir@/profiles.d/00-default.conf
+update_interval = 15
+max_flows = 0
+
+[capture-defaults]
+capture_type = pcap
+
+[threads]
+# capture_base = 0
+# detection_base = 1
+# detection_cores = 2
+
+[flow-hash-cache]
+enable = yes
+save = persistent
+cache_size = 1000
 
 [dns_hint_cache]
-enable = true
+enable = yes
 save = persistent
-ttl = 1800
+cache_size = 1000
 
-[socket]
-listen_address[0] = 0.0.0.0
-listen_port[0] = 2100
-listen_path[0] = /var/lib/@PACKAGE_TARNAME@/@PACKAGE_TARNAME@.sock
+[netify-api]
+enable = no
+
+[protocols]
+all = include
+
+[netlink]
+conntrack_idle_ttl = 3600
 
 [privacy_filter]
-mac[0] = 00:11:22:33:44:55
-host[0] = 192.168.0.1
-host[1] = fe80::226:c6ff::1
-
-[tasks]
-example-task = libexample-task.so
-
-[services]
-example-service = libexample-service.so
+# host[0] = 192.168.1.1
 .EE
 .in
 .PP
 .SH SEE ALSO
 @PACKAGE_TARNAME@(8)
+.SH ONLINE DOCUMENTATION
+For additional documentation, please visit: https://www.netify.ai/documentation
 .SH COPYRIGHT
-Copyright (C) 2015-2024 eGloo Incorporated <\fIhttp://www.egloo.ca\fR>
+Copyright (C) 2015-2026 eGloo Incorporated <\fIhttp://www.egloo.ca\fR>
 .SH LICENSE
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
