@@ -1100,8 +1100,8 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
             ndAddr::Create(flow.lower_addr, (const struct in6_addr *)lower_ip);
             ndAddr::Create(flow.upper_addr, (const struct in6_addr *)upper_ip);
         }
-        flow.lower_addr.SetPort(ntohs(lower_port));
-        flow.upper_addr.SetPort(ntohs(upper_port));
+        flow.lower_addr.SetPort(lower_port);
+        flow.upper_addr.SetPort(upper_port);
 
         if constexpr (DL_TYPE == DLT_EN10MB) {
             if (lower_mac) ndAddr::Create(flow.lower_mac, lower_mac, ETH_ALEN);
