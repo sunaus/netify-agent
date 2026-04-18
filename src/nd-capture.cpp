@@ -1344,34 +1344,38 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
             ProcessDNSPacket(nf, pkt, pkt_len, proto);
     }
 
-    if (nf->flags.detection_complete.load() == false &&
-      nf->flags.expired.load() == false &&
-      nf->stats.detection_packets.load() < ndGC.max_detection_pkts &&
-      nf->dpi_queued < ndGC.max_detection_pkts)
     {
-        nf->dpi_queued++;
+        lock_guard<recursive_mutex> lg(nf->lock);
 
-        if (nf->dpi_thread_id < 0) {
-            nf->dpi_thread_id = dpi_thread_id;
-            if (++dpi_thread_id == (int16_t)threads_dpi.size())
-                dpi_thread_id = 0;
-        }
+        if (nf->flags.detection_complete.load() == false &&
+          nf->flags.expired.load() == false &&
+          nf->stats.detection_packets.load() < ndGC.max_detection_pkts &&
+          nf->dpi_queued < ndGC.max_detection_pkts)
+        {
+            nf->dpi_queued++;
 
-        auto idpi = threads_dpi.find(nf->dpi_thread_id);
+            if (nf->dpi_thread_id < 0) {
+                nf->dpi_thread_id = dpi_thread_id;
+                if (++dpi_thread_id == (int16_t)threads_dpi.size())
+                    dpi_thread_id = 0;
+            }
 
-        if (idpi != threads_dpi.end()) {
-            idpi->second->QueuePacket(nf, packet,
-              (nf->ip_version == 4) ?
-                (uint8_t *)packet->l3.ip4 : (uint8_t *)packet->l3.ip6,
-              packet->caplen - l2_len);
+            auto idpi = threads_dpi.find(nf->dpi_thread_id);
 
-            // Hand over packet ownership to the DPI queue
-            packet = nullptr;
-        }
-        else {
-            throw ndException(
-              "%s: detection thread ID not found (%hd)",
-              tag.c_str(), nf->dpi_thread_id);
+            if (idpi != threads_dpi.end()) {
+                idpi->second->QueuePacket(nf, packet,
+                  (nf->ip_version == 4) ?
+                    (uint8_t *)packet->l3.ip4 : (uint8_t *)packet->l3.ip6,
+                  packet->caplen - l2_len);
+
+                // Hand over packet ownership to the DPI queue
+                packet = nullptr;
+            }
+            else {
+                throw ndException(
+                  "%s: detection thread ID not found (%hd)",
+                  tag.c_str(), nf->dpi_thread_id);
+            }
         }
     }
 
