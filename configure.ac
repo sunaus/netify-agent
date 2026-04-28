@@ -530,7 +530,7 @@ AC_CONFIG_FILES([deploy/debian/Makefile])
 AC_CONFIG_FILES([deploy/freebsd/Makefile])
 AC_CONFIG_FILES([deploy/rpm/Makefile])
 AC_CONFIG_FILES([deploy/systemd/Makefile])
-AC_CONFIG_FILES([doc/netifyd.8 doc/netifyd.conf.5])
+AC_CONFIG_FILES([doc/netifyd.8 doc/netifyd.conf.5 doc/netify-flow-expressions.7])
 AC_CONFIG_FILES([util/generate-protocol-csv.sh],
     [chmod +x util/generate-protocol-csv.sh])
 AC_CONFIG_FILES([util/generate-alpn-include.sh],
