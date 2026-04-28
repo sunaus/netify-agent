@@ -2,7 +2,7 @@
 .SH NAME
 netify-flow-expressions \- Netify Flow Expression Engine Syntax
 .SH DESCRIPTION
-The Netify Flow Expression engine provides a powerful way to filter and classify network traffic based on flow metadata and deep-packet inspection (DPI) results. It supports two syntax modes: \fBCompact Syntax\fR for simple application and protocol matching, and \fBStandard Syntax\fR for complex logical expressions.
+The Netify Flow Expression engine provides a powerful way to filter and classify network traffic based on flow metadata and deep-packet inspection (DPI) results. It supports two syntax modes: \fBCompact Syntax\fR for simple application, protocol, and category matching, and \fBStandard Syntax\fR for complex logical expressions.
 .SH COMPACT SYNTAX
 Compact syntax is a shorthand for matching flows based on application or protocol tags and categories.
 .TP
