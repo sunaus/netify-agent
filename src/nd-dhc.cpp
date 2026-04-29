@@ -36,7 +36,7 @@ using namespace std;
 constexpr const char *_ND_DHC_FILE_NAME = "/dns-cache.csv";
 
 ndDNSHintCache::ndDNSHintCache(size_t cache_size)
-  : ndLRUCache<uint64_t, string>(cache_size, true) {
+  : ndLRUCache<ndDigest, string>(cache_size, true) {
     kvmap.reserve(ND_HASH_BUCKETS_DNSARS);
 }
 
@@ -64,13 +64,12 @@ void ndDNSHintCache::Insert(const ndAddr &addr,
         return;
     }
 
-    uint64_t digest = nd_xxh64(sa, addr.GetAddressSize());
+    ndDigest digest = nd_xxh64(sa, addr.GetAddressSize());
 
     CacheInsert(digest, hostname, true);
 }
 
-void ndDNSHintCache::Insert(uint64_t digest,
-  const string &hostname) {
+void ndDNSHintCache::Insert(ndDigest digest, const string &hostname) {
     CacheInsert(digest, hostname, true);
 }
 
@@ -90,7 +89,7 @@ bool ndDNSHintCache::Lookup(const ndAddr &addr, string &hostname) {
         return false;
     }
 
-    uint64_t digest = nd_xxh64(sa, sa_length);
+    ndDigest digest = nd_xxh64(sa, sa_length);
 
     //    return Lookup(digest, hostname);
     return CacheLookup(digest, hostname);
@@ -139,13 +138,17 @@ void ndDNSHintCache::Load(void) {
             return;
         }
 
+        bool valid_digest = false;
+        ndDigest digest = 0;
         string hostname(line.begin(), line.begin() + p);
 
         nd_trim(hostname);
         nd_trim(hostname, '"');
 
         switch (fc) {
-        case 1: Insert(line.substr(p + 1), hostname); break;
+        case 1:
+            valid_digest = nd_string_to_xxh64(line.substr(p + 1), digest);
+            break;
         case 2:
             nd_dprintf(
               "Legacy-format DNS hint cache detected.\n");
@@ -157,9 +160,7 @@ void ndDNSHintCache::Load(void) {
                   filename.c_str(), ln);
                 return;
             }
-            uint64_t digest;
-            if (nd_string_to_xxh64(line.substr(dp, p), digest))
-                Insert(digest, hostname);
+            valid_digest = nd_string_to_xxh64(line.substr(dp, p), digest);
             break;
         default:
             nd_printf("%s: parse error at line #%u\n",
@@ -167,7 +168,10 @@ void ndDNSHintCache::Load(void) {
             return;
         }
 
-        loaded++;
+        if (valid_digest) {
+            Insert(digest, hostname);
+            loaded++;
+        }
     }
 
     nd_dprintf("Loaded %u DNS hint cache entries.\n", loaded);

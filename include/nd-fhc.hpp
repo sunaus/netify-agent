@@ -61,7 +61,7 @@ public:
 };
 
 class ndFlowHashCache :
-  public ndLRUCache<uint64_t, ndFlowHashCacheEntry>
+  public ndLRUCache<ndDigest, ndFlowHashCacheEntry>
 {
 public:
     ndFlowHashCache(size_t cache_size);

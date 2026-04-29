@@ -25,17 +25,17 @@
 #include "nd-addr.hpp"
 #include "nd-util.hpp"
 
-class ndDNSHintCache : public ndLRUCache<uint64_t, std::string>
+class ndDNSHintCache : public ndLRUCache<ndDigest, std::string>
 {
 public:
     ndDNSHintCache(size_t cache_size);
 
     void Insert(const ndAddr &addr, const std::string &hostname);
-    void Insert(uint64_t digest, const std::string &hostname);
+    void Insert(ndDigest digest, const std::string &hostname);
 
     bool Lookup(const ndAddr &addr, std::string &hostname);
     inline bool
-    Lookup(uint64_t digest, std::string &hostname) {
+    Lookup(ndDigest digest, std::string &hostname) {
         return CacheLookup(digest, hostname);
     }
 

@@ -38,7 +38,7 @@ constexpr const char *_ND_FHC_FILE_NAME =
   "/flow-hash-cache.csv";
 
 ndFlowHashCache::ndFlowHashCache(size_t cache_size)
-  : ndLRUCache<uint64_t, ndFlowHashCacheEntry>(cache_size, true) {
+  : ndLRUCache<ndDigest, ndFlowHashCacheEntry>(cache_size, true) {
 }
 
 void ndFlowHashCache::Load(void) {
