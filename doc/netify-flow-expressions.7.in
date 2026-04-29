@@ -459,17 +459,17 @@ Match all flows belonging to the 'social-media' category:
 .PP
 Match Netflix or YouTube traffic on port 443:
 .RS
-\fB(app == 'netflix' || app == 'youtube') && local_port == 443\fR
+\fB(app == 'netflix' || app == 'youtube') && local_port == 443;\fR
 .RE
 .PP
 Match traffic from a specific local network that is NOT using TLS 1.3:
 .RS
-\fBsrc_ip == 192.168.1.0/24 && tls_version != 'TLSv1.3'\fR
+\fBsrc_ip == 192.168.1.0/24 && tls_version != 0x0303;\fR
 .RE
 .PP
 Match flows where the detected hostname ends with '.org':
 .RS
-\fBdetected_hostname == 'rx:.*\\.org$'\fR
+\fBdetected_hostname == 'rx:.*\\.org$';\fR
 .RE
 .SH SEE ALSO
 .BR netifyd (8),
