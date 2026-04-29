@@ -2934,7 +2934,15 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
                         ct_counter_ifnames.end())
                         continue;
 
-                    thread_conntrack->UpdateFlowStats(i.second, stamp);
+                    if (thread_conntrack->UpdateFlowStats(i.second, stamp)) {
+                        if (i.second->lru_list == 1) {
+                            fm.Remove(i.second.get());
+                            fm.PushBackShort(i.second.get());
+                        } else if (i.second->lru_list == 2) {
+                            fm.Remove(i.second.get());
+                            fm.PushBackLong(i.second.get());
+                        }
+                    }
                 }
 
                 flow_buckets->ReleaseBucket(b);
@@ -3065,10 +3073,8 @@ void ndInstance::ProcessFlows(void) {
 
     nd_dprintf(
       "%s: new: %lu, pre-dpi: %lu, in-use: %lu, purged "
-      "%lu, active: %lu, idle: %lu, expiring: "
-      "%lu, "
-      "expired: %lu, total: %lu (%lu)\n",
-      tag.c_str(),
+      "%lu, active: %lu, idle: %lu, expiring: %lu, "
+      "expired: %lu, total: %lu (%lu)\n", tag.c_str(),
       flows_new, flows_pre_init, status.flows_in_use,
       status.flows_purged, status.flows_active,
       (flows_total - status.flows_active - flows_pre_init),

@@ -52,7 +52,7 @@ public:
 
     void UpdateFlow(ndFlow::Ptr &flow);
 #if defined(_ND_ENABLE_CONNTRACK_COUNTERS)
-    void UpdateFlowStats(ndFlow::Ptr &flow, const struct timeval &stamp) const;
+    bool UpdateFlowStats(ndFlow::Ptr &flow, const struct timeval &stamp) const;
 #endif
     class Stats {
     public:

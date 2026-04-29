@@ -537,14 +537,14 @@ void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
 }
 
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
-void ndNetlinkConntrackThread::UpdateFlowStats(
+bool ndNetlinkConntrackThread::UpdateFlowStats(
     ndFlow::Ptr &flow, const struct timeval &stamp) const {
 
     if (flow->conntrack.id == 0) {
 #ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: id not set.\n", TAG);
 #endif
-        return;
+        return false;
     }
 
     lock_guard<mutex> lg(map_lock);
@@ -554,7 +554,7 @@ void ndNetlinkConntrackThread::UpdateFlowStats(
 #ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: id not found in map.\n", TAG);
 #endif
-        return;
+        return false;
     }
 
     if (id_flow->second->packets[
@@ -564,7 +564,7 @@ void ndNetlinkConntrackThread::UpdateFlowStats(
 #ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: no packets.\n", TAG);
 #endif
-        return;
+        return false;
     }
 
     unsigned idx_lower, idx_upper;
@@ -581,13 +581,11 @@ void ndNetlinkConntrackThread::UpdateFlowStats(
         break;
     default:
         nd_dprintf("%s: flow origin unknown.\n", TAG);
-        return;
+        return false;
     }
 
     uint64_t ts_pkt = ((uint64_t)stamp.tv_sec) * ND_DETECTION_TICKS +
       stamp.tv_usec / (1000000 / ND_DETECTION_TICKS);
-
-    flow->ts_last_seen = ts_pkt;
 
     uint64_t current_lower_packets = id_flow->second->packets[idx_lower];
     uint64_t current_lower_bytes = id_flow->second->bytes[idx_lower];
@@ -618,6 +616,11 @@ void ndNetlinkConntrackThread::UpdateFlowStats(
     flow->stats.total_bytes += delta_lower_bytes;
     flow->stats.total_packets += delta_upper_packets;
     flow->stats.total_bytes += delta_upper_bytes;
+
+    bool has_new_packets = (delta_lower_packets > 0 || delta_upper_packets > 0);
+    if (has_new_packets) {
+        flow->ts_last_seen = ts_pkt;
+    }
 #ifdef _ND_ENABLE_EXTENDED_STATS
     flow->stats.UpdateRate(true, ts_pkt, delta_lower_bytes);
     flow->stats.UpdateRate(false, ts_pkt, delta_upper_bytes);
@@ -625,6 +628,7 @@ void ndNetlinkConntrackThread::UpdateFlowStats(
 #ifdef _ND_DEBUG_LOG
     nd_dprintf("%s: updated flow counters.\n", TAG);
 #endif
+    return has_new_packets;
 }
 #endif // _ND_ENABLE_CONNTRACK_COUNTERS
 
