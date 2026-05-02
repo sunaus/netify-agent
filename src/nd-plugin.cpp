@@ -364,7 +364,7 @@ ndPluginLoader::ndPluginLoader(const string &tag,
         throw ndException("%s: %s", tag.c_str(), dlerror_string);
     }
 
-    plugin = (*ndPluginInit)(tag, params);
+    plugin.reset((*ndPluginInit)(tag, params));
     if (plugin == nullptr) {
         dlclose(so_handle);
         so_handle = nullptr;
@@ -377,6 +377,7 @@ ndPluginLoader::ndPluginLoader(const string &tag,
 }
 
 ndPluginLoader::~ndPluginLoader() {
+    plugin.reset();
     if (so_handle != nullptr) {
         if (! ndGC_DEBUG) {
             // In debug mode, don't close the shared object so tools like
@@ -413,9 +414,7 @@ void ndPluginManager::Load(ndPlugin::Type type, bool create) {
         if (plugins == nullptr) continue;
 
         for (auto &i : *plugins) {
-            ndPluginLoader *loader = nullptr;
-
-            loader = new ndPluginLoader(i.first,
+            auto loader = std::make_unique<ndPluginLoader>(i.first,
               i.second.first, i.second.second);
 
             if (loader->GetPlugin()->GetType() != t.first) {
@@ -445,7 +444,7 @@ void ndPluginManager::Load(ndPlugin::Type type, bool create) {
                   "duplicate plugin tag");
             }
 
-            if (! mp->insert(make_pair(i.first, loader)).second)
+            if (! mp->insert(make_pair(i.first, std::move(loader))).second)
             {
                 throw ndException("%s: %s", i.first.c_str(),
                   "failed to insert plugin loader");
@@ -517,11 +516,6 @@ void ndPluginManager::Destroy(ndPlugin::Type type) {
         for (auto &p : processors)
             p.second->GetPlugin()->Terminate();
 
-        for (auto &p : processors) {
-            delete p.second->GetPlugin();
-            delete p.second;
-        }
-
         processors.clear();
     }
 
@@ -529,11 +523,6 @@ void ndPluginManager::Destroy(ndPlugin::Type type) {
     {
         for (auto &p : sinks)
             p.second->GetPlugin()->Terminate();
-
-        for (auto &p : sinks) {
-            delete p.second->GetPlugin();
-            delete p.second;
-        }
 
         sinks.clear();
     }
@@ -569,9 +558,6 @@ size_t ndPluginManager::Reap(ndPlugin::Type type) {
               p->second->GetObjectName().c_str());
 
             lock_guard<mutex> ul(lock);
-
-            delete p->second->GetPlugin();
-            delete p->second;
 
             count++;
             p = mp->erase(p);
@@ -899,14 +885,14 @@ void ndPluginManager::DisplayStatus(const nlohmann::json &status) const {
         if (type == "processor") {
             for (auto &p : processors) {
                 if (p.second->GetTag() != tag) continue;
-                pl = p.second;
+                pl = p.second.get();
                 break;
             }
         }
         else if (type == "sink") {
             for (auto &p : sinks) {
                 if (p.second->GetTag() != tag) continue;
-                pl = p.second;
+                pl = p.second.get();
                 break;
             }
         }
