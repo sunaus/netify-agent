@@ -40,7 +40,7 @@ const nd_alpn_proto_map nd_alpn_protos = {
     { "tds/8.0" /* TDS/8.0 */, ndProto::Id::MSSQL_TDS },
     { "dicom" /* DICOM */, ndProto::Id::TLS },
     { "sip/2" /* SIP */, ndProto::Id::SIPS },
-    { "postgresql" /* PostgreSQL */, ndProto::Id::POSTRES },
+    { "postgresql" /* PostgreSQL */, ndProto::Id::POSTGRES },
     { "radius/1.0" /* RADIUS/1.0 */, ndProto::Id::RADIUS },
     { "radius/1.1" /* RADIUS/1.1 */, ndProto::Id::RADIUS }
 };
