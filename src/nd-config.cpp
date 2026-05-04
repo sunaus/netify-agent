@@ -294,7 +294,7 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #elif defined(_ND_ENABLE_TPACKETV3)
             capture_type = ndCaptureType::TPV3;
 #elif defined(_ND_ENABLE_NFQUEUE)
-            capture_type = ndCaptureType::TPV3;
+            capture_type = ndCaptureType::NFQ;
 #else
             fprintf(stderr,
               "Not default capture type could be "
