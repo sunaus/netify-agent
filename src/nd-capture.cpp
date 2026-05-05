@@ -1235,6 +1235,8 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
     if (addr_cmp < 0) {
         nf->stats.lower_packets++;
         nf->stats.lower_bytes += packet->length;
+        nf->stats.total_lower_bytes += packet->length;
+        nf->stats.total_lower_packets++;
 #ifdef _ND_ENABLE_EXTENDED_STATS
         nf->stats.UpdateRate(true, ts_pkt, packet->length);
 #endif
@@ -1242,6 +1244,8 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
     else {
         nf->stats.upper_packets++;
         nf->stats.upper_bytes += packet->length;
+        nf->stats.total_upper_bytes += packet->length;
+        nf->stats.total_upper_packets++;
 #ifdef _ND_ENABLE_EXTENDED_STATS
         nf->stats.UpdateRate(false, ts_pkt, packet->length);
 #endif
