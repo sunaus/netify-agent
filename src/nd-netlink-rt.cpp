@@ -30,12 +30,21 @@
 #include <linux/if_link.h>
 
 #include <libmnl/libmnl.h>
+#include <libnftnl/set.h>
 
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-netlink-rt.hpp"
 #include "nd-util.hpp"
+#if defined(_ND_ENABLE_UBUS)
+#include "nd-ubus.hpp"
+#include <libubox/blobmsg_json.h>
+#include <libubus.h>
+#endif
 
+#include <linux/netfilter.h>
+#include <linux/netfilter/nfnetlink.h>
+#include <linux/netfilter/nf_tables.h>
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_LOG   1
 
@@ -69,6 +78,19 @@ struct nd_bridge_vlan_info {
 };
 
 constexpr const char *TAG = { "netlink-rt" };
+
+/**
+ * Netlink error callback to capture the specific errno from the kernel ACK
+ */
+static int ndNetlinkRoute_nft_error_cb(const struct nlmsghdr *nlh, void *data) {
+    if (nlh->nlmsg_type == NLMSG_ERROR) {
+        struct nlmsgerr *err = static_cast<struct nlmsgerr *>(mnl_nlmsg_get_payload(nlh));
+        if (err->error != 0) {
+            *(int *)data = err->error;
+        }
+    }
+    return MNL_CB_OK;
+}
 
 static int ndNetlinkRoute_attr_parse_ifav4(
     const struct nlattr *attr, void *data) {
@@ -452,7 +474,7 @@ void ndNetlinkRouteThread::Dump(void) {
     // Need to make a specific call to Netlink specifing family
     // otherwise kernel does not return the bridge VLAN metadata
     // we're looking for
-    if (ndGC.netlink_bridge_pvid_discovery) {
+    if (ndGC.mark_to_ifindex_mapping) {
         rt_dump.Dump(RTM_GETLINK, AF_BRIDGE);
     }
     rt_dump.Dump(RTM_GETNEIGH);
@@ -636,8 +658,9 @@ int ndNetlinkRouteThread::AddRemoveNetwork(const struct nlmsghdr *nlh, bool add)
         return 0;
     }
 
-    _ND_NLRT_CHECK_ATTR(TAG, attrs[RTA_DST], -1);
-    _ND_NLRT_CHECK_ATTR(TAG, attrs[RTA_OIF], -1);
+    if (!attrs[RTA_DST] || !attrs[RTA_OIF]) {
+        return 0;
+    }
 
     ndAddr addr;
     switch(rtm->rtm_family) {
@@ -694,9 +717,22 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
 
     int rc = 0;
     ndInstance &ndi = ndInstance::GetInstance();
+    char ifname[IFNAMSIZ] = { '\0' };
+
+    if (ndGC.mark_to_ifindex_mapping && ndGC.mark_to_ifindex_fw == "nft") {
+        uint32_t mark = (uint32_t)ifi->ifi_index << ndGC.mark_to_ifindex_shift;
+
+        nd_dprintf("%s: nftables [%s] %s map: %s (idx: %d) -> mark: 0x%08x (shift: %u)\n",
+            TAG,
+            ndGC.mark_to_ifindex_table.c_str(),
+            add ? "ADD" : "DELETE",
+            ifname,
+            ifi->ifi_index,
+            mark,
+            ndGC.mark_to_ifindex_shift);
+    }
 
     if (add) {
-        char ifname[IFNAMSIZ] = { '\0' };
         if (if_indextoname(ifi->ifi_index, ifname) == nullptr) {
             nd_dprintf("%s: %s: if_indextoname(%d): %s\n",
                 TAG, __PRETTY_FUNCTION__, ifi->ifi_index, strerror(errno));
@@ -707,6 +743,25 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
 
         if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
 
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        std::string ssid = this->GetWirelessSSID(ifname);
+        if (!ssid.empty()) {
+            nd_dprintf("%s: %s SSID: %s\n", TAG, ifname, ssid.c_str());
+            ndi.addr_lookup.AddLinkSSID(ifi->ifi_index, ssid);
+        }
+#endif
+
+        if (ndGC.mark_to_ifindex_mapping && ndGC.mark_to_ifindex_fw == "nft") {
+            if (ndGC.mark_to_ifindex_shift > 24) {
+                nd_dprintf("Invalid shift too large\n");
+                return -1;
+            }
+
+            uint32_t mark = (uint32_t)ifi->ifi_index << ndGC.mark_to_ifindex_shift;
+
+            this->UpdateNftablesMapping(ifi->ifi_index, mark, true);
+        }
+
         AttrsLink attrs = { 0 };
 
         if (mnl_attr_parse(nlh, sizeof(*ifi),
@@ -714,6 +769,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             return -1;
 
         if (attrs[IFLA_LINKINFO]) {
+            // ... (VLAN Kind/ID Parsing logic remains unchanged) ...
             AttrsLinkInfo linkinfo_attrs = { 0 };
 
             if (mnl_attr_parse_nested(attrs[IFLA_LINKINFO],
@@ -741,76 +797,16 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
                     }
 
                     if (vlan_attrs[IFLA_VLAN_ID]) {
-                        uint16_t vlan_id = mnl_attr_get_u16(
+                        uint16_t pvid = mnl_attr_get_u16(
                             vlan_attrs[IFLA_VLAN_ID]
                         );
 
-                        nd_dprintf("%s: VLAN_ID: %hu\n", ifname, vlan_id);
-                        ndi.addr_lookup.AddLinkVLANId(ifi->ifi_index, vlan_id);
+                        nd_dprintf("%s: PVID: %hu\n", ifname, pvid);
+                        ndi.addr_lookup.AddLinkPVID(ifi->ifi_index, pvid);
                     }
                 }
             }
         }
-
-        if (ndGC.netlink_bridge_pvid_discovery && attrs[IFLA_AF_SPEC]) {
-            int rem = mnl_attr_get_payload_len(attrs[IFLA_AF_SPEC]);
-            const struct nlattr *af_spec_attr =
-                static_cast<const struct nlattr *>(mnl_attr_get_payload(attrs[IFLA_AF_SPEC]));
-
-            while (mnl_attr_ok(af_spec_attr, rem)) {
-                uint16_t type = mnl_attr_get_type(af_spec_attr);
-
-                // --- CASE 1: Nested Data (Inside AF_BRIDGE/7 folder) ---
-                if (type == AF_BRIDGE) {
-                    const struct nlattr *br_attr =
-                        static_cast<const struct nlattr *>(mnl_attr_get_payload(af_spec_attr));
-                    int br_rem = mnl_attr_get_payload_len(af_spec_attr);
-
-                    while (mnl_attr_ok(br_attr, br_rem)) {
-                        if (mnl_attr_get_type(br_attr) == IFLA_BRIDGE_VLAN_INFO) {
-                            const char *payload = static_cast<const char *>(mnl_attr_get_payload(br_attr));
-                            int vlen = mnl_attr_get_payload_len(br_attr);
-
-                            for (int i = 0; i <= vlen - (int)sizeof(nd_bridge_vlan_info); i += sizeof(nd_bridge_vlan_info)) {
-                                const struct nd_bridge_vlan_info *vinfo =
-                                    reinterpret_cast<const struct nd_bridge_vlan_info *>(payload + i);
-
-                                if (vinfo->flags & BRIDGE_VLAN_INFO_PVID) {
-                                    nd_dprintf("%s: %s PVID (Nested): %hu\n",TAG, ifname, vinfo->vid);
-                                    ndi.addr_lookup.AddLinkVLANId(ifi->ifi_index, vinfo->vid);
-                                    goto next_interface;
-                                }
-                            }
-                        }
-                        int b_len = mnl_attr_get_len(br_attr);
-                        br_attr = mnl_attr_next(br_attr);
-                        br_rem -= MNL_ALIGN(b_len);
-                    }
-                }
-                // --- CASE 2: Direct Data (Type 2 is VLAN Info because header is AF_BRIDGE) ---
-                else if (type == IFLA_BRIDGE_VLAN_INFO && ifi->ifi_family == AF_BRIDGE) {
-                    const char *payload = static_cast<const char *>(mnl_attr_get_payload(af_spec_attr));
-                    int vlen = mnl_attr_get_payload_len(af_spec_attr);
-
-                    for (int i = 0; i <= vlen - (int)sizeof(nd_bridge_vlan_info); i += sizeof(nd_bridge_vlan_info)) {
-                        const struct nd_bridge_vlan_info *vinfo =
-                            reinterpret_cast<const struct nd_bridge_vlan_info *>(payload + i);
-
-                        if (vinfo->flags & BRIDGE_VLAN_INFO_PVID) {
-                            nd_dprintf("%s: %s PVID (Direct): %hu\n", TAG, ifname, vinfo->vid);
-                            ndi.addr_lookup.AddLinkVLANId(ifi->ifi_index, vinfo->vid);
-                            goto next_interface;
-                        }
-                    }
-                }
-
-                int a_len = mnl_attr_get_len(af_spec_attr);
-                af_spec_attr = mnl_attr_next(af_spec_attr);
-                rem -= MNL_ALIGN(a_len);
-            }
-        }
-
-    next_interface: // Label to break out of nested loops once PVID is found
 
         _ND_NLRT_CHECK_ATTR(TAG, attrs[IFLA_ADDRESS], -1);
 
@@ -829,15 +825,22 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
         if (ndi.addr_lookup.AddLinkAddress(ifi->ifi_index, addr)) rc = 1;
     }
     else {
+
 #ifdef _ND_DEBUG_LOG
         nd_dprintf("%s: removing link: %d\n", TAG,
             ifi->ifi_index
         );
 #endif
+        if (ndGC.mark_to_ifindex_mapping && ndGC.mark_to_ifindex_fw == "nft") {
+            this->UpdateNftablesMapping(ifi->ifi_index, 0, false);
+        }
         if (ndi.addr_lookup.RemoveLinkAddress(ifi->ifi_index)) rc = 1;
         if (ndi.addr_lookup.RemoveLinkName(ifi->ifi_index)) rc = 1;
 
-        ndi.addr_lookup.RemoveLinkVLANId(ifi->ifi_index);
+        ndi.addr_lookup.RemoveLinkPVID(ifi->ifi_index);
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        ndi.addr_lookup.RemoveLinkSSID(ifi->ifi_index);
+#endif
     }
 
     return rc;
@@ -960,3 +963,167 @@ int ndNetlinkRouteThread::AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add
 
     return rc;
 }
+
+void ndNetlinkRouteThread::UpdateNftablesMapping(
+    int ifindex,
+    uint32_t mark,
+    bool add)
+{
+    struct mnl_socket *nl;
+    struct nftnl_set *set;
+    struct nftnl_set_elem *elem;
+    char buf[MNL_SOCKET_BUFFER_SIZE];
+    uint32_t seq = time(NULL);
+    int ret;
+
+    set = nftnl_set_alloc();
+    if (!set) {
+        nd_dprintf("%s: failed to allocate nftnl_set\n", TAG);
+        return;
+    }
+
+    // Bit of a TODO - we don't support anything but nftables for now, the et name is non-configurable
+    nftnl_set_set_str(set, NFTNL_SET_TABLE, ndGC.mark_to_ifindex_table.c_str());
+    nftnl_set_set_str(set, NFTNL_SET_NAME, "ifindex_to_mark");
+    nftnl_set_set_u32(set, NFTNL_SET_FAMILY, NFPROTO_BRIDGE);
+
+    elem = nftnl_set_elem_alloc();
+    if (!elem) {
+        nftnl_set_free(set);
+        nd_dprintf("%s: failed to allocate nftnl_set_elem\n", TAG);
+        return;
+    }
+
+    nftnl_set_elem_set(elem, NFTNL_SET_ELEM_KEY, &ifindex, sizeof(ifindex));
+    if (add) {
+        nftnl_set_elem_set(elem, NFTNL_SET_ELEM_DATA, &mark, sizeof(mark));
+    }
+    nftnl_set_elem_add(set, elem);
+
+    nl = mnl_socket_open(NETLINK_NETFILTER);
+    if (!nl) {
+        nd_dprintf("%s: failed to open netlink socket\n", TAG);
+        nftnl_set_free(set);
+        return;
+    }
+
+    if (mnl_socket_bind(nl, 0, MNL_SOCKET_AUTOPID) < 0) {
+        nd_dprintf("%s: failed to bind netlink socket\n", TAG);
+        mnl_socket_close(nl);
+        nftnl_set_free(set);
+        return;
+    }
+
+    struct nlmsghdr *nlh;
+    struct nfgenmsg *nfg;
+    int offset = 0;
+
+    // Batch Begin
+    nlh = mnl_nlmsg_put_header(buf);
+    nlh->nlmsg_type = NFNL_MSG_BATCH_BEGIN;
+    nlh->nlmsg_flags = NLM_F_REQUEST;
+    nlh->nlmsg_seq = seq++;
+
+    nfg = (struct nfgenmsg *)mnl_nlmsg_put_extra_header(nlh, sizeof(*nfg));
+    nfg->nfgen_family = NFPROTO_UNSPEC;
+    nfg->version = NFNETLINK_V0;
+    nfg->res_id = NFNL_SUBSYS_NFTABLES;
+    offset += nlh->nlmsg_len;
+
+    // Add/Delete Set Element
+    uint16_t msg_type = add ? NFT_MSG_NEWSETELEM : NFT_MSG_DELSETELEM;
+    uint16_t msg_flags = NLM_F_REQUEST | NLM_F_ACK;
+    if (add) {
+        msg_flags |= NLM_F_CREATE;
+    }
+
+    nlh = nftnl_nlmsg_build_hdr(buf + offset, msg_type, NFPROTO_BRIDGE, msg_flags, seq++);
+    nftnl_set_elems_nlmsg_build_payload(nlh, set);
+    offset += nlh->nlmsg_len;
+
+    // Batch End
+    nlh = mnl_nlmsg_put_header(buf + offset);
+    nlh->nlmsg_type = NFNL_MSG_BATCH_END;
+    nlh->nlmsg_flags = NLM_F_REQUEST;
+    nlh->nlmsg_seq = seq++;
+
+    nfg = (struct nfgenmsg *)mnl_nlmsg_put_extra_header(nlh, sizeof(*nfg));
+    nfg->nfgen_family = NFPROTO_UNSPEC;
+    nfg->version = NFNETLINK_V0;
+    nfg->res_id = NFNL_SUBSYS_NFTABLES;
+    offset += nlh->nlmsg_len;
+
+    if (mnl_socket_sendto(nl, buf, offset) < 0) {
+        nd_dprintf("%s: failed to send nft message\n", TAG);
+    } else {
+        ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
+        if (ret > 0) {
+            int err_code = 0;
+            if (mnl_cb_run(buf, ret, 0, mnl_socket_get_portid(nl), ndNetlinkRoute_nft_error_cb, &err_code) < 0) {
+                nd_dprintf("%s: nftables update failed: %s (table: %s)\n", 
+                           TAG, strerror(abs(err_code)), ndGC.mark_to_ifindex_table.c_str());
+            }
+        }
+    }
+
+    nftnl_set_free(set);
+    mnl_socket_close(nl);
+}
+
+#if defined(_ND_ENABLE_UBUS)
+struct nd_ssid_cb_data {
+    std::string *ssid_out;
+};
+
+static void nd_ubus_ssid_cb(struct ubus_request *req, int type, struct blob_attr *msg) {
+    struct blob_attr *tb[1];
+    struct blobmsg_policy p[1] = { { .name = "ssid", .type = BLOBMSG_TYPE_STRING } };
+
+    blobmsg_parse(p, 1, tb, blobmsg_data(msg), blobmsg_len(msg));
+
+    if (tb[0]) {
+        auto data = static_cast<nd_ssid_cb_data*>(req->priv);
+        *(data->ssid_out) = blobmsg_get_string(tb[0]);
+    }
+}
+#endif
+
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+std::string ndNetlinkRouteThread::GetWirelessSSID(const char* ifname) {
+    std::string ssid = "";
+
+#if defined(_ND_ENABLE_UBUS)
+    if (ifname && (strncmp(ifname, "wlan", 4) == 0 || strncmp(ifname, "ath", 3) == 0)) {
+        struct ubus_context *ctx = ubus_connect(NULL);
+
+        if (ctx) {
+            uint32_t id;
+            std::string ubus_path = "hostapd." + std::string(ifname);
+
+            if (ubus_lookup_id(ctx, ubus_path.c_str(), &id) == UBUS_STATUS_OK) {
+                nd_ssid_cb_data cb_data = { &ssid };
+
+                int res = ubus_invoke(ctx, id, "get_status", NULL, nd_ubus_ssid_cb, &cb_data, 500);
+
+                if (res != UBUS_STATUS_OK) {
+                    nd_dprintf("%s: GetWirelessSSID(%s) - ubus_invoke error: %s (code: %d)\n",
+                               TAG, ifname, ubus_strerror(res), res);
+                } else if (ssid.empty()) {
+                    nd_dprintf("%s: GetWirelessSSID(%s) - Method succeeded but 'ssid' field was missing\n", TAG, ifname);
+                } else {
+                    nd_dprintf("%s: GetWirelessSSID(%s) - SUCCESS: Found SSID '%s'\n", TAG, ifname, ssid.c_str());
+                }
+            } else {
+                nd_dprintf("%s: GetWirelessSSID(%s) - Ubus path '%s' not found\n", TAG, ifname, ubus_path.c_str());
+            }
+
+            ubus_free(ctx);
+        }
+    }
+#else
+    (void)ifname;
+#endif
+
+    return ssid;
+}
+#endif

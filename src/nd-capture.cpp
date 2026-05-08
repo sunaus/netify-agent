@@ -1100,28 +1100,48 @@ nd_process_ip:
         nf->first_addr_cmp = addr_cmp;
 
 #if defined(_ND_ENABLE_NFQUEUE)
-        if (ndCT_TYPE(
-            iface->capture_type.flags) == ndCaptureType::NFQ) {
-
+        if (ndCT_TYPE(iface->capture_type.flags) == ndCaptureType::NFQ) {
             nf->nfq.src_ifindex = packet->ifidx_src;
             nf->nfq.dst_ifindex = packet->ifidx_dst;
-
-            if (nf->nfq.src_ifindex != -1) {
-                ndi.addr_lookup.LookupLinkName(
-                    nf->nfq.src_ifindex, nf->nfq.src_iface);
-                nf->vlan_id = ndi.addr_lookup.LookupLinkVLANId(
-                    nf->nfq.src_ifindex);
-            }
-            if (nf->nfq.dst_ifindex != -1) {
-                ndi.addr_lookup.LookupLinkName(
-                    nf->nfq.dst_ifindex, nf->nfq.dst_iface);
-                if (nf->vlan_id == 0) {
-                    nf->vlan_id = ndi.addr_lookup.LookupLinkVLANId(
-                        nf->nfq.dst_ifindex);
-                }
-            }
         }
 #endif
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        // 1. Assign the indexes from the packet (Capture method agnostic!)
+        int meta_src_idx = (packet->ifidx_logical != -1) ?
+                                packet->ifidx_logical : packet->ifidx_src;
+
+        nf->if_metadata.local.index = meta_src_idx;
+        nf->if_metadata.other.index = packet->ifidx_dst;
+
+        // 2. Populate Local Metadata
+        if (nf->if_metadata.local.index != -1) {
+            std::string tmp_name;
+            if (ndi.addr_lookup.LookupLinkName(nf->if_metadata.local.index, tmp_name)) {
+                snprintf(nf->if_metadata.local.name, sizeof(nf->if_metadata.local.name),
+                         "%s", tmp_name.c_str());
+            }
+
+            std::string tmp_ssid;
+            if (ndi.addr_lookup.LookupLinkSSID(nf->if_metadata.local.index, tmp_ssid)) {
+                snprintf(nf->if_metadata.local.ssid, sizeof(nf->if_metadata.local.ssid),
+                         "%s", tmp_ssid.c_str());
+            }
+
+            nf->if_metadata.local.pvid = ndi.addr_lookup.LookupLinkPVID(nf->if_metadata.local.index);
+        }
+
+        // 3. Populate Other Metadata
+        if (nf->if_metadata.other.index!= -1) {
+            std::string tmp_name;
+            if (ndi.addr_lookup.LookupLinkName(nf->if_metadata.other.index, tmp_name)) {
+                snprintf(nf->if_metadata.other.name, sizeof(nf->if_metadata.other.name),
+                         "%s", tmp_name.c_str());
+            }
+
+            nf->if_metadata.other.pvid = ndi.addr_lookup.LookupLinkPVID(nf->if_metadata.other.index);
+        }
+#endif
+
         if (! ndi.flow_buckets->InsertUnlocked(flow_digest, nf))
         {
             ndi.flow_buckets->Release(flow_digest);

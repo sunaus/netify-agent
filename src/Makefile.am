@@ -55,7 +55,7 @@ libnetifyd_la_LIBADD = -L$(top_srcdir)/libs/inih -lini \
 
 if USE_NETLINK
 libnetifyd_la_SOURCES += nd-netlink.cpp nd-netlink-rt.cpp
-libnetifyd_la_LIBADD += $(LIBMNL_LIBS)
+libnetifyd_la_LIBADD += $(LIBMNL_LIBS) -lnftnl
 if USE_CONNTRACK
 libnetifyd_la_SOURCES += nd-netlink-ct.cpp
 libnetifyd_la_LIBADD += $(LIBNETFILTER_CONNTRACK_LIBS)

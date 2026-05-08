@@ -211,15 +211,15 @@ static int ndCaptureNFQueue_Callback(
         nfq->mark = ntohl(mnl_attr_get_u32(attr[NFQA_MARK]));
 
     uint32_t ifidx_in = 0;
-    if (attr[NFQA_IFINDEX_PHYSINDEV] != nullptr)
-        ifidx_in = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSINDEV]));
-    else if (attr[NFQA_IFINDEX_INDEV] != nullptr)
+    if (attr[NFQA_IFINDEX_INDEV] != nullptr)
         ifidx_in = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_INDEV]));
+    else if (attr[NFQA_IFINDEX_PHYSINDEV] != nullptr)
+        ifidx_in = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSINDEV]));
     uint32_t ifidx_out = 0;
-    if (attr[NFQA_IFINDEX_PHYSOUTDEV] != nullptr)
-        ifidx_out = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSOUTDEV]));
-    else if (attr[NFQA_IFINDEX_OUTDEV] != nullptr)
+    if (attr[NFQA_IFINDEX_OUTDEV] != nullptr)
         ifidx_out = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_OUTDEV]));
+    else if (attr[NFQA_IFINDEX_PHYSOUTDEV] != nullptr)
+        ifidx_out = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSOUTDEV]));
 #ifdef _ND_LOG_DEBUG
     if (ifidx_in > 0) {
         char ifname[IFNAMSIZ] = { '\0' };
@@ -295,6 +295,20 @@ static int ndCaptureNFQueue_Callback(
         }
     }
 
+    uint32_t mark = nfq->mark;
+    int ifidx_logical = -1;
+
+    if (ndGC.mark_to_ifindex_mapping && mark != 0) {
+        // Isolate the ifindex from our specific byte slot
+        unsigned int mark_to_ifindex = (mark >> ndGC.mark_to_ifindex_shift) & 0xFF;
+
+        //nd_dprintf("%s: NFQ Packet Received - Mark: 0x%08x, Recovered IfIndex: %u\n",
+        //"nfq-capture", mark, mark_to_ifindex);
+
+        // Override the logicial ingress interface with the true interface we hid in the mark
+        ifidx_logical = mark_to_ifindex;
+    }
+
     // Filtered?
     if (nfq->filter.bf_insns && bpf_filter(
         nfq->filter.bf_insns, pkt_data,
@@ -303,11 +317,14 @@ static int ndCaptureNFQueue_Callback(
         delete [] pkt_data;
     }
     else {
-        // Create and push packet...
+        // Create and push packet
         ndPacket *pkt = new ndPacket(pkt_status,
           static_cast<uint16_t>(hdr_eth_size + pkt_len),
           static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
-          pkt_data, pkt_tv, ifidx_in, ifidx_out);
+          pkt_data, pkt_tv,
+          ifidx_logical,
+          ifidx_in,
+          ifidx_out);
 
         nfq->PushPacket(pkt);
     }

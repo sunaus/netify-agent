@@ -256,6 +256,22 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #endif
         ));
 
+    mark_to_ifindex_mapping = r->GetBoolean(ND_NAME_SHORT,
+      "mark_to_ifindex_mapping",
+       this->mark_to_ifindex_mapping);
+
+    mark_to_ifindex_shift = (uint8_t)r->GetInteger(ND_NAME_SHORT,
+      "mark_to_ifindex_shift",
+      (int)this->mark_to_ifindex_shift);
+
+    mark_to_ifindex_fw = r->Get(ND_NAME_SHORT,
+      "mark_to_ifindex_fw",
+      this->mark_to_ifindex_fw);
+
+    mark_to_ifindex_table = r->Get(ND_NAME_SHORT,
+      "mark_to_ifindex_table",
+      this->mark_to_ifindex_table);
+
     user_id = r->Get(ND_NAME_SHORT, "user", "");
     group_id = r->Get(ND_NAME_SHORT, "group", "");
 
@@ -271,8 +287,6 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #ifdef _ND_ENABLE_NETLINK
     netlink_buffer_size = (size_t)r->GetInteger("netlink",
       "buffer_size", this->netlink_buffer_size);
-    netlink_bridge_pvid_discovery = r->GetBoolean("netlink",
-      "bridge_pvid_discovery", this->netlink_bridge_pvid_discovery);
 #endif
 
     // Capture defaults section

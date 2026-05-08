@@ -83,6 +83,28 @@ use_getifaddrs = false
 # local UNIX socket.
 path_server_socket = ${path_state_volatile}/netifyd.sock
 
+# Enables the logical mapping of packets to their original source
+# interface. When enabled, the agent extracts a stored interface index from the
+# packet mark (skb mark) to identify the specific logical interface (e.g., a 
+# wireless VAP) even when packets are captured on a physical bridge or NFQueue handle.
+# mark_to_ifindex_mapping = no
+
+# Specifies the bitwise left-shift used to locate the interface index within the
+# 32-bit packet mark. For example, a shift of 8 indicates the index is stored in
+# the second byte (bits 8-15), allowing the mark to coexist with other metadata
+# like connection marks.
+# mark_to_ifindex_shift = 8
+
+# Defines the firewall backend used to manage the mapping. When set to nft
+# (currently the only mode supported), the agent will automatically synchronize
+# the interface-to-mark mappings with the kernel's nftables sets.
+# mark_to_ifindex_fw = nft
+
+# Specifies the name of the nftables table where the mapping set is located. The
+# agent expects to find (or will attempt to update) a set named ifindex_to_mark
+# within this table to facilitate the correlation between physical and logical interfaces.
+# mark_to_ifindex_table = netify
+
 # Capture Defaults
 ############################################################################
 
@@ -158,6 +180,5 @@ all = include
 [netlink]
 # Set the Netlink buffer size
 buffer_size = 32768
-bridge_pvid_discovery = no
 
 # vim: set ft=dosini :

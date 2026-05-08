@@ -70,6 +70,13 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
 
 ndFlow::ndFlow(ndInterface::Ptr &iface)
   : iface(iface), detected_protocol_name("Unknown") {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+     memset(&if_metadata, 0, sizeof(if_metadata));
+    if_metadata.local.index = -1;
+    if_metadata.local.pvid = -1;
+    if_metadata.other.index = -1;
+    if_metadata.other.pvid = -1;
+#endif
 }
 
 ndFlow::ndFlow(const ndFlow &flow)
@@ -80,6 +87,9 @@ ndFlow::ndFlow(const ndFlow &flow)
     vlan_id(flow.vlan_id), ts_first_seen(flow.ts_first_seen),
     ts_last_seen(flow.ts_last_seen.load()),
     tunnel_type(flow.tunnel_type), origin(flow.origin),
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    if_metadata(flow.if_metadata),
+#endif
     digest_lower(flow.digest_lower), flags{}, tcp{},
 #ifdef _ND_ENABLE_CONNTRACK
     conntrack(flow.conntrack),
@@ -492,6 +502,32 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
                     dls << " DST: " << nfq.dst_iface;
             }
 #endif
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+            if (if_metadata.local.index != -1 || if_metadata.other.index != -1) {
+                dls << endl << setw(plen) << " " << ": META";
+
+                if (if_metadata.local.index != -1) {
+                    dls << " L:[IDX:" << if_metadata.local.index;
+                    if (if_metadata.local.name[0] != '\0')
+                        dls << " NM:" << if_metadata.local.name;
+                    if (if_metadata.local.ssid[0] != '\0')
+                        dls << " SSID:" << if_metadata.local.ssid;
+                    if (if_metadata.local.pvid != -1)
+                        dls << " PVID:" << if_metadata.local.pvid;
+                    dls << "]";
+                }
+
+                if (if_metadata.other.index != -1) {
+                    dls << " O:[IDX:" << if_metadata.other.index;
+                    if (if_metadata.other.name[0] != '\0')
+                        dls << " NM:" << if_metadata.other.name;
+                    if (if_metadata.other.pvid != -1)
+                        dls << " PVID:" << if_metadata.other.pvid;
+                    dls << "]";
+                }
+            }
+#endif
+
             if (! dns_host_name.empty() ||
               ! host_server_name.empty())
             {

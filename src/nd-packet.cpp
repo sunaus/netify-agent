@@ -28,12 +28,14 @@ using namespace std;
 
 ndPacket::ndPacket(const ndFlags<StatusFlags> &status,
   const uint16_t &length, const uint16_t &caplen,
-  uint8_t *data, const struct timeval &tv
+  uint8_t *data, const struct timeval &tv,
+  int ifidx_logical
 #if defined(_ND_ENABLE_NFQUEUE)
   , int ifidx_src, int ifidx_dst
 #endif
   ) : status(status), length(length), caplen(caplen),
-    data(data), tv_sec(tv.tv_sec), tv_usec(tv.tv_usec)
+    data(data), tv_sec(tv.tv_sec), tv_usec(tv.tv_usec),
+    ifidx_logical(ifidx_logical)
 #if defined(_ND_ENABLE_NFQUEUE)
     , ifidx_src(ifidx_src), ifidx_dst(ifidx_dst)
 #endif

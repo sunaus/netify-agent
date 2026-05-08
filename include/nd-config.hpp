@@ -325,6 +325,10 @@ public:
     std::string path_uuid_site = { ND_SITE_UUID_PATH };
     std::string url_napi_bootstrap = { ND_URL_API_BOOTSTRAP };
     std::string user_id;
+    bool mark_to_ifindex_mapping = { false };
+    uint8_t mark_to_ifindex_shift = { 8 };
+    std::string mark_to_ifindex_fw = { "nft" };
+    std::string mark_to_ifindex_table = { "netify" };
 
     ndDHCStorage dhc_storage = { ndDHCStorage::PERSISTENT };
     ndFHCStorage fhc_storage = { ndFHCStorage::PERSISTENT };
@@ -366,7 +370,6 @@ public:
     unsigned update_interval = { ND_STATS_INTERVAL };
 #ifdef _ND_ENABLE_NETLINK
     size_t netlink_buffer_size = { ND_NETLINK_BUFFER_SIZE };
-    bool netlink_bridge_pvid_discovery = { false };
 #endif
     typedef std::vector<std::pair<std::string, std::string>> SocketHosts;
     SocketHosts socket_host;
