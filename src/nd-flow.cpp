@@ -787,6 +787,26 @@ void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
         lm = LowerMap::LOCAL;
         ot = OtherType::LOCAL;
     }
+    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCALNET)
+    {
+        lm = LowerMap::OTHER;
+        ot = OtherType::LOCAL;
+    }
+    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::RESERVED)
+    {
+        lm = LowerMap::LOCAL;
+        ot = OtherType::LOCAL;
+    }
+    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCAL)
+    {
+        lm = LowerMap::OTHER;
+        ot = OtherType::REMOTE;
+    }
+    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::RESERVED)
+    {
+        lm = LowerMap::LOCAL;
+        ot = OtherType::REMOTE;
+    }
     else if (lt == ndAddr::Type::MULTICAST) {
         lm = LowerMap::OTHER;
         ot = OtherType::MULTICAST;
@@ -803,18 +823,6 @@ void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
         lm = LowerMap::LOCAL;
         ot = OtherType::BROADCAST;
     }
-    else if (lt == ndAddr::Type::RESERVED &&
-      ut == ndAddr::Type::LOCALNET)
-    {
-        lm = LowerMap::OTHER;
-        ot = OtherType::LOCAL;
-    }
-    else if (lt == ndAddr::Type::LOCALNET &&
-      ut == ndAddr::Type::RESERVED)
-    {
-        lm = LowerMap::LOCAL;
-        ot = OtherType::LOCAL;
-    }
     // TODO: Further investigation required!
     // This appears to catch corrupted IPv6 headers.
     // Spend some time to figure out if there are any
@@ -826,18 +834,7 @@ void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
         lm = LowerMap::LOCAL;
         ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCAL)
-    {
-        lm = LowerMap::OTHER;
-        ot = OtherType::REMOTE;
-    }
-    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::RESERVED)
-    {
-        lm = LowerMap::LOCAL;
-        ot = OtherType::REMOTE;
-    }
-    else if (lt == ndAddr::Type::LOCALNET &&
-      ut == ndAddr::Type::LOCALNET)
+    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::LOCALNET)
     {
         lm = LowerMap::LOCAL;
         ot = OtherType::LOCAL;

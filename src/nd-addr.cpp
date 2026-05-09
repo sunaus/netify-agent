@@ -1251,7 +1251,8 @@ void ndAddrLookup::SaveGroupAddresses(const string &path) {
 }
 
 void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
-    if (addr.IsValid()) type = ndAddr::Type::OTHER;
+    if (addr.IsValid())
+        type = ndAddr::Type::OTHER;
     else {
         type = ndAddr::Type::ERROR;
         return;
@@ -1329,7 +1330,6 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         }
 
         lock_guard<mutex> ul_ipv4_ifaces(lock_ipv4_ifaces);
-        lock_guard<mutex> ul_ipv4_reserved(lock_ipv4_reserved);
 
         for (auto &iface : ipv4_ifaces) {
             ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
@@ -1353,6 +1353,8 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::CreateQuery(
               entry, addr))
         {
+            lock_guard<mutex> ul_ipv4_reserved(lock_ipv4_reserved);
+
             RadixAddrType4::iterator it;
             if ((it = ipv4_reserved.longest_match(entry)) !=
               ipv4_reserved.end())
@@ -1367,7 +1369,6 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
     }
     else if (addr.IsIPv6()) {
         lock_guard<mutex> ul_ipv6_ifaces(lock_ipv6_ifaces);
-        lock_guard<mutex> ul_ipv6_reserved(lock_ipv6_reserved);
 
         for (auto &iface : ipv6_ifaces) {
             ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
@@ -1391,6 +1392,8 @@ void ndAddrLookup::Classify(ndAddr::Type &type, const ndAddr &addr) {
         if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::CreateQuery(
               entry, addr))
         {
+            lock_guard<mutex> ul_ipv6_reserved(lock_ipv6_reserved);
+
             RadixAddrType6::iterator it;
             if ((it = ipv6_reserved.longest_match(entry)) !=
               ipv6_reserved.end())
