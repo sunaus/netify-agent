@@ -52,45 +52,53 @@ ndFlowMap::~ndFlowMap() {
 }
 
 ndFlow::Ptr
-ndFlowMap::Lookup(const string &digest, bool acquire_lock) {
+ndFlowMap::Lookup(uint64_t hash_id, bool acquire_lock) {
     ndFlow::Ptr f;
-    size_t b = HashToBucket(digest);
+    size_t b = HashToBucket(hash_id);
 
     bucket_lock[b]->lock();
 
-    auto fi = bucket[b]->find(digest);
-    if (fi != bucket[b]->end()) f = fi->second;
+    auto fi = bucket[b]->map.find(hash_id);
+    if (fi != bucket[b]->map.end()) f = fi->second;
 
     if (! acquire_lock) bucket_lock[b]->unlock();
 
     return f;
 }
 
-bool ndFlowMap::Insert(const string &digest,
+bool ndFlowMap::Insert(uint64_t hash_id,
   ndFlow::Ptr &flow, bool unlocked) {
     bool result = false;
-    size_t b = HashToBucket(digest);
+    size_t b = HashToBucket(hash_id);
 
     if (! unlocked) bucket_lock[b]->lock();
 
-    auto fi = bucket[b]->insert(make_pair(digest, flow));
+    auto fi = bucket[b]->map.insert(make_pair(hash_id, flow));
 
     result = fi.second;
+
+    if (result) {
+        if (flow->ip_protocol == IPPROTO_TCP) bucket[b]->PushBackLong(flow.get());
+        else bucket[b]->PushBackShort(flow.get());
+    }
+
 
     if (! unlocked) bucket_lock[b]->unlock();
 
     return result;
 }
 
-bool ndFlowMap::Delete(const string &digest) {
+bool ndFlowMap::Delete(uint64_t hash_id) {
     bool deleted = false;
-    size_t b = HashToBucket(digest);
+    size_t b = HashToBucket(hash_id);
     lock_guard<mutex> lock(*bucket_lock[b]);
 
-    auto fi = bucket[b]->find(digest);
-    if (fi != bucket[b]->end()) {
+    auto fi = bucket[b]->map.find(hash_id);
+    if (fi != bucket[b]->map.end()) {
         deleted = true;
-        bucket[b]->erase(fi);
+        bucket[b]->Remove(fi->second.get());
+
+        bucket[b]->map.erase(fi);
     }
 
     return deleted;
@@ -118,7 +126,7 @@ const ndFlowMap::Map &ndFlowMap::AcquireConst(size_t b) const {
     return *bucket[b];
 }
 
-void ndFlowMap::Release(size_t b) const {
+void ndFlowMap::ReleaseBucket(size_t b) const {
     if (b >= buckets) {
         throw ndException("%s: %s: %s", __PRETTY_FUNCTION__,
           "bucket", strerror(EINVAL));
@@ -127,8 +135,8 @@ void ndFlowMap::Release(size_t b) const {
     bucket_lock[b]->unlock();
 }
 
-void ndFlowMap::Release(const string &digest) const {
-    Release(HashToBucket(digest));
+void ndFlowMap::Release(uint64_t hash_id) const {
+    ReleaseBucket(HashToBucket(hash_id));
 }
 
 #ifndef _ND_LEAN_AND_MEAN
@@ -136,7 +144,7 @@ void ndFlowMap::DumpBucketStats(void) {
     for (size_t i = 0; i < buckets; i++) {
         if (bucket_lock[i]->try_lock()) {
             nd_dprintf("ndFlowMap: %4u: %u flow(s).\n", i,
-              bucket[i]->size());
+              bucket[i]->map.size());
 
             bucket_lock[i]->unlock();
         }
@@ -144,3 +152,66 @@ void ndFlowMap::DumpBucketStats(void) {
     }
 }
 #endif
+
+void ndFlowMap::Bucket::PushBackShort(ndFlow* f) {
+    if (f->lru_prev || f->lru_next || lru_short_head == f || lru_long_head == f) return;
+    if (!lru_short_tail) {
+        lru_short_head = lru_short_tail = f;
+    } else {
+        lru_short_tail->lru_next = f;
+        f->lru_prev = lru_short_tail;
+        lru_short_tail = f;
+    }
+    f->lru_list = 1;
+}
+
+void ndFlowMap::Bucket::PushBackLong(ndFlow* f) {
+    if (f->lru_prev || f->lru_next || lru_short_head == f || lru_long_head == f) return;
+    if (!lru_long_tail) {
+        lru_long_head = lru_long_tail = f;
+    } else {
+        lru_long_tail->lru_next = f;
+        f->lru_prev = lru_long_tail;
+        lru_long_tail = f;
+    }
+    f->lru_list = 2;
+}
+
+void ndFlowMap::Bucket::Remove(ndFlow* f) {
+    if (f->lru_list == 1) {
+        if (f->lru_prev) f->lru_prev->lru_next = f->lru_next;
+        else if (lru_short_head == f) lru_short_head = f->lru_next;
+        if (f->lru_next) f->lru_next->lru_prev = f->lru_prev;
+        else if (lru_short_tail == f) lru_short_tail = f->lru_prev;
+    } else if (f->lru_list == 2) {
+        if (f->lru_prev) f->lru_prev->lru_next = f->lru_next;
+        else if (lru_long_head == f) lru_long_head = f->lru_next;
+        if (f->lru_next) f->lru_next->lru_prev = f->lru_prev;
+        else if (lru_long_tail == f) lru_long_tail = f->lru_prev;
+    }
+    f->lru_prev = f->lru_next = nullptr;
+    f->lru_list = 0;
+}
+
+void ndFlowMap::MoveToTail(uint64_t hash_id, ndFlow* flow) {
+    size_t b = HashToBucket(hash_id);
+    bucket_lock[b]->lock();
+    if (flow->lru_list == 1) {
+        bucket[b]->Remove(flow);
+        bucket[b]->PushBackShort(flow);
+    } else if (flow->lru_list == 2) {
+        bucket[b]->Remove(flow);
+        bucket[b]->PushBackLong(flow);
+    }
+    bucket_lock[b]->unlock();
+}
+
+void ndFlowMap::MoveToShort(uint64_t hash_id, ndFlow* flow) {
+    size_t b = HashToBucket(hash_id);
+    bucket_lock[b]->lock();
+    if (flow->lru_list == 2) {
+        bucket[b]->Remove(flow);
+        bucket[b]->PushBackShort(flow);
+    }
+    bucket_lock[b]->unlock();
+}

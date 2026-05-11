@@ -48,10 +48,11 @@ public:
     virtual int ProcessMessage(const struct nlmsghdr *nlh);
 
     void Dump(bool zero_counters = false);
+    void Sweep(time_t timeout);
 
     void UpdateFlow(ndFlow::Ptr &flow);
 #if defined(_ND_ENABLE_CONNTRACK_COUNTERS)
-    void UpdateFlowStats(ndFlow::Ptr &flow, const struct timeval &stamp) const;
+    bool UpdateFlowStats(ndFlow::Ptr &flow, const struct timeval &stamp) const;
 #endif
     class Stats {
     public:
@@ -98,7 +99,7 @@ protected:
     typedef std::unordered_map<uint32_t,
         std::shared_ptr<ndConntrackFlow>> IdFlowMap;
     typedef std::unordered_map<ndDigest,
-        std::shared_ptr<ndConntrackFlow>, ndArrayHasher> DigestFlowMap;
+        std::shared_ptr<ndConntrackFlow>> DigestFlowMap;
 
     IdFlowMap id_flows;
     DigestFlowMap digest_flows;

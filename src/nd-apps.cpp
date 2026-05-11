@@ -33,12 +33,8 @@
 
 using namespace std;
 
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndApp::Id> nd_rn4_app;
-typedef radix_tree<ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndApp::Id> nd_rn6_app;
-
 ndApplications::ndApplications()
-  : stats{ 0 }, app_networks4(nullptr), app_networks6(nullptr),
-    app_overrides4(nullptr), app_overrides6(nullptr) {
+  : stats{ 0 } {
     Reset();
 }
 
@@ -251,7 +247,7 @@ bool ndApplications::Save(const string &filename) {
     for (auto &it : domains)
         ofs << "dom:" << it.second << ":" << it.first << endl;
 
-    nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
+    nd_rn4_app *rn4 = app_networks4.get();
     for (auto &it : (*rn4)) {
         string ip;
         if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX)) {
@@ -260,7 +256,7 @@ bool ndApplications::Save(const string &filename) {
         }
     }
 
-    nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
+    nd_rn6_app *rn6 = app_networks6.get();
     for (auto &it : (*rn6)) {
         string ip;
         if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX)) {
@@ -269,7 +265,7 @@ bool ndApplications::Save(const string &filename) {
         }
     }
 
-    rn4 = static_cast<nd_rn4_app *>(app_overrides4);
+    rn4 = app_overrides4.get();
     for (auto &it : (*rn4)) {
         string ip;
         if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX))
@@ -279,7 +275,7 @@ bool ndApplications::Save(const string &filename) {
         }
     }
 
-    rn6 = static_cast<nd_rn6_app *>(app_overrides6);
+    rn6 = app_overrides6.get();
     for (auto &it : (*rn6)) {
         string ip;
         if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX))
@@ -319,7 +315,7 @@ bool ndApplications::SaveLegacy(const string &filename) {
             << Lookup(it.second) << endl;
     }
 
-    nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
+    nd_rn4_app *rn4 = app_networks4.get();
     for (auto &it : (*rn4)) {
         string ip;
         if (it.first.GetString(ip, ndAddr::MakeFlags::PREFIX))
@@ -329,7 +325,7 @@ bool ndApplications::SaveLegacy(const string &filename) {
         }
     }
 
-    nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
+    nd_rn6_app *rn6 = app_networks6.get();
     for (auto &it : (*rn6)) {
         string ip;
         if (it.first.GetString(ip,
@@ -399,8 +395,8 @@ ndApp::Id ndApplications::Find(const ndAddr &addr, bool app_override) {
 
             nd_rn4_app::iterator it;
             nd_rn4_app *rn4 = ((app_override) ?
-              static_cast<nd_rn4_app *>(app_overrides4) :
-              static_cast<nd_rn4_app *>(app_networks4));
+              app_overrides4.get() :
+              app_networks4.get());
 #if 0
             vector<nd_rn4_app::iterator> it_matches;
             rn4->prefix_match(entry, it_matches);
@@ -439,8 +435,8 @@ ndApp::Id ndApplications::Find(const ndAddr &addr, bool app_override) {
 
             nd_rn6_app::iterator it;
             nd_rn6_app *rn6 = ((app_override) ?
-              static_cast<nd_rn6_app *>(app_overrides6) :
-              static_cast<nd_rn6_app *>(app_networks6));
+              app_overrides6.get() :
+              app_networks6.get());
 
             if ((it = rn6->longest_match(entry)) != rn6->end())
                 return it->second;
@@ -502,41 +498,18 @@ bool ndApplications::Lookup(ndApp::Id id, ndApplication &app) {
 }
 
 void ndApplications::Reset(bool free_only) {
-    if (app_networks4 != nullptr) {
-        nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_networks4);
-        delete rn4;
-        app_networks4 = nullptr;
-    }
-
-    if (app_networks6 != nullptr) {
-        nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_networks6);
-        delete rn6;
-        app_networks6 = nullptr;
-    }
-
-    if (app_overrides4 != nullptr) {
-        nd_rn4_app *rn4 = static_cast<nd_rn4_app *>(app_overrides4);
-        delete rn4;
-        app_overrides4 = nullptr;
-    }
-
-    if (app_overrides6 != nullptr) {
-        nd_rn6_app *rn6 = static_cast<nd_rn6_app *>(app_overrides6);
-        delete rn6;
-        app_overrides6 = nullptr;
-    }
+    app_networks4.reset();
+    app_networks6.reset();
+    app_overrides4.reset();
+    app_overrides6.reset();
 
     if (! free_only) {
-        app_networks4 = static_cast<void *>(new nd_rn4_app);
-        app_networks6 = static_cast<void *>(new nd_rn6_app);
+        app_networks4 = make_unique<nd_rn4_app>();
+        app_networks6 = make_unique<nd_rn6_app>();
 
-        app_overrides4 = static_cast<void *>(new nd_rn4_app);
-        app_overrides6 = static_cast<void *>(new nd_rn6_app);
+        app_overrides4 = make_unique<nd_rn4_app>();
+        app_overrides6 = make_unique<nd_rn6_app>();
     }
-
-    for (auto &it : apps) delete it.second;
-
-    for (auto &rx : domain_xforms) delete rx.second.first;
 
     apps.clear();
     app_tags.clear();
@@ -557,17 +530,17 @@ void ndApplications::Get(nd_apps_t &apps_copy) const {
 ndApplication *
 ndApplications::AddApp(ndApp::Id id, const string &tag) {
     auto it_id = apps.find(id);
-    if (it_id != apps.end()) return it_id->second;
+    if (it_id != apps.end()) return it_id->second.get();
 
     auto it_tag = app_tags.find(tag);
     if (it_tag != app_tags.end()) return nullptr;
 
-    ndApplication *app = new ndApplication(id, tag);
+    auto app = make_shared<ndApplication>(id, tag);
 
     apps.insert(make_pair(id, app));
     app_tags.insert(make_pair(tag, app));
 
-    return app;
+    return app.get();
 }
 
 bool ndApplications::AddDomain(ndApp::Id id, const string &domain) {
@@ -584,9 +557,9 @@ bool ndApplications::AddDomainTransform(const string &search,
         return false;
 
     try {
-        regex *rx = new regex(search,
+        auto rx = make_unique<regex>(search,
           regex::extended | regex::icase | regex::optimize);
-        domain_xforms[search] = make_pair(rx, replace);
+        domain_xforms[search] = make_pair(std::move(rx), replace);
         return true;
     }
     catch (const regex_error &e) {
@@ -618,8 +591,8 @@ bool ndApplications::AddNetwork(ndApp::Id id,
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(entry, addr))
             {
                 nd_rn4_app *rn4 = ((app_override) ?
-                  static_cast<nd_rn4_app *>(app_overrides4) :
-                  static_cast<nd_rn4_app *>(app_networks4));
+                  app_overrides4.get() :
+                  app_networks4.get());
 
                 (*rn4)[entry] = id;
                 return true;
@@ -630,8 +603,8 @@ bool ndApplications::AddNetwork(ndApp::Id id,
             if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(entry, addr))
             {
                 nd_rn6_app *rn6 = ((app_override) ?
-                  static_cast<nd_rn6_app *>(app_overrides6) :
-                  static_cast<nd_rn6_app *>(app_networks6));
+                  app_overrides6.get() :
+                  app_networks6.get());
 
                 (*rn6)[entry] = id;
                 return true;

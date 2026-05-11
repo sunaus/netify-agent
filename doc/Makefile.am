@@ -10,9 +10,11 @@ EXTRA_DIST = BUGS.md BUILD-openwrt.md OVERVIEW.md netifyd-sample.conf README-JSO
 sharedatadir = $(datadir)/netifyd
 sharedata_DATA = netifyd-sample.conf README-JSON-socket-example.md json-socket-example.sh json-socket-filter.jq
 
-dist_man_MANS = netifyd.8 netifyd.conf.5
+dist_man_MANS = netifyd.8 netifyd.conf.5 netify-flow-expressions.7
 
 .5.pdf:
+	man -t "./$<" | ps2pdf - "$@"
+.7.pdf:
 	man -t "./$<" | ps2pdf - "$@"
 .8.pdf:
 	man -t "./$<" | ps2pdf - "$@"

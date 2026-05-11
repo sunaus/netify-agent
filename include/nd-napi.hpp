@@ -102,7 +102,7 @@ protected:
 
     std::string token;
     std::string url;
-    ndDigest digest = { { 0 } };
+    ndDigestSHA1 digest;
 };
 
 class ndNetifyApiManager

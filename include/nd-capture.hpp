@@ -76,12 +76,16 @@ protected:
 
     ndPacketStats stats;
 
-    std::string flow_digest;
-
     ndDNSHintCache *dhc;
 
     const ndDetectionThreads &threads_dpi;
     int16_t dpi_thread_id;
+
+    typedef const ndPacket *(ndCaptureThread::*ProcessPacketFunc)(ndPacket *);
+    ProcessPacketFunc process_packet_func = nullptr;
+
+    template <int DL_TYPE>
+    const ndPacket *ProcessPacketImpl(ndPacket *packet);
 
     const ndPacket *ProcessPacket(ndPacket *packet);
 

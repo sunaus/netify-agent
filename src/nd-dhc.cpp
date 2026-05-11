@@ -36,7 +36,7 @@ using namespace std;
 constexpr const char *_ND_DHC_FILE_NAME = "/dns-cache.csv";
 
 ndDNSHintCache::ndDNSHintCache(size_t cache_size)
-  : ndLRUCache<string, string>(cache_size, true) {
+  : ndLRUCache<ndDigest, string>(cache_size, true) {
     kvmap.reserve(ND_HASH_BUCKETS_DNSARS);
 }
 
@@ -64,27 +64,13 @@ void ndDNSHintCache::Insert(const ndAddr &addr,
         return;
     }
 
-    sha1 ctx;
-    string digest;
-    uint8_t _digest[SHA1_DIGEST_LENGTH];
-
-    sha1_init(&ctx);
-    sha1_write(&ctx, sa, addr.GetAddressSize());
-
-    digest.assign((const char *)sha1_result(&ctx, _digest),
-      SHA1_DIGEST_LENGTH);
+    ndDigest digest = nd_xxh64(sa, addr.GetAddressSize());
 
     CacheInsert(digest, hostname, true);
 }
 
-void ndDNSHintCache::Insert(const string &digest,
-  const string &hostname) {
-    vector<uint8_t> _digest_bin;
-
-    if (nd_string_to_sha1(digest, _digest_bin)) {
-        string _digest(_digest_bin.begin(), _digest_bin.end());
-        CacheInsert(_digest, hostname, true);
-    }
+void ndDNSHintCache::Insert(ndDigest digest, const string &hostname) {
+    CacheInsert(digest, hostname, true);
 }
 
 bool ndDNSHintCache::Lookup(const ndAddr &addr, string &hostname) {
@@ -103,15 +89,7 @@ bool ndDNSHintCache::Lookup(const ndAddr &addr, string &hostname) {
         return false;
     }
 
-    sha1 ctx;
-    string digest;
-    uint8_t _digest[SHA1_DIGEST_LENGTH];
-
-    sha1_init(&ctx);
-    sha1_write(&ctx, sa, sa_length);
-
-    digest.assign((const char *)sha1_result(&ctx, _digest),
-      SHA1_DIGEST_LENGTH);
+    ndDigest digest = nd_xxh64(sa, sa_length);
 
     //    return Lookup(digest, hostname);
     return CacheLookup(digest, hostname);
@@ -160,13 +138,17 @@ void ndDNSHintCache::Load(void) {
             return;
         }
 
+        bool valid_digest = false;
+        ndDigest digest = 0;
         string hostname(line.begin(), line.begin() + p);
 
         nd_trim(hostname);
         nd_trim(hostname, '"');
 
         switch (fc) {
-        case 1: Insert(line.substr(p + 1), hostname); break;
+        case 1:
+            valid_digest = nd_string_to_xxh64(line.substr(p + 1), digest);
+            break;
         case 2:
             nd_dprintf(
               "Legacy-format DNS hint cache detected.\n");
@@ -178,7 +160,7 @@ void ndDNSHintCache::Load(void) {
                   filename.c_str(), ln);
                 return;
             }
-            Insert(line.substr(dp, p), hostname);
+            valid_digest = nd_string_to_xxh64(line.substr(dp, p), digest);
             break;
         default:
             nd_printf("%s: parse error at line #%u\n",
@@ -186,7 +168,10 @@ void ndDNSHintCache::Load(void) {
             return;
         }
 
-        loaded++;
+        if (valid_digest) {
+            Insert(digest, hostname);
+            loaded++;
+        }
     }
 
     nd_dprintf("Loaded %u DNS hint cache entries.\n", loaded);
@@ -219,8 +204,7 @@ void ndDNSHintCache::Save(void) const {
 
     for (auto &i : kvmap) {
         string digest;
-        ndDigestDynamic digest_bin(i.first.begin(), i.first.end());
-        nd_sha1_to_string(digest_bin, digest);
+        nd_xxh64_to_string(i.first, digest);
 
         ofs << "\"" << i.second.value << "\"," << digest << endl;
 

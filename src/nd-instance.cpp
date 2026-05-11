@@ -502,7 +502,7 @@ ndInstance::InitializeConfig(int argc, char * const argv[]) {
         case 'S':
 #ifndef _ND_LEAN_AND_MEAN
         {
-            ndDigest digest;
+            ndDigestSHA1 digest;
 
             if ((rc = nd_sha1_file(optarg, digest)) == 0) {
                 string sha1;
@@ -2298,7 +2298,10 @@ void *ndInstance::ndInstance::Entry(void) {
 
         switch (static_cast<InstanceEvent>(ipc = WaitForIPC(1)))
         {
-        case InstanceEvent::NONE: break;
+        case InstanceEvent::NONE:
+            ProcessExpirations();
+            break;
+
         case InstanceEvent::RELOAD:
             nd_dprintf("%s: received IPC: [%d] %s\n", tag.c_str(),
               ipc, "Reload run-time configuration");
@@ -2621,7 +2624,7 @@ void ndInstance::DestroyCaptureThreads(
     for (size_t b = 0; b < buckets; b++) {
         auto &fm = flow_buckets->Acquire(b);
 
-        for (auto &it : fm) {
+        for (auto &it : fm.map) {
             if (it.second->flags.expired.load() == false &&
               it.second->flags.expiring.load() == false) {
                 total++;
@@ -2629,7 +2632,7 @@ void ndInstance::DestroyCaptureThreads(
             }
         }
 
-        flow_buckets->Release(b);
+        flow_buckets->ReleaseBucket(b);
     }
 
     nd_dprintf("%s: forcibly expired %lu of %lu flow(s).\n",
@@ -2905,8 +2908,9 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
     if (flow_hash_cache != nullptr)
         flow_hash_cache->Scoreboard(tag + ": FHC");
 
+#ifdef _ND_ENABLE_CONNTRACK
+    if (ndGC_USE_CONNTRACK && thread_conntrack) {
 #ifdef _ND_ENABLE_CONNTRACK_COUNTERS
-    if (ndGC_USE_CONNTRACK) {
         set<string> ct_counter_ifnames;
 
         for (auto &it : interfaces) {
@@ -2915,7 +2919,7 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
         }
 
         if (! ct_counter_ifnames.empty()) {
-            thread_conntrack->Dump(true);
+            thread_conntrack->Dump();
 
             struct timeval stamp;
             gettimeofday(&stamp, nullptr);
@@ -2924,20 +2928,32 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
             for (size_t b = 0; b < buckets; b++) {
                 auto &fm = flow_buckets->Acquire(b);
 
-                for (auto &i : fm) {
+                for (auto &i : fm.map) {
                     if (i.second->conntrack.id == 0) continue;
                     if (ct_counter_ifnames.find(i.second->iface->ifname) ==
                         ct_counter_ifnames.end())
                         continue;
 
-                    thread_conntrack->UpdateFlowStats(i.second, stamp);
+                    if (thread_conntrack->UpdateFlowStats(i.second, stamp)) {
+                        if (i.second->lru_list == 1) {
+                            fm.Remove(i.second.get());
+                            fm.PushBackShort(i.second.get());
+                        } else if (i.second->lru_list == 2) {
+                            fm.Remove(i.second.get());
+                            fm.PushBackLong(i.second.get());
+                        }
+                    }
                 }
 
-                flow_buckets->Release(b);
+                flow_buckets->ReleaseBucket(b);
             }
         }
-    }
 #endif // _ND_ENABLE_CONNTRACK_COUNTERS
+        thread_conntrack->Sweep(
+            ndGC.netlink_conntrack_idle_timeout
+        );
+    }
+#endif // _ND_ENABLE_CONNTRACK
 
     plugins.BroadcastEvent(ndPlugin::Type::BASE,
       ndPlugin::Event::STATUS_UPDATE);
@@ -2989,7 +3005,6 @@ void ndInstance::ProcessUpdate(const ndCaptureThreads &threads) {
 }
 
 void ndInstance::ProcessFlows(void) {
-    time_t now = time(nullptr);
     size_t buckets = flow_buckets->GetBuckets();
 #ifdef _ND_PROCESS_FLOW_DEBUG
     size_t tcp = 0, tcp_fin = 0, tcp_fin_ack_1 = 0,
@@ -2997,21 +3012,17 @@ void ndInstance::ProcessFlows(void) {
 #endif
     size_t flows_pre_init = 0, flows_total = 0;
 
-    status.flows_purged = 0;
-    status.flows_expiring = 0;
     status.flows_expired = 0;
     status.flows_active = 0;
     status.flows_in_use = 0;
 
-    // flow_buckets->DumpBucketStats();
-
     for (size_t b = 0; b < buckets; b++) {
         auto &fm = flow_buckets->Acquire(b);
-        auto i = fm.begin();
+        auto i = fm.map.begin();
 
-        flows_total += fm.size();
+        flows_total += fm.map.size();
 
-        while (i != fm.end()) {
+        while (i != fm.map.end()) {
 #ifdef _ND_PROCESS_FLOW_DEBUG
             if (i->second->ip_protocol == IPPROTO_TCP)
                 tcp++;
@@ -3030,37 +3041,8 @@ void ndInstance::ProcessFlows(void) {
             if (i->second.use_count() > 1)
                 status.flows_in_use++;
 
-            if (i->second->flags.expired.load() == false) {
-                time_t ttl = ((i->second->ip_protocol != IPPROTO_TCP) ?
-                    ndGC.ttl_idle_flow :
-                    ((i->second->tcp.fin_ack.load()) ?
-                        ndGC.ttl_idle_flow :
-                        ndGC.ttl_idle_tcp_flow));
-
-                if (((time_t)(i->second->ts_last_seen.load() / 1000) +
-                      ttl) < now)
-                    if (ExpireFlow(i->second))
-                        status.flows_expiring++;
-            }
-
             if (i->second->flags.expired.load() == true) {
                 status.flows_expired++;
-
-                if (i->second.use_count() == 1) {
-                    if (i->second->flags.expiry_broadcast.load() == false)
-                    {
-                        i->second->flags.expiry_broadcast = true;
-                        plugins.BroadcastProcessorEvent(
-                          ndPluginProcessor::Event::FLOW_EXPIRE,
-                          i->second);
-                    }
-                    else {
-                        i = fm.erase(i);
-                        status.flows_purged++;
-                    }
-
-                    continue;
-                }
             }
             else {
                 if (i->second->flags.detection_init.load()) {
@@ -3073,14 +3055,13 @@ void ndInstance::ProcessFlows(void) {
                 }
                 else {
                     flows_pre_init++;
-                    // i->second->Print(ndFlow::PRINTF_ALL);
                 }
             }
 
             i++;
         }
 
-        flow_buckets->Release(b);
+        flow_buckets->ReleaseBucket(b);
     }
 
     size_t flows_new = 0;
@@ -3089,24 +3070,107 @@ void ndInstance::ProcessFlows(void) {
         flows_new = flows_total - status.flows_prev;
 
     status.flows_prev = status.flows.load();
-    status.flows -= status.flows_purged;
 
     nd_dprintf(
       "%s: new: %lu, pre-dpi: %lu, in-use: %lu, purged "
-      "%lu, active: %lu, idle: %lu, expiring: "
-      "%lu, "
-      "expired: %lu, total: %lu (%lu)\n",
-      tag.c_str(),
-
+      "%lu, active: %lu, idle: %lu, expiring: %lu, "
+      "expired: %lu, total: %lu (%lu)\n", tag.c_str(),
       flows_new, flows_pre_init, status.flows_in_use,
       status.flows_purged, status.flows_active,
-      flows_total - status.flows_active - flows_pre_init,
-      status.flows_expiring, status.flows_expired, flows_total,
-      status.flows.load());
+      (flows_total - status.flows_active - flows_pre_init),
+      status.flows_expiring, status.flows_expired,
+      status.flows.load(), flows_total);
+
 #ifdef _ND_PROCESS_FLOW_DEBUG
     nd_dprintf(
-      "TCP: %lu, TCP+FIN: %lu, TCP+FIN+ACK1: %lu, "
-      "TCP+FIN+ACK>=2: %lu\n",
+      "%s: tcp: %lu, fin: %lu, fin_ack_1: %lu, fin_ack_>1: %lu\n",
+      tag.c_str(),
       tcp, tcp_fin, tcp_fin_ack_1, tcp_fin_ack_gt2);
 #endif
+
+    status.flows_purged = 0;
+    status.flows_expiring = 0;
+}
+
+
+
+void ndInstance::ProcessExpirations(void) {
+    time_t now = time(nullptr);
+    size_t buckets = flow_buckets->GetBuckets();
+    std::vector<ndFlow::Ptr> to_broadcast;
+    std::vector<ndFlow::Ptr> to_expiring;
+
+    for (size_t b = 0; b < buckets; b++) {
+        auto &fm = flow_buckets->Acquire(b);
+
+        ndFlow* curr = fm.lru_short_head;
+        while (curr) {
+            ndFlow* next = curr->lru_next;
+            if (curr->flags.expired.load() == false) {
+                time_t ttl = ndGC.ttl_idle_flow;
+                if (((time_t)(curr->ts_last_seen.load() / 1000) + ttl) < now) {
+                    auto it = fm.map.find(curr->digest_lower);
+                    if (it != fm.map.end()) to_expiring.push_back(it->second);
+                } else {
+                    break;
+                }
+            } else {
+                auto it = fm.map.find(curr->digest_lower);
+                if (it != fm.map.end() && it->second.use_count() == 1) {
+                    if (curr->flags.expiry_broadcast.load() == false) {
+                        curr->flags.expiry_broadcast = true;
+                        to_broadcast.push_back(it->second);
+                    } else {
+                        fm.Remove(curr);
+                        fm.map.erase(it);
+                        status.flows--;
+                        status.flows_purged++;
+                    }
+                }
+            }
+            curr = next;
+        }
+
+        curr = fm.lru_long_head;
+        while (curr) {
+            ndFlow* next = curr->lru_next;
+            if (curr->flags.expired.load() == false) {
+                time_t ttl = ndGC.ttl_idle_tcp_flow;
+                if (((time_t)(curr->ts_last_seen.load() / 1000) + ttl) < now) {
+                    auto it = fm.map.find(curr->digest_lower);
+                    if (it != fm.map.end()) to_expiring.push_back(it->second);
+                } else {
+                    break;
+                }
+            } else {
+                auto it = fm.map.find(curr->digest_lower);
+                if (it != fm.map.end() && it->second.use_count() == 1) {
+                    if (curr->flags.expiry_broadcast.load() == false) {
+                        curr->flags.expiry_broadcast = true;
+                        to_broadcast.push_back(it->second);
+                    } else {
+                        fm.Remove(curr);
+                        fm.map.erase(it);
+                        status.flows--;
+                        status.flows_purged++;
+                    }
+                }
+            }
+            curr = next;
+        }
+
+        flow_buckets->ReleaseBucket(b);
+
+        for (auto &flow : to_expiring) {
+            if (ExpireFlow(flow))
+                status.flows_expiring++;
+        }
+        to_expiring.clear();
+
+        for (auto &flow : to_broadcast) {
+            plugins.BroadcastProcessorEvent(
+                ndPluginProcessor::Event::FLOW_EXPIRE, flow);
+        }
+        to_broadcast.clear();
+    }
 }

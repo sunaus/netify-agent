@@ -213,7 +213,7 @@ public:
 
     ndFlags<PrivacyMask> privacy_mask = { PrivacyMask::NONE };
 
-    ndDigest digest_lower = { { 0 } };
+    ndDigest digest_lower = 0;
 
     using DigestVec = std::vector<ndDigest>;
     DigestVec digest_mdata;
@@ -237,11 +237,17 @@ public:
     struct {
         std::atomic<uint8_t> fin_ack = { 0 };
         std::atomic<uint32_t> last_seq = { 0 };
+        std::atomic<uint32_t> lower_next_seq = { 0 };
+        std::atomic<uint32_t> upper_next_seq = { 0 };
     } tcp;
 
 #ifdef _ND_ENABLE_CONNTRACK
     struct {
         uint32_t id = { 0 };
+#ifdef _ND_ENABLE_CONNTRACK_COUNTERS
+        uint64_t packets[2] = { 0, 0 };
+        uint64_t bytes[2] = { 0, 0 };
+#endif
 #ifdef _ND_ENABLE_CONNTRACK_MDATA
         uint32_t mark = { 0 };
         ndAddr reply_src_addr;
@@ -373,6 +379,10 @@ public:
     int16_t dpi_thread_id = { -1 };
 
     struct ndpi_flow_struct *ndpi_flow = { nullptr };
+    mutable ndFlow *lru_prev = { nullptr };
+    mutable ndFlow *lru_next = { nullptr };
+    uint8_t lru_list = { 0 };
+
 
     ndFlow(ndInterface::Ptr &iface);
     ndFlow(const ndFlow &flow);
@@ -383,6 +393,10 @@ public:
 
     inline void Reset(bool full = false) {
         stats.Reset();
+        tcp.last_seq = 0;
+        tcp.lower_next_seq = 0;
+        tcp.upper_next_seq = 0;
+        tcp.fin_ack = 0;
         if (full) vlan_id = 0;
     }
 
@@ -466,7 +480,7 @@ public:
         std::string digest;
 
         if (digest_mdata.empty()) {
-            nd_sha1_to_string(digest_lower, digest);
+            nd_xxh64_to_string(digest_lower, digest);
             serialize(output, { "digest" }, digest);
 
             std::vector<std::string> digests;
@@ -475,12 +489,12 @@ public:
         }
         else {
             auto i = digest_mdata.rbegin();
-            nd_sha1_to_string((*i), digest);
+            nd_xxh64_to_string((*i), digest);
             serialize(output, { "digest" }, digest);
 
             std::vector<std::string> digests;
             for (auto &i : digest_mdata) {
-                nd_sha1_to_string(i, digest);
+                nd_xxh64_to_string(i, digest);
                 digests.push_back(digest);
             }
             serialize(output, { "digest_prev" }, digests);

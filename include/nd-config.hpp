@@ -237,11 +237,15 @@ enum class ndGlobalFlags : uint32_t {
 typedef struct nd_config_pcap_t {
     std::string capture_filename;
     bool conntrack_counters = { false };
+    unsigned buffer_size = { 16 * 1024 * 1024 };
+    unsigned queue_size = { 128 };
 
     inline bool operator==(const struct nd_config_pcap_t &i) const {
         return (
             capture_filename == i.capture_filename &&
-            conntrack_counters == i.conntrack_counters
+            conntrack_counters == i.conntrack_counters &&
+            buffer_size == i.buffer_size &&
+            queue_size == i.queue_size
         );
     }
 } nd_config_pcap;
@@ -370,6 +374,12 @@ public:
     unsigned update_interval = { ND_STATS_INTERVAL };
 #ifdef _ND_ENABLE_NETLINK
     size_t netlink_buffer_size = { ND_NETLINK_BUFFER_SIZE };
+#ifdef _ND_ENABLE_CONNTRACK
+    size_t netlink_conntrack_buffer_size = {
+      ND_NETLINK_CONNTRACK_BUFFER_SIZE };
+    unsigned netlink_conntrack_idle_timeout = {
+      ND_NETLINK_CONNTRACK_IDLE_TIMEOUT };
+#endif
 #endif
     typedef std::vector<std::pair<std::string, std::string>> SocketHosts;
     SocketHosts socket_host;

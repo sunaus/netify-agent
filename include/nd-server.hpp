@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <memory>
 #include <stack>
 #include <string>
 #include <thread>
@@ -82,6 +83,8 @@ public:
 
     void CreateClientSession(void);
 
+    virtual ~ndServer();
+
     const char *GetCommandCodeName(CommandCode code) const {
         static const char *name = "UNKNOWN";
         try {
@@ -92,10 +95,10 @@ public:
     }
 
 protected:
-    static ndServer *instance;
+    static std::unique_ptr<ndServer> instance;
 
     std::string path_socket;
-    static ndSocketServer *skt;
+    static std::unique_ptr<ndSocketServer> skt;
 
     void Close(void);
 
@@ -130,7 +133,6 @@ protected:
 
 private:
     ndServer() { }
-    virtual ~ndServer();
 };
 
 class ndServerSaxConsumer : public nlohmann::json::json_sax_t

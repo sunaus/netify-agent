@@ -252,7 +252,38 @@ void nd_trim(string &s, unsigned char c) {
     nd_rtrim(s, c);
 }
 
-int nd_sha1_file(const string &filename, ndDigest &digest) {
+int nd_xxh64_file(const string &filename, ndDigest &digest) {
+    int fd = open(filename.c_str(), O_RDONLY);
+    uint8_t buffer[ND_SHA1_BUFFER];
+    ssize_t bytes;
+
+    if (fd < 0) {
+        nd_printf("Unable to hash file: %s: %s\n",
+          filename.c_str(), strerror(errno));
+        return -1;
+    }
+
+    // Just read entire file to hash.
+    vector<uint8_t> file_data;
+    do {
+        bytes = read(fd, buffer, ND_SHA1_BUFFER);
+        if (bytes > 0)
+            file_data.insert(file_data.end(), buffer, buffer + bytes);
+        else if (bytes < 0) {
+            nd_printf("Unable to hash file: %s: %s\n",
+              filename.c_str(), strerror(errno));
+            close(fd);
+            return -1;
+        }
+    } while (bytes != 0);
+
+    close(fd);
+    digest = nd_xxh64(file_data.data(), file_data.size());
+
+    return 0;
+}
+
+int nd_sha1_file(const string &filename, ndDigestSHA1 &digest) {
     sha1 ctx;
     int fd = open(filename.c_str(), O_RDONLY);
     uint8_t buffer[ND_SHA1_BUFFER];
@@ -286,7 +317,118 @@ int nd_sha1_file(const string &filename, ndDigest &digest) {
     return 0;
 }
 
-void nd_sha1_to_string(const ndDigest &digest, string &digest_str) {
+static inline uint64_t XXH_rotl64(uint64_t x, int r) {
+    return (x << r) | (x >> (64 - r));
+}
+
+uint64_t nd_xxh64(const void *input, size_t length, uint64_t seed) {
+    static const uint64_t PRIME64_1 = 11400714785074694791ULL;
+    static const uint64_t PRIME64_2 = 14029467366897019727ULL;
+    static const uint64_t PRIME64_3 = 1609587929392839161ULL;
+    static const uint64_t PRIME64_4 = 9650029242287828579ULL;
+    static const uint64_t PRIME64_5 = 2870177450012600261ULL;
+
+    const uint8_t *p = (const uint8_t *)input;
+    const uint8_t *end = p + length;
+    uint64_t h64;
+
+    if (length >= 32) {
+        const uint8_t *limit = end - 32;
+        uint64_t v1 = seed + PRIME64_1 + PRIME64_2;
+        uint64_t v2 = seed + PRIME64_2;
+        uint64_t v3 = seed + 0;
+        uint64_t v4 = seed - PRIME64_1;
+
+        do {
+            v1 += (*(const uint64_t *)p) * PRIME64_2;
+            v1 = XXH_rotl64(v1, 31);
+            v1 *= PRIME64_1;
+            p += 8;
+            v2 += (*(const uint64_t *)p) * PRIME64_2;
+            v2 = XXH_rotl64(v2, 31);
+            v2 *= PRIME64_1;
+            p += 8;
+            v3 += (*(const uint64_t *)p) * PRIME64_2;
+            v3 = XXH_rotl64(v3, 31);
+            v3 *= PRIME64_1;
+            p += 8;
+            v4 += (*(const uint64_t *)p) * PRIME64_2;
+            v4 = XXH_rotl64(v4, 31);
+            v4 *= PRIME64_1;
+            p += 8;
+        }
+        while (p <= limit);
+
+        h64 = XXH_rotl64(v1, 1) + XXH_rotl64(v2, 7) +
+          XXH_rotl64(v3, 12) + XXH_rotl64(v4, 18);
+
+        v1 *= PRIME64_2;
+        v1 = XXH_rotl64(v1, 31);
+        v1 *= PRIME64_1;
+        h64 ^= v1;
+        h64 = h64 * PRIME64_1 + PRIME64_4;
+
+        v2 *= PRIME64_2;
+        v2 = XXH_rotl64(v2, 31);
+        v2 *= PRIME64_1;
+        h64 ^= v2;
+        h64 = h64 * PRIME64_1 + PRIME64_4;
+
+        v3 *= PRIME64_2;
+        v3 = XXH_rotl64(v3, 31);
+        v3 *= PRIME64_1;
+        h64 ^= v3;
+        h64 = h64 * PRIME64_1 + PRIME64_4;
+
+        v4 *= PRIME64_2;
+        v4 = XXH_rotl64(v4, 31);
+        v4 *= PRIME64_1;
+        h64 ^= v4;
+        h64 = h64 * PRIME64_1 + PRIME64_4;
+    }
+    else {
+        h64 = seed + PRIME64_5;
+    }
+
+    h64 += (uint64_t)length;
+
+    while (p + 8 <= end) {
+        uint64_t k1 = (*(const uint64_t *)p) * PRIME64_2;
+        k1 = XXH_rotl64(k1, 31);
+        k1 *= PRIME64_1;
+        h64 ^= k1;
+        h64 = XXH_rotl64(h64, 27) * PRIME64_1 + PRIME64_4;
+        p += 8;
+    }
+
+    if (p + 4 <= end) {
+        h64 ^= (*(const uint32_t *)p) * PRIME64_1;
+        h64 = XXH_rotl64(h64, 23) * PRIME64_2 + PRIME64_3;
+        p += 4;
+    }
+
+    while (p < end) {
+        h64 ^= (*p) * PRIME64_5;
+        h64 = XXH_rotl64(h64, 11) * PRIME64_1;
+        p++;
+    }
+
+    h64 ^= h64 >> 33;
+    h64 *= PRIME64_2;
+    h64 ^= h64 >> 29;
+    h64 *= PRIME64_3;
+    h64 ^= h64 >> 32;
+
+    return h64;
+}
+
+void nd_xxh64_to_string(const ndDigest &digest, string &digest_str) {
+    char buf[17];
+    snprintf(buf, sizeof(buf), "%016llx", (unsigned long long)digest);
+    digest_str.assign(buf, 16);
+}
+
+void nd_sha1_to_string(const ndDigestSHA1 &digest, string &digest_str) {
     array<char, SHA1_DIGEST_LENGTH * 2 + 1> _digest;
     char *p = _digest.data();
 
@@ -303,14 +445,30 @@ void nd_sha1_to_string(const ndDigestDynamic &digest, string &digest_str) {
           __PRETTY_FUNCTION__, digest.size(), SHA1_DIGEST_LENGTH);
     }
 
-    ndDigest _digest;
-    memcpy(_digest.data(), digest.data(), SHA1_DIGEST_LENGTH);
+    array<char, SHA1_DIGEST_LENGTH * 2 + 1> _digest;
+    char *p = _digest.data();
 
-    return nd_sha1_to_string(_digest, digest_str);
+    for (size_t i = 0; i < SHA1_DIGEST_LENGTH; i++, p += 2)
+        sprintf(p, "%02hhx", digest[i]);
+
+    digest_str.assign(_digest.begin(), _digest.end() - 1);
 }
 
-bool nd_string_to_sha1(const string &digest_str, ndDigest &digest) {
-    digest.fill('\0');
+bool nd_string_to_xxh64(const string &digest_str, ndDigest &digest) {
+    if (digest_str.size() != 16) return false;
+    try {
+        digest = std::stoull(digest_str, nullptr, 16);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+bool nd_string_to_sha1(const string &digest_str,
+  ndDigestDynamic &digest) {
+    if (digest_str.size() != SHA1_DIGEST_LENGTH * 2) return false;
+
+    digest.assign(SHA1_DIGEST_LENGTH, '\0');
 
     size_t i = 0;
     istringstream is(digest_str);
@@ -340,17 +498,6 @@ bool nd_string_to_sha1(const string &digest_str, ndDigest &digest) {
     }
 
     return (i == SHA1_DIGEST_LENGTH);
-}
-
-bool nd_string_to_sha1(const string &digest_str,
-  ndDigestDynamic &digest) {
-    ndDigest _digest;
-    if (! nd_string_to_sha1(digest_str, _digest))
-        return false;
-
-    digest.assign(_digest.begin(), _digest.end());
-
-    return true;
 }
 
 bool nd_string_to_mac(const string &src, uint8_t *mac) {

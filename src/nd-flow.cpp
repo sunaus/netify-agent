@@ -44,6 +44,7 @@ using namespace std;
 // Enable digest mdata debug output
 // #define _ND_DEBUG_DIGEST_MDATA 1
 
+#ifdef _ND_ENABLE_EXTENDED_STATS
 void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
   uint64_t bytes) {
     const unsigned interval = ndGC.update_interval;
@@ -67,6 +68,7 @@ void ndFlowStats::UpdateRate(bool lower, uint64_t timestamp,
 
     rate = (divisor > 0) ? ((float)total / (float)divisor) : 0.0f;
 }
+#endif
 
 ndFlow::ndFlow(ndInterface::Ptr &iface)
   : iface(iface), detected_protocol_name("Unknown") {
@@ -98,6 +100,8 @@ ndFlow::ndFlow(const ndFlow &flow)
     digest_mdata.push_back(digest_lower);
     tcp.last_seq = flow.tcp.last_seq.load();
     tcp.fin_ack = flow.tcp.fin_ack.load();
+    tcp.lower_next_seq = flow.tcp.lower_next_seq.load();
+    tcp.upper_next_seq = flow.tcp.upper_next_seq.load();
 }
 
 ndFlow::~ndFlow() {
@@ -106,83 +110,71 @@ ndFlow::~ndFlow() {
 
 void ndFlow::Hash(const string &device, bool hash_mdata,
   const uint8_t *key, size_t key_length) {
-    sha1 ctx;
 
-    sha1_init(&ctx);
-    sha1_write(&ctx, (const char *)device.c_str(), device.size());
+    uint8_t hdata[256];
+    size_t hoff = 0;
 
-    sha1_write(&ctx, (const char *)&ip_version, sizeof(ip_version));
-    sha1_write(&ctx, (const char *)&ip_protocol,
-      sizeof(ip_protocol));
-    sha1_write(&ctx, (const char *)&vlan_id, sizeof(vlan_id));
+    auto hwrite = [&](const void *data, size_t len) {
+        if (hoff + len <= sizeof(hdata)) {
+            memcpy(&hdata[hoff], data, len);
+            hoff += len;
+        }
+    };
+
+    hwrite(device.c_str(), device.size());
+    hwrite(&ip_version, sizeof(ip_version));
+    hwrite(&ip_protocol, sizeof(ip_protocol));
+    uint16_t vlan_be = htons(vlan_id);
+    hwrite(&vlan_be, sizeof(vlan_be));
 
     switch (ip_version) {
     case 4:
-        sha1_write(&ctx,
-          (const char *)&lower_addr.addr.in.sin_addr,
-          sizeof(struct in_addr));
-        sha1_write(&ctx,
-          (const char *)&upper_addr.addr.in.sin_addr,
-          sizeof(struct in_addr));
+        hwrite(&lower_addr.addr.in.sin_addr.s_addr, 4);
+        hwrite(&upper_addr.addr.in.sin_addr.s_addr, 4);
 
         if (lower_addr.addr.in.sin_addr.s_addr == 0 &&
           upper_addr.addr.in.sin_addr.s_addr == 0xffffffff)
         {
-            // XXX: Hash in lower MAC for ethernet broadcasts
-            // (DHCPv4).
 #if defined(__linux__)
-            sha1_write(&ctx,
-              (const char *)lower_mac.addr.ll.sll_addr,
-              ETH_ALEN);
+            hwrite(lower_mac.addr.ll.sll_addr, ETH_ALEN);
 #elif defined(__FreeBSD__)
-            sha1_write(&ctx,
-              (const char *)LLADDR(&lower_mac.addr.dl),
-              ETH_ALEN);
+            hwrite(LLADDR(&lower_mac.addr.dl), ETH_ALEN);
 #endif
         }
-
         break;
     case 6:
-        sha1_write(&ctx,
-          (const char *)&lower_addr.addr.in6.sin6_addr,
-          sizeof(struct in6_addr));
-        sha1_write(&ctx,
-          (const char *)&upper_addr.addr.in6.sin6_addr,
-          sizeof(struct in6_addr));
+        hwrite(&lower_addr.addr.in6.sin6_addr.s6_addr, 16);
+        hwrite(&upper_addr.addr.in6.sin6_addr.s6_addr, 16);
         break;
-    default: break;
     }
 
     uint16_t port = lower_addr.GetPort(false);
-    sha1_write(&ctx, (const char *)&port, sizeof(port));
+    hwrite(&port, sizeof(port));
     port = upper_addr.GetPort(false);
-    sha1_write(&ctx, (const char *)&port, sizeof(port));
+    hwrite(&port, sizeof(port));
 
     if (hash_mdata) {
-        sha1_write(&ctx, (const char *)&detected_protocol,
-          sizeof(ndProto::Id));
-        sha1_write(&ctx, (const char *)&detected_application,
-          sizeof(ndApp::Id));
+        hwrite(&detected_protocol, sizeof(ndProto::Id));
+        hwrite(&detected_application, sizeof(ndApp::Id));
 
         if (! host_server_name.empty()) {
-            sha1_write(&ctx, host_server_name.c_str(),
+            hwrite(host_server_name.c_str(),
               host_server_name.size());
         }
 
         if (HasBTInfoHash()) {
-            sha1_write(&ctx, bt.info_hash.data(),
+            hwrite(bt.info_hash.data(),
               bt.info_hash.size());
         }
     }
 
     if (key != nullptr && key_length > 0)
-        sha1_write(&ctx, (const char *)key, key_length);
+        hwrite(key, key_length);
 
     if (! hash_mdata)
-        sha1_result(&ctx, digest_lower.data());
+        digest_lower = nd_xxh64(hdata, hoff);
     else {
-        ndDigest mdata;
-        sha1_result(&ctx, mdata.data());
+        ndDigest mdata = nd_xxh64(hdata, hoff);
         PushMetadataDigest(mdata);
     }
 }
@@ -335,30 +327,24 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
         dls << os.str() << ": ";
 
         if (ndFlagBoolean(pflags, PrintFlags::HASHES)) {
-            for (unsigned i = 0; i < 5; i++) {
-                dls << setw(2) << setfill('0') << hex
-                    << (int)digest_lower[i];
-            }
-            dls << ": ";
+            string h1, h2, h3;
+            nd_xxh64_to_string(digest_lower, h1);
+
             auto mdata = digest_mdata.rbegin();
-
-            for (unsigned i = 0; i < 5; i++) {
-                dls << setw(2) << setfill('0') << hex
-                    << (int)((mdata == digest_mdata.rend()) ?
-                           0x00 :
-                           (*mdata)[i]);
+            if (mdata != digest_mdata.rend()) {
+                nd_xxh64_to_string(*mdata, h2);
+                mdata++;
+            } else {
+                h2 = "0000000000000000";
             }
 
-            if (mdata != digest_mdata.rend()) mdata++;
-
-            dls << ":";
-            for (unsigned i = 0; i < 5; i++) {
-                dls << setw(2) << setfill('0') << hex
-                    << (int)((mdata == digest_mdata.rend()) ?
-                           0x00 :
-                           (*mdata)[i]);
+            if (mdata != digest_mdata.rend()) {
+                nd_xxh64_to_string(*mdata, h3);
+            } else {
+                h3 = "0000000000000000";
             }
-            dls << " ";
+
+            dls << h1.substr(0, 10) << ":" << h2.substr(0, 10) << ":" << h3.substr(0, 10) << " ";
         }
 
         dls
@@ -890,19 +876,19 @@ void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
 
 bool ndFlow::PushMetadataDigest(const ndDigest &digest) {
     for (auto &i : digest_mdata) {
-        if (equal(i.begin(), i.end(), digest.begin())) return false;
+        if (i == digest) return false;
     }
 
     digest_mdata.push_back(digest);
 
 #ifdef _ND_DEBUG_DIGEST_MDATA
     string lower;
-    nd_sha1_to_string(digest_lower, lower);
+    nd_xxh64_to_string(digest_lower, lower);
 
     unsigned i = 0;
     for (auto &d : digest_mdata) {
         string mdata;
-        nd_sha1_to_string(d, mdata);
+        nd_xxh64_to_string(d, mdata);
         nd_dprintf("%s: digest mdata[%u]: %s\n",
           lower.c_str(), i++, mdata.c_str());
     }

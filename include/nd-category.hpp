@@ -21,6 +21,7 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <set>
@@ -30,6 +31,11 @@
 #include "nd-addr.hpp"
 
 class ndCategory;
+
+using ndRN4Categories = radix_tree<
+  ndRadixNetworkEntry<_ND_ADDR_BITSv4>, unsigned>;
+using ndRN6Categories = radix_tree<
+  ndRadixNetworkEntry<_ND_ADDR_BITSv6>, unsigned>;
 
 class ndCategories
 {
@@ -82,7 +88,8 @@ protected:
     void ResetNetworks(bool free_only = true);
 
 private:
-    void *networks4, *networks6;
+    std::unique_ptr<ndRN4Categories> networks4;
+    std::unique_ptr<ndRN6Categories> networks6;
 };
 
 class ndCategory

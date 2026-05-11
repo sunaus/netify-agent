@@ -287,6 +287,12 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #ifdef _ND_ENABLE_NETLINK
     netlink_buffer_size = (size_t)r->GetInteger("netlink",
       "buffer_size", this->netlink_buffer_size);
+#ifdef _ND_ENABLE_CONNTRACK
+    netlink_conntrack_buffer_size = (size_t)r->GetInteger("netlink",
+      "conntrack_buffer_size", this->netlink_conntrack_buffer_size);
+    netlink_conntrack_idle_timeout = (unsigned)r->GetInteger("netlink",
+      "conntrack_idle_ttl", this->netlink_conntrack_idle_timeout);
+#endif
 #endif
 
     // Capture defaults section
@@ -302,7 +308,7 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #elif defined(_ND_ENABLE_TPACKETV3)
             capture_type = ndCaptureType::TPV3;
 #elif defined(_ND_ENABLE_NFQUEUE)
-            capture_type = ndCaptureType::TPV3;
+            capture_type = ndCaptureType::NFQ;
 #else
             fprintf(stderr,
               "Not default capture type could be "
@@ -451,17 +457,15 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     ndGC_SetFlag(ndGlobalFlags::USE_NAPI,
       r->GetBoolean("netify-api", "enable",
         (! profile) ? false : ndGC_USE_NAPI));
-    ttl_napi_tick = r->GetInteger("netify-api",
-      "update_tick", (! profile) ? ND_TTL_API_TICK : ttl_napi_tick);
-    ttl_napi_update = r->GetInteger("netify-api",
-      "update_interval",
+    ttl_napi_tick = r->GetInteger("netify-api", "update_tick",
+      (! profile) ? ND_TTL_API_TICK : ttl_napi_tick);
+    ttl_napi_update = r->GetInteger("netify-api", "update_interval",
       (! profile) ? ND_TTL_API_UPDATE : ttl_napi_update);
-    url_napi_bootstrap = r->Get("netify-api",
-      "bootstrap_url",
+    url_napi_bootstrap = r->Get("netify-api", "bootstrap_url",
       (! profile) ? ND_URL_API_BOOTSTRAP : url_napi_bootstrap);
     napi_vendor = r->Get("netify-api", "vendor", ND_API_VENDOR);
-    napi_tls_verify = r->GetBoolean("netify-api",
-      "tls_verify", (! profile) ? true : napi_tls_verify);
+    napi_tls_verify = r->GetBoolean("netify-api", "tls_verify",
+      (! profile) ? true : napi_tls_verify);
 
     // Protocols section
     Protocols p;
@@ -1063,6 +1067,11 @@ bool ndGlobalConfig::LoadCaptureSettings(void *config_reader,
 #endif
     if (ndCT_TYPE(type.flags) == ndCaptureType::PCAP) {
         nd_config_pcap *pcap = static_cast<nd_config_pcap *>(config);
+        pcap->queue_size = (unsigned)r->GetInteger(
+          section, "queue_size", 128);
+        pcap->buffer_size = (unsigned)r->GetInteger(
+          section, "buffer_size", 16 * 1024 * 1024 /* 16MB default */);
+
         string capture_filename = r->Get(section,
           "filename", "");
 

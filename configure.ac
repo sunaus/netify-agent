@@ -294,6 +294,11 @@ AS_IF([test "x$enable_uci" = "xyes" -o "x$enable_ubus" = "xyes" ], [
 PKG_CHECK_MODULES([LIBCURL], [libcurl])
 PKG_CHECK_MODULES([ZLIB], [zlib])
 
+# Optional GoogleTest support for unit testing
+PKG_CHECK_MODULES([GTEST], [gtest_main >= 1.10.0],
+    [have_gtest=yes], [have_gtest=no])
+AM_CONDITIONAL([HAVE_GTEST], [test "x$have_gtest" = "xyes"])
+
 # Parameters: --with/without
 AC_ARG_WITH([systemdsystemunitdir],
      [AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files])],,
@@ -538,7 +543,7 @@ AC_CONFIG_FILES([deploy/debian/Makefile])
 AC_CONFIG_FILES([deploy/freebsd/Makefile])
 AC_CONFIG_FILES([deploy/rpm/Makefile])
 AC_CONFIG_FILES([deploy/systemd/Makefile])
-AC_CONFIG_FILES([doc/netifyd.8 doc/netifyd.conf.5])
+AC_CONFIG_FILES([doc/netifyd.8 doc/netifyd.conf.5 doc/netify-flow-expressions.7])
 AC_CONFIG_FILES([util/generate-protocol-csv.sh],
     [chmod +x util/generate-protocol-csv.sh])
 AC_CONFIG_FILES([util/generate-alpn-include.sh],
@@ -575,3 +580,4 @@ AC_MSG_NOTICE([Volatile state directory: ${volatilestatedir}])
 AC_MSG_NOTICE([Shared data directory: ${datadir}/${PACKAGE_TARNAME}])
 AC_MSG_NOTICE([Default configuration filename: ${sysconfdir}/${PACKAGE_TARNAME}.conf])
 AC_MSG_NOTICE([Default PID filename: ${volatilestatedir}/${PACKAGE_TARNAME}.pid])
+AC_MSG_NOTICE([Have GoogleTest (gtest): ${have_gtest}])

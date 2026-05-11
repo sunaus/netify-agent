@@ -386,7 +386,7 @@ void ndDetectionThread::ProcessPacket(ndDetectionQueueEntry *entry) {
     }
 
     if (ndEF->host_server_name.empty() &&
-      ndEFNF->host_server_name[0] != '\0')
+      ndEFNF != nullptr && ndEFNF->host_server_name[0] != '\0')
     {
         SetHostServerName(entry, ndEFNF->host_server_name);
     }
@@ -655,8 +655,10 @@ void ndDetectionThread::SetHostServerName(
         SetDetectedApplication(entry,
           ndi.apps.Find(ndEF->host_server_name));
 
-        ndEF->category.domain = ndi.categories.LookupDotDirectory(
-          ndEFNF->host_server_name);
+        if (ndEFNF != nullptr) {
+            ndEF->category.domain = ndi.categories.LookupDotDirectory(
+              ndEFNF->host_server_name);
+        }
     }
 }
 

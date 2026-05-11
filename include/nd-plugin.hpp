@@ -275,7 +275,7 @@ public:
       const std::string &so_name, const ndPlugin::Params &params);
     virtual ~ndPluginLoader();
 
-    inline ndPlugin *GetPlugin(void) { return plugin; };
+    inline ndPlugin *GetPlugin(void) { return plugin.get(); };
     inline const std::string &GetTag(void) { return tag; };
     inline const std::string &GetObjectName(void) {
         return so_name;
@@ -285,7 +285,7 @@ protected:
     std::string tag;
     std::string so_name;
     void *so_handle;
-    ndPlugin *plugin;
+    std::unique_ptr<ndPlugin> plugin;
 };
 
 class ndPluginManager : public ndSerializer
@@ -354,7 +354,7 @@ public:
 protected:
     std::mutex lock;
 
-    using PluginMap = std::map<std::string, ndPluginLoader *>;
+    using PluginMap = std::map<std::string, std::unique_ptr<ndPluginLoader>>;
 
     PluginMap processors;
     PluginMap sinks;

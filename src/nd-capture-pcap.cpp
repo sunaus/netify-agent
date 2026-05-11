@@ -23,6 +23,7 @@
 #endif
 
 #include <stdexcept>
+#include <vector>
 
 #include <net/if.h>
 #include <sys/ioctl.h>
@@ -60,6 +61,15 @@ ndCapturePcap::~ndCapturePcap() {
     nd_dprintf("%s: PCAP capture thread destroyed.\n", tag.c_str());
 }
 
+static void pcap_callback(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes) {
+    auto queue = reinterpret_cast<vector<ndPacket*>*>(user);
+    uint8_t *pd = new uint8_t[h->caplen];
+    memcpy(pd, bytes, h->caplen);
+    ndFlags<ndPacket::StatusFlags> pkt_status = ndPacket::StatusFlags::OK;
+    ndPacket *pkt = new ndPacket(pkt_status, h->len, h->caplen, pd, h->ts);
+    queue->push_back(pkt);
+}
+
 void *ndCapturePcap::Entry(void) {
     int rc;
     int sd_max = 0;
@@ -67,9 +77,8 @@ void *ndCapturePcap::Entry(void) {
     struct timeval tv;
     fd_set fds_read;
     bool warnings = true;
-    ndPacket *pkt;
-    ndFlags<ndPacket::StatusFlags> pkt_status =
-      ndPacket::StatusFlags::OK;
+    vector<ndPacket*> pkt_queue;
+    pkt_queue.reserve(iface->config_pcap.queue_size);
 
     while (! ShouldTerminate()) {
         if (pcap != nullptr) {
@@ -95,29 +104,22 @@ void *ndCapturePcap::Entry(void) {
 #endif
             if (! FD_ISSET(pcap_fd, &fds_read)) continue;
 
-            rc = 0;
-            while (ShouldTerminate() == false &&
-              (rc = pcap_next_ex(pcap, &pkt_header, &pkt_data)) > 0)
-            {
-                // One-and-only packet copy...
-                uint8_t *pd = new uint8_t[pkt_header->caplen];
-                memcpy(pd, pkt_data, pkt_header->caplen);
+            rc = pcap_dispatch(pcap, iface->config_pcap.queue_size, pcap_callback, reinterpret_cast<u_char*>(&pkt_queue));
 
-                pkt = new ndPacket(pkt_status, pkt_header->len,
-                  pkt_header->caplen, pd, pkt_header->ts);
-
+            if (!pkt_queue.empty()) {
                 Lock();
-
                 try {
-                    if (ProcessPacket(pkt) != nullptr)
-                        delete pkt;
+                    for (auto p : pkt_queue) {
+                        if (ProcessPacket(p) != nullptr)
+                            delete p;
+                    }
                 }
                 catch (...) {
                     Unlock();
                     throw;
                 }
-
                 Unlock();
+                pkt_queue.clear();
             }
 
             if (rc < 0) {
@@ -209,8 +211,23 @@ pcap_t *ndCapturePcap::OpenCapture(void) {
         }
     }
     else {
-        pcap_new = pcap_open_live(tag.c_str(), ndGC.max_capture_length,
-          1, ndGC.capture_read_timeout, pcap_errbuf);
+        pcap_new = pcap_create(tag.c_str(), pcap_errbuf);
+        if (pcap_new != nullptr) {
+            pcap_set_snaplen(pcap_new, ndGC.max_capture_length);
+            pcap_set_promisc(pcap_new, 1);
+            pcap_set_timeout(pcap_new, ndGC.capture_read_timeout);
+            pcap_set_buffer_size(pcap_new, iface->config_pcap.buffer_size);
+            pcap_set_immediate_mode(pcap_new, 0);
+
+            int status = pcap_activate(pcap_new);
+            if (status < 0) {
+                nd_printf("%s: pcap_activate: %s\n", tag.c_str(), pcap_geterr(pcap_new));
+                pcap_close(pcap_new);
+                pcap_new = nullptr;
+            } else if (status > 0) {
+                nd_dprintf("%s: pcap_activate warning: %s\n", tag.c_str(), pcap_geterr(pcap_new));
+            }
+        }
 
 #if 0
         if (pcap_new != nullptr) {

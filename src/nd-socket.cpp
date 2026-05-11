@@ -50,13 +50,13 @@ using namespace std;
 ndSocketLocal::ndSocketLocal(ndSocket *base, const string &node)
   : base(base), valid(false) {
     // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
-    struct sockaddr_un *sa_un = new struct sockaddr_un;
+    base->sa = make_unique<struct sockaddr_storage>();
+    struct sockaddr_un *sa_un = (struct sockaddr_un *)base->sa.get();
 
     base->node = node;
     base->sa_size = sizeof(struct sockaddr_un);
-    base->sa = (struct sockaddr_storage *)sa_un;
 
-    memset(sa_un, 0, base->sa_size);
+    memset(sa_un, 0, sizeof(struct sockaddr_un));
 
     sa_un->sun_family = base->family = AF_LOCAL;
     strncpy(sa_un->sun_path, base->node.c_str(), UNIX_PATH_MAX);
@@ -176,20 +176,11 @@ ndSocket *ndSocketServer::Accept(void) {
     // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
     ndSocket *peer = nullptr;
     int peer_sd = -1;
-    socklen_t peer_sa_size = 0;
-    sockaddr *peer_sa = nullptr;
-
-    if (base->sa_size == sizeof(struct sockaddr_un)) {
-        peer_sa = (sockaddr *)new struct sockaddr_un;
-        peer_sa_size = sizeof(struct sockaddr_un);
-    }
-    else {
-        peer_sa = (sockaddr *)new struct sockaddr_storage;
-        peer_sa_size = sizeof(struct sockaddr_storage);
-    }
+    socklen_t peer_sa_size = sizeof(struct sockaddr_storage);
+    auto peer_sa = make_unique<struct sockaddr_storage>();
 
     try {
-        peer_sd = accept(base->sd, peer_sa, &peer_sa_size);
+        peer_sd = accept(base->sd, (struct sockaddr *)peer_sa.get(), &peer_sa_size);
         if (peer_sd < 0) {
             throw ndExceptionSystemError(__PRETTY_FUNCTION__,
               "accept");
@@ -204,7 +195,7 @@ ndSocket *ndSocketServer::Accept(void) {
         else {
             char node[NI_MAXHOST], service[NI_MAXSERV];
 
-            int rc = getnameinfo(peer_sa, peer_sa_size,
+            int rc = getnameinfo((struct sockaddr *)peer_sa.get(), peer_sa_size,
               node, NI_MAXHOST, service, NI_MAXSERV,
               NI_NUMERICHOST | NI_NUMERICSERV);
 
@@ -223,15 +214,14 @@ ndSocket *ndSocketServer::Accept(void) {
         peer->family = base->family;
         peer->type = ndSOCKET_TYPE_CLIENT;
         peer->state = ndSOCKET_STATE_ACCEPTED;
-
-        delete peer_sa;
+        peer->sa = std::move(peer_sa);
+        peer->sa_size = peer_sa_size;
     }
     catch (runtime_error &e) {
         if (peer != nullptr) {
             delete peer;
             peer = nullptr;
         }
-        else if (peer_sa != nullptr) delete peer_sa;
         if (peer_sd >= 0) close(peer_sd);
         throw;
     }
@@ -294,21 +284,21 @@ ndSocketServerRemote::~ndSocketServerRemote() {
 }
 
 ndSocket::ndSocket()
-  : sd(1), family(AF_UNSPEC), sa(nullptr), sa_size(0),
+  : sd(-1), family(AF_UNSPEC), sa_size(0),
     type(ndSOCKET_TYPE_NULL), state(ndSOCKET_STATE_INIT),
     bytes_in(0), bytes_out(0) {
     // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
 }
 
 ndSocket::ndSocket(const string &node)
-  : sd(-1), family(AF_UNSPEC), sa(nullptr), sa_size(0),
+  : sd(-1), family(AF_UNSPEC), sa_size(0),
     node(node), type(ndSOCKET_TYPE_NULL),
     state(ndSOCKET_STATE_INIT), bytes_in(0), bytes_out(0) {
     // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
 }
 
 ndSocket::ndSocket(const string &host, const string &service)
-  : sd(-1), family(AF_UNSPEC), sa(nullptr), sa_size(0),
+  : sd(-1), family(AF_UNSPEC), sa_size(0),
     node(host), service(service), type(ndSOCKET_TYPE_NULL),
     state(ndSOCKET_STATE_INIT), bytes_in(0), bytes_out(0) {
     // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
@@ -317,7 +307,6 @@ ndSocket::ndSocket(const string &host, const string &service)
 ndSocket::~ndSocket() {
     // nd_dprintf("%s\n", __PRETTY_FUNCTION__);
     if (sd != -1) close(sd);
-    if (sa != nullptr) delete sa;
 }
 
 ssize_t ndSocket::Read(uint8_t *buffer, ssize_t length) {
@@ -494,8 +483,8 @@ void ndSocket::Create(void) {
         family = rp->ai_family;
         sa_size = rp->ai_addrlen;
 
-        sa = new struct sockaddr_storage;
-        memcpy(sa, rp->ai_addr, sa_size);
+        sa = make_unique<struct sockaddr_storage>();
+        memcpy(sa.get(), rp->ai_addr, sa_size);
 
         freeaddrinfo(result);
 
@@ -519,7 +508,7 @@ void ndSocket::Create(void) {
         }
 
         if (type == ndSOCKET_TYPE_CLIENT) {
-            if (::connect(sd, (struct sockaddr *)sa, sa_size) != 0)
+            if (::connect(sd, (struct sockaddr *)sa.get(), sa_size) != 0)
             {
                 throw ndExceptionSystemError(
                   __PRETTY_FUNCTION__, "connect");
@@ -527,7 +516,7 @@ void ndSocket::Create(void) {
             nd_printf("%s: connected\n", __PRETTY_FUNCTION__);
         }
         else if (type == ndSOCKET_TYPE_SERVER) {
-            if (::bind(sd, (struct sockaddr *)sa, sa_size) != 0)
+            if (::bind(sd, (struct sockaddr *)sa.get(), sa_size) != 0)
             {
                 throw ndExceptionSystemError(
                   __PRETTY_FUNCTION__, "bind");

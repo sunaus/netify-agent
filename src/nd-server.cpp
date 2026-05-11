@@ -43,8 +43,8 @@ using namespace std;
 using json = nlohmann::json;
 using json_ordered = nlohmann::ordered_json;
 
-ndServer *ndServer::instance = nullptr;
-ndSocketServer *ndServer::skt = nullptr;
+unique_ptr<ndServer> ndServer::instance = nullptr;
+unique_ptr<ndSocketServer> ndServer::skt = nullptr;
 
 static atomic<bool> ndServer_ClientTerminate{false};
 
@@ -250,7 +250,7 @@ static bool ndServer_ClientRequest(FILE *hf) {
     return result;
 }
 
-static void ndServer_ClientEntry(ndSocket *client) {
+static void ndServer_ClientEntry(unique_ptr<ndSocket> client) {
     int rc;
     fd_set fds_read;
     int client_fd = client->GetDescriptor();
@@ -278,7 +278,6 @@ static void ndServer_ClientEntry(ndSocket *client) {
           ! ndServer_ClientRequest(hf)) break;
     }
 
-    delete client;
     nd_dprintf("ndServer: Client exit.\n");
 }
 
@@ -288,7 +287,7 @@ ndServer &ndServer::Create(void) {
           "ndServer", strerror(EEXIST));
     }
 
-    instance = new ndServer;
+    instance = unique_ptr<ndServer>(new ndServer);
     ndServer_ClientTerminate = false;
 
     return *instance;
@@ -300,8 +299,7 @@ void ndServer::Destroy(void) {
           "ndServer", strerror(EINVAL));
     }
 
-    delete instance;
-    instance = nullptr;
+    instance.reset();
 }
 
 void ndServer::Reload(const string &path_socket) {
@@ -313,10 +311,10 @@ void ndServer::Reload(const string &path_socket) {
 
     try {
         if (! path_socket.empty()) {
-            ndSocketServerLocal *server = new ndSocketServerLocal(path_socket);
+            auto server = make_unique<ndSocketServerLocal>(path_socket);
             server->SetBlockingMode(false);
             server->SetPermissions(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
-            skt = server;
+            skt = std::move(server);
 
             this->path_socket = path_socket;
         }
@@ -330,23 +328,22 @@ void ndServer::Reload(const string &path_socket) {
 
 void ndServer::Close() {
     if (skt != nullptr) {
-        delete skt;
-        skt = nullptr;
+        skt.reset();
     }
 }
 
 void ndServer::CreateClientSession() {
-    ndSocket *skt_client = nullptr;
+    unique_ptr<ndSocket> skt_client;
 
     try {
-        skt_client = skt->Accept();
+        skt_client.reset(skt->Accept());
     }
     catch (exception &e) {
-        if (skt_client != nullptr) delete skt_client;
         throw;
     }
 
-    thread(ndServer_ClientEntry, skt_client).detach();
+    if (skt_client)
+        thread(ndServer_ClientEntry, std::move(skt_client)).detach();
 }
 
 ndServer::~ndServer() {

@@ -37,13 +37,8 @@ using json = nlohmann::json;
 
 const ndCategories::Id ndCategory::UNKNOWN = 0;
 
-using ndRN4Categories = radix_tree<
-  ndRadixNetworkEntry<_ND_ADDR_BITSv4>, ndCategories::Id>;
-using ndRN6Categories = radix_tree<
-  ndRadixNetworkEntry<_ND_ADDR_BITSv6>, ndCategories::Id>;
-
 ndCategories::ndCategories()
-  : networks4(nullptr), networks6(nullptr) {
+{
     categories.emplace(Type::APP, ndCategory());
     categories.emplace(Type::PROTO, ndCategory());
 }
@@ -255,10 +250,11 @@ bool ndCategories::LoadDotDirectory(const string &path) {
                         if (ndRadixNetworkEntry<_ND_ADDR_BITSv4>::Create(
                               entry, addr))
                         {
-                            ndRN4Categories *rn4 =
-                              static_cast<ndRN4Categories *>(networks4);
-                            (*rn4)[entry] = tag->second;
-                            networks++;
+                            ndRN4Categories *rn4 = networks4.get();
+                            if (rn4) {
+                                (*rn4)[entry] = tag->second;
+                                networks++;
+                            }
                         }
                     }
                     else {
@@ -266,10 +262,11 @@ bool ndCategories::LoadDotDirectory(const string &path) {
                         if (ndRadixNetworkEntry<_ND_ADDR_BITSv6>::Create(
                               entry, addr))
                         {
-                            ndRN6Categories *rn6 =
-                              static_cast<ndRN6Categories *>(networks6);
-                            (*rn6)[entry] = tag->second;
-                            networks++;
+                            ndRN6Categories *rn6 = networks6.get();
+                            if (rn6) {
+                                (*rn6)[entry] = tag->second;
+                                networks++;
+                            }
                         }
                     }
                 }
@@ -558,7 +555,7 @@ ndCategories::Id ndCategories::LookupDotDirectory(const ndAddr &addr) {
     lock_guard<mutex> ul(lock);
 
     if (addr.IsIPv4()) {
-        ndRN4Categories *rn = static_cast<ndRN4Categories *>(networks4);
+        ndRN4Categories *rn = networks4.get();
 
         ndRadixNetworkEntry<_ND_ADDR_BITSv4> entry;
         if (rn != nullptr &&
@@ -570,7 +567,7 @@ ndCategories::Id ndCategories::LookupDotDirectory(const ndAddr &addr) {
         }
     }
     else if (addr.IsIPv6()) {
-        ndRN6Categories *rn = static_cast<ndRN6Categories *>(networks6);
+        ndRN6Categories *rn = networks6.get();
 
         ndRadixNetworkEntry<_ND_ADDR_BITSv6> entry;
         if (rn != nullptr &&
@@ -666,23 +663,11 @@ void ndCategories::ResetCategories(void) {
 }
 
 void ndCategories::ResetNetworks(bool free_only) {
-    if (networks4 != nullptr) {
-        ndRN4Categories *rn4 = static_cast<ndRN4Categories *>(networks4);
-        delete rn4;
-        networks4 = nullptr;
-    }
-
-    if (networks6 != nullptr) {
-        ndRN6Categories *rn6 = static_cast<ndRN6Categories *>(networks6);
-        delete rn6;
-        networks6 = nullptr;
-    }
+    networks4.reset();
+    networks6.reset();
 
     if (! free_only) {
-        ndRN4Categories *rn4 = new ndRN4Categories;
-        ndRN6Categories *rn6 = new ndRN6Categories;
-
-        networks4 = static_cast<void *>(rn4);
-        networks6 = static_cast<void *>(rn6);
+        networks4 = make_unique<ndRN4Categories>();
+        networks6 = make_unique<ndRN6Categories>();
     }
 }

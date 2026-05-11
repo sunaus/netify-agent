@@ -21,6 +21,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -77,7 +78,7 @@ protected:
 
     int sd;
     int family;
-    struct sockaddr_storage *sa;
+    std::unique_ptr<struct sockaddr_storage> sa;
     socklen_t sa_size;
     std::string node;
     std::string service;

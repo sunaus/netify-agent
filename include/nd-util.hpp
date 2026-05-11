@@ -52,7 +52,12 @@
 #include "nd-types.hpp"
 
 constexpr unsigned ND_SHA1_BUFFER = 4096;
-typedef std::array<uint8_t, SHA1_DIGEST_LENGTH> ndDigest;
+
+constexpr size_t ND_XXH64_DIGEST_LENGTH_STR = 16;
+
+typedef uint64_t ndDigest;
+
+typedef std::array<uint8_t, SHA1_DIGEST_LENGTH> ndDigestSHA1;
 typedef std::vector<uint8_t> ndDigestDynamic;
 
 namespace ndTerm {
@@ -266,12 +271,16 @@ void nd_ltrim(std::string &s, unsigned char c = 0);
 void nd_rtrim(std::string &s, unsigned char c = 0);
 void nd_trim(std::string &s, unsigned char c = 0);
 
-int nd_sha1_file(const std::string &filename, ndDigest &digest);
+int nd_xxh64_file(const std::string &filename, ndDigest &digest);
+int nd_sha1_file(const std::string &filename, ndDigestSHA1 &digest);
 
-void nd_sha1_to_string(const ndDigest &digest, std::string &digest_str);
+uint64_t nd_xxh64(const void *input, size_t length, uint64_t seed = 0);
+
+void nd_xxh64_to_string(const ndDigest &digest, std::string &digest_str);
+void nd_sha1_to_string(const ndDigestSHA1 &digest, std::string &digest_str);
 void nd_sha1_to_string(const ndDigestDynamic &digest, std::string &digest_str);
 
-bool nd_string_to_sha1(const std::string &digest_str, ndDigest &digest);
+bool nd_string_to_xxh64(const std::string &digest_str, ndDigest &digest);
 bool nd_string_to_sha1(const std::string &digest_str, ndDigestDynamic &digest);
 
 bool nd_string_to_mac(const std::string &src, uint8_t *mac);

@@ -38,7 +38,7 @@ constexpr const char *_ND_FHC_FILE_NAME =
   "/flow-hash-cache.csv";
 
 ndFlowHashCache::ndFlowHashCache(size_t cache_size)
-  : ndLRUCache<string, ndFlowHashCacheEntry>(cache_size, true) {
+  : ndLRUCache<ndDigest, ndFlowHashCacheEntry>(cache_size, true) {
 }
 
 void ndFlowHashCache::Load(void) {
@@ -90,7 +90,7 @@ void ndFlowHashCache::Load(void) {
             return;
         }
 
-        if (! nd_string_to_sha1(line.substr(0, p), entry.digest)) {
+        if (! nd_string_to_xxh64(line.substr(0, p), entry.digest)) {
             nd_printf("%s: parse error at line #%u\n",
               filename.c_str(), ln);
             return;
@@ -145,7 +145,7 @@ void ndFlowHashCache::Load(void) {
         }
 
         ndDigest digest;
-        if (! nd_string_to_sha1(digest_lower, digest)) {
+        if (! nd_string_to_xxh64(digest_lower, digest)) {
             nd_printf("%s: parse error at line #%u\n",
               filename.c_str(), ln);
             return;
@@ -188,8 +188,7 @@ void ndFlowHashCache::Save(void) const {
 
     for (auto &i : kvmap) {
         string digest;
-        ndDigestDynamic digest_bin(i.first.begin(), i.first.end());
-        nd_sha1_to_string(digest_bin, digest);
+        nd_xxh64_to_string(i.first, digest);
 
         ofs << digest << "," << i.second.value << endl;
 
