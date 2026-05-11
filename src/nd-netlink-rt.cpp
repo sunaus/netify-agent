@@ -48,7 +48,7 @@
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_LOG   1
 
-#ifndef IFLA_EXT_MASK 
+#ifndef IFLA_EXT_MASK
 #define IFLA_EXT_MASK 29
 #endif
 
@@ -472,7 +472,7 @@ void ndNetlinkRouteThread::Dump(void) {
     // Need to make a specific call to Netlink specifing family
     // otherwise kernel does not return the bridge VLAN metadata
     // we're looking for
-    if (ndGC.mark_to_ifindex_mapping) {
+    if (ndGC.mark_to_ifindex_enable) {
         rt_dump.Dump(RTM_GETLINK, AF_BRIDGE);
     }
     rt_dump.Dump(RTM_GETNEIGH);
@@ -736,13 +736,13 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
         }
 #endif
 
-        if (ndGC.mark_to_ifindex_mapping && ndGC.mark_to_ifindex_fw == "nft") {
-            if (ndGC.mark_to_ifindex_shift > 24) {
+        if (ndGC.mark_to_ifindex_enable && ndGC.mark_to_ifindex_firewall == "nft") {
+            if (ndGC.mark_to_ifindex_mark_shift > 24) {
                 nd_dprintf("Invalid shift too large\n");
                 return -1;
             }
 
-            uint32_t mark = (uint32_t)ifi->ifi_index << ndGC.mark_to_ifindex_shift;
+            uint32_t mark = (uint32_t)ifi->ifi_index << ndGC.mark_to_ifindex_mark_shift;
 
             this->UpdateNftablesMapping(ifi->ifi_index, mark, true);
         }
@@ -816,7 +816,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             ifi->ifi_index
         );
 #endif
-        if (ndGC.mark_to_ifindex_mapping && ndGC.mark_to_ifindex_fw == "nft") {
+        if (ndGC.mark_to_ifindex_enable && ndGC.mark_to_ifindex_firewall == "nft") {
             this->UpdateNftablesMapping(ifi->ifi_index, 0, false);
         }
         if (ndi.addr_lookup.RemoveLinkAddress(ifi->ifi_index)) rc = 1;
@@ -967,9 +967,9 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
         return;
     }
 
-    // Bit of a TODO - we don't support anything but nftables for now, the et name is non-configurable
-    nftnl_set_set_str(set, NFTNL_SET_TABLE, ndGC.mark_to_ifindex_table.c_str());
-    nftnl_set_set_str(set, NFTNL_SET_NAME, "ifindex_to_mark");
+    // Bit of a TODO - we don't support anything but nftables for now
+    nftnl_set_set_str(set, NFTNL_SET_TABLE, ndGC.mark_to_ifindex_nft_table.c_str());
+    nftnl_set_set_str(set, NFTNL_SET_NAME, ndGc.mark_to_ifindex_nft_set.c_string());
     nftnl_set_set_u32(set, NFTNL_SET_FAMILY, NFPROTO_BRIDGE);
 
     elem = nftnl_set_elem_alloc();
@@ -1045,8 +1045,11 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
         if (ret > 0) {
             int err_code = 0;
             if (mnl_cb_run(buf, ret, 0, mnl_socket_get_portid(nl), ndNetlinkRoute_nft_error_cb, &err_code) < 0) {
-                nd_dprintf("%s: nftables update failed: %s (table: %s)\n", 
-                           TAG, strerror(abs(err_code)), ndGC.mark_to_ifindex_table.c_str());
+                nd_dprintf("%s: nftables update failed: %s (table: %s, set: %s)\n",
+                   TAG,
+                   strerror(abs(err_code)),
+                   ndGC.mark_to_ifindex_nft_table.c_str(),
+                   ndGC.mark_to_ifindex_nft_set.c_str());
             }
         }
     }

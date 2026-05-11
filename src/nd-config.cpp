@@ -256,21 +256,29 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #endif
         ));
 
-    mark_to_ifindex_mapping = r->GetBoolean(ND_NAME_SHORT,
-      "mark_to_ifindex_mapping",
-       this->mark_to_ifindex_mapping);
+    mark_to_ifindex_enable = r->GetBoolean("mark-to-ifindex",
+      "enable",
+       this->mark_to_ifindex_enable);
 
-    mark_to_ifindex_shift = (uint8_t)r->GetInteger(ND_NAME_SHORT,
-      "mark_to_ifindex_shift",
-      (int)this->mark_to_ifindex_shift);
+    mark_to_ifindex_mark_shift = (uint8_t)r->GetInteger("mark-to-ifindex",
+      "mark_shift",
+      (int)this->mark_to_ifindex_mark_shift);
 
-    mark_to_ifindex_fw = r->Get(ND_NAME_SHORT,
-      "mark_to_ifindex_fw",
-      this->mark_to_ifindex_fw);
+    mark_to_ifindex_mark_mask = (uint8_t)r->GetInteger("mark-to-ifindex",
+      "mark_mask",
+      (int)this->mark_to_ifindex_mark_mask);
 
-    mark_to_ifindex_table = r->Get(ND_NAME_SHORT,
-      "mark_to_ifindex_table",
-      this->mark_to_ifindex_table);
+    mark_to_ifindex_firewall = r->Get("mark-to-ifindex",
+      "firewall",
+      this->mark_to_ifindex_firewall);
+
+    mark_to_ifindex_nft_table = r->Get("mark-to-ifindex",
+      "nft_table",
+      this->mark_to_ifindex_nft_table);
+
+    mark_to_ifindex_nft_set = r->Get("mark-to-ifindex",
+      "nft_set",
+      this->mark_to_ifindex_nft_set);
 
     user_id = r->Get(ND_NAME_SHORT, "user", "");
     group_id = r->Get(ND_NAME_SHORT, "group", "");

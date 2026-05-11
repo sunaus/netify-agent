@@ -329,10 +329,12 @@ public:
     std::string path_uuid_site = { ND_SITE_UUID_PATH };
     std::string url_napi_bootstrap = { ND_URL_API_BOOTSTRAP };
     std::string user_id;
-    bool mark_to_ifindex_mapping = { false };
-    uint8_t mark_to_ifindex_shift = { 8 };
-    std::string mark_to_ifindex_fw = { "nft" };
-    std::string mark_to_ifindex_table = { "netify" };
+    bool mark_to_ifindex_enable = { false };
+    uint8_t mark_to_ifindex_mark_shift = { 8 };
+    uint8_t mark_to_ifindex_mark_mask = { 8 };
+    std::string mark_to_ifindex_firewall = { "nft" };
+    std::string mark_to_ifindex_nft_table = { "netify" };
+    std::string mark_to_ifindex_nft_set = { "ifindex_to_mark" };
 
     ndDHCStorage dhc_storage = { ndDHCStorage::PERSISTENT };
     ndFHCStorage fhc_storage = { ndFHCStorage::PERSISTENT };

@@ -299,9 +299,9 @@ static int ndCaptureNFQueue_Callback(
     uint32_t mark = nfq->mark;
     int ifidx_logical = -1;
 
-    if (ndGC.mark_to_ifindex_mapping && mark != 0) {
+    if (ndGC.mark_to_ifindex_enable && mark != 0) {
         // Isolate the ifindex from our specific byte slot
-        unsigned int mark_to_ifindex = (mark >> ndGC.mark_to_ifindex_shift) & 0xFF;
+        unsigned int mark_to_ifindex = (mark >> ndGC.mark_to_ifindex_mark_shift) & ((1U << ndGC.mark_to_ifindex_mark_mask) - 1);
 
         //nd_dprintf("%s: NFQ Packet Received - Mark: 0x%08x, Recovered IfIndex: %u\n",
         //"nfq-capture", mark, mark_to_ifindex);
