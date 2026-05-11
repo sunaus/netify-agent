@@ -79,9 +79,7 @@ struct nd_bridge_vlan_info {
 
 constexpr const char *TAG = { "netlink-rt" };
 
-/**
- * Netlink error callback to capture the specific errno from the kernel ACK
- */
+ //Netlink error callback to capture the specific errno from the kernel ACK
 static int ndNetlinkRoute_nft_error_cb(const struct nlmsghdr *nlh, void *data) {
     if (nlh->nlmsg_type == NLMSG_ERROR) {
         struct nlmsgerr *err = static_cast<struct nlmsgerr *>(mnl_nlmsg_get_payload(nlh));
