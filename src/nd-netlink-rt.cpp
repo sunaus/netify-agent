@@ -969,7 +969,7 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
 
     // Bit of a TODO - we don't support anything but nftables for now
     nftnl_set_set_str(set, NFTNL_SET_TABLE, ndGC.mark_to_ifindex_nft_table.c_str());
-    nftnl_set_set_str(set, NFTNL_SET_NAME, ndGc.mark_to_ifindex_nft_set.c_string());
+    nftnl_set_set_str(set, NFTNL_SET_NAME, ndGC.mark_to_ifindex_nft_set.c_str());
     nftnl_set_set_u32(set, NFTNL_SET_FAMILY, NFPROTO_BRIDGE);
 
     elem = nftnl_set_elem_alloc();

@@ -253,8 +253,8 @@ typedef void* yyscan_t;
 %type <bool_result> expr_tag_category_id expr_tls_cipher expr_tls_ech
 %type <bool_result> expr_tls_ja4 expr_tls_version expr_tunnel_type
 %type <bool_result> expr_vlan_id expr_vlan
-%type <bool_result> expr_local_if_meta_ssid expr_local_if_meta_pvid
-%type <bool_result> expr_other_if_meta_pvid
+%type <bool_result> expr_local_if_metadata_ssid expr_local_if_metadata_pvid
+%type <bool_result> expr_other_if_metadata_pvid
 %type <bool_result> expr_app_ip_override expr_app_proto_twins
 %type <bool_result> expr_dhcp_class_ident expr_dhcp_fingerprint
 %type <bool_result> expr_dst_bytes expr_dst_packets
@@ -291,9 +291,9 @@ expr:
     | expr_ip_version
     | expr_vlan_id
     | expr_vlan
-    | expr_local_if_meta_ssid
-    | expr_local_if_meta_pvid
-    | expr_other_if_meta_pvid
+    | expr_local_if_metadata_ssid
+    | expr_local_if_metadata_pvid
+    | expr_other_if_metadata_pvid
     | expr_app_ip_override
     | expr_app_proto_twins
     | expr_dhcp_class_ident
@@ -525,161 +525,256 @@ expr_vlan_id:
 
 expr_vlan:
       FLOW_VLAN {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id != 0) || (_NDFP_flow->local_if_meta.pvid != 0) || (_NDFP_flow->other_if_meta.pvid != 0)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id != 0) || (_NDFP_flow->if_metadata.local.pvid != 0) || (_NDFP_flow->if_metadata.other.pvid != 0)));
         _NDFP_debugf("VLAN is non-zero? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_VLAN {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id == 0) && (_NDFP_flow->local_if_meta.pvid == 0) && (_NDFP_flow->other_if_meta.pvid == 0)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id == 0) && (_NDFP_flow->if_metadata.local.pvid == 0) && (_NDFP_flow->if_metadata.other.pvid == 0)));
         _NDFP_debugf("VLAN is zero? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_VLAN CMP_EQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id == $3) || (_NDFP_flow->local_if_meta.pvid == $3) || (_NDFP_flow->other_if_meta.pvid == $3)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id == $3) || (_NDFP_flow->if_metadata.local.pvid == $3) || (_NDFP_flow->if_metadata.other.pvid == $3)));
         _NDFP_debugf("VLAN == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_VLAN CMP_NOTEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id != $3) && (_NDFP_flow->local_if_meta.pvid != $3) && (_NDFP_flow->other_if_meta.pvid != $3)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id != $3) && (_NDFP_flow->if_metadata.local.pvid != $3) && (_NDFP_flow->if_metadata.other.pvid != $3)));
         _NDFP_debugf("VLAN != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_VLAN CMP_GTHANEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id >= $3) || (_NDFP_flow->local_if_meta.pvid >= $3) || (_NDFP_flow->other_if_meta.pvid >= $3)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id >= $3) || (_NDFP_flow->if_metadata.local.pvid >= $3) || (_NDFP_flow->if_metadata.other.pvid >= $3)));
         _NDFP_debugf("VLAN >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_VLAN CMP_LTHANEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id <= $3) || (_NDFP_flow->local_if_meta.pvid <= $3) || (_NDFP_flow->other_if_meta.pvid <= $3)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id <= $3) || (_NDFP_flow->if_metadata.local.pvid <= $3) || (_NDFP_flow->if_metadata.other.pvid <= $3)));
         _NDFP_debugf("VLAN <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_VLAN '>' VALUE_UNSIGNED {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id > $3) || (_NDFP_flow->local_if_meta.pvid > $3) || (_NDFP_flow->other_if_meta.pvid > $3)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id > $3) || (_NDFP_flow->if_metadata.local.pvid > $3) || (_NDFP_flow->if_metadata.other.pvid > $3)));
         _NDFP_debugf("VLAN > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_VLAN '<' VALUE_UNSIGNED {
-        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id < $3) || (_NDFP_flow->local_if_meta.pvid < $3) || (_NDFP_flow->other_if_meta.pvid < $3)));
+        _NDFP_result = ($$ = ((_NDFP_flow->vlan_id < $3) || (_NDFP_flow->if_metadata.local.pvid < $3) || (_NDFP_flow->if_metadata.other.pvid < $3)));
         _NDFP_debugf("VLAN < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
-
-expr_local_if_meta_ssid:
-      FLOW_LOCAL_IF_META_SSID {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.ssid.empty() == false));
+expr_local_if_metadata_ssid:
+    FLOW_LOCAL_IF_META_SSID {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        // Check if first char is NOT null terminator
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.ssid[0] != '\0'));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta SSID set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_LOCAL_IF_META_SSID {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.ssid.empty() == true));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        // Check if first char IS null terminator
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.ssid[0] == '\0'));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta SSID not set? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_SSID CMP_EQUAL VALUE_NAME {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
         _NDFP_result = ($$ = false);
-        if (! _NDFP_flow->local_if_meta.ssid.empty()) {
+        if (_NDFP_flow->if_metadata.local.ssid[0] != '\0') {
             string search($3);
             size_t p;
             while ((p = search.find_first_of("\'\"")) != string::npos)
                 search.erase(p, 1);
-            if (strncasecmp(_NDFP_flow->local_if_meta.ssid.c_str(),
+
+            // Pass the array directly; strncasecmp expects a const char*
+            if (strncasecmp(_NDFP_flow->if_metadata.local.ssid,
               search.c_str(), _NDFP_MAX_BUFLEN) == 0) {
                 _NDFP_result = ($$ = true);
             }
         }
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta SSID == %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_SSID CMP_NOTEQUAL VALUE_NAME {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
         _NDFP_result = ($$ = true);
-        if (! _NDFP_flow->local_if_meta.ssid.empty()) {
+        if (_NDFP_flow->if_metadata.local.ssid[0] != '\0') {
             string search($3);
             size_t p;
             while ((p = search.find_first_of("\'\"")) != string::npos)
                 search.erase(p, 1);
-            if (strncasecmp(_NDFP_flow->local_if_meta.ssid.c_str(),
+
+            if (strncasecmp(_NDFP_flow->if_metadata.local.ssid,
               search.c_str(), _NDFP_MAX_BUFLEN) == 0) {
                 _NDFP_result = ($$ = false);
             }
         }
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta SSID != %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_SSID CMP_EQUAL VALUE_REGEX {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
         _NDFP_result = ($$ = false);
-        if (! _NDFP_flow->local_if_meta.ssid.empty()) {
-            regex rx($3, regex_constants::grep | regex_constants::nosubs);
-            _NDFP_result = ($$ = _NDFP_regex_search(rx, _NDFP_flow->local_if_meta.ssid));
+        if (_NDFP_flow->if_metadata.local.ssid[0] != '\0') {
+            // Create named strings so we have 'lvalues' for the reference arguments
+            string rx_pattern($3); 
+            string ssid_str(_NDFP_flow->if_metadata.local.ssid);
+            _NDFP_result = ($$ = _NDFP_regex_search(rx_pattern, ssid_str));
         }
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta SSID =~ %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_SSID CMP_NOTEQUAL VALUE_REGEX {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
         _NDFP_result = ($$ = true);
-        if (! _NDFP_flow->local_if_meta.ssid.empty()) {
-            regex rx($3, regex_constants::grep | regex_constants::nosubs);
-            _NDFP_result = ($$ = !_NDFP_regex_search(rx, _NDFP_flow->local_if_meta.ssid));
+        if (_NDFP_flow->if_metadata.local.ssid[0] != '\0') {
+            string rx_pattern($3);
+            string ssid_str(_NDFP_flow->if_metadata.local.ssid);
+            _NDFP_result = ($$ = !_NDFP_regex_search(rx_pattern, ssid_str));
         }
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta SSID !~ %s? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
-expr_local_if_meta_pvid:
-      FLOW_LOCAL_IF_META_PVID {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid != 0));
+expr_local_if_metadata_pvid:
+    FLOW_LOCAL_IF_META_PVID {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid != 0));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID is non-zero? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_LOCAL_IF_META_PVID {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid == 0));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid == 0));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID is zero? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_PVID CMP_EQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid == $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid == $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_PVID CMP_NOTEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid != $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid != $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_PVID CMP_GTHANEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid >= $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid >= $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_PVID CMP_LTHANEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid <= $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid <= $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_PVID '>' VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid > $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid > $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_LOCAL_IF_META_PVID '<' VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->local_if_meta.pvid < $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.local.pvid < $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Local if_meta PVID < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
 
-expr_other_if_meta_pvid:
-      FLOW_OTHER_IF_META_PVID {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid != 0));
+expr_other_if_metadata_pvid:
+    FLOW_OTHER_IF_META_PVID {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid != 0));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID is non-zero? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | '!' FLOW_OTHER_IF_META_PVID {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid == 0));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid == 0));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID is zero? %s\n", (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_OTHER_IF_META_PVID CMP_EQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid == $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid == $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID == %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_OTHER_IF_META_PVID CMP_NOTEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid != $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid != $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID != %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_OTHER_IF_META_PVID CMP_GTHANEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid >= $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid >= $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID >= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_OTHER_IF_META_PVID CMP_LTHANEQUAL VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid <= $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid <= $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID <= %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_OTHER_IF_META_PVID '>' VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid > $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid > $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID > %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     | FLOW_OTHER_IF_META_PVID '<' VALUE_UNSIGNED {
-        _NDFP_result = ($$ = (_NDFP_flow->other_if_meta.pvid < $3));
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        _NDFP_result = ($$ = (_NDFP_flow->if_metadata.other.pvid < $3));
+#else
+        _NDFP_result = ($$ = (false));
+#endif
         _NDFP_debugf("Other if_meta PVID < %lu? %s\n", $3, (_NDFP_result) ? "yes" : "no");
     }
     ;
