@@ -271,6 +271,21 @@ case "${host_os}" in
                 [Define to enable LIBCAP capabilities support.])
             AM_CONDITIONAL(USE_LIBCAP, true)
         ])
+
+        dnl Interface metadata extraction
+
+        AC_ARG_ENABLE([interface-metadata],
+            [AS_HELP_STRING([--enable-interface-metadata], [Enable Interface Metadata (SSID/PVID) mapping [default=no]])],
+            [],
+            [enable_interface_metadata=no])
+
+        AS_IF([test "x$enable_interface_metadata" = "xyes"], [
+            AC_DEFINE([_ND_ENABLE_INTERFACE_METADATA], [1],
+                [Define to enable interface metadata mapping.])
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_INTERFACE_METADATA=1"])
+            AM_CONDITIONAL(ENABLE_INTERFACE_METADATA, true)
+        ])
+
         ;;
 esac
 
@@ -423,18 +438,6 @@ AS_IF([test "x$enable_lean_and_mean" = "xyes"], [
         [Define to build smallest possible binary.])
     AS_VAR_APPEND([ND_DEFINES], [" -D_ND_LEAN_AND_MEAN=1"])
     AM_CONDITIONAL(ENABLE_LEAN_AND_MEAN, true)
-])
-
-AC_ARG_ENABLE([interface-metadata],
-    [AS_HELP_STRING([--enable-interface-metadata], [Enable Interface Metadata (SSID/PVID) mapping [default=no]])],
-    [],
-    [enable_interface_metadata=no])
-
-AS_IF([test "x$enable_interface_metadata" = "xyes"], [
-    AC_DEFINE([_ND_ENABLE_INTERFACE_METADATA], [1],
-        [Define to enable interface metadata mapping.])
-    AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_INTERFACE_METADATA=1"])
-    AM_CONDITIONAL(ENABLE_INTERFACE_METADATA, true)
 ])
 
 AC_ARG_ENABLE([extended-stats],
