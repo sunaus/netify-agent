@@ -717,19 +717,6 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
     ndInstance &ndi = ndInstance::GetInstance();
     char ifname[IFNAMSIZ] = { '\0' };
 
-    if (ndGC.mark_to_ifindex_mapping && ndGC.mark_to_ifindex_fw == "nft") {
-        uint32_t mark = (uint32_t)ifi->ifi_index << ndGC.mark_to_ifindex_shift;
-
-        nd_dprintf("%s: nftables [%s] %s map: %s (idx: %d) -> mark: 0x%08x (shift: %u)\n",
-            TAG,
-            ndGC.mark_to_ifindex_table.c_str(),
-            add ? "ADD" : "DELETE",
-            ifname,
-            ifi->ifi_index,
-            mark,
-            ndGC.mark_to_ifindex_shift);
-    }
-
     if (add) {
         if (if_indextoname(ifi->ifi_index, ifname) == nullptr) {
             nd_dprintf("%s: %s: if_indextoname(%d): %s\n",
