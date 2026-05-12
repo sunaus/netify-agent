@@ -10,24 +10,25 @@
 #include <arpa/inet.h>
 #include <string.h>
 
-// Netify headers
 #include "nd-util.hpp"
+
+using namespace std;
 
 // Test the nd_trim function family
 TEST(UtilTest, StringTrim) {
-    std::string s1 = "  hello world  ";
+    string s1 = "  hello world  ";
     nd_trim(s1);
     EXPECT_EQ(s1, "hello world");
 
-    std::string s2 = "no_trim";
+    string s2 = "no_trim";
     nd_trim(s2);
     EXPECT_EQ(s2, "no_trim");
 
-    std::string s3 = "   left";
+    string s3 = "   left";
     nd_ltrim(s3);
     EXPECT_EQ(s3, "left");
 
-    std::string s4 = "right   ";
+    string s4 = "right   ";
     nd_rtrim(s4);
     EXPECT_EQ(s4, "right");
 }
@@ -48,14 +49,14 @@ TEST(UtilTest, IpToString) {
     addr4->sin_family = AF_INET;
     inet_pton(AF_INET, "192.168.1.1", &addr4->sin_addr);
 
-    std::string dst;
+    string dst;
     nd_ip_to_string(ss, dst);
     EXPECT_EQ(dst, "192.168.1.1");
 }
 
 // Test hostname processing
 TEST(UtilTest, SetHostname) {
-    std::string dst;
+    string dst;
     
     // Valid strict
     nd_set_hostname(dst, "www.example.com", 15, true);
@@ -69,5 +70,6 @@ TEST(UtilTest, SetHostname) {
 // Ensure gtest has an entry point
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
+
     return RUN_ALL_TESTS();
 }

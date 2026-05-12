@@ -44,15 +44,20 @@ endif
 bin_PROGRAMS = check-protocols check-risks
 
 if HAVE_GTEST
-check_PROGRAMS = test-util
-TESTS = test-util
+check_PROGRAMS = test-util test-flow-expr
+TESTS = test-util test-flow-expr
 
 test_util_SOURCES = test-util.cpp
 test_util_CPPFLAGS = $(AM_CPPFLAGS) $(GTEST_CFLAGS)
 test_util_LDADD = $(top_srcdir)/src/libnetifyd.la $(GTEST_LIBS) -lpthread
 
+test_flow_expr_SOURCES = test-flow-expr.cpp
+test_flow_expr_CPPFLAGS = $(AM_CPPFLAGS) $(GTEST_CFLAGS)
+test_flow_expr_LDADD = $(top_srcdir)/src/libnetifyd.la $(GTEST_LIBS) -lpthread
+
 if USE_LIBTCMALLOC
 test_util_LDADD += $(LIBTCMALLOC_LIBS)
+test_flow_expr_LDADD += $(LIBTCMALLOC_LIBS)
 endif
 
 endif
