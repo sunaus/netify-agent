@@ -753,30 +753,30 @@ bool ndAddrLookup::LookupLinkAddress(unsigned index, ndAddr &addr) {
     return true;
 }
 
-bool ndAddrLookup::AddLinkVLANId(unsigned index, uint16_t id) {
-    lock_guard<mutex> ul(lock_link_vlan_id);
+bool ndAddrLookup::AddLinkPVID(unsigned index, uint16_t id) {
+    lock_guard<mutex> ul(lock_link_pvid);
 
-    auto result = link_vlan_ids.insert(make_pair(index, id));
+    auto result = link_pvids.insert(make_pair(index, id));
 
     return result.second;
 }
 
-bool ndAddrLookup::RemoveLinkVLANId(unsigned index) {
-    lock_guard<mutex> ul(lock_link_vlan_id);
+bool ndAddrLookup::RemoveLinkPVID(unsigned index) {
+    lock_guard<mutex> ul(lock_link_pvid);
 
-    auto result = link_vlan_ids.find(index);
-    if (result == link_vlan_ids.end()) return false;
+    auto result = link_pvids.find(index);
+    if (result == link_pvids.end()) return false;
 
-    link_vlan_ids.erase(result);
+    link_pvids.erase(result);
 
     return true;
 }
 
-uint16_t ndAddrLookup::LookupLinkVLANId(unsigned index) {
-    lock_guard<mutex> ul(lock_link_vlan_id);
+uint16_t ndAddrLookup::LookupLinkPVID(unsigned index) {
+    lock_guard<mutex> ul(lock_link_pvid);
 
-    auto result = link_vlan_ids.find(index);
-    if (result == link_vlan_ids.end()) return 0;
+    auto result = link_pvids.find(index);
+    if (result == link_pvids.end()) return 0;
 
     return result->second;
 }
@@ -1525,3 +1525,27 @@ size_t ndInterface::UpdateAddrs(const struct ifaddrs *if_addrs) {
 
     return count;
 }
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+
+bool ndAddrLookup::AddLinkSSID(unsigned index, const std::string &ssid) {
+    std::lock_guard<std::mutex> lock(this->lock_link_ssids);
+    this->link_ssids[index] = ssid;
+    return true;
+}
+
+bool ndAddrLookup::RemoveLinkSSID(unsigned index) {
+    std::lock_guard<std::mutex> lock(this->lock_link_ssids);
+    return this->link_ssids.erase(index) > 0;
+}
+
+bool ndAddrLookup::LookupLinkSSID(unsigned index, std::string &ssid) {
+    std::lock_guard<std::mutex> lock(this->lock_link_ssids);
+    auto it = this->link_ssids.find(index);
+    if (it != this->link_ssids.end()) {
+        ssid = it->second;
+        return true;
+    }
+    return false;
+}
+
+#endif
