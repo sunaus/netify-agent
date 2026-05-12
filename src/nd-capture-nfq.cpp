@@ -220,6 +220,7 @@ static int ndCaptureNFQueue_Callback(
         ifidx_out = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSOUTDEV]));
     else if (attr[NFQA_IFINDEX_OUTDEV] != nullptr)
         ifidx_out = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_OUTDEV]));
+
 #ifdef _ND_LOG_DEBUG
     if (ifidx_in > 0) {
         char ifname[IFNAMSIZ] = { '\0' };
@@ -295,6 +296,13 @@ static int ndCaptureNFQueue_Callback(
         }
     }
 
+    int ifidx_logical = -1;
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    if (ndGC.mark_to_ifindex_enable && nfq->mark) {
+        ifidx_logical = (nfq->mark >> ndGC.mark_to_ifindex_mark_shift) &
+          ((1U << ndGC.mark_to_ifindex_mark_mask) - 1);
+    }
+#endif
     // Filtered?
     if (nfq->filter.bf_insns && bpf_filter(
         nfq->filter.bf_insns, pkt_data,
@@ -303,11 +311,14 @@ static int ndCaptureNFQueue_Callback(
         delete [] pkt_data;
     }
     else {
-        // Create and push packet...
+        // Create and push packet
         ndPacket *pkt = new ndPacket(pkt_status,
           static_cast<uint16_t>(hdr_eth_size + pkt_len),
           static_cast<uint16_t>(hdr_eth_size + pkt_caplen),
-          pkt_data, pkt_tv, ifidx_in, ifidx_out);
+          pkt_data, pkt_tv,
+          ifidx_logical,
+          ifidx_in,
+          ifidx_out);
 
         nfq->PushPacket(pkt);
     }

@@ -164,7 +164,38 @@ conntrack_buffer_size = 1048576
 # entries that have been idle for greater than this number of seconds.
 # Default: 1 hour (3600).  Set to 0 to disable.
 conntrack_idle_timeout = 3600
-# Enable Bridge PVID discovery
-bridge_pvid_discovery = no
+
+[mark-to-interface]
+# Enables the logical mapping of packets to their original source
+# interface. When enabled, the agent extracts a stored interface index from the
+# packet mark (skb mark) to identify the specific logical interface (e.g., a
+# wireless VAP) even when packets are captured on a physical bridge or NFQueue handle.
+# enable = no
+
+# Specifies the bitwise left-shift used to locate the interface index within the
+# 32-bit packet mark. For example, a shift of 8 indicates the index is stored in
+# the second byte (bits 8-15), allowing the mark to coexist with other metadata
+# like connection marks.
+# mark_shift = 8
+
+# Specifies the bitwise mask used to locate the interface index within the
+# 32-bit packet mark.
+# mark_shift = 8
+
+# Defines the firewall backend used to manage the mapping. When set to nft
+# Defines the firewall backend used to manage the mapping. When set to nft
+# (currently the only mode supported), the agent will automatically synchronize
+# the interface-to-mark mappings with the kernel's nftables sets.
+# firewall = nft
+
+# Specifies the name of the nftables table where the mapping set is located. The
+# agent expects to find (or will attempt to update) a set named according the the
+# nft_set configuratin parameter within this table to facilitate the correlation
+# between physical and logical interfaces.
+# nft_table = netify
+
+# A set within the nft_table used to facilitate the correlation between physical
+# and logical interfaces.
+# nft_set = ifindex_to_mark
 
 # vim: set ft=dosini :

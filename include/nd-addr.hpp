@@ -669,14 +669,19 @@ public:
     bool RemoveLinkAddress(unsigned index);
     bool LookupLinkAddress(unsigned index, ndAddr &addr);
 
-    bool AddLinkVLANId(unsigned index, uint16_t id);
-    bool RemoveLinkVLANId(unsigned index);
-    uint16_t LookupLinkVLANId(unsigned index);
+    bool AddLinkPVID(unsigned index, uint16_t id);
+    bool RemoveLinkPVID(unsigned index);
+    uint16_t LookupLinkPVID(unsigned index);
 
     bool AddLinkName(unsigned index, const std::string &name);
     bool RemoveLinkName(unsigned index);
     bool LookupLinkName(unsigned index, std::string &name);
 
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    bool AddLinkSSID(unsigned index, const std::string &ssid);
+    bool RemoveLinkSSID(unsigned index);
+    bool LookupLinkSSID(unsigned index, std::string &ssid);
+#endif
     bool AddNeighbor(const ndAddr &addr, const ndAddr &lladdr);
     bool RemoveNeighbor(const ndAddr &addr);
     bool LookupNeighbor(const ndAddr &addr, ndAddr &lladdr);
@@ -723,11 +728,16 @@ protected:
     mutable std::mutex lock_link_addrs;
     std::unordered_map<unsigned, ndAddr> link_addrs;
 
-    mutable std::mutex lock_link_vlan_id;
-    std::unordered_map<unsigned, uint16_t> link_vlan_ids;
+    mutable std::mutex lock_link_pvid;
+    std::unordered_map<unsigned, uint16_t> link_pvids;
 
     mutable std::mutex lock_link_names;
     std::unordered_map<unsigned, std::string> link_names;
+
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    mutable std::mutex lock_link_ssids;
+    std::unordered_map<unsigned, std::string> link_ssids;
+#endif
 
     mutable std::mutex lock_neighbors;
     using NeighborMap = std::unordered_map<

@@ -37,6 +37,10 @@ if USE_LIBCAP
 AM_CPPFLAGS += $(LIBCAP_CFLAGS)
 endif
 
+if ENABLE_INTERFACE_METADATA
+AM_CPPFLAGS += $(LIBNFTNL_CFLAGS)
+endif
+
 lib_LTLIBRARIES = libnetifyd.la
 libnetifyd_la_SOURCES = nd-addr.cpp nd-apps.cpp nd-base64.cpp nd-capture.cpp \
 	nd-category.cpp nd-config.cpp nd-detection.cpp nd-except.cpp nd-dhc.cpp \
@@ -56,6 +60,9 @@ libnetifyd_la_LIBADD = -L$(top_srcdir)/libs/inih -lini \
 if USE_NETLINK
 libnetifyd_la_SOURCES += nd-netlink.cpp nd-netlink-rt.cpp
 libnetifyd_la_LIBADD += $(LIBMNL_LIBS)
+if ENABLE_INTERFACE_METADATA
+libnetifyd_la_LIBADD += $(LIBNFTNL_LIBS)
+endif
 if USE_CONNTRACK
 libnetifyd_la_SOURCES += nd-netlink-ct.cpp
 libnetifyd_la_LIBADD += $(LIBNETFILTER_CONNTRACK_LIBS)

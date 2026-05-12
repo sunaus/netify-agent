@@ -65,7 +65,8 @@ public:
 
     ndPacket(const ndFlags<StatusFlags> &status,
       const uint16_t &length, const uint16_t &caplen,
-      uint8_t *data, const struct timeval &tv
+      uint8_t *data, const struct timeval &tv,
+      int ifidx_logical = -1
 #if defined(_ND_ENABLE_NFQUEUE)
       , int ifidx_src = -1, int ifidx_dst = -1
 #endif
@@ -111,6 +112,7 @@ protected:
 
     time_t tv_sec;
     time_t tv_usec;
+    int ifidx_logical;
 #if defined(_ND_ENABLE_NFQUEUE)
     int ifidx_src;
     int ifidx_dst;
