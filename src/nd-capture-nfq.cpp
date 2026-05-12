@@ -211,7 +211,7 @@ static int ndCaptureNFQueue_Callback(
         nfq->mark = ntohl(mnl_attr_get_u32(attr[NFQA_MARK]));
 
     uint32_t ifidx_in = 0;
-        if (attr[NFQA_IFINDEX_PHYSINDEV] != nullptr)
+    if (attr[NFQA_IFINDEX_PHYSINDEV] != nullptr)
         ifidx_in = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_PHYSINDEV]));
     else if (attr[NFQA_IFINDEX_INDEV] != nullptr)
         ifidx_in = ntohl(mnl_attr_get_u32(attr[NFQA_IFINDEX_INDEV]));
