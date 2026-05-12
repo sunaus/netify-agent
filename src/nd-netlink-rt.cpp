@@ -25,28 +25,32 @@
 #include <algorithm>
 #include <vector>
 
-#include <net/if.h>
-
+#include <arpa/inet.h>
 #include <linux/if_link.h>
+#include <net/if.h>
+#include <netinet/in.h>
 
 #include <libmnl/libmnl.h>
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
 #include <libnftnl/set.h>
+
+#if defined(_ND_ENABLE_UBUS)
+#include <libubox/blobmsg_json.h>
+#include <libubus.h>
+
+// TODO: Not used.
+// #include "nd-ubus.hpp"
 #endif
+
+#include <linux/netfilter.h>
+#include <linux/netfilter/nf_tables.h>
+#endif // _ND_ENABLE_INTERFACE_METADATA
 
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-netlink-rt.hpp"
 #include "nd-util.hpp"
-#if defined(_ND_ENABLE_UBUS)
-#include "nd-ubus.hpp"
-#include <libubox/blobmsg_json.h>
-#include <libubus.h>
-#endif
 
-#include <linux/netfilter.h>
-#include <linux/netfilter/nfnetlink.h>
-#include <linux/netfilter/nf_tables.h>
 // Enable Conntrack debug logging
 // #define _ND_DEBUG_LOG   1
 
@@ -81,16 +85,21 @@ struct nd_bridge_vlan_info {
 
 constexpr const char *TAG = { "netlink-rt" };
 
- //Netlink error callback to capture the specific errno from the kernel ACK
-static int ndNetlinkRoute_nft_error_cb(const struct nlmsghdr *nlh, void *data) {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+// Netlink error callback to capture the specific errno from the kernel ACK
+static int ndNetlinkRoute_nft_error_cb(
+  const struct nlmsghdr *nlh, void *data)
+{
     if (nlh->nlmsg_type == NLMSG_ERROR) {
-        struct nlmsgerr *err = static_cast<struct nlmsgerr *>(mnl_nlmsg_get_payload(nlh));
+        struct nlmsgerr *err = static_cast<struct nlmsgerr *>(
+          mnl_nlmsg_get_payload(nlh));
         if (err->error != 0) {
             *(int *)data = err->error;
         }
     }
     return MNL_CB_OK;
 }
+#endif
 
 static int ndNetlinkRoute_attr_parse_ifav4(
     const struct nlattr *attr, void *data) {
@@ -471,12 +480,14 @@ void ndNetlinkRouteThread::Dump(void) {
     rt_dump.Dump(RTM_GETADDR);
     rt_dump.Dump(RTM_GETROUTE);
     rt_dump.Dump(RTM_GETLINK);
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
     // Need to make a specific call to Netlink specifing family
     // otherwise kernel does not return the bridge VLAN metadata
     // we're looking for
     if (ndGC.mark_to_ifindex_enable) {
         rt_dump.Dump(RTM_GETLINK, AF_BRIDGE);
     }
+#endif
     rt_dump.Dump(RTM_GETNEIGH);
 }
 
@@ -737,13 +748,14 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             ndi.addr_lookup.AddLinkSSID(ifi->ifi_index, ssid);
         }
 
-        if (ndGC.mark_to_ifindex_enable && ndGC.mark_to_ifindex_firewall == "nft") {
-            uint32_t mark = (uint32_t)ifi->ifi_index << ndGC.mark_to_ifindex_mark_shift;
+        if (ndGC.mark_to_ifindex_enable &&
+          ndGC.mark_to_ifindex_firewall == "nft") {
+            uint32_t mark = (uint32_t)ifi->ifi_index
+              << ndGC.mark_to_ifindex_mark_shift;
 
             this->UpdateNftablesMapping(ifi->ifi_index, mark, true);
         }
 #endif
-
         AttrsLink attrs = { 0 };
 
         if (mnl_attr_parse(nlh, sizeof(*ifi),
@@ -788,7 +800,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
                 }
             }
         }
-
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
         if (ndGC.mark_to_ifindex_enable && attrs[IFLA_AF_SPEC]) {
             int rem = mnl_attr_get_payload_len(attrs[IFLA_AF_SPEC]);
             const struct nlattr *af_spec_attr =
@@ -847,8 +859,9 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             }
         }
 
-        next_interface: // Label to break out of nested loops once PVID is found
-
+        // Label to break out of nested loops once PVID is found
+        next_interface:
+#endif
         _ND_NLRT_CHECK_ATTR(TAG, attrs[IFLA_ADDRESS], -1);
 
         ndAddr addr;
@@ -873,7 +886,8 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
         );
 #endif
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
-        if (ndGC.mark_to_ifindex_enable && ndGC.mark_to_ifindex_firewall == "nft")
+        if (ndGC.mark_to_ifindex_enable
+          && ndGC.mark_to_ifindex_firewall == "nft")
             this->UpdateNftablesMapping(ifi->ifi_index, 0, false);
 #endif
         if (ndi.addr_lookup.RemoveLinkAddress(ifi->ifi_index)) rc = 1;
@@ -1005,7 +1019,7 @@ int ndNetlinkRouteThread::AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add
 
     return rc;
 }
- 
+
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
 void ndNetlinkRouteThread::UpdateNftablesMapping(
     int ifindex,
@@ -1015,7 +1029,8 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
     struct mnl_socket *nl;
     struct nftnl_set *set;
     struct nftnl_set_elem *elem;
-    char buf[MNL_SOCKET_BUFFER_SIZE];
+    vector<uint8_t> buf;
+    buf.resize(ndGC.netlink_buffer_size);
     uint32_t seq = time(NULL);
     int ret;
 
@@ -1026,8 +1041,10 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
     }
 
     // Bit of a TODO - we don't support anything but nftables for now
-    nftnl_set_set_str(set, NFTNL_SET_TABLE, ndGC.mark_to_ifindex_nft_table.c_str());
-    nftnl_set_set_str(set, NFTNL_SET_NAME, ndGC.mark_to_ifindex_nft_set.c_str());
+    nftnl_set_set_str(
+      set, NFTNL_SET_TABLE, ndGC.mark_to_ifindex_nft_table.c_str());
+    nftnl_set_set_str(
+      set, NFTNL_SET_NAME, ndGC.mark_to_ifindex_nft_set.c_str());
     nftnl_set_set_u32(set, NFTNL_SET_FAMILY, NFPROTO_BRIDGE);
 
     elem = nftnl_set_elem_alloc();
@@ -1062,7 +1079,7 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
     int offset = 0;
 
     // Batch Begin
-    nlh = mnl_nlmsg_put_header(buf);
+    nlh = mnl_nlmsg_put_header(buf.data());
     nlh->nlmsg_type = NFNL_MSG_BATCH_BEGIN;
     nlh->nlmsg_flags = NLM_F_REQUEST;
     nlh->nlmsg_seq = seq++;
@@ -1080,12 +1097,14 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
         msg_flags |= NLM_F_CREATE;
     }
 
-    nlh = nftnl_nlmsg_build_hdr(buf + offset, msg_type, NFPROTO_BRIDGE, msg_flags, seq++);
+    nlh = nftnl_nlmsg_build_hdr(
+      (char *)buf.data() + offset, msg_type,
+      NFPROTO_BRIDGE, msg_flags, seq++);
     nftnl_set_elems_nlmsg_build_payload(nlh, set);
     offset += nlh->nlmsg_len;
 
     // Batch End
-    nlh = mnl_nlmsg_put_header(buf + offset);
+    nlh = mnl_nlmsg_put_header(buf.data() + offset);
     nlh->nlmsg_type = NFNL_MSG_BATCH_END;
     nlh->nlmsg_flags = NLM_F_REQUEST;
     nlh->nlmsg_seq = seq++;
@@ -1096,16 +1115,16 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
     nfg->res_id = NFNL_SUBSYS_NFTABLES;
     offset += nlh->nlmsg_len;
 
-    if (mnl_socket_sendto(nl, buf, offset) < 0) {
+    if (mnl_socket_sendto(nl, buf.data(), offset) < 0)
         nd_dprintf("%s: failed to send nft message\n", TAG);
-    } else {
-        ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
+    else {
+        ret = mnl_socket_recvfrom(nl, buf.data(), buf.size());
         if (ret > 0) {
             int err_code = 0;
-            if (mnl_cb_run(buf, ret, 0, mnl_socket_get_portid(nl), ndNetlinkRoute_nft_error_cb, &err_code) < 0) {
-                nd_dprintf("%s: nftables update failed: %s (table: %s, set: %s)\n",
-                   TAG,
-                   strerror(abs(err_code)),
+            if (mnl_cb_run(buf.data(), ret, 0, mnl_socket_get_portid(nl), ndNetlinkRoute_nft_error_cb, &err_code) < 0) {
+                nd_dprintf(
+                  "%s: nftables update failed: %s (table: %s, set: %s)\n",
+                   TAG, strerror(abs(err_code)),
                    ndGC.mark_to_ifindex_nft_table.c_str(),
                    ndGC.mark_to_ifindex_nft_set.c_str());
             }

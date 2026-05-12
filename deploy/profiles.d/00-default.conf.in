@@ -168,7 +168,7 @@ conntrack_idle_timeout = 3600
 [mark-to-interface]
 # Enables the logical mapping of packets to their original source
 # interface. When enabled, the agent extracts a stored interface index from the
-# packet mark (skb mark) to identify the specific logical interface (e.g., a 
+# packet mark (skb mark) to identify the specific logical interface (e.g., a
 # wireless VAP) even when packets are captured on a physical bridge or NFQueue handle.
 # enable = no
 
@@ -190,11 +190,12 @@ conntrack_idle_timeout = 3600
 
 # Specifies the name of the nftables table where the mapping set is located. The
 # agent expects to find (or will attempt to update) a set named according the the
-# nft_set configuratin parameter within this table to facilitate the correlation 
+# nft_set configuratin parameter within this table to facilitate the correlation
 # between physical and logical interfaces.
 # nft_table = netify
 
-# The a set within the nft_table used to facilitate the correlation between physical and logical interfaces.
+# A set within the nft_table used to facilitate the correlation between physical
+# and logical interfaces.
 # nft_set = ifindex_to_mark
 
 # vim: set ft=dosini :

@@ -275,17 +275,18 @@ case "${host_os}" in
         dnl Interface metadata extraction
 
         AC_ARG_ENABLE([interface-metadata],
-            [AS_HELP_STRING([--enable-interface-metadata], [Enable Interface Metadata (SSID/PVID) mapping [default=no]])],
+            [AS_HELP_STRING([--enable-interface-metadata],
+                [Enable Interface Metadata (SSID/PVID) mapping [default=no]])],
             [],
             [enable_interface_metadata=no])
 
         AS_IF([test "x$enable_interface_metadata" = "xyes"], [
+            PKG_CHECK_MODULES([LIBNFTNL], [libnftnl])
             AC_DEFINE([_ND_ENABLE_INTERFACE_METADATA], [1],
                 [Define to enable interface metadata mapping.])
             AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_INTERFACE_METADATA=1"])
             AM_CONDITIONAL(ENABLE_INTERFACE_METADATA, true)
         ])
-
         ;;
 esac
 

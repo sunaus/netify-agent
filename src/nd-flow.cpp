@@ -89,12 +89,12 @@ ndFlow::ndFlow(const ndFlow &flow)
     vlan_id(flow.vlan_id), ts_first_seen(flow.ts_first_seen),
     ts_last_seen(flow.ts_last_seen.load()),
     tunnel_type(flow.tunnel_type), origin(flow.origin),
-#if defined(_ND_ENABLE_INTERFACE_METADATA)
-    if_metadata(flow.if_metadata),
-#endif
     digest_lower(flow.digest_lower), flags{}, tcp{},
 #ifdef _ND_ENABLE_CONNTRACK
     conntrack(flow.conntrack),
+#endif
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    if_metadata(flow.if_metadata),
 #endif
     gtp(flow.gtp), detected_protocol_name("Unknown") {
     digest_mdata.push_back(digest_lower);

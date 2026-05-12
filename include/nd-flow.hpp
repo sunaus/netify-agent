@@ -27,8 +27,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <net/if.h>
-
 #include "nd-addr.hpp"
 #include "nd-category.hpp"
 #include "nd-config.hpp"
@@ -38,10 +36,6 @@
 #include "nd-sha1.h"
 #include "nd-types.hpp"
 #include "nd-util.hpp"
-
-#ifndef IW_ESSID_MAX_SIZE
-#define IW_ESSID_MAX_SIZE 32
-#endif
 
 // TLS SNI hostname/common-name length. Reference: RFC 4366
 constexpr size_t ND_FLOW_TLS_CNLEN = 256;
@@ -265,8 +259,8 @@ public:
     struct if_metadata {
         int index = { -1 };
         int pvid = { -1 };
-        char name[IFNAMSIZ];
-        char ssid[IW_ESSID_MAX_SIZE + 1];
+        std::string name;
+        std::string ssid;
     };
 
     struct {
@@ -707,17 +701,16 @@ public:
             if (if_metadata.local.index != -1) {
                 serialize(output, { "local_if_meta", "index" }, (uint32_t)if_metadata.local.index);
 
-                if (if_metadata.local.name[0] != '\0')
+                if (! if_metadata.local.name.empty())
                     serialize(output, { "local_if_meta", "name" }, if_metadata.local.name);
 
-                if (if_metadata.local.ssid[0] != '\0')
+                if (! if_metadata.local.ssid.empty())
                     serialize(output, { "local_if_meta", "ssid" }, if_metadata.local.ssid);
 
                 if (if_metadata.local.pvid != -1)
                     serialize(output, { "local_if_meta", "pvid" }, (uint32_t)if_metadata.local.pvid);
             }
 
-            // Other Metadata - Flattened to 2 levels
             if (if_metadata.other.index != -1) {
                 serialize(output, { "other_if_meta", "index" }, (uint32_t)if_metadata.other.index);
 

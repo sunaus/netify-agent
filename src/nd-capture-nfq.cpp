@@ -296,12 +296,13 @@ static int ndCaptureNFQueue_Callback(
         }
     }
 
-    uint32_t mark = nfq->mark;
     int ifidx_logical = -1;
-
-    if (ndGC.mark_to_ifindex_enable && mark != 0)
-        ifidx_logical = (mark >> ndGC.mark_to_ifindex_mark_shift) & ((1U << ndGC.mark_to_ifindex_mark_mask) - 1);
-
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    if (ndGC.mark_to_ifindex_enable && nfq->mark) {
+        ifidx_logical = (nfq->mark >> ndGC.mark_to_ifindex_mark_shift) &
+          ((1U << ndGC.mark_to_ifindex_mark_mask) - 1);
+    }
+#endif
     // Filtered?
     if (nfq->filter.bf_insns && bpf_filter(
         nfq->filter.bf_insns, pkt_data,
