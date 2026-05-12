@@ -256,6 +256,31 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #endif
         ));
 
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    mark_to_ifindex_enable = r->GetBoolean("mark-to-ifindex",
+      "enable",
+       this->mark_to_ifindex_enable);
+
+    int raw_shift = r->GetInteger("mark-to-ifindex", "mark_shift", (int)this->mark_to_ifindex_mark_shift);
+    this->mark_to_ifindex_mark_shift = (uint8_t)std::clamp(raw_shift, 0, 24);
+
+
+    int raw_mask = r->GetInteger("mark-to-ifindex", "mark_mask", (int)this->mark_to_ifindex_mark_mask);
+    this->mark_to_ifindex_mark_mask = (uint8_t)std::clamp(raw_mask, 0, 32);
+
+    mark_to_ifindex_firewall = r->Get("mark-to-ifindex",
+      "firewall",
+      this->mark_to_ifindex_firewall);
+
+    mark_to_ifindex_nft_table = r->Get("mark-to-ifindex",
+      "nft_table",
+      this->mark_to_ifindex_nft_table);
+
+    mark_to_ifindex_nft_set = r->Get("mark-to-ifindex",
+      "nft_set",
+      this->mark_to_ifindex_nft_set);
+#endif
+
     user_id = r->Get(ND_NAME_SHORT, "user", "");
     group_id = r->Get(ND_NAME_SHORT, "group", "");
 
@@ -277,8 +302,6 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     netlink_conntrack_idle_timeout = (unsigned)r->GetInteger("netlink",
       "conntrack_idle_ttl", this->netlink_conntrack_idle_timeout);
 #endif
-    netlink_bridge_pvid_discovery = r->GetBoolean("netlink",
-      "bridge_pvid_discovery", this->netlink_bridge_pvid_discovery);
 #endif
 
     // Capture defaults section

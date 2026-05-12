@@ -43,6 +43,7 @@ AC_SUBST([LIBNETIFY_VERSION_SO], [$so_version])
 AM_CONDITIONAL(ENABLE_DEBUG_STATS, false)
 AM_CONDITIONAL(ENABLE_EXTENDED_STATS, false)
 AM_CONDITIONAL(ENABLE_LEAN_AND_MEAN, false)
+AM_CONDITIONAL(ENABLE_INTERFACE_METADATA, false)
 AM_CONDITIONAL(USE_CONNTRACK, false)
 AM_CONDITIONAL(USE_LIBGCRYPT_SYSTEM, false)
 AM_CONDITIONAL(USE_LIBPCAP, false)
@@ -269,6 +270,22 @@ case "${host_os}" in
             AC_DEFINE([_ND_ENABLE_LIBCAP], [1],
                 [Define to enable LIBCAP capabilities support.])
             AM_CONDITIONAL(USE_LIBCAP, true)
+        ])
+
+        dnl Interface metadata extraction
+
+        AC_ARG_ENABLE([interface-metadata],
+            [AS_HELP_STRING([--enable-interface-metadata],
+                [Enable Interface Metadata (SSID/PVID) mapping [default=no]])],
+            [],
+            [enable_interface_metadata=no])
+
+        AS_IF([test "x$enable_interface_metadata" = "xyes"], [
+            PKG_CHECK_MODULES([LIBNFTNL], [libnftnl])
+            AC_DEFINE([_ND_ENABLE_INTERFACE_METADATA], [1],
+                [Define to enable interface metadata mapping.])
+            AS_VAR_APPEND([ND_DEFINES], [" -D_ND_ENABLE_INTERFACE_METADATA=1"])
+            AM_CONDITIONAL(ENABLE_INTERFACE_METADATA, true)
         ])
         ;;
 esac

@@ -255,6 +255,19 @@ public:
 #endif
     } conntrack;
 #endif
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+    struct if_metadata {
+        int index = { -1 };
+        int pvid = { -1 };
+        std::string name;
+        std::string ssid;
+    };
+
+    struct {
+        if_metadata local;
+        if_metadata other;
+    } if_metadata;
+#endif
 #if defined(_ND_ENABLE_NFQUEUE)
     struct {
         int src_ifindex = { -1 };
@@ -684,6 +697,30 @@ public:
             }
 #endif // _ND_ENABLE_CONNTRACK_MDATA
 #endif // _ND_ENABLE_CONNTRACK
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+            if (if_metadata.local.index != -1) {
+                serialize(output, { "local_if_meta", "index" }, (uint32_t)if_metadata.local.index);
+
+                if (! if_metadata.local.name.empty())
+                    serialize(output, { "local_if_meta", "name" }, if_metadata.local.name);
+
+                if (! if_metadata.local.ssid.empty())
+                    serialize(output, { "local_if_meta", "ssid" }, if_metadata.local.ssid);
+
+                if (if_metadata.local.pvid != -1)
+                    serialize(output, { "local_if_meta", "pvid" }, (uint32_t)if_metadata.local.pvid);
+            }
+
+            if (if_metadata.other.index != -1) {
+                serialize(output, { "other_if_meta", "index" }, (uint32_t)if_metadata.other.index);
+
+                if (if_metadata.other.name[0] != '\0')
+                    serialize(output, { "other_if_meta", "name" }, if_metadata.other.name);
+
+                if (if_metadata.other.pvid != -1)
+                    serialize(output, { "other_if_meta", "pvid" }, (uint32_t)if_metadata.other.pvid);
+            }
+#endif // _ND_ENABLE_INTERFACE_METADATA
 #if defined(_ND_ENABLE_NFQUEUE)
             if (! nfq.src_iface.empty()) {
                 serialize(output, { "nfq", "src_iface" }, nfq.src_iface);
