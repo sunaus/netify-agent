@@ -3470,7 +3470,7 @@ yyreduce:
         if (_NDFP_flow->if_metadata.local.ssid[0] != '\0') {
             string search((yyvsp[0].buffer));
             size_t p;
-            while ((p = search.find_first_of("\'\"")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             // Pass the array directly; strncasecmp expects a const char*
@@ -3495,7 +3495,7 @@ yyreduce:
         if (_NDFP_flow->if_metadata.local.ssid[0] != '\0') {
             string search((yyvsp[0].buffer));
             size_t p;
-            while ((p = search.find_first_of("\'\"")) != string::npos)
+            while ((p = search.find_first_of("'\"")) != string::npos)
                 search.erase(p, 1);
 
             if (strncasecmp(_NDFP_flow->if_metadata.local.ssid,
