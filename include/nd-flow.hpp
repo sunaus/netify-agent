@@ -27,6 +27,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <net/if.h>
+
 #include "nd-addr.hpp"
 #include "nd-category.hpp"
 #include "nd-config.hpp"
@@ -36,6 +38,10 @@
 #include "nd-sha1.h"
 #include "nd-types.hpp"
 #include "nd-util.hpp"
+
+#ifndef IW_ESSID_MAX_SIZE
+#define IW_ESSID_MAX_SIZE 32
+#endif
 
 // TLS SNI hostname/common-name length. Reference: RFC 4366
 constexpr size_t ND_FLOW_TLS_CNLEN = 256;
@@ -259,8 +265,8 @@ public:
     struct if_metadata {
         int index = { -1 };
         int pvid = { -1 };
-        char name[16];
-        char ssid[33];
+        char name[IFNAMSIZ];
+        char ssid[IW_ESSID_MAX_SIZE + 1];
     };
 
     struct {
