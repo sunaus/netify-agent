@@ -30,7 +30,9 @@
 #include <linux/if_link.h>
 
 #include <libmnl/libmnl.h>
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
 #include <libnftnl/set.h>
+#endif
 
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
@@ -734,18 +736,13 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             nd_dprintf("%s: %s SSID: %s\n", TAG, ifname, ssid.c_str());
             ndi.addr_lookup.AddLinkSSID(ifi->ifi_index, ssid);
         }
-#endif
 
         if (ndGC.mark_to_ifindex_enable && ndGC.mark_to_ifindex_firewall == "nft") {
-            if (ndGC.mark_to_ifindex_mark_shift > 24) {
-                nd_dprintf("Invalid shift too large\n");
-                return -1;
-            }
-
             uint32_t mark = (uint32_t)ifi->ifi_index << ndGC.mark_to_ifindex_mark_shift;
 
             this->UpdateNftablesMapping(ifi->ifi_index, mark, true);
         }
+#endif
 
         AttrsLink attrs = { 0 };
 
@@ -875,9 +872,10 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             ifi->ifi_index
         );
 #endif
-        if (ndGC.mark_to_ifindex_enable && ndGC.mark_to_ifindex_firewall == "nft") {
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        if (ndGC.mark_to_ifindex_enable && ndGC.mark_to_ifindex_firewall == "nft")
             this->UpdateNftablesMapping(ifi->ifi_index, 0, false);
-        }
+#endif
         if (ndi.addr_lookup.RemoveLinkAddress(ifi->ifi_index)) rc = 1;
         if (ndi.addr_lookup.RemoveLinkName(ifi->ifi_index)) rc = 1;
 
@@ -1007,7 +1005,8 @@ int ndNetlinkRouteThread::AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add
 
     return rc;
 }
-
+ 
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
 void ndNetlinkRouteThread::UpdateNftablesMapping(
     int ifindex,
     uint32_t mark,
@@ -1116,6 +1115,7 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
     nftnl_set_free(set);
     mnl_socket_close(nl);
 }
+#endif
 
 #if defined(_ND_ENABLE_UBUS)
 struct nd_ssid_cb_data {

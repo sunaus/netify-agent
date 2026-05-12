@@ -256,17 +256,17 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
 #endif
         ));
 
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
     mark_to_ifindex_enable = r->GetBoolean("mark-to-ifindex",
       "enable",
        this->mark_to_ifindex_enable);
 
-    mark_to_ifindex_mark_shift = (uint8_t)r->GetInteger("mark-to-ifindex",
-      "mark_shift",
-      (int)this->mark_to_ifindex_mark_shift);
+    int raw_shift = r->GetInteger("mark-to-ifindex", "mark_shift", (int)this->mark_to_ifindex_mark_shift);
+    this->mark_to_ifindex_mark_shift = (uint8_t)std::clamp(raw_shift, 0, 24);
 
-    mark_to_ifindex_mark_mask = (uint8_t)r->GetInteger("mark-to-ifindex",
-      "mark_mask",
-      (int)this->mark_to_ifindex_mark_mask);
+
+    int raw_mask = r->GetInteger("mark-to-ifindex", "mark_mask", (int)this->mark_to_ifindex_mark_mask);
+    this->mark_to_ifindex_mark_mask = (uint8_t)std::clamp(raw_mask, 0, 32);
 
     mark_to_ifindex_firewall = r->Get("mark-to-ifindex",
       "firewall",
@@ -279,6 +279,7 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     mark_to_ifindex_nft_set = r->Get("mark-to-ifindex",
       "nft_set",
       this->mark_to_ifindex_nft_set);
+#endif
 
     user_id = r->Get(ND_NAME_SHORT, "user", "");
     group_id = r->Get(ND_NAME_SHORT, "group", "");
