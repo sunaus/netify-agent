@@ -360,6 +360,10 @@ void *ndNetifyApiBootstrap::Entry(void) {
     try {
         string payload;
         nd_file_load(ndGC.path_state_persistent + "/license.json", payload);
+
+        if (! payload.empty())
+            headers.insert(make_pair("Content-type", "application/json"));
+
         Perform(ndNetifyApiThread::Method::POST, url, headers, payload);
     }
     catch (CURLcode &rc) {
