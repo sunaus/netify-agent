@@ -165,6 +165,9 @@ conntrack_buffer_size = 1048576
 # Default: 1 hour (3600).  Set to 0 to disable.
 conntrack_idle_timeout = 3600
 
+# Enhanced interface metadata using Socket Buffer Marks
+############################################################################
+
 [mark-to-interface]
 # Enables the logical mapping of packets to their original source
 # interface. When enabled, the agent extracts a stored interface index from the
@@ -183,14 +186,13 @@ conntrack_idle_timeout = 3600
 # mark_shift = 8
 
 # Defines the firewall backend used to manage the mapping. When set to nft
-# Defines the firewall backend used to manage the mapping. When set to nft
 # (currently the only mode supported), the agent will automatically synchronize
 # the interface-to-mark mappings with the kernel's nftables sets.
 # firewall = nft
 
 # Specifies the name of the nftables table where the mapping set is located. The
 # agent expects to find (or will attempt to update) a set named according the the
-# nft_set configuratin parameter within this table to facilitate the correlation
+# nft_set configuration parameter within this table to facilitate the correlation
 # between physical and logical interfaces.
 # nft_table = netify
 
