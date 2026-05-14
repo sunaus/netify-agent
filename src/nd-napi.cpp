@@ -553,10 +553,11 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
     }
 
     size_t downloads = 0;
-    static vector<Request> types = {
+    static const vector<Request> types = {
         Request::DOWNLOAD_APPLICATIONS,
         Request::DOWNLOAD_CATEGORIES,
         Request::DOWNLOAD_INTELLIGENCE,
+        Request::DOWNLOAD_OVERLAY,
     };
 
     for (auto &type : types) {
@@ -617,6 +618,10 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
                 }
                 else if (url.first == Request::DOWNLOAD_CATEGORIES) {
                     filename = ndGC.path_cat_config;
+                    auth_method = agent_data->GetAuthMethod();
+                }
+                else if (url.first == Request::DOWNLOAD_OVERLAY) {
+                    filename = ndGC.path_overlay_config;
                     auth_method = agent_data->GetAuthMethod();
                 }
                 else if (url.first == Request::DOWNLOAD_INTELLIGENCE) {
@@ -713,7 +718,7 @@ ndNetifyApiManager::UpdateResult
         int code = -1;
         string message("Unknown");
 
-        static vector<string> status_codes = {
+        static const vector<string> status_codes = {
             "status_"
             "code",
             "resp_code"
@@ -730,7 +735,7 @@ ndNetifyApiManager::UpdateResult
             }
         }
 
-        static vector<string> status_messages = {
+        static const vector<string> status_messages = {
             "status_message", "resp_message"
         };
 
@@ -824,6 +829,10 @@ ndNetifyApiManager::UpdateResult
             url = agent_data->GetUrl("categories");
             if (! url.empty())
                 urls[Request::DOWNLOAD_CATEGORIES] = url;
+
+            url = agent_data->GetUrl("overlay");
+            if (! url.empty())
+                urls[Request::DOWNLOAD_OVERLAY] = url;
         }
 
         if (intel_data) {
@@ -857,6 +866,9 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         break;
     case Request::DOWNLOAD_INTELLIGENCE:
         status_type = "intelligence";
+        break;
+    case Request::DOWNLOAD_OVERLAY:
+        status_type = "overlay";
         break;
     default:
         nd_dprintf("%s: invalid download type: %d", tag.c_str(), type);
@@ -933,6 +945,13 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         else if (download->content_type == "application/octet-stream") {
             return nd_copy_file(download->content_filename,
               nd_change_ext(ndGC.path_intel_config, "dat"),
+              S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        }
+    }
+    else if (type == Request::DOWNLOAD_OVERLAY) {
+        if (download->content_type == "application/json") {
+            return nd_copy_file(download->content_filename,
+              ndGC.path_overlay_config,
               S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         }
     }

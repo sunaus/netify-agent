@@ -285,6 +285,7 @@ public:
         DOWNLOAD_APPLICATIONS,
         DOWNLOAD_CATEGORIES,
         DOWNLOAD_INTELLIGENCE,
+        DOWNLOAD_OVERLAY,
     };
 
     const ndNetifyApiData::Ptr
