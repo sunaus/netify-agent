@@ -28,6 +28,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_NETIFYD_ENABLE_CONNTRACK_COUNTERS \
 	CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA \
 	CONFIG_NETIFYD_ENABLE_EXTENDED_STATS \
+	CONFIG_NETIFYD_ENABLE_INTERFACE_METADATA \
 	CONFIG_NETIFYD_ENABLE_LEAN_AND_MEAN \
 	CONFIG_NETIFYD_ENABLE_LINUX_CAPABILITIES \
 	CONFIG_NETIFYD_ENABLE_NFQUEUE \
@@ -44,7 +45,7 @@ define Package/@PACKAGE_TARNAME@
   TITLE:=Netify Agent
   URL:=http://www.netify.ai/
   DEPENDS:=+ca-bundle +libatomic +libcurl +libmnl +libnetfilter-conntrack \
-	+libpcap +libpthread +zlib @!USE_UCLIBC
+	+libnftnl +libpcap +libpthread +zlib @!USE_UCLIBC
   # Explicitly depend on libstdcpp rather than $(CXX_DEPENDS).  At the moment
   # std::unordered_map is only available via libstdcpp which is required for
   # performance reasons.
@@ -92,6 +93,7 @@ CONFIGURE_ARGS+= \
 	$(if $(CONFIG_NETIFYD_ENABLE_CONNTRACK_MDATA),--enable-conntrack-mdata,--disable-conntrack-mdata) \
 	$(if $(CONFIG_NETIFYD_ENABLE_EXTENDED_STATS),--enable-extended-stats,--disable-extended-stats) \
 	$(if $(CONFIG_NETIFYD_ENABLE_LEAN_AND_MEAN),--enable-lean-and-mean,--disable-lean-and-mean) \
+	$(if $(CONFIG_NETIFYD_ENABLE_INTERFACE_METADATA),--enable-interface-metadata,--disable-interface-metadata) \
 	$(if $(CONFIG_NETIFYD_ENABLE_LINUX_CAPABILITIES),--enable-capabilities,--disable-capabilities) \
 	$(if $(CONFIG_NETIFYD_ENABLE_NFQUEUE),--enable-nfqueue,--disable-nfqueue) \
 	$(if $(CONFIG_NETIFYD_ENABLE_OPENWRT),--enable-ubus,--disable-ubus) \

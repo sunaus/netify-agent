@@ -128,7 +128,7 @@ if [ "x${OPTION_CONNTRACK}" = "xenable" ]; then
     CONFIGURE_ARGS+=" --${OPTION_CONNTRACK_COUNTERS}-conntrack-counters"
 fi
 
-./configure \
+./configure --enable-interface-metadata \
     $CONFIGURE_ARGS \
     $@ || exit $?
 
