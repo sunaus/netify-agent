@@ -67,4 +67,11 @@ config NETIFYD_ENABLE_EXTENDED_STATS
 	help
 		Enable to collect additional flow statistics, such as flow rates, TCP sequence errors, and resets.
 
+config NETIFYD_ENABLE_INTERFACE_METADATA
+	bool "Enable Interface Metadata mapping (SSID, PVID)"
+	depends on PACKAGE_netifyd
+	default y
+	help
+	  Enables the extraction and JSON logging of physical interface
+	  metadata, including hardware PVIDs and wireless SSIDs.
 endmenu

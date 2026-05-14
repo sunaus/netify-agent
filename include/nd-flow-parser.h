@@ -37,7 +37,7 @@
 #define _NDFP_ORIGIN_LOCAL      1
 #define _NDFP_ORIGIN_OTHER      2
 
-#if 1
+#if 0
 #define _NDFP_debugf(f, ...) nd_dprintf(f, __VA_ARGS__)
 #else
 #define _NDFP_debugf(f, ...) \
