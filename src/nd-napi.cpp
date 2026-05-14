@@ -417,14 +417,28 @@ void *ndNetifyApiBootstrap::Entry(void) {
     }
 
     string url = ndGC.url_napi_bootstrap;
+    string payload;
 
     try {
-        string payload;
-        nd_file_load(ndGC.path_state_persistent + "/license.json", payload);
+        string license;
+        nd_file_load(ndGC.path_state_persistent + "/license.json", license);
 
-        if (! payload.empty())
+        if (! license.empty()) {
+            json jlicense = json::parse(license);
+
+            json jpayload;
+            jpayload["license"] = jlicense;
+            nd_json_to_string(jpayload, payload);
+
             headers.insert(make_pair("Content-type", "application/json"));
+        }
+    }
+    catch (exception &e) {
+        nd_dprintf("%s: error creating bootstrap payload: license: %s\n",
+          tag.c_str(), e.what());
+    }
 
+    try {
         Perform(ndNetifyApiThread::Method::POST, url, headers, payload);
     }
     catch (CURLcode &rc) {
