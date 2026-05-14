@@ -335,6 +335,67 @@ void ndNetifyApiThread::Perform(Method method, const string &url,
     }
 }
 
+ndNetifyApiAuthMethod::Ptr ndNetifyApiAuthMethod::Create(
+  const string &tag, const json &jconfig)
+{
+    string key = "auth";
+
+    try {
+        auto jauth = jconfig.at(key);
+
+        key = "type";
+        Type type = Token::GetType(jauth.at(key).get<string>());
+
+        if (type == Type::HTTP_BASIC || type == Type::HTTP_BEARER) {
+            key = "token";
+            auto jtoken = jauth.at(key);
+
+            shared_ptr<Token> method(new Token(type, jtoken.get<string>()));
+            return static_pointer_cast<ndNetifyApiAuthMethod::Base>(method);
+        }
+        else {
+            nd_dprintf("%s: unsupported auth method: %s\n", tag.c_str(),
+                jauth.at(key).get<string>().c_str());
+        }
+    }
+    catch (std::out_of_range &e) {
+        nd_dprintf("%s: %s not found or is invalid: %s\n",
+            tag.c_str(), key.c_str(), e.what());
+    }
+    catch (json::exception &e) {
+        nd_dprintf("%s: %s not found or is invalid: %s\n",
+            tag.c_str(), key.c_str(), e.what());
+    }
+
+    return nullptr;
+}
+
+ndNetifyApiData::Ptr ndNetifyApiData::Create(
+  const string &tag, Type type, const json &jconfig)
+{
+    if (type == Type::INVALID) return nullptr;
+
+    ndNetifyApiAuthMethod::Ptr auth_method =
+        ndNetifyApiAuthMethod::Create(tag, jconfig);
+
+    Urls urls;
+    for (auto &i : jconfig.items()) {
+        auto p = i.key().find_first_of("_");
+        if (p == string::npos) continue;
+
+        auto prefix = i.key().substr(0, p);
+        if (prefix != "url") continue;
+
+        urls.emplace(
+          make_pair(
+            i.key().substr(p + 1), i.value().get<string>()
+          )
+        );
+    }
+
+    return Ptr(new Base(type, auth_method, urls));
+}
+
 void *ndNetifyApiBootstrap::Entry(void) {
 
     static map<ndUUID, string> uuids = {
@@ -374,10 +435,11 @@ void *ndNetifyApiBootstrap::Entry(void) {
     return nullptr;
 }
 
-ndNetifyApiDownload::ndNetifyApiDownload(const string &token,
+ndNetifyApiDownload::ndNetifyApiDownload(
+  const ndNetifyApiAuthMethod::Ptr &auth_method,
   const string &url, const string &filename)
-  : ndNetifyApiThread("api-download"), token(token),
-    url(url) {
+  : ndNetifyApiThread("api-download"), auth_method(auth_method), url(url)
+{
     if (! filename.empty()) {
         nd_sha1_file(filename, digest);
         nd_basename(filename, tag);
@@ -390,11 +452,27 @@ ndNetifyApiDownload::~ndNetifyApiDownload() {
 }
 
 void *ndNetifyApiDownload::Entry(void) {
-    string bearer("Bearer ");
-    bearer.append(token);
-
     Headers headers;
-    headers.insert(make_pair("Authorization", bearer));
+
+    if (auth_method) {
+        ndNetifyApiAuthMethod::Type type = auth_method->GetType();
+
+        if (type == ndNetifyApiAuthMethod::Type::HTTP_BASIC ||
+          type == ndNetifyApiAuthMethod::Type::HTTP_BEARER) {
+
+            ndNetifyApiAuthMethod::Token *token =
+              static_cast<ndNetifyApiAuthMethod::Token *>(
+                auth_method.get()
+              );
+
+            string credentials(
+              (type == ndNetifyApiAuthMethod::Type::HTTP_BASIC) ?
+                "Basic " : "Bearer ");
+            credentials.append(token->GetToken());
+
+            headers.insert(make_pair("Authorization", credentials));
+        }
+    }
 
     nd_tmpfile("/tmp/nd-napi", content_filename);
 
@@ -405,8 +483,7 @@ void *ndNetifyApiDownload::Entry(void) {
             auto hdr_sha1 = headers_rx.find("x-sha1-hash");
             if (hdr_sha1 == headers_rx.end()) {
                 nd_dprintf(
-                  "%s: no SHA1 hash found in headers, "
-                  "can't compare.\n",
+                  "%s: no SHA1 hash found in headers, can't compare.\n",
                   tag.c_str());
 
                 Perform(ndNetifyApiThread::Method::GET, url, headers);
@@ -419,18 +496,14 @@ void *ndNetifyApiDownload::Entry(void) {
                     nd_dprintf(
                       "%s: file has not changed.\n", tag.c_str());
                     ndCurl->http_rc = 304;
-                    content =
-                      "{\"status_code\":304, "
-                      "\"status_message\":\"Not "
-                      "modified\"}";
+                    content = "{\"status_code\":304, "
+                      "\"status_message\":\"Not modified\"}";
                 }
                 else {
                     nd_dprintf(
-                      "%s: file has changed, downloading "
-                      "update...\n",
+                      "%s: file has changed, downloading update...\n",
                       tag.c_str());
-                    Perform(ndNetifyApiThread::Method::GET,
-                      url, headers);
+                    Perform(ndNetifyApiThread::Method::GET, url, headers);
                 }
             }
         }
@@ -471,9 +544,8 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
             }
             catch (exception &e) {
                 nd_printf(
-                  "netify-api: Error creating bootstrap "
-                  "request: %s\n",
-                  e.what());
+                  "%s: Error creating bootstrap request: %s\n",
+                  tag.c_str(), e.what());
                 delete bootstrap;
                 requests.erase(request.first);
             }
@@ -483,10 +555,8 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
     size_t downloads = 0;
     static vector<Request> types = {
         Request::DOWNLOAD_APPLICATIONS,
-        Request::DOWNLOAD_APPLICATIONS_DAT,
         Request::DOWNLOAD_CATEGORIES,
         Request::DOWNLOAD_INTELLIGENCE,
-        Request::DOWNLOAD_INTELLIGENCE_DAT,
     };
 
     for (auto &type : types) {
@@ -517,10 +587,8 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
             successful++;
         }
 
-        nd_dprintf(
-          "netify-api: %lu of %lu download(s) "
-          "successful.\n",
-          successful, download_results.size());
+        nd_dprintf("%s: %lu of %lu download(s) successful.\n",
+          tag.c_str(), successful, download_results.size());
 
         download_results.clear();
 
@@ -530,7 +598,7 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
         return result;
     }
 
-    if (! token.empty()) {
+    if (agent_data) {
         time_t now = nd_time_monotonic();
 
         if (downloads == 0 &&
@@ -541,22 +609,26 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
 
             for (auto &url : urls) {
                 string filename;
+                ndNetifyApiAuthMethod::Ptr auth_method;
 
-                if (url.first == Request::DOWNLOAD_APPLICATIONS)
+                if (url.first == Request::DOWNLOAD_APPLICATIONS) {
                     filename = ndGC.path_app_config;
-                else if (url.first == Request::DOWNLOAD_APPLICATIONS_DAT)
-                    filename = nd_change_ext(ndGC.path_app_config, "dat");
-                else if (url.first == Request::DOWNLOAD_CATEGORIES)
+                    auth_method = agent_data->GetAuthMethod();
+                }
+                else if (url.first == Request::DOWNLOAD_CATEGORIES) {
                     filename = ndGC.path_cat_config;
-                else if (url.first == Request::DOWNLOAD_INTELLIGENCE)
+                    auth_method = agent_data->GetAuthMethod();
+                }
+                else if (url.first == Request::DOWNLOAD_INTELLIGENCE) {
                     filename = ndGC.path_intel_config;
-                else if (url.first == Request::DOWNLOAD_INTELLIGENCE_DAT)
-                    filename = nd_change_ext(ndGC.path_intel_config, "dat");
+                    auth_method = intel_data->GetAuthMethod();
+                }
 
                 ndNetifyApiDownload *download = new ndNetifyApiDownload(
-                  token, url.second, filename);
+                  auth_method, url.second, filename);
 
-                auto request = requests.insert(make_pair(url.first, download));
+                auto request = requests.insert(
+                  make_pair(url.first, download));
 
                 if (request.second != true) delete download;
                 else {
@@ -565,8 +637,8 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
                     }
                     catch (exception &e) {
                         nd_printf(
-                          "netify-api: Error creating download request: %s\n",
-                          e.what());
+                          "%s: Error creating download request: %s\n",
+                          tag.c_str(), e.what());
                         delete download;
                         requests.erase(request.first);
                     }
@@ -585,24 +657,22 @@ void ndNetifyApiManager::Terminate(void) {
     requests.clear();
 }
 
-string ndNetifyApiManager::GetRequestUrl(ndNetifyApiManager::Request request) {
+const ndNetifyApiData::Ptr ndNetifyApiManager::GetBootstrapData(
+  ndNetifyApiData::Type type) const
+{
     unique_lock<mutex> ul(lock);
 
-    string url;
-    const auto i = urls.find(request);
-    if (i != urls.end()) url = i->second;
+    const auto data = bootstrap_data.find(type);
+    if (data == bootstrap_data.end())
+        return nullptr;
 
-    return url;
-}
-
-string ndNetifyApiManager::GetToken(void) {
-    unique_lock<mutex> ul(lock);
-    return token;
+    return data->second;
 }
 
 ndNetifyApiManager::UpdateResult
-ndNetifyApiManager::ProcessBootstrapRequest(
-  ndNetifyApiBootstrap *bootstrap) {
+  ndNetifyApiManager::ProcessBootstrapRequest(
+    ndNetifyApiBootstrap *bootstrap)
+{
     jstatus["bootstrap"]["code"] = -1;
     jstatus["bootstrap"]["last_update"] = time(nullptr);
 
@@ -618,15 +688,14 @@ ndNetifyApiManager::ProcessBootstrapRequest(
     if (ndCurlParent(bootstrap)->http_rc == 0) {
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] = "Request failure";
-        nd_printf(
-          "netify-api: Bootstrap request failed.\n");
+        nd_printf("%s: Bootstrap request failed.\n", tag.c_str());
         return UpdateResult::ERROR;
     }
 
     if (bootstrap->content.length() == 0) {
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] = "Empty response";
-        nd_printf("netify-api: Empty bootstrap content.\n");
+        nd_printf("%s: Empty bootstrap content.\n", tag.c_str());
         return UpdateResult::ERROR;
     }
 
@@ -634,9 +703,7 @@ ndNetifyApiManager::ProcessBootstrapRequest(
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] =
           "Invalid content type";
-        nd_printf(
-          "netify-api: Invalid bootstrap content "
-          "type.\n");
+        nd_printf("%s: Invalid bootstrap content type.\n", tag.c_str());
         return UpdateResult::ERROR;
     }
 
@@ -682,123 +749,95 @@ ndNetifyApiManager::ProcessBootstrapRequest(
         jstatus["bootstrap"]["message"] = message;
 
         if (ndCurlParent(bootstrap)->http_rc != 200 || code != 0) {
-            nd_printf(
-              "netify-api: Bootstrap request failed: HTTP "
-              "%ld: %s [%d]\n",
-              ndCurlParent(bootstrap)->http_rc, message.c_str(), code);
+            nd_printf("%s: Bootstrap request failed: HTTP %ld: %s [%d]\n",
+              tag.c_str(), ndCurlParent(bootstrap)->http_rc,
+              message.c_str(), code);
             return UpdateResult::ERROR;
         }
 
         auto jdata = content.find("data");
         if (jdata == content.end()) {
             jstatus["bootstrap"]["code"] = -1;
-            jstatus["bootstrap"]["message"] =
-              "Data not found";
-            nd_dprintf(
-              "netify-api: Malformed bootstrap content: "
-              "%s\n",
-              "data not found");
+            jstatus["bootstrap"]["message"] = "Data not found";
+            nd_dprintf("%s: Malformed bootstrap content: %s\n",
+              tag.c_str(), "data not found");
             return UpdateResult::ERROR;
         }
 
         auto juuid_site = jdata->find("uuid-site");
-        if (juuid_site != jdata->end() &&
-          juuid_site->type() == json::value_t::string)
-        {
+        if (juuid_site != jdata->end() && !juuid_site->is_string()) {
             string new_uuid = juuid_site->get<string>();
             if (ndGC.SaveUUID(ndUUID::SITE, new_uuid)) {
                 jstatus["bootstrap"]["code"] = 0;
-                jstatus["bootstrap"]["message"] =
-                  "Site provisioned";
-                nd_printf(
-                  "netify-api: Site UUID provisioned: %s\n",
-                  new_uuid.c_str());
+                jstatus["bootstrap"]["message"] = "Site provisioned";
+                nd_printf("%s: Site UUID provisioned: %s\n",
+                  tag.c_str(), new_uuid.c_str());
             }
             return UpdateResult::RELOAD_BROADCAST;
         }
 
-        auto jsigs = jdata->find("signatures");
-        if (jsigs == jdata->end()) {
-            jstatus["bootstrap"]["code"] = -1;
-            jstatus["bootstrap"]["message"] =
-              "Signatures not found";
-            nd_dprintf(
-              "netify-api: Malformed bootstrap content: %s\n",
-              "signatures not found");
-            return UpdateResult::ERROR;
-        }
-
-        auto jtoken = jsigs->find("token");
-        if (jtoken == jsigs->end() &&
-          jtoken->type() != json::value_t::string)
-        {
-            jstatus["bootstrap"]["code"] = -1;
-            jstatus["bootstrap"]["message"] =
-              "Authentication token not found";
-            nd_dprintf(
-              "netify-api: Malformed bootstrap content: %s\n",
-              "token not found or invalid type");
-            return UpdateResult::ERROR;
-        }
-
         unique_lock<mutex> ul(lock);
 
-        string new_token = jtoken->get<string>();
+        agent_data = nullptr;
+        intel_data = nullptr;
 
-        if (token.empty() || new_token != token) {
-            token = new_token;
-            nd_dprintf("netify-api: new API token set.\n");
+        bootstrap_data.clear();
+
+        for (auto &jdc : jdata->items()) {
+            ndNetifyApiData::Type type = ndNetifyApiData::Base::GetType(
+              jdc.key()
+            );
+
+            if (type == ndNetifyApiData::Type::INVALID) continue;
+
+            ndNetifyApiData::Ptr data = ndNetifyApiData::Create(
+                jdc.key(), type, jdc.value());
+
+            if (! data) continue;
+
+            bootstrap_data.emplace(make_pair(type, data));
         }
 
-        auto jendpoint = jsigs->find("applications_endpoint");
-        if (jendpoint != jsigs->end() &&
-          jendpoint->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_APPLICATIONS] = jendpoint->get<string>();
+        if (bootstrap_data.empty()) {
+            jstatus["bootstrap"]["code"] = -1;
+            jstatus["bootstrap"]["message"] =
+              "No bootstrap configuration data found";
+            nd_dprintf("%s: Malformed bootstrap content: %s\n",
+              tag.c_str(), "no valid data entries found");
+            return UpdateResult::ERROR;
         }
 
-        jendpoint = jsigs->find("applications_dat_endpoint");
-        if (jendpoint != jsigs->end() &&
-          jendpoint->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_APPLICATIONS_DAT] = jendpoint->get<string>();
+        for (auto &i : bootstrap_data) {
+            if (i.second->GetType() == ndNetifyApiData::Type::AGENT)
+                agent_data = i.second;
+            if (i.second->GetType() != ndNetifyApiData::Type::INTEL)
+                intel_data = i.second;
+
+            if (agent_data && intel_data) break;
         }
 
-        jendpoint = jsigs->find("categories_endpoint");
-        if (jendpoint != jsigs->end() &&
-          jendpoint->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_CATEGORIES] = jendpoint->get<string>();
+        if (agent_data) {
+            auto url = agent_data->GetUrl("apps");
+            if (! url.empty())
+                urls[Request::DOWNLOAD_APPLICATIONS] = url;
+
+            url = agent_data->GetUrl("categories");
+            if (! url.empty())
+                urls[Request::DOWNLOAD_CATEGORIES] = url;
         }
 
-        jendpoint = jsigs->find("intelligence_endpoint");
-        if (jendpoint != jsigs->end() &&
-          jendpoint->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_INTELLIGENCE] = jendpoint->get<string>();
-        }
-
-        jendpoint = jsigs->find("intelligence_dat_endpoint");
-        if (jendpoint != jsigs->end() &&
-          jendpoint->type() == json::value_t::string) {
-            urls[Request::DOWNLOAD_INTELLIGENCE_DAT] = jendpoint->get<string>();
-        }
-
-        jendpoint = jsigs->find("feeds_endpoint");
-        if (jendpoint != jsigs->end() &&
-          jendpoint->type() == json::value_t::string) {
-            urls[Request::FEEDS_FLOWS] = jendpoint->get<string>();
-        }
-
-        jendpoint = jsigs->find("feeds_flows_endpoint");
-        if (jendpoint != jsigs->end() &&
-          jendpoint->type() == json::value_t::string) {
-            urls[Request::FEEDS_FLOWS] = jendpoint->get<string>();
+        if (intel_data) {
+            auto url = intel_data->GetUrl("intel");
+            if (! url.empty())
+                urls[Request::DOWNLOAD_INTELLIGENCE] = url;
         }
     }
     catch (json::exception &e) {
         jstatus["bootstrap"]["code"] = -1;
         jstatus["bootstrap"]["message"] =
           "Exception encountered while assigning signature download URLs";
-        nd_printf(
-          "netify-api: Failed to decode bootstrap content.\n");
-        nd_dprintf("netify-api: JSON exception: %s\n", e.what());
+        nd_printf("%s: Failed to decode bootstrap content.\n", tag.c_str());
+        nd_dprintf("%s: JSON exception: %s\n", tag.c_str(), e.what());
         return UpdateResult::ERROR;
     }
 
@@ -813,20 +852,14 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     case Request::DOWNLOAD_APPLICATIONS:
         status_type = "applications";
         break;
-    case Request::DOWNLOAD_APPLICATIONS_DAT:
-        status_type = "applications (dat)";
-        break;
     case Request::DOWNLOAD_CATEGORIES:
         status_type = "categories";
         break;
     case Request::DOWNLOAD_INTELLIGENCE:
         status_type = "intelligence";
         break;
-    case Request::DOWNLOAD_INTELLIGENCE_DAT:
-        status_type = "intelligence (dat)";
-        break;
     default:
-        nd_dprintf("netify-api: invalid download type: %d", type);
+        nd_dprintf("%s: invalid download type: %d", tag.c_str(), type);
         return false;
     }
 
@@ -844,16 +877,13 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
         jstatus[status_type]["message"] = "Updated";
         break;
     case 304:
-        jstatus[status_type]["message"] =
-          "Up-to-date (not modified)";
+        jstatus[status_type]["message"] = "Up-to-date (not modified)";
         return false;
     case 401:
-        jstatus[status_type]["message"] =
-          "Authorization failure";
+        jstatus[status_type]["message"] = "Authorization failure";
         break;
     case 403:
-        jstatus[status_type]["message"] =
-          "Forbidden request";
+        jstatus[status_type]["message"] = "Forbidden request";
         break;
     default:
         jstatus[status_type]["message"] = "Request failure";
@@ -861,17 +891,14 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     }
 
     if (ndCurlParent(download)->http_rc != 200) {
-        nd_printf(
-          "netify-api: Download request failed: HTTP %ld: "
-          "type: %d\n",
-          ndCurlParent(download)->http_rc, type);
+        nd_printf("%s: Download request failed: HTTP %ld: type: %d\n",
+          tag.c_str(), ndCurlParent(download)->http_rc, type);
 
         if (ndCurlParent(download)->http_rc == 401 ||
             ndCurlParent(download)->http_rc == 403) {
-            nd_dprintf(
-              "netify-api: cleared token on authorization "
-              "failure.\n");
-            token.clear();
+            nd_dprintf("%s: reset update TTL on authorization failure.\n",
+              tag.c_str());
+
             ttl_last_update = 0;
         }
 
@@ -879,30 +906,39 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     }
 
     if (type == Request::DOWNLOAD_APPLICATIONS) {
-        return nd_copy_file(download->content_filename,
-          ndGC.path_app_config,
-          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    }
-    else if (type == Request::DOWNLOAD_APPLICATIONS_DAT) {
-        return nd_copy_file(download->content_filename,
-          nd_change_ext(ndGC.path_app_config, "dat"),
-          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        if (download->content_type == "application/json") {
+            return nd_copy_file(download->content_filename,
+              ndGC.path_app_config,
+              S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        }
+        else if (download->content_type == "application/octet-stream") {
+            return nd_copy_file(download->content_filename,
+              nd_change_ext(ndGC.path_app_config, "dat"),
+              S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        }
     }
     else if (type == Request::DOWNLOAD_CATEGORIES) {
-        return nd_copy_file(download->content_filename,
-          ndGC.path_cat_config,
-          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        if (download->content_type == "application/json") {
+            return nd_copy_file(download->content_filename,
+              ndGC.path_cat_config,
+              S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        }
     }
     else if (type == Request::DOWNLOAD_INTELLIGENCE) {
-        return nd_copy_file(download->content_filename,
-          ndGC.path_intel_config,
-          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        if (download->content_type == "application/json") {
+            return nd_copy_file(download->content_filename,
+              ndGC.path_intel_config,
+              S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        }
+        else if (download->content_type == "application/octet-stream") {
+            return nd_copy_file(download->content_filename,
+              nd_change_ext(ndGC.path_intel_config, "dat"),
+              S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        }
     }
-    else if (type == Request::DOWNLOAD_INTELLIGENCE_DAT) {
-        return nd_copy_file(download->content_filename,
-          nd_change_ext(ndGC.path_intel_config, "dat"),
-          S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    }
+
+    jstatus[status_type]["message"] =
+      "Invalid content-type:" + download->content_type;
 
     return false;
 }
