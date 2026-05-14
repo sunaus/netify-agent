@@ -24,6 +24,7 @@
 
 #include <ctime>
 #include <map>
+#include <memory>
 #include <mutex>
 
 #include <nlohmann/json.hpp>
@@ -75,6 +76,159 @@ protected:
     void *curl_private = { nullptr };
 };
 
+namespace ndNetifyApiAuthMethod {
+
+enum class Type : uint8_t {
+    INVALID,
+    HTTP_BASIC,
+    HTTP_BEARER,
+};
+
+namespace TypeName {
+
+constexpr const char *INVALID = { "invalid" };
+constexpr const char *HTTP_BASIC = { "basic" };
+constexpr const char *HTTP_BEARER = { "bearer" };
+
+}
+
+const std::unordered_map<std::string, Type> MapTagType = {
+    { TypeName::HTTP_BASIC, Type::HTTP_BASIC },
+    { TypeName::HTTP_BEARER, Type::HTTP_BEARER },
+};
+
+const std::unordered_map<Type, std::string, ndEnumHasher> MapTypeTag = {
+    { Type::INVALID, TypeName::INVALID },
+    { Type::HTTP_BASIC, TypeName::HTTP_BASIC },
+    { Type::HTTP_BEARER, TypeName::HTTP_BEARER },
+};
+
+class Base;
+using Ptr = std::shared_ptr<ndNetifyApiAuthMethod::Base>;
+
+Ptr Create(const std::string &tag, const nlohmann::json &jconfig);
+
+class Base {
+public:
+    Base(Type type) : type(type) { }
+    virtual ~Base() = default;
+
+    inline Type GetType(void) const { return type; }
+    inline const std::string GetTypeTag(void) const {
+        return MapTypeTag.at(type);
+    }
+
+    static Type GetType(const std::string &tag) {
+        auto i = MapTagType.find(tag);
+        if (i == MapTagType.end()) return Type::INVALID;
+        return i->second;
+    }
+
+    static const std::string GetTypeTag(Type type) {
+        std::string tag;
+        auto i = MapTypeTag.find(type);
+        if (i != MapTypeTag.end()) tag = i->second;
+        return tag;
+    }
+
+protected:
+    const Type type;
+};
+
+class Token : public Base {
+public:
+    Token(Type type, const std::string &token)
+      : Base(type), token(token) { }
+    virtual ~Token() = default;
+
+    std::string GetToken(void) { return token; }
+
+protected:
+    std::string token;
+};
+
+} // ndNetifyApiAuthMethod
+
+namespace ndNetifyApiData {
+
+enum class Type : uint8_t {
+    INVALID,
+    AGENT,
+    INTEL,
+    DEV_DISCOVERY,
+};
+
+namespace TypeName {
+
+constexpr const char *INVALID = { "invalid" };
+constexpr const char *AGENT = { "agent" };
+constexpr const char *INTEL = { "intel" };
+constexpr const char *DEV_DISCOVERY = { "dev-discovery" };
+
+}
+
+const std::unordered_map<std::string, Type> MapTagType = {
+    { TypeName::AGENT, Type::AGENT },
+    { TypeName::INTEL, Type::INTEL },
+    { TypeName::DEV_DISCOVERY, Type::DEV_DISCOVERY },
+};
+
+const std::unordered_map<Type, std::string, ndEnumHasher> MapTypeTag = {
+    { Type::INVALID, TypeName::INVALID },
+    { Type::AGENT, TypeName::AGENT },
+    { Type::INTEL, TypeName::INTEL },
+    { Type::DEV_DISCOVERY, TypeName::DEV_DISCOVERY },
+};
+
+class Base;
+
+using Ptr = std::shared_ptr<ndNetifyApiData::Base>;
+using Urls = std::unordered_map<std::string, std::string>;
+
+Ptr Create(
+  const std::string &tag, Type type, const nlohmann::json &jconfig);
+
+class Base {
+public:
+    Base(
+      Type type, ndNetifyApiAuthMethod::Ptr &auth_method, const Urls &urls)
+      : type(type), auth_method(auth_method), urls(urls) { }
+    virtual ~Base() = default;
+
+    inline Type GetType(void) const { return type; }
+    inline const std::string GetTypeTag(void) const {
+        return MapTypeTag.at(type);
+    }
+
+    static Type GetType(const std::string &tag) {
+        auto i = MapTagType.find(tag);
+        if (i == MapTagType.end()) return Type::INVALID;
+        return i->second;
+    }
+
+    static const std::string GetTypeTag(Type type) {
+        std::string tag;
+        auto i = MapTypeTag.find(type);
+        if (i != MapTypeTag.end()) tag = i->second;
+        return tag;
+    }
+
+    ndNetifyApiAuthMethod::Ptr GetAuthMethod(void) { return auth_method; }
+    std::string GetUrl(const std::string &tag) {
+        std::string url;
+        auto i = urls.find(tag);
+        if (i != urls.end()) url = i->second;
+        return url;
+    }
+
+protected:
+    const Type type;
+    ndNetifyApiAuthMethod::Ptr auth_method;
+    Urls urls;
+};
+
+} // ndNetifyApiData
+
 class ndNetifyApiBootstrap : public ndNetifyApiThread
 {
 public:
@@ -89,9 +243,8 @@ protected:
 class ndNetifyApiDownload : public ndNetifyApiThread
 {
 public:
-    ndNetifyApiDownload(const std::string &token,
-      const std::string &url,
-      const std::string &filename = "");
+    ndNetifyApiDownload(const ndNetifyApiAuthMethod::Ptr &auth_method,
+      const std::string &url, const std::string &filename = "");
 
     virtual ~ndNetifyApiDownload();
 
@@ -100,7 +253,7 @@ public:
 protected:
     friend class ndNetifyApiManager;
 
-    std::string token;
+    ndNetifyApiAuthMethod::Ptr auth_method;
     std::string url;
     ndDigestSHA1 digest;
 };
@@ -130,17 +283,20 @@ public:
         NONE,
         BOOTSTRAP,
         DOWNLOAD_APPLICATIONS,
-        DOWNLOAD_APPLICATIONS_DAT,
         DOWNLOAD_CATEGORIES,
         DOWNLOAD_INTELLIGENCE,
-        DOWNLOAD_INTELLIGENCE_DAT,
-        FEEDS_FLOWS,
+        DOWNLOAD_OVERLAY,
     };
 
-    std::string GetRequestUrl(Request request);
-    std::string GetToken(void);
+    const ndNetifyApiData::Ptr
+      GetBootstrapData(ndNetifyApiData::Type type) const;
 
 protected:
+    const std::string tag = { "netify-api" };
+    mutable std::mutex lock;
+
+    nlohmann::json jstatus;
+
     struct RequestHash {
         template <typename T>
         size_t operator()(T t) const {
@@ -148,28 +304,29 @@ protected:
         }
     };
 
-    typedef std::unordered_map<
-        Request, ndNetifyApiThread *, RequestHash> Requests;
+    using Requests = std::unordered_map<
+      Request, ndNetifyApiThread *, RequestHash>;
+    using Urls = std::unordered_map<Request, std::string, RequestHash>;
 
     Requests requests;
 
-    typedef std::unordered_map<Request, std::string, RequestHash> Urls;
-
-    std::mutex lock;
-
     Urls urls;
+    ndNetifyApiData::Ptr agent_data;
+    ndNetifyApiData::Ptr intel_data;
 
-    std::string token;
     time_t ttl_last_update;
 
     typedef std::unordered_map<Request, bool, RequestHash> Results;
 
     Results download_results;
 
-    UpdateResult
-    ProcessBootstrapRequest(ndNetifyApiBootstrap *bootstrap);
-    bool ProcessDownloadRequest(ndNetifyApiDownload *download,
-      Request type);
+    using BootstrapData = std::unordered_map<
+      ndNetifyApiData::Type, ndNetifyApiData::Ptr>;
+    BootstrapData bootstrap_data;
 
-    nlohmann::json jstatus;
+    UpdateResult ProcessBootstrapRequest(
+      ndNetifyApiBootstrap *bootstrap);
+
+    bool ProcessDownloadRequest(
+      ndNetifyApiDownload *download, Request type);
 };
