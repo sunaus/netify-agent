@@ -2,9 +2,25 @@
 .SH NAME
 @PACKAGE_TARNAME@ \- @PACKAGE_NAME@ v@PACKAGE_VERSION@
 .SH DESCRIPTION
-The @PACKAGE_NAME@ is a deep-packet inspection server.  The Agent is built on top of nDPI (\fIhttp://www.ntop.org/products/deep-packet-inspection/ndpi/\fR) (formerly OpenDPI) to detect network protocols and applications.  These detections can be saved locally, served over a UNIX or TCP socket, and/or "pushed" (via HTTP POSTs) to a remote third-party server.  Flow metadata, network statistics, and detection classifications are stored using JSON encoding.
+The @PACKAGE_NAME@ is a high-performance, multi-threaded passive network traffic analyzer that leverages deep-packet inspection (DPI) to identify network protocols and applications. It is designed to provide comprehensive network visibility by capturing traffic from multiple internal (LAN) and external (WAN) interfaces simultaneously.
 
-Optionally, the @PACKAGE_NAME@ can be coupled with a Netify Cloud (\fIhttps://www.netify.ai/\fR) subscription for further cloud processing, historical storage, machine-learning analysis, event notifications, device detection/identification, along with the option (on supported platforms) to take an active role in policing/bandwidth-shaping specific network protocols and applications.
+Key features and capabilities include:
+.IP \(bu 2
+\fBProtocol & Application Detection\fR: Utilizing the nDPI engine, the Agent accurately classifies thousands of protocols and applications in real-time, including support for encrypted traffic analysis.
+.IP \(bu 2
+\fBMetadata Extraction\fR: Beyond simple classification, the Agent extracts rich flow metadata, including network statistics, connection durations, protocol-specific details, and flow risk analysis.
+.IP \(bu 2
+\fBDevice Identification\fR: Analyzes traffic patterns to identify and categorize devices on the network, distinguishing between IoT devices, workstations, mobile devices, and more.
+.IP \(bu 2
+\fBFlexible Data Export\fR: Classification and flow data are JSON-encoded and can be exported to local files, served over UNIX or TCP sockets, or pushed to remote endpoints via HTTP/S POST requests.
+.IP \(bu 2
+\fBPlugin Architecture\fR: Supports a modular plugin system that allows for extending functionality, such as custom data sinks, integration with local databases, or specialized analysis modules.
+.IP \(bu 2
+\fBInformatics Integration\fR: Optionally integrates with the Netify Informatics cloud platform for advanced machine-learning analysis, historical reporting, event notifications, and long-term storage.
+.IP \(bu 2
+\fBActive Control Support\fR: On supported platforms, the Agent can be configured to take an active role in network policing, bandwidth shaping, and policy enforcement based on real-time DPI results.
+
+The Agent is built with C++17 and optimized for efficiency, making it suitable for deployment on a wide range of hardware, from embedded gateways and IoT devices to high-performance servers.
 .SH SYNOPSIS
 .B @PACKAGE_TARNAME@
 \fB\-p\fR, \fB\-\-provision\fR
