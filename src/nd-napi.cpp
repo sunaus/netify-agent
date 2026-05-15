@@ -814,6 +814,11 @@ ndNetifyApiManager::UpdateResult
 
             if (! data) continue;
 
+            if (type == ndNetifyApiData::Type::AGENT)
+                agent_data = data;
+            if (type == ndNetifyApiData::Type::INTEL)
+                intel_data = data;
+
             bootstrap_data.emplace(make_pair(type, data));
         }
 
@@ -824,15 +829,6 @@ ndNetifyApiManager::UpdateResult
             nd_dprintf("%s: Malformed bootstrap content: %s\n",
               tag.c_str(), "no valid data entries found");
             return UpdateResult::ERROR;
-        }
-
-        for (auto &i : bootstrap_data) {
-            if (i.second->GetType() == ndNetifyApiData::Type::AGENT)
-                agent_data = i.second;
-            if (i.second->GetType() != ndNetifyApiData::Type::INTEL)
-                intel_data = i.second;
-
-            if (agent_data && intel_data) break;
         }
 
         if (agent_data) {
@@ -932,12 +928,16 @@ bool ndNetifyApiManager::ProcessDownloadRequest(
     }
 
     if (type == Request::DOWNLOAD_APPLICATIONS) {
-        if (download->content_type == "application/json") {
+        string content_type = download->content_type;
+        auto p = content_type.find_first_of(";");
+        if (p != string::npos) content_type.erase(p);
+
+        if (content_type == "text/plain") {
             return nd_copy_file(download->content_filename,
               ndGC.path_app_config,
               S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         }
-        else if (download->content_type == "application/octet-stream") {
+        else if (content_type == "application/octet-stream") {
             return nd_copy_file(download->content_filename,
               nd_change_ext(ndGC.path_app_config, "dat"),
               S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
