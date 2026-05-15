@@ -206,6 +206,19 @@ Display version information and features.
 .TP
 .BR \-h ", " \-\-help
 Display help information.
+.SH SIGNALS
+.TP
+.BR SIGHUP
+Reload the run-time configuration and capture threads.
+.TP
+.BR SIGINT ", " SIGTERM ", " SIGPWR
+Initiate a clean shutdown of the Agent.  Send twice to shutdown immediately.
+.TP
+.BR SIGUSR1
+Save the DNS hint and flow hash caches to disk.  If Netify API updates are enabled, force an update.
+.TP
+.BR SIGUSR2
+Toggle debug logging between the configured debug log file and stderr.
 .SH ONLINE DOCUMENTATION
 For additional documentation, please visit: https://www.netify.ai/documentation
 .SH BUGS

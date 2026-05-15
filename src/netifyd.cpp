@@ -76,7 +76,6 @@ static void nd_instance(int argc, char *argv[], sigset_t &sigset) {
 
             if (si.si_signo == ND_SIG_RESTART) {
                 restart = true;
-                //instance.Terminate();
                 instance.SendSignal(SIGTERM);
                 continue;
             }

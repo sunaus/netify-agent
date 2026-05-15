@@ -291,6 +291,11 @@ public:
     const ndNetifyApiData::Ptr
       GetBootstrapData(ndNetifyApiData::Type type) const;
 
+    inline void ForceUpdate(void) {
+        ttl_last_update = 0;
+        nd_dprintf("%s: forcing an update...\n", tag.c_str());
+    }
+
 protected:
     const std::string tag = { "netify-api" };
     mutable std::mutex lock;

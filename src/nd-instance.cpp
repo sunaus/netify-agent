@@ -2207,6 +2207,8 @@ bool ndInstance::SendSignal(int signo) {
             dns_hint_cache->Save();
         if (flow_hash_cache != nullptr)
             flow_hash_cache->Save();
+        if (ndGC_USE_NAPI || ndGC_AUTO_INFORMATICS)
+            api_manager.ForceUpdate();
         break;
     case SIGUSR2:
         if (! ndGC.path_debug_log.empty()) {
