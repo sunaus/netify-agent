@@ -445,6 +445,20 @@ void ndFlow::Print(ndFlags<PrintFlags> pflags,
               << ((! detected_application_name.empty()) ?
                      detected_application_name :
                      "");
+
+            if (!tags.empty()) {
+                dls << endl
+                    << setw(plen) << " "
+                    << ": OVERLAY: " << *tags.begin();
+                auto it = tags.begin();
+                it++;
+                for (; it != tags.end(); ++it) {
+                    dls << endl
+                        << setw(plen) << " "
+                        << "           " << *it;
+                }
+            }
+
 #ifdef _ND_ENABLE_CONNTRACK
             dls << endl
                 << setw(plen) << " " << ":"
