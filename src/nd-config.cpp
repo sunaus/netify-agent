@@ -475,6 +475,12 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     napi_vendor = r->Get("netify-api", "vendor", ND_API_VENDOR);
     napi_tls_verify = r->GetBoolean("netify-api", "tls_verify",
       (! profile) ? true : napi_tls_verify);
+    napi_mtls_enable = r->GetBoolean("netify-api", "mtls_enable",
+      (! profile) ? false : napi_mtls_enable);
+    napi_cert_file = r->Get("netify-api", "cert_file",
+      (! profile) ? "" : napi_cert_file);
+    napi_key_file = r->Get("netify-api", "key_file",
+      (! profile) ? "" : napi_key_file);
 
     // Protocols section
     Protocols p;

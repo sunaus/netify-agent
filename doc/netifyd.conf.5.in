@@ -230,6 +230,18 @@ Vendor name to use for API identification.
 .PP
 Verify TLS certificates for API connections.
 .PP
+\fBmtls_enable\fR=\fIBOOLEAN\fR
+.PP
+Enable or disable mTLS (mutual TLS) authentication for API connections.
+.PP
+\fBcert_file\fR=\fIPATH\fR
+.PP
+Path to the client certificate file for mTLS authentication.
+.PP
+\fBkey_file\fR=\fIPATH\fR
+.PP
+Path to the client private key file for mTLS authentication.
+.PP
 .SS Protocols
 Protocol dissector options are defined within the [\fBprotocols\fR] section.
 .PP
@@ -288,6 +300,9 @@ cache_size = 1000
 
 [netify-api]
 enable = no
+# mtls_enable = no
+# cert_file = /etc/netifyd/client-cert.pem
+# key_file = /etc/netifyd/client-key.pem
 
 [protocols]
 all = include
