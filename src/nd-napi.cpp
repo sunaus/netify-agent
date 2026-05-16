@@ -141,8 +141,19 @@ ndNetifyApiCurl::ndNetifyApiCurl() {
     curl_easy_setopt(ch, CURLOPT_CONNECTTIMEOUT, 20);
     curl_easy_setopt(ch, CURLOPT_TIMEOUT, 60);
     curl_easy_setopt(ch, CURLOPT_NOSIGNAL, 1);
-    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
-    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, (ndGC.napi_tls_verify) ? 2 : 0);
+
+    if (ndGC.napi_mtls_enable) {
+        curl_easy_setopt(ch, CURLOPT_SSLCERT, ndGC.napi_cert_file.c_str());
+        curl_easy_setopt(ch, CURLOPT_SSLKEY, ndGC.napi_key_file.c_str());
+        // Force strict verification when mTLS is enabled
+        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, 1L);
+        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, 2L);
+    } else {
+        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
+        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, (ndGC.napi_tls_verify) ? 2 : 0);
+    }
+
+
     // curl_easy_setopt(ch, CURLOPT_SSLVERSION,
     // CURL_SSLVERSION_TLSv1);
 
