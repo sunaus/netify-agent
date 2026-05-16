@@ -34,6 +34,77 @@
 using namespace std;
 using json = nlohmann::json;
 
+ndNetifyApiAuthMethod::Ptr ndNetifyApiAuthMethod::Create(
+  const string &tag, const json &jconfig)
+{
+    string key = "auth";
+
+    try {
+        auto jauth = jconfig.at(key);
+
+        key = "type";
+        Type type = Token::GetType(jauth.at(key).get<string>());
+
+        if (type == Type::HTTP_BASIC || type == Type::HTTP_BEARER) {
+            key = "token";
+            auto jtoken = jauth.at(key);
+
+            shared_ptr<Token> method(new Token(type, jtoken.get<string>()));
+            return static_pointer_cast<ndNetifyApiAuthMethod::Base>(method);
+        }
+        if (type == Type::MTLS) {
+            key = "cert_filename";
+            auto jcert_filename = jauth.at(key);
+            key = "key_filename";
+            auto jkey_filename = jauth.at(key);
+
+            shared_ptr<mTLS> method(new mTLS(
+              jcert_filename.get<string>(), jkey_filename.get<string>()));
+            return static_pointer_cast<ndNetifyApiAuthMethod::Base>(method);
+        }
+        else {
+            nd_dprintf("%s: unsupported auth method: %s\n", tag.c_str(),
+                jauth.at(key).get<string>().c_str());
+        }
+    }
+    catch (std::out_of_range &e) {
+        nd_dprintf("%s: %s not found or is invalid: %s\n",
+            tag.c_str(), key.c_str(), e.what());
+    }
+    catch (json::exception &e) {
+        nd_dprintf("%s: %s not found or is invalid: %s\n",
+            tag.c_str(), key.c_str(), e.what());
+    }
+
+    return nullptr;
+}
+
+ndNetifyApiData::Ptr ndNetifyApiData::Create(
+  const string &tag, Type type, const json &jconfig)
+{
+    if (type == Type::INVALID) return nullptr;
+
+    ndNetifyApiAuthMethod::Ptr auth_method =
+        ndNetifyApiAuthMethod::Create(tag, jconfig);
+
+    Urls urls;
+    for (auto &i : jconfig.items()) {
+        auto p = i.key().find_first_of("_");
+        if (p == string::npos) continue;
+
+        auto prefix = i.key().substr(0, p);
+        if (prefix != "url") continue;
+
+        urls.emplace(
+          make_pair(
+            i.key().substr(p + 1), i.value().get<string>()
+          )
+        );
+    }
+
+    return Ptr(new Base(type, auth_method, urls));
+}
+
 static int ndNetifyApiThread_curl_debug(CURL *ch
   __attribute__((unused)),
   curl_infotype type, char *data, size_t size, void *param) {
@@ -142,18 +213,8 @@ ndNetifyApiCurl::ndNetifyApiCurl() {
     curl_easy_setopt(ch, CURLOPT_TIMEOUT, 60);
     curl_easy_setopt(ch, CURLOPT_NOSIGNAL, 1);
 
-    if (ndGC.napi_mtls_enable) {
-        curl_easy_setopt(ch, CURLOPT_SSLCERT, ndGC.napi_cert_file.c_str());
-        curl_easy_setopt(ch, CURLOPT_SSLKEY, ndGC.napi_key_file.c_str());
-        // Force strict verification when mTLS is enabled
-        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, 1L);
-        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, 2L);
-    } else {
-        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
-        curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, (ndGC.napi_tls_verify) ? 2 : 0);
-    }
-
-
+    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYPEER, ndGC.napi_tls_verify);
+    curl_easy_setopt(ch, CURLOPT_SSL_VERIFYHOST, (ndGC.napi_tls_verify) ? 2 : 0);
     // curl_easy_setopt(ch, CURLOPT_SSLVERSION,
     // CURL_SSLVERSION_TLSv1);
 
@@ -171,8 +232,9 @@ ndNetifyApiCurl::~ndNetifyApiCurl() {
     }
 }
 
-ndNetifyApiThread::ndNetifyApiThread(const string &tag)
-  : ndThread(tag) {
+ndNetifyApiThread::ndNetifyApiThread(
+  const string &tag, const ndNetifyApiAuthMethod::Ptr &auth_method)
+  : ndThread(tag), auth_method(auth_method) {
     curl_private = static_cast<void *>(new ndNetifyApiCurl);
 
     curl_easy_setopt(ndCurl->ch, CURLOPT_WRITEFUNCTION,
@@ -203,6 +265,40 @@ ndNetifyApiThread::ndNetifyApiThread(const string &tag)
           ndNetifyApiThread_curl_debug);
         curl_easy_setopt(ndCurl->ch, CURLOPT_DEBUGDATA,
           static_cast<void *>(this));
+    }
+
+    if (auth_method) {
+        ndNetifyApiAuthMethod::Type type = auth_method->GetType();
+
+        if (type == ndNetifyApiAuthMethod::Type::HTTP_BASIC ||
+          type == ndNetifyApiAuthMethod::Type::HTTP_BEARER) {
+
+            ndNetifyApiAuthMethod::Token *token =
+              static_cast<ndNetifyApiAuthMethod::Token *>(
+                auth_method.get()
+              );
+
+            string credentials(
+              (type == ndNetifyApiAuthMethod::Type::HTTP_BASIC) ?
+                "Basic " : "Bearer ");
+            credentials.append(token->GetToken());
+
+            headers_tx.insert(make_pair("Authorization", credentials));
+        }
+        else if (type == ndNetifyApiAuthMethod::Type::MTLS) {
+            ndNetifyApiAuthMethod::mTLS *mtls =
+              static_cast<ndNetifyApiAuthMethod::mTLS *>(
+                auth_method.get()
+              );
+            curl_easy_setopt(ndCurl->ch, CURLOPT_SSLCERT,
+              mtls->GetCertificateFilename().c_str());
+            curl_easy_setopt(ndCurl->ch, CURLOPT_SSLKEY,
+              mtls->GetKeyFilename().c_str());
+
+            // Force strict verification when mTLS is enabled
+            curl_easy_setopt(ndCurl->ch, CURLOPT_SSL_VERIFYPEER, 1L);
+            curl_easy_setopt(ndCurl->ch, CURLOPT_SSL_VERIFYHOST, 2L);
+        }
     }
 }
 
@@ -289,8 +385,9 @@ void ndNetifyApiThread::DestroyHeaders(void) {
     }
 }
 
-void ndNetifyApiThread::Perform(Method method, const string &url,
-  const Headers &headers, const string &payload) {
+void ndNetifyApiThread::Perform(
+ Method method, const string &url, const string &payload)
+{
     ndCurl->curl_rc = CURLE_OK;
     curl_easy_setopt(ndCurl->ch, CURLOPT_URL, url.c_str());
 
@@ -298,7 +395,7 @@ void ndNetifyApiThread::Perform(Method method, const string &url,
     content.clear();
     headers_rx.clear();
 
-    CreateHeaders(headers);
+    CreateHeaders(headers_tx);
 
     curl_easy_setopt(ndCurl->ch, CURLOPT_NOBODY, 0);
 
@@ -346,67 +443,6 @@ void ndNetifyApiThread::Perform(Method method, const string &url,
     }
 }
 
-ndNetifyApiAuthMethod::Ptr ndNetifyApiAuthMethod::Create(
-  const string &tag, const json &jconfig)
-{
-    string key = "auth";
-
-    try {
-        auto jauth = jconfig.at(key);
-
-        key = "type";
-        Type type = Token::GetType(jauth.at(key).get<string>());
-
-        if (type == Type::HTTP_BASIC || type == Type::HTTP_BEARER) {
-            key = "token";
-            auto jtoken = jauth.at(key);
-
-            shared_ptr<Token> method(new Token(type, jtoken.get<string>()));
-            return static_pointer_cast<ndNetifyApiAuthMethod::Base>(method);
-        }
-        else {
-            nd_dprintf("%s: unsupported auth method: %s\n", tag.c_str(),
-                jauth.at(key).get<string>().c_str());
-        }
-    }
-    catch (std::out_of_range &e) {
-        nd_dprintf("%s: %s not found or is invalid: %s\n",
-            tag.c_str(), key.c_str(), e.what());
-    }
-    catch (json::exception &e) {
-        nd_dprintf("%s: %s not found or is invalid: %s\n",
-            tag.c_str(), key.c_str(), e.what());
-    }
-
-    return nullptr;
-}
-
-ndNetifyApiData::Ptr ndNetifyApiData::Create(
-  const string &tag, Type type, const json &jconfig)
-{
-    if (type == Type::INVALID) return nullptr;
-
-    ndNetifyApiAuthMethod::Ptr auth_method =
-        ndNetifyApiAuthMethod::Create(tag, jconfig);
-
-    Urls urls;
-    for (auto &i : jconfig.items()) {
-        auto p = i.key().find_first_of("_");
-        if (p == string::npos) continue;
-
-        auto prefix = i.key().substr(0, p);
-        if (prefix != "url") continue;
-
-        urls.emplace(
-          make_pair(
-            i.key().substr(p + 1), i.value().get<string>()
-          )
-        );
-    }
-
-    return Ptr(new Base(type, auth_method, urls));
-}
-
 void *ndNetifyApiBootstrap::Entry(void) {
 
     static map<ndUUID, string> uuids = {
@@ -415,8 +451,6 @@ void *ndNetifyApiBootstrap::Entry(void) {
         { ndUUID::SITE, "X-UUID-Site" }
     };
 
-    Headers headers;
-
     for (auto &uuid : uuids) {
         string value("-");
 
@@ -424,7 +458,7 @@ void *ndNetifyApiBootstrap::Entry(void) {
             nd_dprintf("%s: no UUID set for: %s\n",
               tag.c_str(), uuid.second.c_str());
         }
-        headers.insert(make_pair(uuid.second, value));
+        headers_tx.insert(make_pair(uuid.second, value));
     }
 
     string url = ndGC.url_napi_bootstrap;
@@ -441,7 +475,7 @@ void *ndNetifyApiBootstrap::Entry(void) {
             jpayload["license"] = jlicense;
             nd_json_to_string(jpayload, payload);
 
-            headers.insert(make_pair("Content-type", "application/json"));
+            headers_tx.insert(make_pair("Content-type", "application/json"));
         }
     }
     catch (exception &e) {
@@ -450,7 +484,7 @@ void *ndNetifyApiBootstrap::Entry(void) {
     }
 
     try {
-        Perform(ndNetifyApiThread::Method::POST, url, headers, payload);
+        Perform(ndNetifyApiThread::Method::POST, url, payload);
     }
     catch (CURLcode &rc) {
         nd_dprintf("%s: bootstrap request error: %s\n",
@@ -463,7 +497,7 @@ void *ndNetifyApiBootstrap::Entry(void) {
 ndNetifyApiDownload::ndNetifyApiDownload(
   const ndNetifyApiAuthMethod::Ptr &auth_method,
   const string &url, const string &filename)
-  : ndNetifyApiThread("api-download"), auth_method(auth_method), url(url)
+  : ndNetifyApiThread("api-download", auth_method), url(url)
 {
     if (! filename.empty()) {
         nd_sha1_file(filename, digest);
@@ -477,32 +511,10 @@ ndNetifyApiDownload::~ndNetifyApiDownload() {
 }
 
 void *ndNetifyApiDownload::Entry(void) {
-    Headers headers;
-
-    if (auth_method) {
-        ndNetifyApiAuthMethod::Type type = auth_method->GetType();
-
-        if (type == ndNetifyApiAuthMethod::Type::HTTP_BASIC ||
-          type == ndNetifyApiAuthMethod::Type::HTTP_BEARER) {
-
-            ndNetifyApiAuthMethod::Token *token =
-              static_cast<ndNetifyApiAuthMethod::Token *>(
-                auth_method.get()
-              );
-
-            string credentials(
-              (type == ndNetifyApiAuthMethod::Type::HTTP_BASIC) ?
-                "Basic " : "Bearer ");
-            credentials.append(token->GetToken());
-
-            headers.insert(make_pair("Authorization", credentials));
-        }
-    }
-
     nd_tmpfile("/tmp/nd-napi", content_filename);
 
     try {
-        Perform(ndNetifyApiThread::Method::HEAD, url, headers);
+        Perform(ndNetifyApiThread::Method::HEAD, url);
 
         if (ndCurl->http_rc == 200) {
             auto hdr_sha1 = headers_rx.find("x-sha1-hash");
@@ -511,7 +523,7 @@ void *ndNetifyApiDownload::Entry(void) {
                   "%s: no SHA1 hash found in headers, can't compare.\n",
                   tag.c_str());
 
-                Perform(ndNetifyApiThread::Method::GET, url, headers);
+                Perform(ndNetifyApiThread::Method::GET, url);
             }
             else {
                 string old_hash;
@@ -528,7 +540,7 @@ void *ndNetifyApiDownload::Entry(void) {
                     nd_dprintf(
                       "%s: file has changed, downloading update...\n",
                       tag.c_str());
-                    Perform(ndNetifyApiThread::Method::GET, url, headers);
+                    Perform(ndNetifyApiThread::Method::GET, url);
                 }
             }
         }
@@ -557,7 +569,21 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
         }
     }
     else {
-        ndNetifyApiBootstrap *bootstrap = new ndNetifyApiBootstrap();
+        ndNetifyApiAuthMethod::Ptr auth_method = nullptr;
+
+        if (ndGC.napi_mtls_enable) {
+            shared_ptr<ndNetifyApiAuthMethod::mTLS> mtls(
+              new ndNetifyApiAuthMethod::mTLS(
+                ndGC.napi_cert_file, ndGC.napi_key_file.c_str()
+              )
+            );
+
+            auth_method =
+              static_pointer_cast<ndNetifyApiAuthMethod::Base>(mtls);
+        }
+
+        ndNetifyApiBootstrap *bootstrap =
+          new ndNetifyApiBootstrap(auth_method);
 
         auto request = requests.insert(
           make_pair(Request::BOOTSTRAP, bootstrap));
