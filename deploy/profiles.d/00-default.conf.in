@@ -144,6 +144,9 @@ enable = no
 update_tick = 30
 update_interval = 86400
 tls_verify = yes
+#mtls_enable = no
+#cert_file = /path/to/cert
+#key_file = /path/to/key
 
 # Protocol Dissector Options
 ############################################################################

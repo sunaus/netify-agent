@@ -33,55 +33,13 @@
 #include "nd-thread.hpp"
 #include "nd-util.hpp"
 
-class ndNetifyApiManager;
-
-class ndNetifyApiThread : public ndThread
-{
-public:
-    ndNetifyApiThread(const std::string &tag);
-    virtual ~ndNetifyApiThread();
-
-    virtual void *Entry(void) = 0;
-
-    void AppendContent(const char *data, size_t length);
-
-    void ParseHeader(const std::string &header_raw);
-
-    enum class Method : uint8_t {
-        GET,
-        HEAD,
-        POST,
-    };
-
-    typedef std::map<std::string, std::string> Headers;
-
-protected:
-    friend class ndNetifyApiManager;
-
-    void CreateHeaders(const Headers &headers);
-    void DestroyHeaders(void);
-
-    void Perform(Method method, const std::string &url,
-      const Headers &headers,
-      const std::string &payload = "");
-
-    Headers headers_rx;
-
-    std::string payload;
-
-    std::string content;
-    std::string content_type;
-    std::string content_filename;
-
-    void *curl_private = { nullptr };
-};
-
 namespace ndNetifyApiAuthMethod {
 
 enum class Type : uint8_t {
     INVALID,
     HTTP_BASIC,
     HTTP_BEARER,
+    MTLS,
 };
 
 namespace TypeName {
@@ -89,18 +47,21 @@ namespace TypeName {
 constexpr const char *INVALID = { "invalid" };
 constexpr const char *HTTP_BASIC = { "basic" };
 constexpr const char *HTTP_BEARER = { "bearer" };
+constexpr const char *MTLS = { "mtls" };
 
 }
 
 const std::unordered_map<std::string, Type> MapTagType = {
     { TypeName::HTTP_BASIC, Type::HTTP_BASIC },
     { TypeName::HTTP_BEARER, Type::HTTP_BEARER },
+    { TypeName::MTLS, Type::MTLS },
 };
 
 const std::unordered_map<Type, std::string, ndEnumHasher> MapTypeTag = {
     { Type::INVALID, TypeName::INVALID },
     { Type::HTTP_BASIC, TypeName::HTTP_BASIC },
     { Type::HTTP_BEARER, TypeName::HTTP_BEARER },
+    { Type::MTLS, TypeName::MTLS },
 };
 
 class Base;
@@ -145,6 +106,21 @@ public:
 
 protected:
     std::string token;
+};
+
+class mTLS : public Base {
+public:
+    mTLS(const std::string &cert_filename, const std::string &key_filename)
+      : Base(Type::MTLS),
+      cert_filename(cert_filename), key_filename(key_filename) { }
+    virtual ~mTLS() = default;
+
+    std::string GetCertificateFilename(void) { return cert_filename; }
+    std::string GetKeyFilename(void) { return key_filename; }
+
+protected:
+    std::string cert_filename;
+    std::string key_filename;
 };
 
 } // ndNetifyApiAuthMethod
@@ -229,10 +205,59 @@ protected:
 
 } // ndNetifyApiData
 
+class ndNetifyApiManager;
+
+class ndNetifyApiThread : public ndThread
+{
+public:
+    ndNetifyApiThread(const std::string &tag,
+      const ndNetifyApiAuthMethod::Ptr &auth_method = nullptr);
+
+    virtual ~ndNetifyApiThread();
+
+    virtual void *Entry(void) = 0;
+
+    void AppendContent(const char *data, size_t length);
+
+    void ParseHeader(const std::string &header_raw);
+
+    enum class Method : uint8_t {
+        GET,
+        HEAD,
+        POST,
+    };
+
+    typedef std::map<std::string, std::string> Headers;
+
+protected:
+    friend class ndNetifyApiManager;
+
+    void CreateHeaders(const Headers &headers);
+    void DestroyHeaders(void);
+
+    void Perform(
+      Method method,
+      const std::string &url, const std::string &payload = "");
+
+    Headers headers_tx, headers_rx;
+
+    std::string payload;
+
+    std::string content;
+    std::string content_type;
+    std::string content_filename;
+
+    void *curl_private = { nullptr };
+
+    ndNetifyApiAuthMethod::Ptr auth_method;
+};
+
 class ndNetifyApiBootstrap : public ndNetifyApiThread
 {
 public:
-    ndNetifyApiBootstrap() : ndNetifyApiThread("api-bootstrap") { }
+    ndNetifyApiBootstrap(
+      const ndNetifyApiAuthMethod::Ptr &auth_method = nullptr)
+      : ndNetifyApiThread("api-bootstrap", auth_method) { }
 
     virtual void *Entry(void);
 
@@ -243,7 +268,8 @@ protected:
 class ndNetifyApiDownload : public ndNetifyApiThread
 {
 public:
-    ndNetifyApiDownload(const ndNetifyApiAuthMethod::Ptr &auth_method,
+    ndNetifyApiDownload(
+      const ndNetifyApiAuthMethod::Ptr &auth_method,
       const std::string &url, const std::string &filename = "");
 
     virtual ~ndNetifyApiDownload();
@@ -253,7 +279,6 @@ public:
 protected:
     friend class ndNetifyApiManager;
 
-    ndNetifyApiAuthMethod::Ptr auth_method;
     std::string url;
     ndDigestSHA1 digest;
 };

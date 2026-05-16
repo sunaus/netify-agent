@@ -295,6 +295,10 @@ class ndGlobalConfig
 {
 public:
     bool napi_tls_verify = { true };
+    bool napi_mtls_enable = { false };
+
+    std::string napi_cert_file;
+    std::string napi_key_file;
 
     std::string group_id;
     std::string napi_vendor = { ND_API_VENDOR };
