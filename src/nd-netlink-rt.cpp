@@ -31,16 +31,9 @@
 #include <netinet/in.h>
 
 #include <libmnl/libmnl.h>
+
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
 #include <libnftnl/set.h>
-
-#if defined(_ND_ENABLE_UBUS)
-#include <libubox/blobmsg_json.h>
-#include <libubus.h>
-
-// TODO: Not used.
-// #include "nd-ubus.hpp"
-#endif
 
 #include <linux/netfilter.h>
 #include <linux/netfilter/nf_tables.h>
@@ -49,6 +42,9 @@
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
 #include "nd-netlink-rt.hpp"
+#if defined(_ND_ENABLE_INTERFACE_METADATA) && defined(_ND_ENABLE_UBUS)
+#include "nd-ubus.hpp"
+#endif
 #include "nd-util.hpp"
 
 // Enable Conntrack debug logging
