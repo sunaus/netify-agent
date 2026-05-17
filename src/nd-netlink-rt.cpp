@@ -22,33 +22,36 @@
 #include "config.h"
 #endif
 
+#include "nd-netlink-rt.h"
+#include "nd-netlink-rt.hpp"
+
 #include <algorithm>
 #include <vector>
+#include <string>
+#include <array>
 
-#include <arpa/inet.h>
-#include <linux/if_link.h>
-#include <net/if.h>
-#include <netinet/in.h>
-
-#include <libmnl/libmnl.h>
-#if defined(_ND_ENABLE_INTERFACE_METADATA)
-#include <libnftnl/set.h>
+extern "C" {
+    #include <libmnl/libmnl.h>
+    #include <libnftnl/set.h>
+    #include <libnftnl/common.h>
+    #include <linux/netfilter.h>
+    #include <linux/netfilter/nfnetlink.h>
+    #include <linux/netfilter/nf_tables.h>
 
 #if defined(_ND_ENABLE_UBUS)
-#include <libubox/blobmsg_json.h>
-#include <libubus.h>
-
-// TODO: Not used.
-// #include "nd-ubus.hpp"
+    #include <libubox/blobmsg_json.h>
+    #include <libubox/blobmsg.h>
+    #include <libubus.h>
 #endif
+}
 
-#include <linux/netfilter.h>
-#include <linux/netfilter/nf_tables.h>
-#endif // _ND_ENABLE_INTERFACE_METADATA
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <linux/if_link.h>
 
 #include "nd-except.hpp"
 #include "nd-instance.hpp"
-#include "nd-netlink-rt.hpp"
 #include "nd-util.hpp"
 
 // Enable Conntrack debug logging
