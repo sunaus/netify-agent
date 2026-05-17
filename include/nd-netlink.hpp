@@ -23,9 +23,10 @@
 #include <vector>
 #include <cstdint>
 
-#include <linux/netfilter/nfnetlink.h>
-
 #include "nd-addr.hpp"
+
+struct nlmsghdr;
+struct mnl_socket;
 
 #define _ND_NLEX_CHECK_ATTR(tag, attr) \
     if (attr == nullptr) { \
@@ -48,7 +49,7 @@ public:
     virtual ~ndNetlink();
     int GetDescriptor(void);
 
-    virtual int ProcessMessage(const struct nlmsghdr *nlh) = 0;
+    virtual int ProcessMessage(const nlmsghdr *nlh) = 0;
 
     bool Recv(void);
 
