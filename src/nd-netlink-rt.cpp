@@ -749,7 +749,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
             uint32_t mark = (uint32_t)ifi->ifi_index
               << ndGC.mark_to_ifindex_mark_shift;
 
-            this->UpdateNftablesMapping(ifi->ifi_index, mark, true);
+            this->UpdateNFTablesMapping(ifi->ifi_index, mark, true);
         }
 #endif
         AttrsLink attrs = { 0 };
@@ -884,7 +884,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
         if (ndGC.mark_to_ifindex_enable
           && ndGC.mark_to_ifindex_firewall == "nft")
-            this->UpdateNftablesMapping(ifi->ifi_index, 0, false);
+            this->UpdateNFTablesMapping(ifi->ifi_index, 0, false);
 #endif
         if (ndi.addr_lookup.RemoveLinkAddress(ifi->ifi_index)) rc = 1;
         if (ndi.addr_lookup.RemoveLinkName(ifi->ifi_index)) rc = 1;
@@ -1017,11 +1017,9 @@ int ndNetlinkRouteThread::AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add
 }
 
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
-void ndNetlinkRouteThread::UpdateNftablesMapping(
-    int ifindex,
-    uint32_t mark,
-    bool add)
-{
+void ndNetlinkRouteThread::UpdateNFTablesMapping(
+    int ifindex, uint32_t mark, bool add) {
+
     struct mnl_socket *nl;
     struct nftnl_set *set;
     struct nftnl_set_elem *elem;
@@ -1130,62 +1128,72 @@ void ndNetlinkRouteThread::UpdateNftablesMapping(
     nftnl_set_free(set);
     mnl_socket_close(nl);
 }
-#endif
 
 #if defined(_ND_ENABLE_UBUS)
-struct nd_ssid_cb_data {
-    std::string *ssid_out;
-};
+/*
+ * ubus call hostapd.phy0-ap0 get_status
+ * {
+ *  "status": "ENABLED",
+ *  "bssid": "02:00:00:00:00:00",
+ *  "ssid": "SimulatedAP",
+ *  "freq": 5180,
+ *  "channel": 36,
+ *  "op_class": 128,
+ *  "beacon_interval": 100,
+ *  "bss_color": -1,
+ *  "phy": "phy0",
+ *  "rrm": {
+ *      "neighbor_report_tx": 0
+ *  },
+ *  "wnm": {
+ *      "bss_transition_query_rx": 0,
+ *      "bss_transition_request_tx": 0,
+ *      "bss_transition_response_rx": 0
+ *  },
+ *  "airtime": {
+ *      "time": 120,
+ *      "time_busy": 15,
+ *      "utilization": 31
+ *  },
+ *  "dfs": {
+ *      "cac_seconds": 0,
+ *      "cac_active": false,
+ *      "cac_seconds_left": 0
+ *  }
+ * }
+ * */
+string ndNetlinkRouteThread::GetWirelessSSID(const char *ifname) {
+    string ssid;
 
-static void nd_ubus_ssid_cb(struct ubus_request *req, int type, struct blob_attr *msg) {
-    struct blob_attr *tb[1];
-    struct blobmsg_policy p[1] = { { .name = "ssid", .type = BLOBMSG_TYPE_STRING } };
+    if (ifname && (strncmp(ifname, "wlan", 4) == 0 ||
+      strncmp(ifname, "ath", 3) == 0) || strncmp("phy", 3)) {
 
-    blobmsg_parse(p, 1, tb, blobmsg_data(msg), blobmsg_len(msg));
+        json result;
+        string ubus_path = "hostapd." + string(ifname);
 
-    if (tb[0]) {
-        auto data = static_cast<nd_ssid_cb_data*>(req->priv);
-        *(data->ssid_out) = blobmsg_get_string(tb[0]);
-    }
-}
-#endif
+        try {
+            ubus.Call(
+                result, ubus_path, "get_status",
+                args, 0 /* ttl */
+            );
+        }
+        catch (exception &e) {
+            nd_printf("%s: UBUS call failed: %s: %s\n",
+              TAG, ubus_path.c_str(), e.what());
+        }
 
-#if defined(_ND_ENABLE_INTERFACE_METADATA)
-std::string ndNetlinkRouteThread::GetWirelessSSID(const char* ifname) {
-    std::string ssid = "";
-
-#if defined(_ND_ENABLE_UBUS)
-    if (ifname && (strncmp(ifname, "wlan", 4) == 0 || strncmp(ifname, "ath", 3) == 0)) {
-        struct ubus_context *ctx = ubus_connect(NULL);
-
-        if (ctx) {
-            uint32_t id;
-            std::string ubus_path = "hostapd." + std::string(ifname);
-
-            if (ubus_lookup_id(ctx, ubus_path.c_str(), &id) == UBUS_STATUS_OK) {
-                nd_ssid_cb_data cb_data = { &ssid };
-
-                int res = ubus_invoke(ctx, id, "get_status", NULL, nd_ubus_ssid_cb, &cb_data, 500);
-
-                if (res != UBUS_STATUS_OK) {
-                    nd_dprintf("%s: GetWirelessSSID(%s) - ubus_invoke error: %s (code: %d)\n",
-                               TAG, ifname, ubus_strerror(res), res);
-                } else if (ssid.empty()) {
-                    nd_dprintf("%s: GetWirelessSSID(%s) - Method succeeded but 'ssid' field was missing\n", TAG, ifname);
-                } else {
-                    nd_dprintf("%s: GetWirelessSSID(%s) - SUCCESS: Found SSID '%s'\n", TAG, ifname, ssid.c_str());
-                }
-            } else {
-                nd_dprintf("%s: GetWirelessSSID(%s) - Ubus path '%s' not found\n", TAG, ifname, ubus_path.c_str());
-            }
-
-            ubus_free(ctx);
+        try {
+            string key = "ssid";
+            auto jssid = result.at(key);
+            ssid = jssid.get<string>();
+        }
+        catch (exception &e) {
+            nd_dprintf("%s: UBUS result does not contain a valid SSID.\n",
+              TAG);
         }
     }
-#else
-    (void)ifname;
-#endif
 
     return ssid;
 }
-#endif
+#endif // _ND_ENABLE_UBUS
+#endif // _ND_ENABLE_INTERFACE_METADATA

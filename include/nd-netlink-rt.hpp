@@ -72,17 +72,19 @@ public:
     typedef std::array<struct nlattr *, IFLA_INFO_MAX + 1> AttrsLinkInfo;
     typedef std::array<struct nlattr *, IFLA_VLAN_MAX + 1> AttrsLinkVLAN;
     typedef std::array<struct nlattr *, NDA_MAX + 1> AttrsNeigh;
-private:
-    void UpdateNftablesMapping(int ifindex, uint32_t mark, bool add);
 
 protected:
     int AddRemoveAddress(const struct nlmsghdr *nlh, bool add = true);
     int AddRemoveNetwork(const struct nlmsghdr *nlh, bool add = true);
     int AddRemoveLink(const struct nlmsghdr *nlh, bool add = true);
     int AddRemoveNeighbor(const struct nlmsghdr *nlh, bool add = true);
+
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
+    void UpdateNFTablesMapping(int ifindex, uint32_t mark, bool add);
+#if defined(_ND_ENABLE_UBUS)
     std::string GetWirelessSSID(const char* ifname);
-#endif
+#endif // _ND_ENABLE_UBUS
+#endif // _ND_ENABLE_INTERFACE_METADATA
 
     Stats stats;
 };
