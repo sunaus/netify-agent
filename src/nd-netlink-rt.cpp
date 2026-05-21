@@ -72,6 +72,7 @@
 #endif
 
 using namespace std;
+using json = nlohmann::json;
 
 // We use "nd_" prefix so the compiler never confuses this with system types
 struct nd_bridge_vlan_info {
@@ -1171,11 +1172,10 @@ string ndNetlinkRouteThread::GetWirelessSSID(const char *ifname) {
         json result;
         string ubus_path = "hostapd." + string(ifname);
 
+        ndUbus ubus;
+
         try {
-            ubus.Call(
-                result, ubus_path, "get_status",
-                args, 0 /* ttl */
-            );
+            ubus.Call(result, ubus_path, "get_status");
         }
         catch (exception &e) {
             nd_printf("%s: UBUS call failed: %s: %s\n",
