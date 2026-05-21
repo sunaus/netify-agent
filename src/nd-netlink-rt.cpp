@@ -1166,7 +1166,7 @@ string ndNetlinkRouteThread::GetWirelessSSID(const char *ifname) {
     string ssid;
 
     if (ifname && (strncmp(ifname, "wlan", 4) == 0 ||
-      strncmp(ifname, "ath", 3) == 0) || strncmp("phy", 3)) {
+      strncmp(ifname, "ath", 3) == 0) || strncmp(ifname, "phy", 3)) {
 
         json result;
         string ubus_path = "hostapd." + string(ifname);
