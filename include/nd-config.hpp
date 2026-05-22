@@ -438,9 +438,15 @@ public:
     ndGlobalConfig(const ndGlobalConfig &) = delete;
     ndGlobalConfig &operator=(const ndGlobalConfig &) = delete;
 
+    static ndGlobalConfig &Create();
+    static void Destroy(void);
+
     static inline ndGlobalConfig &GetInstance() {
-        static ndGlobalConfig config;
-        return config;
+        if (instance == nullptr) {
+            throw ndException("%s: instance not found",
+              __PRETTY_FUNCTION__);
+        }
+        return *instance;
     }
 
     bool Open(const std::string &filename);
@@ -472,6 +478,8 @@ public:
       const std::string &filter);
 
 protected:
+    static ndGlobalConfig *instance;
+
     void *reader = { nullptr };
     std::mutex lock_uuid;
 

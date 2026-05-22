@@ -41,6 +41,7 @@ using namespace std;
 static void nd_instance(int argc, char *argv[], sigset_t &sigset) {
     bool restart = false;
 
+    ndGlobalConfig::Create();
     ndInstance& instance = ndInstance::Create();
 
     uint32_t result = instance.InitializeConfig(argc, argv);
@@ -85,6 +86,7 @@ static void nd_instance(int argc, char *argv[], sigset_t &sigset) {
     }
 
     ndInstance::Destroy();
+    ndGlobalConfig::Destroy();
 
     if (restart) return; else exit(rc);
 }

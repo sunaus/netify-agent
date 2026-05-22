@@ -44,6 +44,26 @@
 using namespace std;
 using json = nlohmann::json;
 
+ndGlobalConfig *ndGlobalConfig::instance = nullptr;
+
+ndGlobalConfig &ndGlobalConfig::Create(void) {
+    if (instance != nullptr) {
+        throw ndException("%s: instance already created",
+          __PRETTY_FUNCTION__);
+    }
+    instance = new ndGlobalConfig();
+    return *instance;
+}
+
+void ndGlobalConfig::Destroy(void) {
+    if (instance == nullptr) {
+        throw ndException("%s: instance not found",
+          __PRETTY_FUNCTION__);
+    }
+    delete instance;
+    instance = nullptr;
+}
+
 ndGlobalConfig::ndGlobalConfig() {
     flags |= ndGlobalFlags::AUTO_FLOW_EXPIRY;
 #ifdef _ND_ENABLE_CONNTRACK
@@ -61,6 +81,21 @@ ndGlobalConfig::ndGlobalConfig() {
 ndGlobalConfig::~ndGlobalConfig() {
     Close();
     ClearInterfaces(true);
+
+    for (auto &mac : privacy_filter_mac) {
+        delete[] mac;
+    }
+    privacy_filter_mac.clear();
+
+    for (auto &host : privacy_filter_host) {
+        delete host;
+    }
+    privacy_filter_host.clear();
+
+    for (auto &regex_pair : privacy_regex) {
+        delete regex_pair.first;
+    }
+    privacy_regex.clear();
 }
 
 bool ndGlobalConfig::Open(const string &filename) {
