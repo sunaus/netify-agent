@@ -1329,9 +1329,8 @@ bool ndGlobalConfig::AddPlugin(const string &filename) {
         }
 #endif
         if (! mpi
-                ->insert(make_pair(tag, make_pair(so_name, params)))
-                .second)
-        {
+          ->insert(make_pair(tag, make_pair(so_name, params)))
+            .second) {
             fprintf(stderr,
               "Duplicate plugin tag found: %s\n", tag.c_str());
             return false;
