@@ -1165,32 +1165,26 @@ void ndNetlinkRouteThread::UpdateNFTablesMapping(
  * */
 string ndNetlinkRouteThread::GetWirelessSSID(const char *ifname) {
     string ssid;
+    json result;
+    string ubus_path = "hostapd." + string(ifname);
 
-    if (ifname && (strncmp(ifname, "wlan", 4) == 0 ||
-      strncmp(ifname, "ath", 3) == 0) || strncmp(ifname, "phy", 3)) {
+    ndUbus ubus;
 
-        json result;
-        string ubus_path = "hostapd." + string(ifname);
+    try {
+        ubus.Call(result, ubus_path, "get_status");
+    }
+    catch (...) {
+        return ssid;
+    }
 
-        ndUbus ubus;
-
-        try {
-            ubus.Call(result, ubus_path, "get_status");
-        }
-        catch (exception &e) {
-            nd_printf("%s: UBUS call failed: %s: %s\n",
-              TAG, ubus_path.c_str(), e.what());
-        }
-
-        try {
-            string key = "ssid";
-            auto jssid = result.at(key);
-            ssid = jssid.get<string>();
-        }
-        catch (exception &e) {
-            nd_dprintf("%s: UBUS result does not contain a valid SSID.\n",
-              TAG);
-        }
+    try {
+        string key = "ssid";
+        auto jssid = result.at(key);
+        ssid = jssid.get<string>();
+    }
+    catch (exception &e) {
+        nd_dprintf("%s: UBUS result does not contain a valid SSID.\n",
+          TAG);
     }
 
     return ssid;

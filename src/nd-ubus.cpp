@@ -27,6 +27,8 @@
 #include "nd-ubus.hpp"
 #include "nd-util.hpp"
 
+// #define _LOG_DEBUG 1
+
 using namespace std;
 
 using json = nlohmann::json;
@@ -43,7 +45,9 @@ static void nd_ubus_call_cb(
         char *str = blobmsg_format_json(message, true);
         if (str != nullptr) {
             json *j = reinterpret_cast<json *>(req->priv);
+#ifdef _LOG_DEBUG
             nd_dprintf("%s\n", str);
+#endif
             *j = json::parse(str);
             free(str);
         }
