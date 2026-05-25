@@ -22,15 +22,11 @@ include:
       - /gitlab/agent/variants-templates.yml
       - /gitlab/common/variants-templates.yml
 
-services:
-  - docker:29-dind
-
 variables:
   CI_DEBUG_TRACE: 'false'
   GIT_SUBMODULE_STRATEGY: recursive
   OS_EXTRA_PACKAGES: ''
   OS_REPOS: ''
-  DOCKER_API_VERSION: '1.44'
 
 # -----------------------------------------------------------
 # Build
