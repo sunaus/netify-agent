@@ -226,6 +226,7 @@ FreeBSD/13.2/x86-64:
   extends: .freebsd_build
   tags:
     - freebsd13.2
+  when: manual
   variables:
     OS_NAME: freebsd
     OS_ARCH: amd64
@@ -238,6 +239,7 @@ FreeBSD/14.0/x86-64:
   extends: .freebsd_build
   tags:
     - freebsd14.0
+  when: manual
   only:
     - tags
     - web
