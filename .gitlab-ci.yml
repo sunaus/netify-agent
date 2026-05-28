@@ -69,6 +69,25 @@ Debian/12/x86-64:
     CONFIGURE_EXTRA_FLAGS: >
       --enable-capabilities
 
+Debian/13/x86-64:
+  extends: .debian_build
+  tags:
+    - docker
+  only:
+    - tags
+    - web
+  variables:
+    OS_NAME: debian
+    OS_VERSION: 13
+    OS_IMAGE: "debian:13"
+    OS_ARCH: amd64
+    OS_ARCH_PATH:
+      value: $OS_ARCH
+      expand: true
+    OS_EXTRA_PACKAGES: byacc flex libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
+
 # Ubuntu Targets
 
 Ubuntu/20.04/x86-64:
@@ -120,6 +139,25 @@ Ubuntu/24.04/x86-64:
     OS_NAME: ubuntu
     OS_VERSION: noble
     OS_IMAGE: "ubuntu:24.04"
+    OS_ARCH: amd64
+    OS_ARCH_PATH:
+      value: binary-$OS_ARCH
+      expand: true
+    OS_EXTRA_PACKAGES: byacc flex libcap-dev
+    CONFIGURE_EXTRA_FLAGS: >
+      --enable-capabilities
+
+Ubuntu/26.04/x86-64:
+  extends: .debian_build
+  tags:
+    - docker
+  only:
+    - tags
+    - web
+  variables:
+    OS_NAME: ubuntu
+    OS_VERSION: noble
+    OS_IMAGE: "ubuntu:26.04"
     OS_ARCH: amd64
     OS_ARCH_PATH:
       value: binary-$OS_ARCH
