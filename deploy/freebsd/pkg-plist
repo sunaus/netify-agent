@@ -18,6 +18,7 @@ lib/libnetifyd.so
 lib/libnetifyd.so.4
 lib/libnetifyd.so.4.0.0
 share/man/man5/netifyd.conf.5.gz
+share/man/man7/netify-flow-expressions.7.gz
 share/man/man8/netifyd.8.gz
 sbin/netifyd
 %%DEVEL%%include/netifyd/nd-addr.hpp

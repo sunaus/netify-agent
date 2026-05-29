@@ -1,5 +1,6 @@
 @libdir@/*/libnetifyd.so*
 @mandir@/man5/*
+@mandir@/man7/*
 @mandir@/man8/*
 @sbindir@/netifyd
 @sharedatadir@/*

@@ -317,33 +317,35 @@ AM_CONDITIONAL([HAVE_GTEST], [test "x$have_gtest" = "xyes"])
 
 # Parameters: --with/without
 AC_ARG_WITH([systemdsystemunitdir],
-     [AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files])],,
-     [with_systemdsystemunitdir=auto])
+    [AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files])],
+    [with_systemdsystemunitdir="$withval"],
+    [with_systemdsystemunitdir=""])
 
-AS_IF([test "x$with_systemdsystemunitdir" = "xyes" -o "x$with_systemdsystemunitdir" = "xauto"], [
-     def_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd)
+AS_IF([test "x$with_systemdsystemunitdir" = "x"], [
+    with_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd 2>/dev/null)
 
-     AS_IF([test "x$def_systemdsystemunitdir" = "x"],
-   [AS_IF([test "x$with_systemdsystemunitdir" = "xyes"],
-    [AC_MSG_ERROR([systemd support requested but pkg-config unable to query systemd package])])
-    with_systemdsystemunitdir=no],
-   [with_systemdsystemunitdir="$def_systemdsystemunitdir"])])
+    # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
+    AS_IF([test "x$with_systemdsystemunitdir" = "x"], [
+        with_systemdsystemunitdir="/usr/lib/systemd/system"
+    ])
+])
 
-AS_IF([test "x$with_systemdsystemunitdir" != "xno"],
-      [AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])])
-AM_CONDITIONAL(HAVE_SYSTEMD, [test "x$with_systemdsystemunitdir" != "xno"])
+AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])
 
+# Parameters: --with/without
 AC_ARG_WITH([tmpfilesdir],
-     [AS_HELP_STRING([--with-tmpfilesdir=DIR], [Directory for systemd tmpfiles configuration])],,
-     [with_tmpfilesdir=auto])
+    [AS_HELP_STRING([--with-tmpfilesdir=DIR], [Directory for systemd service files])],
+    [with_tmpfilesdir="$withval"],
+    [with_tmpfilesdir=""])
 
-AS_IF([test "x$with_tmpfilesdir" = "xyes" -o "x$with_tmpfilesdir" = "xauto"], [
-     def_tmpfilesdir=$($PKG_CONFIG --variable=tmpfilesdir systemd)
-     AS_IF([test "x$def_tmpfilesdir" = "x"],
-   [AS_IF([test "x$with_tmpfilesdir" = "xyes"],
-    [AC_MSG_ERROR([tmpfiles support requested but pkg-config unable to query systemd package])])
-    with_tmpfilesdir=no],
-   [with_tmpfilesdir="$def_tmpfilesdir"])])
+AS_IF([test "x$with_tmpfilesdir" = "x"], [
+    with_tmpfilesdir=$($PKG_CONFIG --variable=tmpfilesdir systemd 2>/dev/null)
+
+    # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
+    AS_IF([test "x$with_tmpfilesdir" = "x"], [
+        with_tmpfilesdir="/usr/lib/tmpfiles.d"
+    ])
+])
 
 AS_IF([test "x$with_tmpfilesdir" != "xno"],
       [AC_SUBST([tmpfilesdir], [$with_tmpfilesdir])])

@@ -179,6 +179,7 @@ exit 0
 %{_sbindir}/%{name}
 %{_libdir}/lib%{name}.so*
 %{_mandir}/man5/*
+%{_mandir}/man7/*
 %{_mandir}/man8/*
 
 # Developer files

@@ -8,11 +8,9 @@ SYSTEMDFILES_IN = exec-pre.sh.in netifyd.conf.in netifyd.service.in systemd.env.
 
 sharedatadir = $(datadir)/netifyd
 
-if HAVE_SYSTEMD
 systemdsystemunit_DATA = netifyd.service
 tmpfiles_DATA = netifyd.conf
 sharedata_DATA = systemd.env exec-pre.sh
-endif
 
 BUILT_SOURCES = $(SYSTEMDFILES)
 CLEANFILES = $(SYSTEMDFILES)
