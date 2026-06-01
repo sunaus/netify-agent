@@ -4,12 +4,11 @@
 # This is free software, licensed under the GNU General Public License v3.
 
 AUTOMAKE_OPTIONS = foreign subdir-objects
-ACLOCAL_AMFLAGS = -I m4
 
 AM_YFLAGS = -dy --warnings=no-yacc
 BUILT_SOURCES = nd-flow-expr.cpp nd-flow-expr.hpp
 
-AM_CPPFLAGS = $(CPPFLAGS) -D_GNU_SOURCE $(ND_DEFINES) \
+AM_CPPFLAGS = -D_GNU_SOURCE $(ND_DEFINES) \
 	-I $(top_srcdir)/include \
 	-I $(top_srcdir)/libs/ndpi/src/include -I $(top_srcdir)/libs/inih/cpp \
 	-I $(top_srcdir)/libs/timezone \

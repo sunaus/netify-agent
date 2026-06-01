@@ -821,7 +821,7 @@ ndNetifyApiManager::UpdateResult
         }
 
         auto juuid_site = jdata->find("uuid-site");
-        if (juuid_site != jdata->end() && !juuid_site->is_string()) {
+        if (juuid_site != jdata->end() && juuid_site->is_string()) {
             string new_uuid = juuid_site->get<string>();
             if (ndGC.SaveUUID(ndUUID::SITE, new_uuid)) {
                 jstatus["bootstrap"]["code"] = 0;

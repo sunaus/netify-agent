@@ -76,10 +76,6 @@ AS_CASE([x$with_stdcpp],
     ]
 )
 
-AX_UNPRECIOUS([CFLAGS])
-AX_UNPRECIOUS([CXXFLAGS])
-export CFLAGS CXXFLAGS
-
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
@@ -120,6 +116,7 @@ AS_IF([test "$ac_cv_lib_pcap_pcap_open_live" = "yes"], [
 AC_MSG_CHECKING([for DLT_* macros in pcap/bpf.h])
 AC_COMPILE_IFELSE([
     AC_LANG_PROGRAM([
+        #include <sys/types.h>
         #include <pcap/bpf.h>
     ], [
         #ifndef DLT_EN10MB
@@ -127,10 +124,10 @@ AC_COMPILE_IFELSE([
         #endif
     ])
 ], [
-    AC_MSG_RESULT([no])
-], [
     AC_MSG_RESULT([yes])
     AC_DEFINE([_ND_PCAP_DLT_IN_BPF_H], [1], [Define if DLT_* macros are defined in pcap/bpf.h.])
+], [
+    AC_MSG_RESULT([no])
 ])
 
 case "${host_os}" in
@@ -315,40 +312,49 @@ PKG_CHECK_MODULES([GTEST], [gtest_main >= 1.10.0],
     [have_gtest=yes], [have_gtest=no])
 AM_CONDITIONAL([HAVE_GTEST], [test "x$have_gtest" = "xyes"])
 
+# Optional systemd check
+PKG_CHECK_MODULES([SYSTEMD], [systemd],
+    [have_systemd=yes], [have_systemd=no])
+AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$have_systemd" = "xyes"])
+
 # Parameters: --with/without
-AC_ARG_WITH([systemdsystemunitdir],
-    [AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files])],
-    [with_systemdsystemunitdir="$withval"],
-    [with_systemdsystemunitdir=""])
+AS_IF([test "x$have_systemd" = "xyes" ], [
+    AC_ARG_WITH([systemdsystemunitdir],
+        [AS_HELP_STRING([--with-systemdsystemunitdir=DIR],
+          [Directory for systemd service files])],
+        [with_systemdsystemunitdir="$withval"],
+        [with_systemdsystemunitdir=""])
 
-AS_IF([test "x$with_systemdsystemunitdir" = "x"], [
-    with_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd 2>/dev/null)
-
-    # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
     AS_IF([test "x$with_systemdsystemunitdir" = "x"], [
-        with_systemdsystemunitdir="/usr/lib/systemd/system"
+        with_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd 2>/dev/null)
+
+        # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
+        AS_IF([test "x$with_systemdsystemunitdir" = "x"], [
+            with_systemdsystemunitdir="/usr/lib/systemd/system"
+        ])
     ])
-])
 
-AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])
+    AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])
 
-# Parameters: --with/without
-AC_ARG_WITH([tmpfilesdir],
-    [AS_HELP_STRING([--with-tmpfilesdir=DIR], [Directory for systemd service files])],
-    [with_tmpfilesdir="$withval"],
-    [with_tmpfilesdir=""])
+    # Parameters: --with/without
+    AC_ARG_WITH([tmpfilesdir],
+        [AS_HELP_STRING([--with-tmpfilesdir=DIR],
+          [Directory for systemd service files])],
+        [with_tmpfilesdir="$withval"],
+        [with_tmpfilesdir=""])
 
-AS_IF([test "x$with_tmpfilesdir" = "x"], [
-    with_tmpfilesdir=$($PKG_CONFIG --variable=tmpfilesdir systemd 2>/dev/null)
-
-    # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
     AS_IF([test "x$with_tmpfilesdir" = "x"], [
-        with_tmpfilesdir="/usr/lib/tmpfiles.d"
-    ])
-])
+        with_tmpfilesdir=$($PKG_CONFIG --variable=tmpfilesdir systemd 2>/dev/null)
 
-AS_IF([test "x$with_tmpfilesdir" != "xno"],
-      [AC_SUBST([tmpfilesdir], [$with_tmpfilesdir])])
+        # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
+        AS_IF([test "x$with_tmpfilesdir" = "x"], [
+            with_tmpfilesdir="/usr/lib/tmpfiles.d"
+        ])
+    ])
+
+    AS_IF([test "x$with_tmpfilesdir" != "xno"],
+          [AC_SUBST([tmpfilesdir], [$with_tmpfilesdir])])
+])
 
 AC_ARG_WITH([libcurl-zlib],
      [AS_HELP_STRING([--with-libcurl-zlib], [Enable if libcurl is GZIP capable])],,
@@ -571,6 +577,7 @@ case "${host_os}" in
         AC_MSG_NOTICE([UCI integration: ${enable_uci}])
         AC_MSG_NOTICE([UBUS integration: ${enable_ubus}])
         AC_MSG_NOTICE([Linux Capabilities: ${enable_capabilities}])
+        AC_MSG_NOTICE([Have systemd: ${have_systemd}])
     ;;
 esac
 
