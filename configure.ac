@@ -313,8 +313,17 @@ PKG_CHECK_MODULES([GTEST], [gtest_main >= 1.10.0],
 AM_CONDITIONAL([HAVE_GTEST], [test "x$have_gtest" = "xyes"])
 
 # Optional systemd check
-PKG_CHECK_MODULES([SYSTEMD], [systemd],
-    [have_systemd=yes], [have_systemd=no])
+PKG_CHECK_MODULES([SYSTEMD], [systemd], [
+    have_systemd=yes
+    SYSTEMD_PKG=systemd
+], [
+    PKG_CHECK_MODULES([SYSTEMD], [libsystemd], [
+        have_systemd=yes
+        SYSTEMD_PKG=libsystemd
+    ], [
+        have_systemd=no
+    ])
+])
 AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$have_systemd" = "xyes"])
 
 # Parameters: --with/without
@@ -326,7 +335,7 @@ AS_IF([test "x$have_systemd" = "xyes" ], [
         [with_systemdsystemunitdir=""])
 
     AS_IF([test "x$with_systemdsystemunitdir" = "x"], [
-        with_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd 2>/dev/null)
+        with_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir $SYSTEMD_PKG 2>/dev/null)
 
         # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
         AS_IF([test "x$with_systemdsystemunitdir" = "x"], [
@@ -344,7 +353,7 @@ AS_IF([test "x$have_systemd" = "xyes" ], [
         [with_tmpfilesdir=""])
 
     AS_IF([test "x$with_tmpfilesdir" = "x"], [
-        with_tmpfilesdir=$($PKG_CONFIG --variable=tmpfilesdir systemd 2>/dev/null)
+        with_tmpfilesdir=$($PKG_CONFIG --variable=tmpfilesdir $SYSTEMD_PKG 2>/dev/null)
 
         # Fallback to standard path if pkg-config fails (e.g., Debian Trixie)
         AS_IF([test "x$with_tmpfilesdir" = "x"], [
