@@ -616,8 +616,7 @@ bool ndDetectionThread::ProcessALPN(
         {
             if ((ndGC_DEBUG && ndGC_VERBOSE)) {
                 nd_dprintf(
-                  "%s: TLS ALPN: refined: %s: %s -> "
-                  "%s\n",
+                  "%s: TLS ALPN: refined: %s: %s -> %s\n",
                   tag.c_str(), detected_alpn,
                   ndEF->detected_protocol_name.c_str(),
                   ndProto::GetName(alpn->second));
@@ -1185,7 +1184,9 @@ void ndDetectionThread::DetectionUpdate(ndDetectionQueueEntry *entry) {
     }
 
     ndEF->flags.detection_init = true;
-    ndEF->Hash(tag, true);
+
+    if (! ndEF->flags.fhc_hit.load())
+        ndEF->Hash(tag, true);
 
     DispatchEvent(entry);
 }
