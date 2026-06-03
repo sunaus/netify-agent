@@ -71,6 +71,7 @@ Report bugs to: @PACKAGE_BUGREPORT@
 %package devel
 Summary: @PACKAGE_NAME@ Plugin API Files
 Group: Development/Libraries
+Requires: libnetfilter_conntrack-devel
 
 %description devel
 Development files (headers) for developing Netify Agent Plugins.
