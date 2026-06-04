@@ -782,42 +782,38 @@ void ndFlow::UpdateLowerMaps(void) {
 
 void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
   LowerMap &lm, OtherType &ot) {
-    if (lt == ndAddr::Type::ERROR || ut == ndAddr::Type::ERROR)
-    {
+    if (lt == ndAddr::Type::ERROR || ut == ndAddr::Type::ERROR) {
         ot = OtherType::ERROR;
     }
-    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::LOCAL)
-    {
-        lm = LowerMap::LOCAL;
+    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::LOCAL) {
+        lm = (origin == Origin::LOWER || origin == Origin::UNKNOWN) ?
+            LowerMap::LOCAL : LowerMap::OTHER;
         ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::LOCALNET)
-    {
-        lm = LowerMap::LOCAL;
+    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::LOCALNET) {
+        lm = (origin == Origin::LOWER || origin == Origin::UNKNOWN) ?
+            LowerMap::LOCAL : LowerMap::OTHER;
         ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::LOCAL)
-    {
-        lm = LowerMap::LOCAL;
+    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::LOCAL) {
+        lm = (origin == Origin::LOWER || origin == Origin::UNKNOWN) ?
+            LowerMap::LOCAL : LowerMap::OTHER;
         ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCALNET)
-    {
+    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCALNET) {
         lm = LowerMap::OTHER;
         ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::RESERVED)
-    {
-        lm = LowerMap::LOCAL;
+    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::RESERVED) {
+        lm = (origin == Origin::LOWER || origin == Origin::UNKNOWN) ?
+            LowerMap::LOCAL : LowerMap::OTHER;
         ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCAL)
-    {
+    else if (lt == ndAddr::Type::RESERVED && ut == ndAddr::Type::LOCAL) {
         lm = LowerMap::OTHER;
         ot = OtherType::REMOTE;
     }
-    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::RESERVED)
-    {
+    else if (lt == ndAddr::Type::LOCAL && ut == ndAddr::Type::RESERVED) {
         lm = LowerMap::LOCAL;
         ot = OtherType::REMOTE;
     }
@@ -845,12 +841,13 @@ void ndFlow::GetLowerMap(ndAddr::Type lt, ndAddr::Type ut,
     else if (ip_version != 6 && lt == ndAddr::Type::RESERVED &&
       ut == ndAddr::Type::RESERVED)
     {
-        lm = LowerMap::LOCAL;
+        lm = (origin == Origin::LOWER || origin == Origin::UNKNOWN) ?
+            LowerMap::LOCAL : LowerMap::OTHER;
         ot = OtherType::LOCAL;
     }
-    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::LOCALNET)
-    {
-        lm = LowerMap::LOCAL;
+    else if (lt == ndAddr::Type::LOCALNET && ut == ndAddr::Type::LOCALNET) {
+        lm = (origin == Origin::LOWER || origin == Origin::UNKNOWN) ?
+            LowerMap::LOCAL : LowerMap::OTHER;
         ot = OtherType::LOCAL;
     }
     else if (lt == ndAddr::Type::OTHER) {
