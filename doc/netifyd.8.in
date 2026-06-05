@@ -2,7 +2,7 @@
 .SH NAME
 @PACKAGE_TARNAME@ \- @PACKAGE_NAME@ v@PACKAGE_VERSION@
 .SH DESCRIPTION
-The @PACKAGE_NAME@ is a high-performance, multi-threaded passive network traffic analyzer that leverages deep-packet inspection (DPI) to identify network protocols and applications. It is designed to provide comprehensive network visibility by capturing traffic from multiple internal (LAN) and external (WAN) interfaces simultaneously.
+The @PACKAGE_NAME@ (The Agent) is a high-performance, multi-threaded passive network traffic analyzer that leverages deep-packet inspection (DPI) to identify network protocols and applications in near realtime. It is designed to provide comprehensive network visibility by capturing traffic from multiple network capture sources simultaneously.
 
 Key features and capabilities include:
 .IP \(bu 2

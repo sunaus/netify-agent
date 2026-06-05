@@ -156,7 +156,7 @@ Ubuntu/26.04/x86-64:
     - web
   variables:
     OS_NAME: ubuntu
-    OS_VERSION: noble
+    OS_VERSION: resolute
     OS_IMAGE: "ubuntu:26.04"
     OS_ARCH: amd64
     OS_ARCH_PATH:
