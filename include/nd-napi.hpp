@@ -232,6 +232,9 @@ public:
 protected:
     friend class ndNetifyApiManager;
 
+    void SetAuthMethod(
+      const ndNetifyApiAuthMethod::Ptr &auth_method = nullptr);
+
     void CreateHeaders(const Headers &headers);
     void DestroyHeaders(void);
 
@@ -250,6 +253,8 @@ protected:
     void *curl_private = { nullptr };
 
     ndNetifyApiAuthMethod::Ptr auth_method;
+
+    long GetResponseCode(void);
 };
 
 class ndNetifyApiBootstrap : public ndNetifyApiThread
