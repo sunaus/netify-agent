@@ -160,7 +160,7 @@ all = include
 
 [netlink]
 # Set the Netlink buffer size
-buffer_size = 32768
+buffer_size = 65536
 # Set the Conntrack buffer size (1MB default, 8MB for higher traffic spikes)
 conntrack_buffer_size = 1048576
 # In the event we miss a conntrack DESTROY event, clean-up cached flow
