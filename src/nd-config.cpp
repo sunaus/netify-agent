@@ -411,7 +411,7 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     }
 
     max_dhc = (unsigned)r->GetInteger("dns-hint-cache",
-      "cache-size", (! profile) ? ND_MAX_DHC_ENTRIES : max_dhc);
+      "cache_size", (! profile) ? ND_MAX_DHC_ENTRIES : max_dhc);
 
     // Privacy filter section
     for (int i = 0;; i++) {
