@@ -1287,7 +1287,8 @@ void ndDetectionThread::DetectionComplete(
         }
     }
 
-    ndEF->Hash(tag, true);
+    if (ndEF->flags.fhc_hit.load() == false)
+        ndEF->Hash(tag, true);
 
     if (fhc != nullptr && ! ndEF->flags.fhc_hit.load() &&
       ! ndEF->flags.detection_guessed.load() &&
