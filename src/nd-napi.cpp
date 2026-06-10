@@ -53,14 +53,37 @@ ndNetifyApiAuthMethod::Ptr ndNetifyApiAuthMethod::Create(
             return static_pointer_cast<ndNetifyApiAuthMethod::Base>(method);
         }
         if (type == Type::MTLS) {
-            key = "cert_filename";
-            auto jcert_filename = jauth.at(key);
-            key = "key_filename";
-            auto jkey_filename = jauth.at(key);
+            string cert_filename, key_filename;
 
-            shared_ptr<mTLS> method(new mTLS(
-              jcert_filename.get<string>(), jkey_filename.get<string>()));
-            return static_pointer_cast<ndNetifyApiAuthMethod::Base>(method);
+            auto jcert_filename = jauth.find("cert_filename");
+            if (jcert_filename != jauth.end() && jcert_filename->is_string())
+                cert_filename = jcert_filename->get<string>();
+            else
+                cert_filename = ndGC.napi_cert_file;
+
+            auto jkey_filename = jauth.find("key_filename");
+            if (jkey_filename != jauth.end() && jkey_filename->is_string())
+                key_filename = jkey_filename->get<string>();
+            else
+                key_filename = ndGC.napi_key_file;
+
+            if (cert_filename.empty()) {
+                nd_dprintf("%s: unsupported auth method: %s is not set\n",
+                    tag.c_str(), "cert_filename");
+            }
+            else if (key_filename.empty()) {
+                nd_dprintf("%s: unsupported auth method: %s is not set\n",
+                    tag.c_str(), "key_filename");
+            }
+            else {
+                shared_ptr<mTLS> method(
+                  new mTLS(cert_filename, key_filename));
+
+                if (! ndGC.napi_ca_file.empty())
+                    method->SetCAFilename(ndGC.napi_ca_file);
+
+                return static_pointer_cast<ndNetifyApiAuthMethod::Base>(method);
+            }
         }
         else {
             nd_dprintf("%s: unsupported auth method: %s\n", tag.c_str(),
@@ -356,6 +379,12 @@ void ndNetifyApiThread::SetAuthMethod(
               static_cast<ndNetifyApiAuthMethod::mTLS *>(
                 auth_method.get()
               );
+
+            if (mtls->HasCAFilename()) {
+                curl_easy_setopt(ndCurl->ch, CURLOPT_CAINFO,
+                  mtls->GetCAFilename().c_str());
+            }
+
             curl_easy_setopt(ndCurl->ch, CURLOPT_SSLCERT,
               mtls->GetCertificateFilename().c_str());
             curl_easy_setopt(ndCurl->ch, CURLOPT_SSLKEY,
@@ -596,6 +625,9 @@ ndNetifyApiManager::UpdateResult ndNetifyApiManager::Update(void) {
                 ndGC.napi_cert_file, ndGC.napi_key_file.c_str()
               )
             );
+
+            if (! ndGC.napi_ca_file.empty())
+                mtls->SetCAFilename(ndGC.napi_ca_file);
 
             auth_method =
               static_pointer_cast<ndNetifyApiAuthMethod::Base>(mtls);

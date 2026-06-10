@@ -115,10 +115,16 @@ public:
       cert_filename(cert_filename), key_filename(key_filename) { }
     virtual ~mTLS() = default;
 
-    std::string GetCertificateFilename(void) { return cert_filename; }
-    std::string GetKeyFilename(void) { return key_filename; }
+    inline bool HasCAFilename(void) const { return ! ca_filename.empty(); }
+    std::string GetCAFilename(void) const { return ca_filename; }
+    void SetCAFilename(const std::string &ca_filename) {
+        this->ca_filename = ca_filename;
+    }
+    std::string GetCertificateFilename(void) const { return cert_filename; }
+    std::string GetKeyFilename(void) const { return key_filename; }
 
 protected:
+    std::string ca_filename;
     std::string cert_filename;
     std::string key_filename;
 };

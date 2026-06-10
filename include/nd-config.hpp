@@ -294,21 +294,20 @@ typedef struct nd_config_nfq_t {
 class ndGlobalConfig
 {
 public:
-    bool napi_tls_verify = { true };
+    std::string group_id;
     bool napi_mtls_enable = { false };
-
+    bool napi_tls_verify = { true };
+    std::string napi_ca_file;
     std::string napi_cert_file;
     std::string napi_key_file;
-
-    std::string group_id;
     std::string napi_vendor = { ND_API_VENDOR };
     std::string network_namespace;
     std::string path_addr_groups = { ND_ADDR_GROUPS_PATH };
     std::string path_agent_status = { ND_AGENT_STATUS_PATH };
     std::string path_app_config = { ND_CONF_APP_PATH };
     std::string path_cat_config = { ND_CONF_CAT_PATH };
-    std::string path_cat_user_config = { ND_CONF_CAT_USER_PATH };
     std::string path_categories = { ND_CATEGORIES_PATH };
+    std::string path_cat_user_config = { ND_CONF_CAT_USER_PATH };
     std::string path_config = { ND_CONF_FILE_NAME };
     std::string path_debug_log;
     std::string path_debug_log_flow;
