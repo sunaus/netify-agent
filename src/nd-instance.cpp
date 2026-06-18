@@ -1277,8 +1277,9 @@ void ndInstance::CommandLineHelp(bool version_only) {
           "the number of detection (DPI) threads to "
           "start.\n"
 
-          "\nSee %s(8) and %s.conf(5) for "
-          "further options.\n",
+          "\nSee %s(8), %s.conf(5), or netify-flow-expressions(7) for "
+          "further options.\n"
+          "Visit https://www.netify.ai/documentation for online documentation.\n",
           ND_CONF_FILE_NAME, ND_CONF_LEGACY_PATH,
           ndGC.path_uuid.c_str(), ndGC.path_uuid_site.c_str(),
           ND_NAME_SHORT, ND_NAME_SHORT);

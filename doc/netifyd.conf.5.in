@@ -8,7 +8,10 @@ follows the standard INI-style format.
 .IP \(bu 2
 contains configuration parameters for \fB@PACKAGE_TARNAME@(8)\fR, a deep-packet inspection server.
 .IP \(bu 2
-contains configuration parameters for the Netify Cloud service (\fIhttps://www.netify.ai/\fR).
+contains configuration parameters for the
+.UR https://www.netify.ai/products/netify-informatics
+Netify Informatics
+.UE service.
 .SS Main
 The main server options are defined within the [\fB@PACKAGE_TARNAME@\fR] section.
 .PP
@@ -216,7 +219,7 @@ Frequency of internal API housekeeping.
 .PP
 \fBupdate_interval\fR=\fISECONDS\fR
 .PP
-Interval for updating application and category data from the API.
+Interval for updating application and category data from the API server.
 .PP
 \fBbootstrap_url\fR=\fIURL\fR
 .PP
@@ -318,9 +321,14 @@ conntrack_idle_ttl = 3600
 .SH SEE ALSO
 @PACKAGE_TARNAME@(8)
 .SH ONLINE DOCUMENTATION
-For additional documentation, please visit: https://www.netify.ai/documentation
+For additional documentation, please visit:
+.UR https://www.netify.ai/documentation
+.UE
 .SH COPYRIGHT
-Copyright (C) 2015-2026 eGloo Incorporated <\fIhttp://www.egloo.ca\fR>
+Copyright (C) 2015-2026
+.UR http://www.egloo.ca
+eGloo Incorporated
+.UE
 .SH LICENSE
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 .TH NETIFYD 8
 .SH NAME
-@PACKAGE_TARNAME@ \- @PACKAGE_NAME@ v@PACKAGE_VERSION@
+@PACKAGE_TARNAME@ \- The @PACKAGE_NAME@ v@PACKAGE_VERSION@
 .SH DESCRIPTION
 The @PACKAGE_NAME@ (The Agent) is a high-performance, multi-threaded passive network traffic analyzer that leverages deep-packet inspection (DPI) to identify network protocols and applications in near realtime. It is designed to provide comprehensive network visibility by capturing traffic from multiple network capture sources simultaneously.
 
@@ -73,11 +73,12 @@ The Agent is built with C++17 and optimized for efficiency, making it suitable f
 .TP
 Generate a new client UUID if one hasn't already been set.  Display the URL used to provision this Agent.
 .TP
-.BR \-\-enable-sink ", " \-\-disable-sink
-Enable or disable access to the Netify Cloud.  When enabled, flow metadata and DPI detection information will be uploaded to the Cloud for further processing and analysis.  A Netify Cloud Subscription (\fIhttps://netify.ai/\fR) is required.  This option is disabled by default.
-.TP
 .BR \-\-enable-informatics ", " \-\-disable-informatics
-Automatically configure and enable the plugins required for Netify Informatics.
+Automatically configure and enable the plugins required for Netify Informatics.  When enabled, flow metadata and DPI detection information will be uploaded to Netify Informatics for further processing and analysis.  A
+.UR https://www.netify.ai/products/netify-informatics
+Netify Informatics Subscription
+.UE
+is required.  This option is disabled by default.
 .TP
 .BR \-s ", " \-\-status
 Display the latest service status.
@@ -176,7 +177,7 @@ Interface/device option: associate the interface with a peer (e.g., PPPoE interf
 Specify an alternate configuration file.  Default: /etc/@PACKAGE_TARNAME@.conf
 .TP
 .BR \-u ", " \-\-uuid=\fIUUID\fR
-Specify a client serial number (UUID).  Used for device identification with the Netify Cloud Sync server(s).  Normally, the auto-generated client UUID is used for this purpose.
+Specify a client serial number (UUID).  Used for device identification with Netify Informatics.  Normally, the auto-generated client UUID is used for this purpose.
 .TP
 .BR \-f ", " \-\-ndpi-config=\fIFILENAME\fR
 Specify an alternate legacy (nDPI) application configuration file.
@@ -236,13 +237,20 @@ Save the DNS hint and flow hash caches to disk.  If Netify API updates are enabl
 .BR SIGUSR2
 Toggle debug logging between the configured debug log file and stderr.
 .SH ONLINE DOCUMENTATION
-For additional documentation, please visit: https://www.netify.ai/documentation
+For additional documentation, please visit:
+.UR https://www.netify.ai/documentation
+.UE
 .SH BUGS
-If you find a bug or have a feature request, please report it here: \fI@PACKAGE_BUGREPORT@\fR
+If you find a bug or have a feature request, please report it here:
+.UR @PACKAGE_BUGREPORT@
+.UE
 .SH SEE ALSO
 @PACKAGE_TARNAME@.conf(5)
 .SH COPYRIGHT
-Copyright (C) 2015-2026 eGloo Incorporated <\fIhttp://www.egloo.ca\fR>
+Copyright (C) 2015-2026
+.UR http://www.egloo.ca
+eGloo Incorporated
+.UE
 .SH LICENSE
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
