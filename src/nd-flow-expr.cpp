@@ -6022,7 +6022,7 @@ yyreduce:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 (yyval.bool_result) = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
@@ -6091,7 +6091,7 @@ yyreduce:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 (yyval.bool_result) = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
@@ -6149,7 +6149,7 @@ yyreduce:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 (yyval.bool_result) = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
@@ -6207,7 +6207,7 @@ yyreduce:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 (yyval.bool_result) = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
