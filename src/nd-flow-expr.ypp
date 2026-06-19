@@ -2236,7 +2236,7 @@ expr_category:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 $$ = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
@@ -2300,7 +2300,7 @@ expr_category:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 $$ = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
@@ -2356,7 +2356,7 @@ expr_category_id:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 $$ = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
@@ -2409,7 +2409,7 @@ expr_category_id:
 
         if (!_NDFP_result && _NDFP_params_intel) {
             json jvalue;
-            string key("intel_domain_criteria");
+            string key("intel_criteria_domain_category");
             _NDFP_result = (
                 $$ = (
                     flow_intel(key, *_NDFP_params_intel, jvalue) &&
