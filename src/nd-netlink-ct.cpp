@@ -507,6 +507,25 @@ void ndNetlinkConntrackThread::UpdateFlow(ndFlow::Ptr &flow) {
         flow->conntrack.id = ct_flow.id;
 #ifdef _ND_ENABLE_CONNTRACK_MDATA
         flow->conntrack.mark = ct_flow.mark;
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        if (ndGC.mark_to_ifindex_enable && ct_flow.mark) {
+            int ifidx_logical = (ct_flow.mark >> ndGC.mark_to_ifindex_mark_shift) &
+                ((1U << ndGC.mark_to_ifindex_mark_mask) - 1);
+
+            if (ifidx_logical > 0) {
+                ndInstance &ndi = ndInstance::GetInstance();
+
+                flow->if_metadata.local.index = ifidx_logical;
+
+                ndi.addr_lookup.LookupLinkName(
+                    flow->if_metadata.local.index, flow->if_metadata.local.name);
+                ndi.addr_lookup.LookupLinkSSID(
+                    flow->if_metadata.local.index, flow->if_metadata.local.ssid);
+                flow->if_metadata.local.pvid =
+                    ndi.addr_lookup.LookupLinkPVID(flow->if_metadata.local.index);
+            }
+        }
+#endif
         flow->conntrack.reply_src_addr = digest_flow->second->reply_addr[
             static_cast<int>(ndConntrackFlow::Direction::SRC)];
         flow->conntrack.reply_dst_addr = digest_flow->second->reply_addr[

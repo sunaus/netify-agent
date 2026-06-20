@@ -111,6 +111,7 @@
 #include "nd-capture.hpp"
 #include "nd-config.hpp"
 #include "nd-detection.hpp"
+#include "nd-instance.hpp"
 
 using namespace std;
 
@@ -1167,13 +1168,17 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
         }
 #endif
         if (! ndi.flow_buckets->InsertUnlocked(flow.digest_lower, nf))
-
         {
             ndi.flow_buckets->Release(flow.digest_lower);
             // Flow exists in map!  Impossible!
             throw ndException("%s: flow exists in map",
               tag.c_str());
         }
+
+#if defined(_ND_ENABLE_NETLINK)
+        if (ndGC_USE_CONNTRACK)
+            ndi.thread_conntrack->UpdateFlow(nf);
+#endif
 
         ndi.status.flows++;
 

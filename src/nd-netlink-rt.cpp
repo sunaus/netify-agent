@@ -1165,13 +1165,21 @@ void ndNetlinkRouteThread::UpdateNFTablesMapping(
  * */
 string ndNetlinkRouteThread::GetWirelessSSID(const char *ifname) {
     string ssid;
+
+    std::string base_path = "/sys/class/net/" + std::string(ifname);
+    if (access((base_path + "/phy80211").c_str(), F_OK) != 0 &&
+        access((base_path + "/lower_wlan0/phy80211").c_str(), F_OK) != 0 &&
+        access((base_path + "/lower_wlan1/phy80211").c_str(), F_OK) != 0) {
+        return ssid;
+    }
+
     json result;
     string ubus_path = "hostapd." + string(ifname);
 
     ndUbus ubus;
 
     try {
-        ubus.Call(result, ubus_path, "get_status");
+        ubus.Call(result, ubus_path, "get_status", "", 1);
     }
     catch (...) {
         return ssid;
