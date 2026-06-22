@@ -738,7 +738,7 @@ int ndNetlinkRouteThread::AddRemoveLink(const struct nlmsghdr *nlh, bool add) {
 
         if (ndi.addr_lookup.AddLinkName(ifi->ifi_index, ifname)) rc = 1;
 
-#if defined(_ND_ENABLE_INTERFACE_METADATA)
+#if defined(_ND_ENABLE_INTERFACE_METADATA) && defined(_ND_ENABLE_UBUS)
         std::string ssid = this->GetWirelessSSID(ifname);
         if (!ssid.empty()) {
             nd_dprintf("%s: %s SSID: %s\n", TAG, ifname, ssid.c_str());

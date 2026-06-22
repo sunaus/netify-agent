@@ -111,7 +111,6 @@
 #include "nd-capture.hpp"
 #include "nd-config.hpp"
 #include "nd-detection.hpp"
-#include "nd-instance.hpp"
 
 using namespace std;
 
@@ -1143,29 +1142,12 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
             }
         }
 #endif
-
 #if defined(_ND_ENABLE_INTERFACE_METADATA)
         int meta_src_idx = (packet->ifidx_logical != -1) ?
           packet->ifidx_logical : packet->ifidx_src;
 
         nf->if_metadata.local.index = meta_src_idx;
         nf->if_metadata.other.index = packet->ifidx_dst;
-
-        if (nf->if_metadata.local.index != -1) {
-            ndi.addr_lookup.LookupLinkName(
-              nf->if_metadata.local.index, nf->if_metadata.local.name);
-            ndi.addr_lookup.LookupLinkSSID(
-              nf->if_metadata.local.index, nf->if_metadata.local.ssid);
-            nf->if_metadata.local.pvid =
-              ndi.addr_lookup.LookupLinkPVID(nf->if_metadata.local.index);
-        }
-
-        if (nf->if_metadata.other.index!= -1) {
-            ndi.addr_lookup.LookupLinkName(
-              nf->if_metadata.other.index, nf->if_metadata.other.name);
-            nf->if_metadata.other.pvid =
-              ndi.addr_lookup.LookupLinkPVID(nf->if_metadata.other.index);
-        }
 #endif
         if (! ndi.flow_buckets->InsertUnlocked(flow.digest_lower, nf))
         {
@@ -1174,11 +1156,6 @@ ndCaptureThread::ProcessPacketImpl(ndPacket *packet) {
             throw ndException("%s: flow exists in map",
               tag.c_str());
         }
-
-#if defined(_ND_ENABLE_NETLINK)
-        if (ndGC_USE_CONNTRACK)
-            ndi.thread_conntrack->UpdateFlow(nf);
-#endif
 
         ndi.status.flows++;
 

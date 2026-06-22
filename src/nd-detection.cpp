@@ -503,8 +503,39 @@ void ndDetectionThread::ProcessFlow(ndDetectionQueueEntry *entry) {
             thread_conntrack->UpdateFlow(ndEF);
         }
 #endif
+#if defined(_ND_ENABLE_INTERFACE_METADATA)
+        int meta_src_idx = (entry->packet->ifidx_logical != -1) ?
+          entry->packet->ifidx_logical : entry->packet->ifidx_src;
+
+        if (ndGC.mark_to_ifindex_enable && ndEF->conntrack.mark) {
+            // XXX: Override src index; mark_to_ifindex is enabled and
+            // a conntrack mark is set.
+            meta_src_idx =
+              (ndEF->conntrack.mark >> ndGC.mark_to_ifindex_mark_shift) &
+                ((1U << ndGC.mark_to_ifindex_mark_mask) - 1);
+        }
+
+        ndEF->if_metadata.local.index = meta_src_idx;
+        ndEF->if_metadata.other.index = entry->packet->ifidx_dst;
+
+        if (ndEF->if_metadata.local.index != -1) {
+            ndi.addr_lookup.LookupLinkName(
+              ndEF->if_metadata.local.index, ndEF->if_metadata.local.name);
+            ndi.addr_lookup.LookupLinkSSID(
+              ndEF->if_metadata.local.index, ndEF->if_metadata.local.ssid);
+            ndEF->if_metadata.local.pvid =
+              ndi.addr_lookup.LookupLinkPVID(ndEF->if_metadata.local.index);
+        }
+
+        if (ndEF->if_metadata.other.index!= -1) {
+            ndi.addr_lookup.LookupLinkName(
+              ndEF->if_metadata.other.index, ndEF->if_metadata.other.name);
+            ndEF->if_metadata.other.pvid =
+              ndi.addr_lookup.LookupLinkPVID(ndEF->if_metadata.other.index);
+        }
+#endif // _ND_ENABLE_INTERFACE_METADATA
     }
-#endif
+#endif // _ND_ENABLE_CONNTRACK
 
     ndEF->UpdateLowerMaps();
 

@@ -87,9 +87,6 @@ public:
         tv.tv_usec = tv_usec;
     }
 
-protected:
-    friend class ndCaptureThread;
-
     ndFlags<StatusFlags> status;
     uint16_t length;
     uint16_t caplen;
