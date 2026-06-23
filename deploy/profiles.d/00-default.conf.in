@@ -160,10 +160,23 @@ all = include
 ############################################################################
 
 [netlink]
-# Set the Netlink buffer size
+# Set the user-space buffer size for Netlink messages.
 buffer_size = 65536
-# Set the Conntrack buffer size (1MB default, 8MB for higher traffic spikes)
-conntrack_buffer_size = 1048576
+# Set the maximum size of the Netlink buffer size:
+# If you see warnings such as: mnl_socket_recvfrom: No buffer space available
+# There are two options; adjust the buffer_size above by increasing it until
+# the warnings stop, or set the max_buffer_size to either 0 or some higher
+# value such as double or triple the buffer_size.  Then when the buffer is
+# full, it will automatically increased by 2 KB until it reaches the
+# max_buffer_size.  If max_buffer_size is 0, it will increase indefinately
+# until the warnings stop.  To disable automatic buffer resizing, set the
+# max_buffer_size to the same value as buffer_size, ex:
+#   buffer_size = 65535
+#   max_buffer_size = 65535
+max_buffer_size = 65536
+# Set the buffer size (1MB default, 8MB for higher traffic spikes)
+# for Netlink sockets.  Set to 0 to use the kernel's default.
+socket_buffer_size = 1048576
 # In the event we miss a conntrack DESTROY event, clean-up cached flow
 # entries that have been idle for greater than this number of seconds.
 # Default: 1 hour (3600).  Set to 0 to disable.

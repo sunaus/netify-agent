@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <cstddef>
 #include <iostream>
 #include <map>
@@ -380,12 +381,19 @@ public:
     unsigned update_imf = { 1 };
     unsigned update_interval = { ND_STATS_INTERVAL };
 #ifdef _ND_ENABLE_NETLINK
-    size_t netlink_buffer_size = { ND_NETLINK_BUFFER_SIZE };
+    std::atomic<size_t> netlink_buffer_size = {
+        ND_NETLINK_BUFFER_SIZE
+    };
+    size_t netlink_max_buffer_size = {
+        ND_NETLINK_BUFFER_SIZE
+    };
+    size_t netlink_socket_buffer_size = {
+        ND_NETLINK_SOCKET_BUFFER_SIZE
+    };
 #ifdef _ND_ENABLE_CONNTRACK
-    size_t netlink_conntrack_buffer_size = {
-      ND_NETLINK_CONNTRACK_BUFFER_SIZE };
     unsigned netlink_conntrack_idle_timeout = {
-      ND_NETLINK_CONNTRACK_IDLE_TIMEOUT };
+        ND_NETLINK_CONNTRACK_IDLE_TIMEOUT
+    };
 #endif
 #endif
     typedef std::vector<std::pair<std::string, std::string>> SocketHosts;

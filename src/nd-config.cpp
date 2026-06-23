@@ -330,10 +330,14 @@ bool ndGlobalConfig::Load(const string &filename, bool profile) {
     // Netlink section
 #ifdef _ND_ENABLE_NETLINK
     netlink_buffer_size = (size_t)r->GetInteger("netlink",
-      "buffer_size", this->netlink_buffer_size);
+      "buffer_size", this->netlink_buffer_size.load());
+
+    netlink_max_buffer_size = (size_t)r->GetInteger("netlink",
+      "max_buffer_size", this->netlink_max_buffer_size);
+
+    netlink_socket_buffer_size = (size_t)r->GetInteger("netlink",
+      "socket_buffer_size", this->netlink_socket_buffer_size);
 #ifdef _ND_ENABLE_CONNTRACK
-    netlink_conntrack_buffer_size = (size_t)r->GetInteger("netlink",
-      "conntrack_buffer_size", this->netlink_conntrack_buffer_size);
     netlink_conntrack_idle_timeout = (unsigned)r->GetInteger("netlink",
       "conntrack_idle_ttl", this->netlink_conntrack_idle_timeout);
 #endif
