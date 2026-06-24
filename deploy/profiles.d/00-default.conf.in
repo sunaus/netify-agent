@@ -139,7 +139,7 @@ private_external_addresses = no
 ############################################################################
 
 [netify-api]
-# Enable/disable API integration with Netify Informatics
+# Enable/disable API for app signatures, intel signatures, and more...
 enable = no
 update_tick = 30
 update_interval = 86400
