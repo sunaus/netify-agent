@@ -68,6 +68,10 @@ protected:
     Ports ports;
     Ports src_ports;
     Ports dst_ports;
+
+    using Hostnames = std::unordered_set<std::string>;
+
+    Hostnames hostnames;
 };
 
 class Group

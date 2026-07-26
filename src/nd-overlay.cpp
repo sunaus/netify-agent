@@ -33,6 +33,25 @@ using namespace std;
 using namespace ndOverlay;
 using json = nlohmann::json;
 
+namespace {
+
+bool MatchDomain(const string &flow_host, const string &criterion_host) {
+    if (flow_host.size() < criterion_host.size()) {
+        return false;
+    }
+    if (flow_host == criterion_host) {
+        return true;
+    }
+    size_t suffix_pos = flow_host.size() - criterion_host.size();
+    if (suffix_pos > 0 && flow_host[suffix_pos - 1] == '.' &&
+        flow_host.compare(suffix_pos, criterion_host.size(), criterion_host) == 0) {
+        return true;
+    }
+    return false;
+}
+
+} // namespace
+
 void Criteria::Load(const nlohmann::json &jconfig) {
     auto ji = jconfig.find("applications");
     if (ji != jconfig.end()) apps = ji->get<Apps>();
@@ -54,6 +73,17 @@ void Criteria::Load(const nlohmann::json &jconfig) {
 
     ji = jconfig.find("src_ports");
     if (ji != jconfig.end()) src_ports = ji->get<Ports>();
+
+    ji = jconfig.find("hostnames");
+    if (ji != jconfig.end()) {
+        for (auto &h : ji->get<vector<string>>()) {
+            string host = h;
+            nd_set_hostname(host);
+            if (!host.empty()) {
+                hostnames.insert(host);
+            }
+        }
+    }
 }
 
 bool Criteria::operator==(const ndFlow::Ptr &flow) const {
@@ -88,6 +118,21 @@ bool Criteria::operator==(const ndFlow::Ptr &flow) const {
     if (! dst_ports.empty() && flow->origin == ndFlow::Origin::UPPER &&
         dst_ports.find(flow->lower_addr.GetPort()) == dst_ports.end())
         return false;
+
+    if (! hostnames.empty()) {
+        bool match = false;
+        for (const auto &h : hostnames) {
+            if (!flow->dns_host_name.empty() && MatchDomain(flow->dns_host_name, h)) {
+                match = true;
+                break;
+            }
+            if (!flow->host_server_name.empty() && MatchDomain(flow->host_server_name, h)) {
+                match = true;
+                break;
+            }
+        }
+        if (! match) return false;
+    }
 
     return true;
 }
