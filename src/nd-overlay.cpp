@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include <algorithm>
 #include <fstream>
 
 #include "nd-config.hpp"
@@ -154,6 +155,14 @@ bool Group::MatchFlow(const ndFlow::Ptr &flow,
 }
 
 void Tag::Load(const nlohmann::json &jconfig) {
+    auto jp = jconfig.find("priority");
+    if (jp != jconfig.end())
+        priority = jp->get<int>();
+
+    auto jf = jconfig.find("fallback");
+    if (jf != jconfig.end())
+        fallback = jf->get<bool>();
+
     auto jcat = jconfig.find("category_id");
     if (jcat != jconfig.end())
         category_id = jcat->get<ndCategories::Id>();
@@ -168,14 +177,14 @@ void Tag::Load(const nlohmann::json &jconfig) {
         Group group(jtag.get<string>());
         group.Load(jg);
 
-        groups.insert(make_pair(jtag.get<string>(), group));
+        groups.push_back(group);
     }
 }
 
 bool Tag::MatchFlow(ndFlow::Ptr &flow, Result &result) const {
     size_t matches = 0;
     for (auto &g : groups) {
-        if (! g.second.MatchFlow(flow, result, tag)) continue;
+        if (! g.MatchFlow(flow, result, tag)) continue;
         matches++;
     }
 
@@ -191,7 +200,20 @@ bool Tags::MatchFlow(ndFlow::Ptr &flow) const {
     const lock_guard<mutex> lg(lock);
 
     Result result;
-    for (auto &t : tags) t.second.MatchFlow(flow, result);
+    const Tag *fallback = nullptr;
+
+    for (auto &t : tags) {
+        if (t.IsFallback()) {
+            fallback = &t;
+            continue;
+        }
+
+        t.MatchFlow(flow, result);
+    }
+
+    if (result.empty() && fallback != nullptr) {
+        fallback->MatchFlow(flow, result);
+    }
 
     flow->tags.clear();
     flow->tags.insert(result.begin(), result.end());
@@ -219,23 +241,41 @@ bool Tags::Reload(void) {
     try {
         ifs >> jconfig;
 
-        tags.clear();
+        std::vector<Tag> new_tags;
 
         auto jtags = jconfig.find("tags");
-        if (jtags == jconfig.end()) return true;
+        if (jtags != jconfig.end()) {
+            if (! jtags->is_array())
+                throw ndException("%s must be %s", "tags", "an array");
 
-        if (! jtags->is_array())
-            throw ndException("%s must be %s", "tags", "an array");
+            for (auto &jt : *jtags) {
+                auto jtag = jt.at("tag");
 
-        for (auto &jt : *jtags) {
-            auto jtag = jt.at("tag");
+                Tag tag(jtag.get<string>());
+                tag.Load(jt);
 
-            Tag tag(jtag.get<string>());
-            tag.Load(jt);
+                new_tags.push_back(tag);
+                nd_dprintf("loaded overlay tag: %s\n", jtag.get<string>().c_str());
+            }
 
-            tags.insert(make_pair(jtag.get<string>(), tag));
-            nd_dprintf("loaded overlay tag: %s\n", jtag.get<string>().c_str());
+            bool found_fallback = false;
+
+            for (const auto &t : new_tags) {
+                if (t.IsFallback()) {
+                    if (found_fallback) {
+                        throw ndException("Only one fallback tag is allowed");
+                    }
+                    found_fallback = true;
+                }
+            }
+
+            std::stable_sort(new_tags.begin(), new_tags.end(),
+            [](const Tag &a, const Tag &b) {
+                return a.GetPriority() > b.GetPriority();
+            });
         }
+
+        tags = std::move(new_tags);
     }
     catch (exception &e) {
         nd_printf(

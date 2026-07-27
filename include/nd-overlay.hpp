@@ -25,6 +25,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include <nlohmann/json.hpp>
 
@@ -97,11 +98,17 @@ public:
     void Load(const nlohmann::json &jconfig);
     bool MatchFlow(ndFlow::Ptr &flow, Result &result) const;
 
+    int GetPriority() const { return priority; }
+    bool IsFallback() const { return fallback; }
+
 protected:
     std::string tag;
     ndCategories::Id category_id = { 0 };
 
-    using Groups = std::unordered_map<std::string, Group>;
+    int priority = 1000;
+    bool fallback = false;
+
+    using Groups = std::vector<Group>;
     Groups groups;
 };
 
@@ -113,7 +120,7 @@ public:
 
 protected:
     mutable std::mutex lock;
-    std::unordered_map<std::string, Tag> tags;
+    std::vector<Tag> tags;
 };
 
 } // ndOverlay
